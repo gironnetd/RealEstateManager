@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Navigation View and Bottom Navigation View Strings-->
+    <string name="real_estate">Biens immobiliers</string>
+    <string name="simulation">Simulation</string>
+    <string name="add_real_estate">Ajouter un bien immobilier</string>
+</resources>

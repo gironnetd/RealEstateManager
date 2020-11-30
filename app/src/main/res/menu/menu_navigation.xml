@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/real_estate"
+        android:title="@string/real_estate"
+        android:icon="@drawable/ic_baseline_real_estate_24"
+        android:iconTint="@color/colorPrimaryDark"
+        />
+    <item
+        android:id="@+id/add_real_estate"
+        android:title="@string/add_real_estate"
+        android:icon="@drawable/ic_baseline_add_real_estate_24"
+        android:iconTint="@color/colorPrimaryDark"
+        />
+    <item
+        android:id="@+id/simulation"
+        android:title="@string/simulation"
+        android:icon="@drawable/ic_baseline_bar_chart_24"
+        android:iconTint="@color/colorPrimaryDark"/>
+</menu>

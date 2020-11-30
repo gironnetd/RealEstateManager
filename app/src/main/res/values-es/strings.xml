@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Navigation View and Bottom Navigation View Strings-->
+    <string name="real_estate">Bienes raíces</string>
+    <string name="simulation">Simulación</string>
+    <string name="add_real_estate">Agregar bienes raíces</string>
+</resources>
