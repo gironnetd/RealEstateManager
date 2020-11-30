@@ -4,7 +4,6 @@
         android:id="@+id/real_estate"
         android:title="@string/real_estate"
         android:icon="@drawable/ic_baseline_real_estate_24"
-        android:iconTint="@color/colorPrimaryDark"
         />
     <item
         android:id="@+id/add_real_estate"
