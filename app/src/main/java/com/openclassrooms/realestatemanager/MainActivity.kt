@@ -1,8 +1,8 @@
 package com.openclassrooms.realestatemanager
 
 import android.os.Bundle
+import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
-import android.widget.TextView
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -13,8 +13,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.toolBar)
         configureTextViewMain()
         configureTextViewQuantity()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_action_bar, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     private fun configureTextViewMain() {
