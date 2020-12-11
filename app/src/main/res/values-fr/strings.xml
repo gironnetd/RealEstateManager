@@ -4,4 +4,10 @@
     <string name="real_estate">Biens immobiliers</string>
     <string name="simulation">Simulation</string>
     <string name="add_real_estate">Ajouter un bien immobilier</string>
+    <string name="create">Créer un bien immobilier</string>
+    <string name="update">Modifier un bien immobiler</string>
+    <string name="map">Carte des biens immobiliers</string>
+    <string name="list">Liste des biens immobiliers</string>
+    <string name="detail">Detail de bien immobilier</string>
+    <string name="search">Rechercher</string>
 </resources>

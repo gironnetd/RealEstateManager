@@ -4,4 +4,10 @@
     <string name="real_estate">Bienes raíces</string>
     <string name="simulation">Simulación</string>
     <string name="add_real_estate">Agregar bienes raíces</string>
+    <string name="create">Crear bienes raíces</string>
+    <string name="update">Modificación de bienes inmuebles</string>
+    <string name="map">Mapa inmobiliario</string>
+    <string name="list">Lista de inmuebles</string>
+    <string name="detail">Detalle de bienes raíces</string>
+    <string name="search">Buscar</string>
 </resources>

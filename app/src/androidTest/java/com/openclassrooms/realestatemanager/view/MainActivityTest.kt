@@ -1,24 +1,18 @@
-package com.openclassrooms.realestatemanager
+package com.openclassrooms.realestatemanager.view
 
-import android.app.Activity
-import android.view.View
-import androidx.appcompat.widget.Toolbar
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import junit.framework.TestCase
+import com.google.android.material.internal.NavigationMenuItemView
+import com.openclassrooms.realestatemanager.R
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.instanceOf
-import org.hamcrest.Description
-import org.hamcrest.Matcher
 import org.hamcrest.Matchers.`is`
 import org.junit.After
 import org.junit.Before
@@ -26,9 +20,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 
-@RunWith(AndroidJUnit4::class)
+@RunWith(AndroidJUnit4ClassRunner::class)
 @LargeTest
-class MainActivityTest : TestCase() {
+class MainActivityTest : BaseMainActivityTests() {
 
     private lateinit var activityScenario: ActivityScenario<MainActivity>
 
@@ -48,7 +42,7 @@ class MainActivityTest : TestCase() {
 
     @Test
     fun is_search_item_displayed() {
-        onView(withId(R.id.search)).check(matches(isDisplayed()))
+        onView(withId(R.id.navigation_search)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -60,7 +54,7 @@ class MainActivityTest : TestCase() {
     }
 
     @Test
-    fun when_click_on_home_icon_then_open_navigation_view_(){
+    fun when_click_on_home_icon_then_open_navigation_view(){
         onView(withContentDescription(
                 activityScenario
                         .getToolbarNavigationContentDescription()
@@ -74,7 +68,8 @@ class MainActivityTest : TestCase() {
                 activityScenario
                         .getToolbarNavigationContentDescription()
         )).perform(click())
-        onView(withId(R.id.real_estate)).check(matches(isDisplayed()))
+        onView(allOf(isAssignableFrom(NavigationMenuItemView::class.java), withId(R.id.navigation_list)))
+                .check(matches(isDisplayed()))
     }
 
     @Test
@@ -83,7 +78,7 @@ class MainActivityTest : TestCase() {
                 activityScenario
                         .getToolbarNavigationContentDescription()
         )).perform(click())
-        onView(withId(R.id.add_real_estate)).check(matches(isDisplayed()))
+        onView(withId(R.id.navigation_create)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -92,58 +87,42 @@ class MainActivityTest : TestCase() {
                 activityScenario
                         .getToolbarNavigationContentDescription()
         )).perform(click())
-        onView(withId(R.id.simulation)).check(matches(isDisplayed()))
+
+        onView(allOf(isAssignableFrom(NavigationMenuItemView::class.java), withId(R.id.navigation_simulation)))
+                .check(matches(isDisplayed()))
     }
 
     @Test
     fun is_bottom_navigation_view_displayed() {
-        onView(allOf(`is`(instanceOf(BottomNavigationView::class.java))
-                )).check(matches(isDisplayed()))
+        onView(allOf(isAssignableFrom(BottomNavigationView::class.java)))
+                .check(matches(isDisplayed()))
     }
 
     @Test
     fun when_click_on_real_estate_bottom_navigation_view_then_button_is_checked() {
-        onView(withId(R.id.navigation_real_estate_view)).perform(click())
-        onView(withId(R.id.navigation_simulation_view)).check(matches(withBottomNavItemCheckedStatus(false)))
-        onView(withId(R.id.navigation_real_estate_view)).check(matches(withBottomNavItemCheckedStatus(true)))
+        onView(allOf(withText(R.string.real_estate), isDisplayed()))
+                .perform(click())
+        onView(allOf(withId(R.id.navigation_simulation),
+                isDisplayed()))
+                .check(matches(withBottomNavItemCheckedStatus(false)))
+        onView(allOf(withId(R.id.navigation_list),
+                isDisplayed())).check(matches(withBottomNavItemCheckedStatus(true)))
     }
 
     @Test
     fun when_click_on_simulation_bottom_navigation_view_then_button_is_checked() {
-        onView(withId(R.id.navigation_simulation_view)).perform(click())
-        onView(withId(R.id.navigation_real_estate_view)).check(matches(withBottomNavItemCheckedStatus(false)))
-        onView(withId(R.id.navigation_simulation_view)).check(matches(withBottomNavItemCheckedStatus(true)))
+        onView(allOf(withText(R.string.simulation), isDisplayed()))
+                .perform(click())
+        onView(allOf(withId(R.id.navigation_list),
+                isDisplayed()))
+                .check(matches(withBottomNavItemCheckedStatus(false)))
+        onView(allOf(withId(R.id.navigation_simulation),
+                isDisplayed())).check(matches(withBottomNavItemCheckedStatus(true)))
     }
 
     @Test
     fun is_add_real_estate_floating_action_button_displayed() {
         onView(allOf(`is`(instanceOf(FloatingActionButton::class.java))
         )).check(matches(isDisplayed()))
-    }
-
-    private fun <T : Activity> ActivityScenario<T>.getToolbarNavigationContentDescription()
-            : String {
-        var description = ""
-        onActivity {
-            description =
-                    it.findViewById<Toolbar>(R.id.tool_bar).navigationContentDescription as String
-        }
-        return description
-    }
-
-    private fun withBottomNavItemCheckedStatus(isChecked: Boolean): Matcher<View?>? {
-        return object : BoundedMatcher<View?, BottomNavigationItemView>(BottomNavigationItemView::class.java) {
-            var triedMatching = false
-            override fun describeTo(description: Description) {
-                if (triedMatching) {
-                    description.appendText("with BottomNavigationItem check status: $isChecked")
-                }
-            }
-
-            override fun matchesSafely(item: BottomNavigationItemView): Boolean {
-                triedMatching = true
-                return item.itemData.isChecked == isChecked
-            }
-        }
     }
 }

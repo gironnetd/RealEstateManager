@@ -4,4 +4,10 @@
     <string name="real_estate">Real estate</string>
     <string name="simulation">Simulation</string>
     <string name="add_real_estate">Add real estate</string>
+    <string name="create">Create real estate</string>
+    <string name="update">Modification of real estate</string>
+    <string name="map">Real estate map</string>
+    <string name="list">Real estate list</string>
+    <string name="detail">Real estate Detail</string>
+    <string name="search">Search</string>
 </resources>
