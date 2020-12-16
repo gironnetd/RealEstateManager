@@ -68,7 +68,8 @@ class MainActivityTest : BaseMainActivityTests() {
                 activityScenario
                         .getToolbarNavigationContentDescription()
         )).perform(click())
-        onView(allOf(isAssignableFrom(NavigationMenuItemView::class.java), withId(R.id.navigation_list)))
+        onView(allOf(isAssignableFrom(NavigationMenuItemView::class.java),
+                withId(R.id.navigation_real_estate)))
                 .check(matches(isDisplayed()))
     }
 
@@ -105,7 +106,7 @@ class MainActivityTest : BaseMainActivityTests() {
         onView(allOf(withId(R.id.navigation_simulation),
                 isDisplayed()))
                 .check(matches(withBottomNavItemCheckedStatus(false)))
-        onView(allOf(withId(R.id.navigation_list),
+        onView(allOf(withId(R.id.navigation_real_estate),
                 isDisplayed())).check(matches(withBottomNavItemCheckedStatus(true)))
     }
 
@@ -113,7 +114,7 @@ class MainActivityTest : BaseMainActivityTests() {
     fun when_click_on_simulation_bottom_navigation_view_then_button_is_checked() {
         onView(allOf(withText(R.string.simulation), isDisplayed()))
                 .perform(click())
-        onView(allOf(withId(R.id.navigation_list),
+        onView(allOf(withId(R.id.navigation_real_estate),
                 isDisplayed()))
                 .check(matches(withBottomNavItemCheckedStatus(false)))
         onView(allOf(withId(R.id.navigation_simulation),

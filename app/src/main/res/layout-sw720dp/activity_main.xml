@@ -62,21 +62,19 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:menu="@menu/menu_bottom_navigation" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/create_floating_action_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_add_24"
-                app:elevation="10dp"
-                app:fabSize="mini"
-                app:layout_anchor="@id/bottom_navigation_view"
-                app:layout_anchorGravity="top|center_horizontal"
-                app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
-                app:layout_constraintEnd_toEndOf="@id/bottom_navigation_view"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/create_floating_action_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginBottom="24dp"
+                    android:src="@drawable/ic_baseline_add_24"
+                    app:elevation="10dp"
+                    app:fabSize="auto"
+                    app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
+                    app:layout_constraintEnd_toEndOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
     <com.google.android.material.navigation.NavigationView

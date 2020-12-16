@@ -11,7 +11,6 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
-import com.openclassrooms.realestatemanager.util.Utils
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,17 +27,16 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager
                 .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
-        //appBarConfiguration = AppBarConfiguration(navController.graph, binding.drawerLayout)
+
         appBarConfiguration = AppBarConfiguration.Builder(R.id.navigation_list,
-                R.id.navigation_simulation, R.id.navigation_search, R.id.navigation_create)
+                R.id.navigation_simulation, R.id.navigation_search, R.id.navigation_create,
+                R.id.navigation_real_estate, R.id.navigation_master_detail_real_estate)
                 .setOpenableLayout(binding.drawerLayout)
                 .build()
         binding.toolBar.setupWithNavController(navController, appBarConfiguration)
         binding.navigationView.setupWithNavController(navController)
         binding.bottomNavigationView.setupWithNavController(navController)
         initCreateFloatingActionButton()
-        configureTextViewMain()
-        configureTextViewQuantity()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -55,16 +53,5 @@ class MainActivity : AppCompatActivity() {
         binding.createFloatingActionButton.setOnClickListener {
             navController.navigate(R.id.navigation_create)
         }
-    }
-
-    private fun configureTextViewMain() {
-        binding.activityMainActivityTextViewMain!!.textSize = 15f
-        binding.activityMainActivityTextViewMain!!.text = "Le premier bien immobilier enregistré vaut "
-    }
-
-    private fun configureTextViewQuantity() {
-        val quantity = Utils.convertDollarToEuro(100)
-        binding.activityMainActivityTextViewQuantity!!.textSize = 20f
-        binding.activityMainActivityTextViewQuantity!!.text = quantity.toString()
     }
 }

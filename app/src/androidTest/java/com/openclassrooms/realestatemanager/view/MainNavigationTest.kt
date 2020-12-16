@@ -11,6 +11,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.filters.LargeTest
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
+import androidx.test.platform.app.InstrumentationRegistry
 import com.openclassrooms.realestatemanager.R
 import org.hamcrest.CoreMatchers.allOf
 import org.junit.Test
@@ -35,9 +36,19 @@ class MainNavigationTest : BaseMainActivityTests() {
                 navController.navigate(R.id.navigation_simulation)
             }
         }
-        onView(allOf(withId(R.id.navigation_list), isDisplayed()))
+        onView(allOf(withId(R.id.navigation_real_estate), isDisplayed()))
                 .perform(click())
-        assertEquals(navController.currentDestination?.id, R.id.navigation_list)
+
+        val isTablet = InstrumentationRegistry.getInstrumentation()
+                .targetContext.resources.getBoolean(R.bool.isTablet)
+
+        if (isTablet) {
+            assertEquals(navController.currentDestination?.id, R.id.navigation_master_detail_real_estate)
+        }
+
+        if(!isTablet) {
+            assertEquals(navController.currentDestination?.id, R.id.navigation_list)
+        }
     }
 
     @Test
@@ -73,14 +84,30 @@ class MainNavigationTest : BaseMainActivityTests() {
                         .getToolbarNavigationContentDescription()
         )).perform(click())
 
-        if(navController.currentDestination?.id!! == R.id.navigation_list) {
+        if(navController.currentDestination?.id!! == R.id.navigation_master_detail_real_estate ||
+                navController.currentDestination?.id!! == R.id.navigation_list) {
             runOnUiThread {
                 navController.navigate(R.id.navigation_simulation)
             }
         }
+
         onView(withId(R.id.navigation_view))
-                .perform(NavigationViewActions.navigateTo(R.id.navigation_list))
-        assertEquals(navController.currentDestination?.id, R.id.navigation_list)
+                .perform(NavigationViewActions.navigateTo(R.id.navigation_real_estate))
+
+        onView(isRoot()).perform(waitFor(1000))
+
+        val isTablet = InstrumentationRegistry.getInstrumentation()
+                .targetContext.resources.getBoolean(R.bool.isTablet)
+
+        if (isTablet) {
+            assertEquals(navController.currentDestination?.id,
+                    R.id.navigation_master_detail_real_estate)
+        }
+
+        if(!isTablet) {
+            assertEquals(navController.currentDestination?.id,
+                    R.id.navigation_list)
+        }
     }
 
     @Test
