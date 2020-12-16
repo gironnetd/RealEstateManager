@@ -43,7 +43,7 @@ class MainNavigationTest : BaseMainActivityTests() {
                 .targetContext.resources.getBoolean(R.bool.isTablet)
 
         if (isTablet) {
-            assertEquals(navController.currentDestination?.id, R.id.navigation_master_detail_real_estate)
+            assertEquals(navController.currentDestination?.id, R.id.navigation_real_estate)
         }
 
         if(!isTablet) {
@@ -84,7 +84,7 @@ class MainNavigationTest : BaseMainActivityTests() {
                         .getToolbarNavigationContentDescription()
         )).perform(click())
 
-        if(navController.currentDestination?.id!! == R.id.navigation_master_detail_real_estate ||
+        if(navController.currentDestination?.id!! == R.id.navigation_real_estate ||
                 navController.currentDestination?.id!! == R.id.navigation_list) {
             runOnUiThread {
                 navController.navigate(R.id.navigation_simulation)
@@ -101,7 +101,7 @@ class MainNavigationTest : BaseMainActivityTests() {
 
         if (isTablet) {
             assertEquals(navController.currentDestination?.id,
-                    R.id.navigation_master_detail_real_estate)
+                    R.id.navigation_real_estate)
         }
 
         if(!isTablet) {

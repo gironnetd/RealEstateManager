@@ -7,16 +7,9 @@
     android:id="@+id/real_estate_master_detail_fragment"
     tools:context=".view.realestate.RealEstateMasterDetailFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="Real Estate Detail Fragment" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/master_nav_fragment"

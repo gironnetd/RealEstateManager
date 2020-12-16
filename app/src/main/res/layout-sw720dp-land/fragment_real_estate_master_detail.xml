@@ -7,16 +7,9 @@
     android:id="@+id/real_estate_master_detail_fragment"
     tools:context=".view.realestate.RealEstateMasterDetailFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="Real Estate Detail Fragment" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/master_nav_fragment"
@@ -24,7 +17,6 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:defaultNavHost="false"
-            android:background="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"

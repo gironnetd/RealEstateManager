@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentRealEstateBinding
@@ -29,13 +30,16 @@ class RealEstateFragment : Fragment() {
     }
 
     private fun isTablet() {
+        val navHostFragment = childFragmentManager.findFragmentById(R.id.real_estate_nav_host_fragment)
+                as NavHostFragment
+
         val isTablet = context?.resources?.getBoolean(R.bool.isTablet) ?: false
         when {
             isTablet -> {
-                findNavController().navigate(R.id.navigation_master_detail_real_estate)
+                navHostFragment.findNavController().navigate(R.id.navigation_real_estate_master_detail)
             }
             else -> {
-                findNavController().navigate(R.id.navigation_list)
+                navHostFragment.findNavController().navigate(R.id.navigation_real_estate_master)
             }
         }
     }

@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.view.suites
 import com.openclassrooms.realestatemanager.view.MainActivityTest
 import com.openclassrooms.realestatemanager.view.MainNavigationTest
 import com.openclassrooms.realestatemanager.view.MainRotationTest
+import com.openclassrooms.realestatemanager.view.realestate.RealEstateFragmentTest
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 
@@ -10,6 +11,7 @@ import org.junit.runners.Suite
 @Suite.SuiteClasses(
         MainActivityTest::class,
         MainNavigationTest::class,
-        MainRotationTest::class
+        MainRotationTest::class,
+        RealEstateFragmentTest::class
 )
 class RunAllTests

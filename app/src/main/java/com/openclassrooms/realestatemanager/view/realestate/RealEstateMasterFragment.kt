@@ -7,19 +7,19 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import com.openclassrooms.realestatemanager.R
-import com.openclassrooms.realestatemanager.databinding.FragmentRealEstateMasterDetailBinding
+import com.openclassrooms.realestatemanager.databinding.FragmentRealEstateMasterBinding
 
 /**
- * Fragment to handle the display of real estate for tablet.
+ * Fragment to handle the display of real estate for smartphone.
  */
-class RealEstateMasterDetailFragment : Fragment() {
+class RealEstateMasterFragment : Fragment() {
 
-    private var _binding: FragmentRealEstateMasterDetailBinding? = null
+    private var _binding: FragmentRealEstateMasterBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        _binding = FragmentRealEstateMasterDetailBinding.inflate(inflater, container, false)
+        _binding = FragmentRealEstateMasterBinding.inflate(inflater, container, false)
 
         val master = childFragmentManager.findFragmentById(R.id.master_nav_fragment) as NavHostFragment?
         if(master != null){
@@ -28,15 +28,6 @@ class RealEstateMasterDetailFragment : Fragment() {
             val graph = navInflater.inflate(R.navigation.real_estate_master_navigation)
 
             master.navController.graph = graph
-        }
-
-        val detail = childFragmentManager.findFragmentById(R.id.detail_nav_fragment) as NavHostFragment?
-        if(detail != null){
-            val navController = detail.navController
-            val navInflater = navController.navInflater
-            val graph = navInflater.inflate(R.navigation.real_estate_detail_navigation)
-
-            detail.navController.graph = graph
         }
         return binding.root
     }

@@ -8,6 +8,8 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.PositionAssertions.isCompletelyLeftOf
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.filters.LargeTest
@@ -16,6 +18,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.util.OrientationChangeAction
 import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.anyOf
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.lang.Thread.sleep
@@ -26,7 +29,6 @@ class MainRotationTest : BaseMainActivityTests() {
 
     private lateinit var activityScenario: ActivityScenario<MainActivity>
     private lateinit var navController: NavController
-    private lateinit var mainActivity : MainActivity
 
     @Test
     fun given_create_fragment_displayed_when_rotation_then_display_create_fragment() {
@@ -95,15 +97,7 @@ class MainRotationTest : BaseMainActivityTests() {
         onView(allOf(withId(R.id.navigation_real_estate), isDisplayed()))
                 .perform(click())
 
-        var isTablet = InstrumentationRegistry.getInstrumentation()
-                .targetContext.resources.getBoolean(R.bool.isTablet)
-
-        if (isTablet) {
-            assertEquals(navController.currentDestination?.id, R.id.navigation_master_detail_real_estate)
-        }
-        if(!isTablet) {
-            assertEquals(navController.currentDestination?.id, R.id.navigation_list)
-        }
+        is_this_the_correct_fragment_displayed()
 
         val orientation = mainActivity.applicationContext.resources.configuration.orientation
         if(orientation == ORIENTATION_PORTRAIT) {
@@ -129,10 +123,24 @@ class MainRotationTest : BaseMainActivityTests() {
                 .targetContext.resources.getBoolean(R.bool.isTablet)
 
         if (isTablet) {
-            onView(withId(R.id.real_estate_master_detail_fragment)).check(matches(isDisplayed()))
+            assertEquals(navController.currentDestination?.id, R.id.navigation_real_estate)
+            onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
+
+            onView(withId(R.id.list_fragment))
+                    .check(isCompletelyLeftOf(
+                            anyOf(withId(R.id.map_fragment),
+                                    withId(R.id.detail_fragment))))
+
+            onView(anyOf(withId(R.id.map_fragment),
+                    withId(R.id.detail_fragment)))
+                    .check(matches(isDisplayed()))
         }
         if(!isTablet) {
+            assertEquals(navController.currentDestination?.id, R.id.navigation_real_estate)
             onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
+            onView(anyOf(withId(R.id.map_fragment),
+                    withId(R.id.detail_fragment)))
+                    .check(doesNotExist())
         }
     }
 
