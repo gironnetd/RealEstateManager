@@ -20,6 +20,15 @@ class RealEstateFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         _binding = FragmentRealEstateBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        isTablet()
+    }
+
+    private fun isTablet() {
         val isTablet = context?.resources?.getBoolean(R.bool.isTablet) ?: false
         when {
             isTablet -> {
@@ -29,7 +38,6 @@ class RealEstateFragment : Fragment() {
                 findNavController().navigate(R.id.navigation_list)
             }
         }
-        return binding.root
     }
 
     override fun onDestroyView() {
