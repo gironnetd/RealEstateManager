@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentRealEstateBinding
 
 /**
@@ -18,6 +20,15 @@ class RealEstateFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         _binding = FragmentRealEstateBinding.inflate(inflater, container, false)
+        val isTablet = context?.resources?.getBoolean(R.bool.isTablet) ?: false
+        when {
+            isTablet -> {
+                findNavController().navigate(R.id.navigation_master_detail_real_estate)
+            }
+            else -> {
+                findNavController().navigate(R.id.navigation_list)
+            }
+        }
         return binding.root
     }
 
