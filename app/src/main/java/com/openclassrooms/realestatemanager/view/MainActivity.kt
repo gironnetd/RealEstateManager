@@ -36,6 +36,13 @@ class MainActivity : AppCompatActivity() {
         binding.toolBar.setupWithNavController(navController, appBarConfiguration)
         binding.navigationView.setupWithNavController(navController)
         binding.bottomNavigationView.setupWithNavController(navController)
+
+        if(navController.currentDestination?.id == R.id.navigation_list ||
+                navController.currentDestination?.id ==
+                R.id.navigation_master_detail_real_estate) {
+            navController.navigate(R.id.navigation_real_estate)
+        }
+
         initCreateFloatingActionButton()
     }
 
