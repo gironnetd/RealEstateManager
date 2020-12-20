@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -7,11 +8,49 @@
     android:id="@+id/real_estate_master_fragment"
     tools:context=".view.realestate.RealEstateMasterFragment">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/list_view_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/button_list_title"
+            android:textStyle="bold"
+            android:textColor="@color/selector_text_color"
+            android:background="@drawable/selector_real_esate_button_state"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/map_view_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/button_map_title"
+            android:textStyle="bold"
+            android:textColor="@color/selector_text_color"
+            android:background="@drawable/selector_real_esate_button_state"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/master_nav_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:defaultNavHost="false"/>
+        app:defaultNavHost="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

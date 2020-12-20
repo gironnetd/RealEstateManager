@@ -7,8 +7,10 @@
     <string name="add_real_estate">Add real estate</string>
     <string name="create">Create real estate</string>
     <string name="update">Modification of real estate</string>
-    <string name="map">Real estate map</string>
-    <string name="list">Real estate list</string>
+    <string name="map">Real estate Map</string>
+    <string name="list">Real estate List</string>
     <string name="detail">Real estate Detail</string>
     <string name="search">Search</string>
+    <string name="button_list_title">List</string>
+    <string name="button_map_title">Map</string>
 </resources>

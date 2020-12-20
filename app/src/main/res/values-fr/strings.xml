@@ -10,4 +10,6 @@
     <string name="list">Liste des biens immobiliers</string>
     <string name="detail">Detail de bien immobilier</string>
     <string name="search">Rechercher</string>
+    <string name="button_list_title">Liste</string>
+    <string name="button_map_title">Carte</string>
 </resources>
