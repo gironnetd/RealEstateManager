@@ -22,21 +22,21 @@ class RealEstateMasterDetailFragment : Fragment() {
         _binding = FragmentRealEstateMasterDetailBinding.inflate(inflater, container, false)
 
         val master = childFragmentManager.findFragmentById(R.id.master_nav_fragment) as NavHostFragment?
-        if(master != null){
-            val navController = master.navController
+        master?.let {
+            val navController = it.navController
             val navInflater = navController.navInflater
             val graph = navInflater.inflate(R.navigation.real_estate_master_navigation)
 
-            master.navController.graph = graph
+            it.navController.graph = graph
         }
 
         val detail = childFragmentManager.findFragmentById(R.id.detail_nav_fragment) as NavHostFragment?
-        if(detail != null){
-            val navController = detail.navController
+        detail?.let {
+            val navController = it.navController
             val navInflater = navController.navInflater
             val graph = navInflater.inflate(R.navigation.real_estate_detail_navigation)
 
-            detail.navController.graph = graph
+            it.navController.graph = graph
         }
         return binding.root
     }

@@ -16,19 +16,25 @@ class RealEstateMasterFragment : Fragment() {
 
     private var _binding: FragmentRealEstateMasterBinding? = null
     private val binding get() = _binding!!
+    private lateinit var master : NavHostFragment
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         _binding = FragmentRealEstateMasterBinding.inflate(inflater, container, false)
 
-        val master = childFragmentManager.findFragmentById(R.id.master_nav_fragment) as NavHostFragment?
-        if(master != null){
-            val navController = master.navController
+        master = childFragmentManager.findFragmentById(R.id.master_nav_fragment) as NavHostFragment
+        master.let {
+            val navController = it.navController
             val navInflater = navController.navInflater
             val graph = navInflater.inflate(R.navigation.real_estate_master_navigation)
 
-            master.navController.graph = graph
+            it.navController.graph = graph
         }
+        initSegmentedControl()
+        return binding.root
+    }
+
+    private fun initSegmentedControl() {
         binding.listViewButton.isSelected = true
 
         binding.listViewButton.setOnClickListener {
@@ -36,7 +42,7 @@ class RealEstateMasterFragment : Fragment() {
                 it.isSelected = true
                 if(binding.mapViewButton.isSelected) {
                     binding.mapViewButton.isSelected = false
-                    master!!.navController.navigate(R.id.navigation_list)
+                    master.navController.navigate(R.id.navigation_list)
                 }
             }
         }
@@ -46,12 +52,10 @@ class RealEstateMasterFragment : Fragment() {
                 it.isSelected = true
                 if(binding.listViewButton.isSelected) {
                     binding.listViewButton.isSelected = false
-                    master!!.navController.navigate(R.id.navigation_map)
+                    master.navController.navigate(R.id.navigation_map)
                 }
             }
         }
-
-        return binding.root
     }
 
     override fun onDestroyView() {
