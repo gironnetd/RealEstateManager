@@ -29,6 +29,28 @@ class RealEstateMasterFragment : Fragment() {
 
             master.navController.graph = graph
         }
+        binding.listViewButton.isSelected = true
+
+        binding.listViewButton.setOnClickListener {
+            if(!it.isSelected) {
+                it.isSelected = true
+                if(binding.mapViewButton.isSelected) {
+                    binding.mapViewButton.isSelected = false
+                    master!!.navController.navigate(R.id.navigation_list)
+                }
+            }
+        }
+
+        binding.mapViewButton.setOnClickListener {
+            if(!it.isSelected) {
+                it.isSelected = true
+                if(binding.listViewButton.isSelected) {
+                    binding.listViewButton.isSelected = false
+                    master!!.navController.navigate(R.id.navigation_map)
+                }
+            }
+        }
+
         return binding.root
     }
 
