@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/real_estate_navigation"
+    app:startDestination="@id/navigation_real_estate_master">
+
+    <fragment
+        android:id="@+id/navigation_real_estate_master"
+        android:name="com.openclassrooms.realestatemanager.view.realestate.RealEstateMasterFragment"
+        android:label="fragment_real_estate_master"
+        tools:layout="@layout/fragment_real_estate_master" />
+    <fragment
+        android:id="@+id/navigation_real_estate_master_detail"
+        android:name="com.openclassrooms.realestatemanager.view.realestate.RealEstateMasterDetailFragment"
+        android:label="fragment_real_estate_master_detail"
+        tools:layout="@layout/fragment_real_estate_master_detail" />
+
+
+</navigation>
