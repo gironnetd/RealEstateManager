@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.view.realestate
+package com.openclassrooms.realestatemanager.view.realestate.display
 
 import android.os.Bundle
 import android.view.LayoutInflater

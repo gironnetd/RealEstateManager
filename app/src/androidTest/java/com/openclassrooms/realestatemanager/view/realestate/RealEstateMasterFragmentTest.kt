@@ -10,6 +10,7 @@ import androidx.test.filters.LargeTest
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.view.BaseMainActivityTests
+import com.openclassrooms.realestatemanager.view.realestate.display.RealEstateMasterFragment
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

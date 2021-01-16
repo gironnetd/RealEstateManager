@@ -11,7 +11,6 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.filters.LargeTest
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
-import androidx.test.platform.app.InstrumentationRegistry
 import com.openclassrooms.realestatemanager.R
 import org.hamcrest.CoreMatchers.allOf
 import org.junit.Test
@@ -31,7 +30,7 @@ class MainNavigationTest : BaseMainActivityTests() {
                     navController = Navigation.findNavController(mainActivity, R.id.nav_host_fragment)
                 }
         onView(allOf(withId(R.id.navigation_simulation), isDisplayed())).perform(click())
-        if(navController.currentDestination?.id!! != R.id.navigation_simulation) {
+        if (navController.currentDestination?.id!! != R.id.navigation_simulation) {
             runOnUiThread {
                 navController.navigate(R.id.navigation_simulation)
             }
@@ -39,16 +38,7 @@ class MainNavigationTest : BaseMainActivityTests() {
         onView(allOf(withId(R.id.navigation_real_estate), isDisplayed()))
                 .perform(click())
 
-        val isTablet = InstrumentationRegistry.getInstrumentation()
-                .targetContext.resources.getBoolean(R.bool.isTablet)
-
-        if (isTablet) {
-            assertEquals(navController.currentDestination?.id, R.id.navigation_real_estate)
-        }
-
-        if(!isTablet) {
-            assertEquals(navController.currentDestination?.id, R.id.navigation_list)
-        }
+        assertEquals(navController.currentDestination?.id, R.id.navigation_real_estate)
     }
 
     @Test
@@ -96,18 +86,7 @@ class MainNavigationTest : BaseMainActivityTests() {
 
         onView(isRoot()).perform(waitFor(1000))
 
-        val isTablet = InstrumentationRegistry.getInstrumentation()
-                .targetContext.resources.getBoolean(R.bool.isTablet)
-
-        if (isTablet) {
-            assertEquals(navController.currentDestination?.id,
-                    R.id.navigation_real_estate)
-        }
-
-        if(!isTablet) {
-            assertEquals(navController.currentDestination?.id,
-                    R.id.navigation_list)
-        }
+        assertEquals(navController.currentDestination?.id, R.id.navigation_real_estate)
     }
 
     @Test

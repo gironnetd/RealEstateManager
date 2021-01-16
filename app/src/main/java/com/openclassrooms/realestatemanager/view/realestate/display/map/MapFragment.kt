@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.view.realestate.list
+package com.openclassrooms.realestatemanager.view.realestate.display.map
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,13 +8,13 @@ import androidx.fragment.app.Fragment
 import com.openclassrooms.realestatemanager.R
 
 /**
- * Fragment to list real estates.
+ * Fragment to display real estates on map.
  */
-class ListFragment : Fragment() {
+class MapFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list, container, false)
+        return inflater.inflate(R.layout.fragment_map, container, false)
     }
 }

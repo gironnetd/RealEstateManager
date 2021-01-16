@@ -16,6 +16,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.view.BaseMainActivityTests
 import com.openclassrooms.realestatemanager.view.BaseMainActivityTests.ScreenSize.*
+import com.openclassrooms.realestatemanager.view.realestate.display.RealEstateFragment
 import org.hamcrest.CoreMatchers.anyOf
 import org.junit.Before
 import org.junit.Test

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/edit_fragment"
-    tools:context=".view.realestate.edit.EditFragment">
+    tools:context=".view.realestate.display.edit.EditFragment">
 
     <TextView
         android:layout_width="match_parent"

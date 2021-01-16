@@ -1,4 +1,12 @@
 package com.openclassrooms.realestatemanager
 
-class TestBaseApplication: BaseApplication() {
+import com.openclassrooms.realestatemanager.di.DaggerTestAppComponent
+
+class TestBaseApplication : BaseApplication() {
+
+    override fun initAppComponent() {
+        appComponent = DaggerTestAppComponent.builder()
+                .application(this)
+                .build()
+    }
 }

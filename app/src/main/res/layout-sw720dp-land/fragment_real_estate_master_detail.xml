@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/real_estate_master_detail_fragment"
-    tools:context=".view.realestate.RealEstateMasterDetailFragment">
+    tools:context=".view.realestate.display.RealEstateMasterDetailFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
