@@ -1,9 +1,9 @@
 package com.openclassrooms.realestatemanager.di
 
 import android.app.Application
-import com.openclassrooms.realestatemanager.di.realestate.RealEstateComponent
+import com.openclassrooms.realestatemanager.di.property.browse.BrowseComponent
 import com.openclassrooms.realestatemanager.fragments.MainNavHostFragment
-import com.openclassrooms.realestatemanager.view.MainActivity
+import com.openclassrooms.realestatemanager.ui.MainActivity
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -12,7 +12,7 @@ import javax.inject.Singleton
 @Component(
         modules = [
             AppModule::class,
-            FragmentModule::class,
+            AppFragmentModule::class,
             SubComponentsModule::class
         ])
 interface AppComponent {
@@ -30,5 +30,5 @@ interface AppComponent {
 
     fun inject(mainNavHostFragment: MainNavHostFragment)
 
-    fun realEstateComponent(): RealEstateComponent.Factory
+    fun browseComponent(): BrowseComponent.Factory
 }

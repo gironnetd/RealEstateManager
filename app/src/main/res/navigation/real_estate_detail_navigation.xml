@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/navigation_detail"
-        android:name="com.openclassrooms.realestatemanager.view.realestate.display.detail.DetailFragment"
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.detail.PropertyDetailFragment"
         android:label="@string/detail"
         tools:layout="@layout/fragment_detail" />
 
     <fragment
         android:id="@+id/navigation_map"
-        android:name="com.openclassrooms.realestatemanager.view.realestate.display.map.MapFragment"
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment"
         android:label="@string/map"
         tools:layout="@layout/fragment_map" />
 
     <fragment
         android:id="@+id/navigation_edit"
-        android:name="com.openclassrooms.realestatemanager.view.realestate.display.edit.EditFragment"
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.edit.PropertyEditFragment"
         android:label="@string/update"
         tools:layout="@layout/fragment_edit" />
 </navigation>

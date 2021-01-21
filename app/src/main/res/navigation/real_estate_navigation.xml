@@ -7,14 +7,14 @@
 
     <fragment
         android:id="@+id/navigation_real_estate_master"
-        android:name="com.openclassrooms.realestatemanager.view.realestate.display.RealEstateMasterFragment"
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment"
         android:label="fragment_real_estate_master"
-        tools:layout="@layout/fragment_real_estate_master" />
+        tools:layout="@layout/fragment_browse_master" />
     <fragment
         android:id="@+id/navigation_real_estate_master_detail"
-        android:name="com.openclassrooms.realestatemanager.view.realestate.display.RealEstateMasterDetailFragment"
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterDetailFragment"
         android:label="fragment_real_estate_master_detail"
-        tools:layout="@layout/fragment_real_estate_master_detail" />
+        tools:layout="@layout/fragment_browse_master_detail" />
 
 
 </navigation>

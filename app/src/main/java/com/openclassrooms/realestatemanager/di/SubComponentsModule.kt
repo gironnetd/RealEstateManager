@@ -1,9 +1,9 @@
 package com.openclassrooms.realestatemanager.di
 
-import com.openclassrooms.realestatemanager.di.realestate.RealEstateComponent
+import com.openclassrooms.realestatemanager.di.property.browse.BrowseComponent
 import dagger.Module
 
 @Module(subcomponents = [
-    RealEstateComponent::class
+    BrowseComponent::class,
 ])
 class SubComponentsModule

@@ -1,0 +1,371 @@
+[
+  {
+    "agentId": "z5QEge8f3xSV9tzwj0XZ",
+    "interestPoints": [
+      "BUSES",
+      "SCHOOL"
+    ],
+    "address": {
+      "street": "3 Square Fantin Latour",
+      "latitude": 48.829585361165243,
+      "city": "Le Chesnay-Rocquencourt",
+      "country": "France",
+      "state": "Yvelines",
+      "longitude": 2.1256090307453461,
+      "postalCode": "78150"
+    },
+    "soldDate": null,
+    "id": "2orYJD9m1aAPbTKcrkBj",
+    "rooms": 5,
+    "bathRooms": 3,
+    "surface": 60,
+    "price": 13924,
+    "bedRooms": 3,
+    "type": "HOUSE",
+    "entryDate": "1970-01-01T00:00:15.742Z",
+    "status": "IN_SALE",
+    "mainPicture": {
+      "id": "lDKc1F0GZfHycUf43HC9",
+      "url": "",
+      "thumbnailUrl": "",
+      "description": "",
+      "type": "MAIN"
+    },
+    "description": "Close to the Palace of Versailles, the Sun King's doctor's farm. Charm, completely renovated and equipped. Beams over 550 years old, 70 cm thick walls, 5.50 m high ceilings, facing south. Duplex 70 m2 furnished with taste, bathroom in aged marble, wc. 3 large Vélux style roof windows, very bright, triple exposure, 1 bedroom on the mezzanine, living room. Private garden with stream. Near equestrian center, Saint-Nom-la-Bretèche golf course.",
+    "createTime": "2021-01-18T16:20:59.234557Z",
+    "updateTime": "2021-01-18T16:20:59.234557Z"
+  },
+  {
+    "agentId": "ydjypZLSjCbFuEOJlNfM",
+    "rooms": 4,
+    "soldDate": "1970-01-01T00:00:18.307Z",
+    "bathRooms": 3,
+    "entryDate": "1970-01-01T00:00:14.992Z",
+    "interestPoints": [
+      "BUSES",
+      "PARK",
+      "SHOP"
+    ],
+    "type": "FLAT",
+    "status": "SOLD",
+    "id": "AMEs0idV3ur4eqK2vF3O",
+    "surface": 30,
+    "address": {
+      "postalCode": "78150",
+      "state": "Yvelines",
+      "city": "Le Chesnay-Rocquencourt",
+      "longitude": 2.1244825030303334,
+      "country": "France",
+      "street": "2-8 Square de Castiglione",
+      "latitude": 48.829394665153714
+    },
+    "mainPicture": {
+      "id": "bs9CzvhLjpxahoAUzWuN",
+      "url": "",
+      "thumbnailUrl": "",
+      "description": "",
+      "type": "MAIN"
+    },
+    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
+    "price": 16140,
+    "bedRooms": 2,
+    "createTime": "2021-01-18T16:21:00.128326Z",
+    "updateTime": "2021-01-18T16:21:00.128326Z"
+  },
+  {
+    "agentId": "ydjypZLSjCbFuEOJlNfM",
+    "rooms": 4,
+    "soldDate": "1970-01-01T00:00:18.307Z",
+    "bathRooms": 3,
+    "entryDate": "1970-01-01T00:00:14.992Z",
+    "interestPoints": [
+      "BUSES",
+      "PARK",
+      "SHOP"
+    ],
+    "type": "FLAT",
+    "status": "SOLD",
+    "id": "NITe6lIGdZYjiiAiIX3y",
+    "surface": 30,
+    "address": {
+      "postalCode": "78150",
+      "state": "Yvelines",
+      "city": "Le Chesnay-Rocquencourt",
+      "longitude": 2.1300210866089233,
+      "country": "France",
+      "street": "29 Rue des Anciens Combattants",
+      "latitude": 48.815876267117254
+    },
+    "mainPicture": {
+      "id": "Erki1UuwOThRzE88VuLG",
+      "url": "",
+      "thumbnailUrl": "",
+      "description": "",
+      "type": "MAIN"
+    },
+    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
+    "price": 16140,
+    "bedRooms": 2,
+    "createTime": "2021-01-18T16:21:00.128326Z",
+    "updateTime": "2021-01-18T16:21:00.128326Z"
+  },
+  {
+    "rooms": 4,
+    "entryDate": "1970-01-01T00:00:18.333Z",
+    "soldDate": null,
+    "status": "IN_SALE",
+    "type": "FLAT",
+    "agentId": "NdceWChhVEKxVaPHPgxQ",
+    "address": {
+      "city": "Le Chesnay-Rocquencourt",
+      "street": "34, rue Hoche",
+      "state": "Yvelines",
+      "postalCode": "78150",
+      "latitude": 48.829812277213421,
+      "country": "France",
+      "longitude": 2.127166588301304
+    },
+    "bathRooms": 2,
+    "surface": 20,
+    "price": 16104,
+    "id": "OWCrS4aotKLE0Oo29BBC",
+    "bedRooms": 3,
+    "interestPoints": [
+      "BUSES",
+      "PARK",
+      "SCHOOL"
+    ],
+    "mainPicture": {
+      "id": "IcIYBfyd35zxNLGv6jmj",
+      "url": "",
+      "thumbnailUrl": "",
+      "description": "",
+      "type": "MAIN"
+    },
+    "description": "Located rue Hoche, in the heart of the historic and dynamic district of Notre Dame, 5 min walk from the Palace, 5 min walk from Versailles Rive-Droite train station and 10 min walk from Versailles Rive-Gauche train station.\n\nThis charming little house is located in a beautiful 18th century building and is close to all the shops on Rue de la Paroisse. Very calm and bright, its 5 windows overlook a paved courtyard. It has just been completely renovated with quality materials (solid oak parquet, Ressource paints, new high-end frames).\n\nOn the ground floor: the tiled entrance continues with a beautiful oak staircase giving access to the living rooms.\nThe living / dining room opens onto an open kitchen (new furniture and appliances: oven, gas hob, fridge freezer, extractor, microwave, Nespresso coffee machine). Crockery provided.\nLiving room: sofa and new furniture (coffee table, armchairs, dining room table, chairs) Samsung TV.\nSingle room with 140 bed, plenty of storage space and old marble fireplace.\nBathroom with wc and washing machine.\n\nLinens provided (duvet, ears, sheets, towels, tea towels ..).\n\nIndividual gas boiler.\n\nThe double glazed windows have all been changed.",
+    "createTime": "2021-01-18T16:20:58.796158Z",
+    "updateTime": "2021-01-18T16:20:58.796158Z"
+  },
+  {
+    "id": "fcijcR9oZQXU5WcJFYXh",
+    "bedRooms": "3",
+    "soldDate": null,
+    "price": 14149,
+    "surface": 38,
+    "status": "FOR_RENT",
+    "bathRooms": 1,
+    "entryDate": "1970-01-01T00:00:16.465Z",
+    "interestPoints": [
+      "BUSES",
+      "PARK",
+      "SUBWAY"
+    ],
+    "mainPicture": {
+      "id": "X3Xj3IJDYxy6BJqkxo5q",
+      "url": "",
+      "thumbnailUrl": "",
+      "description": "",
+      "type": "MAIN"
+    },
+    "description": "Clear view, bright, sunny, double exposure South street and North courtyard, calm.\nCollective central heating, comfort, economical (Charges including heating, water) double glazing,\n\nEntrance with storage, separate fitted kitchen (with crockery, stove, fridge, freezer, microwave, washing machine)\nbathroom with window, large Italian shower, storage, wall mounted clothes rack.\nSeparate toilet, with storage, and storage space with wardrobe and shelves.\nLiving room with convertible sofa and storage, and dining area\nbedroom facing courtyard, with storage and office area.\n\nSmall quiet joint ownership. 2nd floor of 3.\n\npreferably by sms to keep contact details",
+    "rooms": 3,
+    "agentId": "z5QEge8f3xSV9tzwj0XZ",
+    "address": {
+      "state": "Yvelines",
+      "city": "Le Chesnay-Rocquencourt",
+      "street": "5 Square Fantin Latour",
+      "country": "France",
+      "latitude": 48.829394665153714,
+      "longitude": 2.12793718802304,
+      "postalCode": "78150"
+    },
+    "type": "DUPLEX",
+    "createTime": "2021-01-18T16:20:59.723078Z",
+    "updateTime": "2021-01-18T16:20:59.723078Z"
+  },
+  {
+    "agentId": "ydjypZLSjCbFuEOJlNfM",
+    "rooms": 4,
+    "soldDate": "1970-01-01T00:00:18.307Z",
+    "bathRooms": 3,
+    "entryDate": "1970-01-01T00:00:14.992Z",
+    "interestPoints": [
+      "BUSES",
+      "PARK",
+      "SHOP"
+    ],
+    "type": "FLAT",
+    "status": "SOLD",
+    "id": "2orYJD9m1aAPbTKcrkBj",
+    "surface": 30,
+    "address": {
+      "postalCode": "78150",
+      "state": "Yvelines",
+      "city": "Le Chesnay-Rocquencourt",
+      "longitude": 2.132739760028256,
+      "country": "France",
+      "street": "21 Rue Kléber",
+      "latitude": 48.820096411353546
+    },
+    "mainPicture": {
+      "id": "lDKc1F0GZfHycUf43HC9",
+      "url": "",
+      "thumbnailUrl": "",
+      "description": "",
+      "type": "MAIN"
+    },
+    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
+    "price": 16140,
+    "bedRooms": 2,
+    "createTime": "2021-01-18T16:21:00.128326Z",
+    "updateTime": "2021-01-18T16:21:00.128326Z"
+  },
+  {
+    "agentId": "ydjypZLSjCbFuEOJlNfM",
+    "rooms": 4,
+    "soldDate": "1970-01-01T00:00:18.307Z",
+    "bathRooms": 3,
+    "entryDate": "1970-01-01T00:00:14.992Z",
+    "interestPoints": [
+      "BUSES",
+      "PARK",
+      "SHOP"
+    ],
+    "type": "FLAT",
+    "status": "SOLD",
+    "id": "AMEs0idV3ur4eqK2vF3O",
+    "surface": 30,
+    "address": {
+      "postalCode": "78000",
+      "state": "Yvelines",
+      "city": "Versailles",
+      "longitude": 2.128016602048885,
+      "country": "France",
+      "street": "3 Place de la Loi",
+      "latitude": 48.81528125230743
+    },
+    "mainPicture": {
+      "id": "bs9CzvhLjpxahoAUzWuN",
+      "url": "",
+      "thumbnailUrl": "",
+      "description": "",
+      "type": "MAIN"
+    },
+    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
+    "price": 16140,
+    "bedRooms": 2,
+    "createTime": "2021-01-18T16:21:00.128326Z",
+    "updateTime": "2021-01-18T16:21:00.128326Z"
+  },
+  {
+    "agentId": "ydjypZLSjCbFuEOJlNfM",
+    "rooms": 4,
+    "soldDate": "1970-01-01T00:00:18.307Z",
+    "bathRooms": 3,
+    "entryDate": "1970-01-01T00:00:14.992Z",
+    "interestPoints": [
+      "BUSES",
+      "PARK",
+      "SHOP"
+    ],
+    "type": "FLAT",
+    "status": "SOLD",
+    "id": "NITe6lIGdZYjiiAiIX3y",
+    "surface": 30,
+    "address": {
+      "postalCode": "78150",
+      "state": "Yvelines",
+      "city": "Le Chesnay-Rocquencourt",
+      "longitude": 2.1300210866089233,
+      "country": "France",
+      "street": "29 Rue des Anciens Combattants",
+      "latitude": 48.815876267117254
+    },
+    "mainPicture": {
+      "id": "Erki1UuwOThRzE88VuLG",
+      "url": "",
+      "thumbnailUrl": "",
+      "description": "",
+      "type": "MAIN"
+    },
+    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
+    "price": 16140,
+    "bedRooms": 2,
+    "createTime": "2021-01-18T16:21:00.128326Z",
+    "updateTime": "2021-01-18T16:21:00.128326Z"
+  },
+  {
+    "agentId": "ydjypZLSjCbFuEOJlNfM",
+    "rooms": 4,
+    "soldDate": "1970-01-01T00:00:18.307Z",
+    "bathRooms": 3,
+    "entryDate": "1970-01-01T00:00:14.992Z",
+    "interestPoints": [
+      "BUSES",
+      "PARK",
+      "SHOP"
+    ],
+    "type": "FLAT",
+    "status": "SOLD",
+    "id": "OWCrS4aotKLE0Oo29BBC",
+    "surface": 30,
+    "address": {
+      "postalCode": "78150",
+      "state": "Yvelines",
+      "city": "Le Chesnay-Rocquencourt",
+      "longitude": 2.1331529841600476,
+      "country": "France",
+      "street": "2 Avenue Jeanne d'Arc",
+      "latitude": 48.817718597959924
+    },
+    "mainPicture": {
+      "id": "IcIYBfyd35zxNLGv6jmj",
+      "url": "",
+      "thumbnailUrl": "",
+      "description": "",
+      "type": "MAIN"
+    },
+    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
+    "price": 16140,
+    "bedRooms": 2,
+    "createTime": "2021-01-18T16:21:00.128326Z",
+    "updateTime": "2021-01-18T16:21:00.128326Z"
+  },
+  {
+    "agentId": "ydjypZLSjCbFuEOJlNfM",
+    "rooms": 4,
+    "soldDate": "1970-01-01T00:00:18.307Z",
+    "bathRooms": 3,
+    "entryDate": "1970-01-01T00:00:14.992Z",
+    "interestPoints": [
+      "BUSES",
+      "PARK",
+      "SHOP"
+    ],
+    "type": "FLAT",
+    "status": "SOLD",
+    "id": "fcijcR9oZQXU5WcJFYXh",
+    "surface": 30,
+    "address": {
+      "postalCode": "78150",
+      "state": "Yvelines",
+      "city": "Le Chesnay-Rocquencourt",
+      "longitude": 2.1339121381354245,
+      "country": "France",
+      "street": "19 Rue Saint-Joseph",
+      "latitude": 48.816471266499676
+    },
+    "mainPicture": {
+      "id": "X3Xj3IJDYxy6BJqkxo5q",
+      "url": "",
+      "thumbnailUrl": "",
+      "description": "",
+      "type": "MAIN"
+    },
+    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
+    "price": 16140,
+    "bedRooms": 2,
+    "createTime": "2021-01-18T16:21:00.128326Z",
+    "updateTime": "2021-01-18T16:21:00.128326Z"
+  }
+]

@@ -28,6 +28,7 @@ android {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
     }
+
     sourceSets {
         debug {
             java {
@@ -45,6 +46,14 @@ android {
                 srcDirs 'src/release/java'
             }
         }
+
+        String sharedTestDir = 'src/sharedTest/java'
+        test {
+            java.srcDir sharedTestDir
+        }
+        androidTest {
+            java.srcDir sharedTestDir
+        }
     }
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -61,20 +70,34 @@ dependencies {
     def multidex = "1.0.3"
     implementation "com.android.support:multidex:$multidex"
 
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "com.google.android.material:material:1.2.1"
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    // Recyclerview
+    def recyclerview_version = "1.1.0-beta03"
+    implementation "androidx.recyclerview:recyclerview:$recyclerview_version"
 
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+
+    def mockito_kotlin_version = "1.5.0"
+    testImplementation "com.nhaarman:mockito-kotlin:$mockito_kotlin_version"
+
+    // androidx.fragment testing
+    def fragment_testing_version = "1.3.0-alpha08"
+    debugImplementation "androidx.fragment:fragment-testing:$fragment_testing_version"
 
     // Espresso
     def androidx_espresso_core = "3.3.0"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidx_espresso_core"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$androidx_espresso_core"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    def androidx_espresso_idling_resource = "3.3.0"
+    androidTestImplementation "androidx.test.espresso:espresso-idling-resource:$androidx_espresso_idling_resource"
+    implementation "androidx.test.espresso:espresso-idling-resource:$androidx_espresso_idling_resource"
 
     // androidx.test
     def androidx_test_runner = "1.2.0"
@@ -95,10 +118,6 @@ dependencies {
     def fragment_version = "1.2.5"
     implementation "androidx.fragment:fragment-ktx:$fragment_version"
 
-    // androidx.fragment testing
-    def fragment_testing_version = "1.3.0-alpha08"
-    debugImplementation "androidx.fragment:fragment-testing:$fragment_testing_version"
-
     // Dagger
     def dagger_version = "2.28"
     implementation "com.google.dagger:dagger:$dagger_version"
@@ -113,9 +132,39 @@ dependencies {
     // Add the dependency for the Firebase SDK for Google Analytics
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
+    // Declare the dependency for the Cloud Firestore library
+    implementation 'com.google.firebase:firebase-firestore-ktx'
+
+    // Declare the dependency for the Cloud Storage library
+    implementation 'com.google.firebase:firebase-storage-ktx'
+
+    // FirebaseUI Storage only
+    implementation 'com.firebaseui:firebase-ui-storage:6.4.0'
+
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
+
+    def mockneat_version = "0.3.8"
+    implementation "net.andreinc.mockneat:mockneat:$mockneat_version"
+
+    // Timber dependencies - log library
+    def timber_version = "4.7.1"
+    implementation "com.jakewharton.timber:timber:$timber_version"
+
+    //glide
+    def glide_version = "4.11.0"
+    implementation "com.github.bumptech.glide:glide:$glide_version"
+    kapt "com.github.bumptech.glide:compiler:$glide_version"
+
+    // Reactive Programming dependencies
+    def rx_kotlin_version = '2.4.0'
+    implementation "io.reactivex.rxjava2:rxkotlin:$rx_kotlin_version"
+
+    def rx_android_version = '2.1.1'
+    implementation "io.reactivex.rxjava2:rxandroid:$rx_android_version"
 }
 repositories {
     mavenCentral()
 }
+
+apply plugin: 'com.google.gms.google-services'
