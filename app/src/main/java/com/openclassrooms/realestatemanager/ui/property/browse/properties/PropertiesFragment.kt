@@ -78,12 +78,8 @@ constructor(
             is Success -> {
                 setUpScreenForSuccess(state.properties)
             }
-            is Failed -> {
-                val s = ""
-            }
-            else -> {
-                val s = ""
-            }
+            is Failed -> { }
+            else -> { }
         }
     }
 

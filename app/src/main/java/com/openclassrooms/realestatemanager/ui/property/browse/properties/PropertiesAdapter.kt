@@ -22,7 +22,7 @@ class PropertiesAdapter(
     val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Property>() {
 
         override fun areItemsTheSame(oldItem: Property, newItem: Property): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.propertyId == newItem.propertyId
         }
 
         override fun areContentsTheSame(oldItem: Property, newItem: Property): Boolean {
@@ -71,12 +71,12 @@ class PropertiesAdapter(
 
         fun bind(item: Property) = with(itemView) {
             item.mainPicture?.let { picture ->
-                picture.propertyId = item.id
+                picture.propertyId = item.propertyId
                 val gsReference = Firebase.storage.getReferenceFromUrl(picture.storageUrl(isThumbnail = true))
                 requestManager.setImage(gsReference, mainPicture)
             }
 
-            item.type.let { type.text = it.type }
+            item.propertyType.let { type.text = it.type }
             item.address?.let { street.text = it.street }
             item.price.let { price.text = "$".plus("$it") }
         }

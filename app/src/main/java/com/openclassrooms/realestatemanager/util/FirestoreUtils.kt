@@ -44,7 +44,7 @@ class FirestoreUtils {
                     )
             )
 
-            agents.forEachIndexed { index, agent ->
+            agents.forEach { agent ->
                 val agentRef = firestore.collection("agents").document()
                 agent.id = agentRef.id
                 agentRef.set(agent)
@@ -57,7 +57,7 @@ class FirestoreUtils {
             val end = endDate.toEpochDay();
 
             var properties: List<Property> = listOf(
-                    Property(type = PropertyType.FLAT,
+                    Property(propertyType = PropertyType.FLAT,
                             price = (10000..20000).random(),
                             surface = (20..40).random(),
                             rooms = (2..5).random(),
@@ -86,7 +86,7 @@ class FirestoreUtils {
                                     latitude = 48.82981227721342,
                                     longitude = 2.127166588301304
                             ),
-                            interestPoints = listOf(
+                            interestPoints = mutableListOf(
                                     InterestPoint.BUSES,
                                     InterestPoint.PARK,
                                     InterestPoint.SCHOOL
@@ -99,7 +99,7 @@ class FirestoreUtils {
                                     .nextLong(start, end)),
                             soldDate = null
                     ),
-                    Property(type = PropertyType.HOUSE,
+                    Property(propertyType = PropertyType.HOUSE,
                             price = (10000..20000).random(),
                             surface = (60..80).random(),
                             rooms = (2..5).random(),
@@ -114,7 +114,7 @@ class FirestoreUtils {
                                     latitude = 48.82958536116524,
                                     longitude = 2.125609030745346
                             ),
-                            interestPoints = listOf(
+                            interestPoints = mutableListOf(
                                     InterestPoint.BUSES,
                                     InterestPoint.SCHOOL
                             ),
@@ -124,7 +124,7 @@ class FirestoreUtils {
                                     .nextLong(start, end)),
                             soldDate = null
                     ),
-                    Property(type = PropertyType.DUPLEX,
+                    Property(propertyType = PropertyType.DUPLEX,
                             price = (10000..20000).random(),
                             surface = (20..40).random(),
                             rooms = (2..5).random(),
@@ -150,7 +150,7 @@ class FirestoreUtils {
                                     latitude = 48.829394665153714,
                                     longitude = 2.12793718802304
                             ),
-                            interestPoints = listOf(
+                            interestPoints = mutableListOf(
                                     InterestPoint.BUSES,
                                     InterestPoint.PARK,
                                     InterestPoint.SUBWAY
@@ -162,7 +162,7 @@ class FirestoreUtils {
                             soldDate = null
                     ),
                     Property(
-                            type = PropertyType.FLAT,
+                            propertyType = PropertyType.FLAT,
                             price = (10000..20000).random(),
                             surface = (20..40).random(),
                             rooms = (2..5).random(),
@@ -196,7 +196,7 @@ class FirestoreUtils {
                                     latitude = 48.829394665153714,
                                     longitude = 2.1244825030303334
                             ),
-                            interestPoints = listOf(
+                            interestPoints = mutableListOf(
                                     InterestPoint.BUSES,
                                     InterestPoint.PARK,
                                     InterestPoint.SHOP
@@ -239,7 +239,7 @@ class FirestoreUtils {
                                     latitude = 48.829275,
                                     longitude = 2.123710
                             ),
-                            interestPoints = listOf(
+                            interestPoints = mutableListOf(
                                     InterestPoint.BUSES,
                                     InterestPoint.PARK,
                                     InterestPoint.SHOP,
@@ -255,55 +255,55 @@ class FirestoreUtils {
 
             for (property in properties) {
                 val documentRef = firestore.collection(PROPERTIES_COLLECTION).document()
-                property.id = documentRef.id
+                property.propertyId = documentRef.id
 
                 var pictures: List<Picture> = listOf(
                         Picture(
                                 description = "",
-                                type = PictureType.MAIN,
+                                pictureType = PictureType.MAIN,
                         ),
                         Picture(
                                 description = "",
-                                type = PictureType.LOUNGE,
+                                pictureType = PictureType.LOUNGE,
                         ),
                         Picture(
                                 description = "",
-                                type = PictureType.LOUNGE,
+                                pictureType = PictureType.LOUNGE,
                         ),
                         Picture(
                                 description = "",
-                                type = PictureType.BATHROOM,
+                                pictureType = PictureType.BATHROOM,
                         ),
                         Picture(
                                 description = "",
-                                type = PictureType.BEDROOM,
+                                pictureType = PictureType.BEDROOM,
                         ),
                         Picture(
                                 description = "",
-                                type = PictureType.BEDROOM,
+                                pictureType = PictureType.BEDROOM,
                         ),
                         Picture(
                                 description = "",
-                                type = PictureType.BEDROOM,
+                                pictureType = PictureType.BEDROOM,
                         ),
                         Picture(
                                 description = "",
-                                type = PictureType.KITCHEN,
+                                pictureType = PictureType.KITCHEN,
                         ),
                         Picture(
                                 description = "",
-                                type = PictureType.FACADE,
+                                pictureType = PictureType.FACADE,
                         ),
                 )
 
                 for (picture in pictures) {
                     val pictureRef = firestore.collection(PROPERTIES_COLLECTION)
-                            .document(property.id)
+                            .document(property.propertyId)
                             .collection(PICTURES_COLLECTION)
                             .document()
-                    picture.id = pictureRef.id
+                    picture.pictureId = pictureRef.id
 
-                    if (picture.type != PictureType.MAIN) {
+                    if (picture.pictureType != PictureType.MAIN) {
                         pictureRef.set(picture)
                     } else {
                         property.mainPicture = picture

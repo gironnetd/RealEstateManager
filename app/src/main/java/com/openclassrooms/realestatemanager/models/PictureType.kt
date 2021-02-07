@@ -1,5 +1,7 @@
 package com.openclassrooms.realestatemanager.models
 
+import androidx.room.TypeConverter
+
 enum class PictureType(val type: String) {
     MAIN("main"),
     BATHROOM("bathroom"),
@@ -8,4 +10,12 @@ enum class PictureType(val type: String) {
     KITCHEN("kitchen"),
     LOUNGE("lounge"),
     NONE("None")
+}
+
+class PictureTypeConverter {
+    @TypeConverter
+    fun toPictureType(type: String) = enumValueOf<PictureType>(type)
+
+    @TypeConverter
+    fun fromPictureType(pictureType: PictureType) = pictureType.name
 }
