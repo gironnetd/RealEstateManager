@@ -5,8 +5,8 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import com.codingwithmitch.espressodaggerexamples.util.EspressoIdlingResourceRule
 import com.openclassrooms.realestatemanager.R
@@ -20,7 +20,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4ClassRunner::class)
+@RunWith(AndroidJUnit4::class)
 @MediumTest
 class PropertiesFragmentIntegrationTest : BaseMainActivityTests() {
 
@@ -42,7 +42,6 @@ class PropertiesFragmentIntegrationTest : BaseMainActivityTests() {
         )
 
         configureFakeRepository(apiService, app)
-
         injectTest(app)
 
         launchActivity<MainActivity>()
@@ -70,7 +69,6 @@ class PropertiesFragmentIntegrationTest : BaseMainActivityTests() {
         )
 
         configureFakeRepository(apiService, app)
-
         injectTest(app)
 
         launchActivity<MainActivity>()
@@ -113,7 +111,6 @@ class PropertiesFragmentIntegrationTest : BaseMainActivityTests() {
         )
 
         configureFakeRepository(apiService, app)
-
         injectTest(app)
 
         val scenario = launchActivity<MainActivity>()

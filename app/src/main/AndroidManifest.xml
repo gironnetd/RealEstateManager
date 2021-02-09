@@ -3,6 +3,7 @@
     package="com.openclassrooms.realestatemanager">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <permission android:name="com.openclassrooms.realestatemanager.provider.READ_WRITE"/>
 
     <application
         android:name=".BaseApplication"
@@ -19,6 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+        <provider
+            android:name=".data.local.provider.AppContentProvider"
+            android:authorities="com.openclassrooms.realestatemanager.provider"
+            android:exported="true"
+            android:permission="com.openclassrooms.realestatemanager.provider.READ_WRITE"/>
+    </application>
 </manifest>

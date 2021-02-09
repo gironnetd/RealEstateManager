@@ -8,8 +8,8 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.NavigationViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
 import androidx.test.platform.app.InstrumentationRegistry
 import com.openclassrooms.realestatemanager.R
@@ -21,7 +21,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4ClassRunner::class)
+@RunWith(AndroidJUnit4::class)
 @LargeTest
 class MainNavigationTest : BaseMainActivityTests() {
 
@@ -44,7 +44,6 @@ class MainNavigationTest : BaseMainActivityTests() {
         )
 
         configureFakeRepository(apiService, app)
-
         injectTest(app)
     }
 

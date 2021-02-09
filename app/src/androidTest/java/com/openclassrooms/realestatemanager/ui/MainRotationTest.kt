@@ -12,8 +12,8 @@ import androidx.test.espresso.assertion.PositionAssertions.isCompletelyLeftOf
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
@@ -27,7 +27,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.lang.Thread.sleep
 
-@RunWith(AndroidJUnit4ClassRunner::class)
+@RunWith(AndroidJUnit4::class)
 @LargeTest
 class MainRotationTest : BaseMainActivityTests() {
 
@@ -50,10 +50,8 @@ class MainRotationTest : BaseMainActivityTests() {
         )
 
         configureFakeRepository(apiService, app)
-
         injectTest(app)
     }
-
 
     @Test
     fun given_create_fragment_displayed_when_rotation_then_display_create_fragment() {

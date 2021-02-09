@@ -13,8 +13,6 @@ import timber.log.Timber.DebugTree
 
 open class BaseApplication: Application() {
 
-    private val TAG: String = "AppDebug"
-
     lateinit var appComponent: AppComponent
 
     private var browseComponent: BrowseComponent? = null
