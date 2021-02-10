@@ -20,7 +20,7 @@ constructor(
     var propertiesJsonFileName: String = Constants.PROPERTIES_DATA_FILENAME
     var networkDelay: Long = 0L
 
-    override fun allProperties(): Flowable<List<Property>> {
+    override fun findAllProperties(): Flowable<List<Property>> {
         val rawJson = jsonUtil.readJSONFromAsset(propertiesJsonFileName)
         val properties = Gson().fromJson<List<Property>>(
                 rawJson,

@@ -26,6 +26,6 @@ constructor(
     @Throws(UninitializedPropertyAccessException::class)
     override fun allProperties(): Flowable<List<Property>> {
         throwExceptionIfApiServiceNotInitialized()
-        return apiService.allProperties()
+        return apiService.findAllProperties()
     }
 }

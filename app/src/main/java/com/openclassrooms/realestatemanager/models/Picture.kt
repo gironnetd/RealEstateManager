@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.models
 
+import android.database.Cursor
 import androidx.room.ColumnInfo
 import com.google.firebase.firestore.Exclude
 import com.google.gson.annotations.SerializedName
@@ -9,19 +10,6 @@ import com.openclassrooms.realestatemanager.util.Constants.MAIN_FILE_NAME
 import com.openclassrooms.realestatemanager.util.Constants.PICTURES_COLLECTION
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTIES_COLLECTION
 import com.openclassrooms.realestatemanager.util.Constants.THUMBNAIL_FILE_NAME
-
-data class Picture(
-        @SerializedName(value = "id")
-        @ColumnInfo(name = "id")
-        var pictureId: String = "",
-
-        @ColumnInfo(name = "property_id")
-        @get:Exclude var propertyId: String = "",
-        val description: String = "",
-        @SerializedName(value = "type")
-        @ColumnInfo(name = "type")
-        var pictureType: PictureType = PictureType.NONE,
-)
 
 fun Picture.storageUrl(isThumbnail: Boolean = false): String {
     var url = StringBuilder()
@@ -39,5 +27,72 @@ fun Picture.storageUrl(isThumbnail: Boolean = false): String {
     return url.toString()
 }
 
+data class Picture(
+        @SerializedName(value = "id")
+        @ColumnInfo(name = "id")
+        var pictureId: String = "",
+
+        @ColumnInfo(name = "property_id")
+        @get:Exclude var propertyId: String = "",
+        var description: String = "",
+        @SerializedName(value = "type")
+        @ColumnInfo(name = "type")
+        var pictureType: PictureType = PictureType.NONE,
+) {
+    constructor(cursor: Cursor, isMainPicture: Boolean = false): this() {
+        if(isMainPicture) {
+            pictureId = cursor.getString(
+                    cursor.getColumnIndex(
+                            PREFIX_MAIN_PICTURE + COLUMN_PICTURE_ID))
+            propertyId = cursor.getString(
+                    cursor.getColumnIndex(
+                            PREFIX_MAIN_PICTURE + COLUMN_PICTURE_PROPERTY_ID
+                            ))
+            description = cursor.getString(
+                    cursor.getColumnIndex(
+                        PREFIX_MAIN_PICTURE + COLUMN_PICTURE_DESCRIPTION
+                    ))
+            pictureType = PictureType.valueOf(
+                    cursor.getString(
+                            cursor.getColumnIndex(
+                                    PREFIX_MAIN_PICTURE + COLUMN_PICTURE_TYPE
+                            )))
+        } else {
+            pictureId = cursor.getString(
+                    cursor.getColumnIndex(
+                            COLUMN_PICTURE_ID))
+            propertyId = cursor.getString(
+                    cursor.getColumnIndex(
+                            COLUMN_PICTURE_PROPERTY_ID
+                    ))
+            description = cursor.getString(
+                    cursor.getColumnIndex(
+                            COLUMN_PICTURE_DESCRIPTION
+                    ))
+            pictureType = PictureType.valueOf(
+                    cursor.getString(
+                            cursor.getColumnIndex(
+                                    COLUMN_PICTURE_TYPE
+                            )))
+        }
+    }
+
+    companion object {
+        /** The name of the id column.  */
+        const val COLUMN_PICTURE_ID = "id"
+
+        /** The name of the property id column.  */
+        const val COLUMN_PICTURE_PROPERTY_ID = "property_id"
+
+        /** The name of the description column.  */
+        const val COLUMN_PICTURE_DESCRIPTION = "description"
+
+        /** The name of the type column.  */
+        const val COLUMN_PICTURE_TYPE = "type"
+
+        /** The name of the prefix main picture in database.  */
+        const val PREFIX_MAIN_PICTURE = "main_picture_"
+    }
+}
 
 

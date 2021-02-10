@@ -5,5 +5,5 @@ import io.reactivex.Flowable
 
 interface PropertyApiService {
 
-    fun allProperties(): Flowable<List<Property>>
+    fun findAllProperties(): Flowable<List<Property>>
 }

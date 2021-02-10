@@ -8,6 +8,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.data.local.AppDatabase
+import com.openclassrooms.realestatemanager.data.local.provider.toList
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTIES_DATA_FILENAME
@@ -62,7 +63,11 @@ class PropertyDaoTest: TestCase() {
     fun is_properties_after_insertion_are_the_same_when_reading_result() {
         fakeProperties.sortedBy { it.propertyId }
         propertyDao.insertProperties(fakeProperties)
-        val actualProperties = propertyDao.findAllProperties()
+        val cursor = propertyDao.findAllProperties()
+
+        val actualProperties = cursor.toList {
+            Property(it)
+        }
 
         actualProperties.sortedBy { it.propertyId }
         actualProperties.forEachIndexed { index, property ->

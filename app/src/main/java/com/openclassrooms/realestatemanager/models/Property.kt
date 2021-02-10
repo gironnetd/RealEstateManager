@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.models
 
 import android.content.ContentValues
+import android.database.Cursor
 import android.provider.BaseColumns
 import androidx.annotation.NonNull
 import androidx.room.*
@@ -48,7 +49,7 @@ data class Property(
         @ColumnInfo(name = "agent_id")
         var agentId: String? = null,
 
-        @Embedded(prefix = "main_picture_")
+        @Embedded(prefix = Picture.PREFIX_MAIN_PICTURE)
         var mainPicture: Picture? = null,
 
         @ColumnInfo(name = "entry_date")
@@ -57,6 +58,36 @@ data class Property(
         @ColumnInfo(name = "sold_date")
         var soldDate: Date? = null,
 ) {
+
+        constructor(cursor: Cursor) : this() {
+                propertyId = cursor.getString(cursor.getColumnIndex(COLUMN_ID))
+                propertyType = PropertyType.valueOf(
+                        cursor.getString(cursor.getColumnIndex(COLUMN_PROPERTY_TYPE)))
+                price = cursor.getInt(cursor.getColumnIndex(COLUMN_PRICE))
+                surface = cursor.getInt(cursor.getColumnIndex(COLUMN_SURFACE))
+                rooms = cursor.getInt(cursor.getColumnIndex(COLUMN_ROOMS))
+                bedRooms = cursor.getInt(cursor.getColumnIndex(COLUMN_BEDROOMS))
+                bathRooms = cursor.getInt(cursor.getColumnIndex(COLUMN_BATHROOMS))
+                description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION))
+                address = Address(cursor = cursor)
+                cursor.getString(cursor.getColumnIndex(COLUMN_INTEREST_POINTS))?.let {
+                        interestPoints = InterestPointConverter().stringToInterestPoints(it)!!
+                }
+                status = PropertyStatus.valueOf(
+                        cursor.getString(cursor.getColumnIndex(COLUMN_PROPERTY_STATUS)))
+                agentId = cursor.getString(cursor.getColumnIndex(COLUMN_AGENT_ID))
+                mainPicture = Picture(cursor = cursor, isMainPicture = true)
+                if(!cursor.isNull(cursor.getColumnIndex(COLUMN_ENTRY_DATE))) {
+                        entryDate = DateConverter()
+                                .fromTimestamp(cursor.getLong(cursor.getColumnIndex(COLUMN_ENTRY_DATE)))!!
+                }
+                if(!cursor.isNull(cursor.getColumnIndex(COLUMN_SOLD_DATE))) {
+                        soldDate = DateConverter()
+                                .fromTimestamp(cursor.getLong(cursor.getColumnIndex(COLUMN_SOLD_DATE)))!!
+                }
+
+        }
+
         companion object {
                 /** The name of the Property table.  */
                 const val TABLE_NAME: String = "properties"

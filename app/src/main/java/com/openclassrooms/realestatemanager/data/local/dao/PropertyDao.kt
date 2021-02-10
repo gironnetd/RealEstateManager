@@ -25,10 +25,5 @@ interface PropertyDao {
     fun findPropertyById(id: Long): Cursor
 
     @Query("SELECT * FROM $TABLE_NAME")
-    fun findAll(): Cursor
-
-    @Query("SELECT * FROM $TABLE_NAME")
-    fun findAllProperties(): List<Property>
-
-
+    fun findAllProperties(): Cursor
 }

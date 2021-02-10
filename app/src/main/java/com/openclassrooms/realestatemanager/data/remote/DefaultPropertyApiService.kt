@@ -10,7 +10,7 @@ class DefaultPropertyApiService
 @Inject
 constructor() : PropertyApiService {
 
-    override fun allProperties(): Flowable<List<Property>> {
+    override fun findAllProperties(): Flowable<List<Property>> {
         TODO("Not yet implemented")
     }
 }
