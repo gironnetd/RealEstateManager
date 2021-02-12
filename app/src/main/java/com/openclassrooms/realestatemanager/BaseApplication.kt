@@ -1,13 +1,9 @@
 package com.openclassrooms.realestatemanager
 
 import android.app.Application
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.openclassrooms.realestatemanager.di.AppComponent
 import com.openclassrooms.realestatemanager.di.DaggerAppComponent
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseComponent
-import com.openclassrooms.realestatemanager.util.Constants.PROPERTIES_COLLECTION
-import com.openclassrooms.realestatemanager.util.FirestoreUtils.Companion.populateFirestore
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 
@@ -26,12 +22,12 @@ open class BaseApplication: Application() {
         }
 
         // Call to Utils function to populate the firestore database
-        Firebase.firestore.collection(PROPERTIES_COLLECTION).get()
-                .addOnSuccessListener { querySnapshot ->
-                    if (querySnapshot.isEmpty) {
-                        populateFirestore()
-                    }
-                }
+//        Firebase.firestore.collection(PROPERTIES_COLLECTION).get()
+//                .addOnSuccessListener { querySnapshot ->
+//                    if (querySnapshot.isEmpty) {
+//                        populateFirestore()
+//                    }
+//                }
     }
 
     open fun initAppComponent() {

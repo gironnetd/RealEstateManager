@@ -34,10 +34,6 @@ object BrowseModule {
     @JvmStatic
     @BrowseScope
     @Provides
-    fun providePropertyApiService(): DefaultPropertyApiService = DefaultPropertyApiService()
-
-    @JvmStatic
-    @BrowseScope
-    @Provides
-    fun providePropertyRepository(apiService: DefaultPropertyApiService): PropertyRepository = DefaultPropertyRepository(apiService = apiService)
+    fun providePropertyRepository(apiService: DefaultPropertyApiService): PropertyRepository
+        = DefaultPropertyRepository(apiService = apiService)
 }

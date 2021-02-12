@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.di
 import android.app.Application
 import com.openclassrooms.realestatemanager.data.local.dao.PropertyDaoTest
 import com.openclassrooms.realestatemanager.data.local.provider.AppContentProviderTest
+import com.openclassrooms.realestatemanager.data.remote.PropertyApiServiceTest
 import com.openclassrooms.realestatemanager.di.property.TestBrowseComponent
 import com.openclassrooms.realestatemanager.repository.property.BrowseFragmentTest
 import com.openclassrooms.realestatemanager.repository.property.BrowseMasterFragmentTest
@@ -47,6 +48,8 @@ interface TestAppComponent : AppComponent {
     fun inject(propertyDaoTest: PropertyDaoTest)
 
     fun inject(appContentProviderTest: AppContentProviderTest)
+
+    fun inject(propertyApiServiceTest: PropertyApiServiceTest)
 
     fun testBrowseComponent(): TestBrowseComponent.Factory
 }

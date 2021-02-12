@@ -3,15 +3,15 @@ package com.openclassrooms.realestatemanager.api.property
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.data.remote.PropertyApiService
-import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.Constants
 import com.openclassrooms.realestatemanager.util.JsonUtil
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-@BrowseScope
+
 class FakePropertyApiService
 @Inject
 constructor(
@@ -19,6 +19,10 @@ constructor(
 ) : PropertyApiService {
     var propertiesJsonFileName: String = Constants.PROPERTIES_DATA_FILENAME
     var networkDelay: Long = 0L
+
+    override fun insertProperties(properties: List<Property>): Completable {
+        TODO("Not yet implemented")
+    }
 
     override fun findAllProperties(): Flowable<List<Property>> {
         val rawJson = jsonUtil.readJSONFromAsset(propertiesJsonFileName)

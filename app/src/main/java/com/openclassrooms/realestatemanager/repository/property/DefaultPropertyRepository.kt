@@ -14,6 +14,6 @@ constructor(
 ) : PropertyRepository {
 
     override fun allProperties(): Flowable<List<Property>> {
-        return Flowable.just(emptyList())
+        return apiService.findAllProperties()
     }
 }

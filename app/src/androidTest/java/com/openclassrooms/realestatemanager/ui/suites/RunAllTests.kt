@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.ui.suites
 
 import com.openclassrooms.realestatemanager.data.local.dao.PropertyDaoTest
 import com.openclassrooms.realestatemanager.data.local.provider.AppContentProviderTest
+import com.openclassrooms.realestatemanager.data.remote.PropertyApiServiceTest
 import com.openclassrooms.realestatemanager.repository.property.BrowseFragmentTest
 import com.openclassrooms.realestatemanager.repository.property.BrowseMasterFragmentTest
 import com.openclassrooms.realestatemanager.repository.property.properties.PropertiesFragmentIntegrationTest
@@ -20,6 +21,7 @@ import org.junit.runners.Suite
         BrowseMasterFragmentTest::class,
         PropertiesFragmentIntegrationTest::class,
         PropertyDaoTest::class,
-        AppContentProviderTest::class
+        AppContentProviderTest::class,
+        PropertyApiServiceTest::class
 )
 class RunAllTests
