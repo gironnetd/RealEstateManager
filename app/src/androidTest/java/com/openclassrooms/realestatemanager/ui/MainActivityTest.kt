@@ -14,7 +14,7 @@ import com.google.android.material.internal.NavigationMenuItemView
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.di.TestAppComponent
-import com.openclassrooms.realestatemanager.util.Constants
+import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.Matchers.`is`
@@ -40,7 +40,7 @@ class MainActivityTest : BaseMainActivityTests() {
                 .applicationContext as TestBaseApplication
 
         val apiService = configureFakeApiService(
-                propertiesDataSource = Constants.EMPTY_LIST, // empty list of data
+                propertiesDataSource = EMPTY_LIST, // empty list of data
                 networkDelay = 0L,
                 application = app
         )

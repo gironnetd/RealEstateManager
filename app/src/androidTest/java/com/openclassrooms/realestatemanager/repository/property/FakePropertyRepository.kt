@@ -9,9 +9,7 @@ import javax.inject.Inject
 @BrowseScope
 class FakePropertyRepository
 @Inject
-constructor(
-        //var apiService: FakePropertyApiService
-) : PropertyRepository {
+constructor() : PropertyRepository {
 
     lateinit var apiService: FakePropertyApiService
 

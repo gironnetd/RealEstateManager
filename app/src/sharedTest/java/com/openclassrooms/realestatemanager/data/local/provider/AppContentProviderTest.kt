@@ -17,7 +17,7 @@ import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_DESCRIPTION
 import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_ID
-import com.openclassrooms.realestatemanager.util.Constants
+import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import junit.framework.TestCase
 import org.junit.Before
@@ -48,7 +48,7 @@ class AppContentProviderTest : TestCase() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         mContentResolver = context.contentResolver
 
-        val rawJson = jsonUtil.readJSONFromAsset(Constants.PROPERTIES_DATA_FILENAME)
+        val rawJson = jsonUtil.readJSONFromAsset(PROPERTIES_DATA_FILENAME)
         fakeProperties = Gson().fromJson(
                 rawJson,
                 object : TypeToken<List<Property>>() {}.type

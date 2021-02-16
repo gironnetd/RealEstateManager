@@ -1,6 +1,8 @@
 package com.openclassrooms.realestatemanager.di
 
 import android.app.Application
+import android.content.Context
+import androidx.lifecycle.LiveData
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.google.firebase.firestore.FirebaseFirestore
@@ -9,6 +11,7 @@ import com.openclassrooms.realestatemanager.data.local.AppDatabase
 import com.openclassrooms.realestatemanager.data.remote.DefaultPropertyApiService
 import com.openclassrooms.realestatemanager.data.remote.PropertyApiService
 import com.openclassrooms.realestatemanager.util.JsonUtil
+import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -57,5 +60,19 @@ object TestAppModule {
     @Provides
     fun provideJsonUtil(application: Application): JsonUtil {
         return JsonUtil(application)
+    }
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideContext(application: Application): Context {
+        return application
+    }
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideNetworkConnectionLiveData(context: Context): LiveData<Boolean> {
+        return NetworkConnectionLiveData(context = context)
     }
 }

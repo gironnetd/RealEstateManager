@@ -8,4 +8,6 @@ object Constants {
     const val SLASH = "/"
     const val MAIN_FILE_NAME = "main.jpg"
     const val THUMBNAIL_FILE_NAME = "thumbnail.jpg"
+
+    const val TIMEOUT_INTERNET_CONNECTION = 1500
 }

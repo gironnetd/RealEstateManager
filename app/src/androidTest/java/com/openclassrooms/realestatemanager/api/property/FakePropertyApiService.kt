@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.data.remote.PropertyApiService
 import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.util.Constants
+import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -17,7 +17,7 @@ class FakePropertyApiService
 constructor(
         private val jsonUtil: JsonUtil,
 ) : PropertyApiService {
-    var propertiesJsonFileName: String = Constants.PROPERTIES_DATA_FILENAME
+    var propertiesJsonFileName: String = PROPERTIES_DATA_FILENAME
     var networkDelay: Long = 0L
 
     override fun insertProperties(properties: List<Property>): Completable {

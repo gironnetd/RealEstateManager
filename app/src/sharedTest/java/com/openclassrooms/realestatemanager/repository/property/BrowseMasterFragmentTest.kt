@@ -14,7 +14,7 @@ import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment
-import com.openclassrooms.realestatemanager.util.Constants
+import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,7 +33,7 @@ class BrowseMasterFragmentTest : BaseMainActivityTests() {
                 .applicationContext as TestBaseApplication
 
         val apiService = configureFakeApiService(
-                propertiesDataSource = Constants.EMPTY_LIST, // empty list of data
+                propertiesDataSource = EMPTY_LIST, // empty list of data
                 networkDelay = 0L,
                 application = app
         )

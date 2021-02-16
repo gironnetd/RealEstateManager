@@ -1,13 +1,13 @@
 package com.openclassrooms.realestatemanager
 
-import android.app.Application
+import androidx.multidex.MultiDexApplication
 import com.openclassrooms.realestatemanager.di.AppComponent
 import com.openclassrooms.realestatemanager.di.DaggerAppComponent
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseComponent
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 
-open class BaseApplication: Application() {
+open class BaseApplication: MultiDexApplication() {
 
     lateinit var appComponent: AppComponent
 

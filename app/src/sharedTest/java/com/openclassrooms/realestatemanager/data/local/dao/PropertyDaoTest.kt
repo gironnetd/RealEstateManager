@@ -11,7 +11,7 @@ import com.openclassrooms.realestatemanager.data.local.AppDatabase
 import com.openclassrooms.realestatemanager.data.local.provider.toList
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.util.Constants.PROPERTIES_DATA_FILENAME
+import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import junit.framework.TestCase
 import org.junit.After

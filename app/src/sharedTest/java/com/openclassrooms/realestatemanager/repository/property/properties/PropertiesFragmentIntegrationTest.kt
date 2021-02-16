@@ -15,7 +15,8 @@ import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.browse.properties.PropertiesAdapter
-import com.openclassrooms.realestatemanager.util.Constants
+import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
+import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,7 +37,7 @@ class PropertiesFragmentIntegrationTest : BaseMainActivityTests() {
                 .applicationContext as TestBaseApplication
 
         val apiService = configureFakeApiService(
-                propertiesDataSource = Constants.EMPTY_LIST, // empty list of data
+                propertiesDataSource = EMPTY_LIST, // empty list of data
                 networkDelay = 0L,
                 application = app
         )
@@ -63,7 +64,7 @@ class PropertiesFragmentIntegrationTest : BaseMainActivityTests() {
                 .applicationContext as TestBaseApplication
 
         val apiService = configureFakeApiService(
-                propertiesDataSource = Constants.PROPERTIES_DATA_FILENAME,
+                propertiesDataSource = PROPERTIES_DATA_FILENAME,
                 networkDelay = 0L,
                 application = app
         )
@@ -105,7 +106,7 @@ class PropertiesFragmentIntegrationTest : BaseMainActivityTests() {
                 .applicationContext as TestBaseApplication
 
         val apiService = configureFakeApiService(
-                propertiesDataSource = Constants.PROPERTIES_DATA_FILENAME,
+                propertiesDataSource = PROPERTIES_DATA_FILENAME,
                 networkDelay = 0L,
                 application = app
         )
