@@ -156,6 +156,7 @@ class ConnectivityManagerTest : BaseMainActivityTests() {
             compositeDisposable.add(Single
                     .fromCallable { isInternetAvailable() }
                     .subscribeOn(Schedulers.io())
+                    .delay(TIMEOUT_INTERNET_CONNECTION.toLong(), TimeUnit.MILLISECONDS)
                     .repeat()
                     .delay(TIMEOUT_INTERNET_CONNECTION.toLong(), TimeUnit.MILLISECONDS)
                     .skipWhile {

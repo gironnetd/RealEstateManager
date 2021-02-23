@@ -4,8 +4,9 @@
 
     <permission android:name="com.openclassrooms.realestatemanager.provider.READ_WRITE"/>
 
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:name=".BaseApplication"
