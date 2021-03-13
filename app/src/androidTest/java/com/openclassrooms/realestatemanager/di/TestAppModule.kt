@@ -8,6 +8,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.openclassrooms.realestatemanager.data.local.AppDatabase
+import com.openclassrooms.realestatemanager.data.local.dao.PropertyDao
 import com.openclassrooms.realestatemanager.data.remote.DefaultPropertyApiService
 import com.openclassrooms.realestatemanager.data.remote.PropertyApiService
 import com.openclassrooms.realestatemanager.util.JsonUtil
@@ -53,6 +54,13 @@ object TestAppModule {
                 ApplicationProvider.getApplicationContext(),
                 AppDatabase::class.java
         ).allowMainThreadQueries().build()
+    }
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun providePropertyDao(db: AppDatabase): PropertyDao {
+        return db.propertyDao()
     }
 
     @JvmStatic

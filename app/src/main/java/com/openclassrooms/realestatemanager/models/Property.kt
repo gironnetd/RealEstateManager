@@ -15,11 +15,11 @@ data class Property(
         @PrimaryKey
         @ColumnInfo(index = true, name = COLUMN_ID)
         @SerializedName(value = "id")
-        var propertyId: String = "",
+        var id: String = "",
 
         @SerializedName(value = "type")
         @ColumnInfo(name = "type")
-        var propertyType: PropertyType = PropertyType.NONE,
+        var type: PropertyType = PropertyType.NONE,
 
         @ColumnInfo(name = "price")
         var price: Int = 0,
@@ -60,8 +60,8 @@ data class Property(
 ) {
 
         constructor(cursor: Cursor) : this() {
-                propertyId = cursor.getString(cursor.getColumnIndex(COLUMN_ID))
-                propertyType = PropertyType.valueOf(
+                id = cursor.getString(cursor.getColumnIndex(COLUMN_ID))
+                type = PropertyType.valueOf(
                         cursor.getString(cursor.getColumnIndex(COLUMN_PROPERTY_TYPE)))
                 price = cursor.getInt(cursor.getColumnIndex(COLUMN_PRICE))
                 surface = cursor.getInt(cursor.getColumnIndex(COLUMN_SURFACE))
@@ -85,7 +85,6 @@ data class Property(
                         soldDate = DateConverter()
                                 .fromTimestamp(cursor.getLong(cursor.getColumnIndex(COLUMN_SOLD_DATE)))!!
                 }
-
         }
 
         companion object {
@@ -95,8 +94,8 @@ data class Property(
                 /** The name of the ID column.  */
                 const val COLUMN_ID: String = BaseColumns._ID
 
-                /** The name of the property type column.  */
-                //const val COLUMN_PROPERTY_ID = "id"
+                /** The name of the property ID column for firestore.  */
+                const val COLUMN_PROPERTY_ID = "id"
 
                 /** The name of the property type column.  */
                 const val COLUMN_PROPERTY_TYPE = "type"
@@ -145,10 +144,10 @@ data class Property(
                         val property = Property()
                         values?.let {
                                 if ( it.containsKey(COLUMN_ID)) {
-                                        property.propertyId = it.getAsString(COLUMN_ID)
+                                        property.id = it.getAsString(COLUMN_ID)
                                 }
                                 if (it.containsKey(COLUMN_PROPERTY_TYPE)) {
-                                        property.propertyType = PropertyType.valueOf(it.getAsString(COLUMN_PROPERTY_TYPE))
+                                        property.type = PropertyType.valueOf(it.getAsString(COLUMN_PROPERTY_TYPE))
                                 }
                                 if ( it.containsKey(COLUMN_PRICE)) {
                                         property.price = it.getAsInteger(COLUMN_PRICE)

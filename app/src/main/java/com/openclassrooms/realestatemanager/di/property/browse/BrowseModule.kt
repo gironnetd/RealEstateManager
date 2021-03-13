@@ -2,11 +2,15 @@ package com.openclassrooms.realestatemanager.di.property.browse
 
 import android.app.Application
 import com.bumptech.glide.Glide
+import com.openclassrooms.realestatemanager.data.local.PropertyLocalDataSource
+import com.openclassrooms.realestatemanager.data.local.dao.PropertyDao
 import com.openclassrooms.realestatemanager.data.remote.DefaultPropertyApiService
-import com.openclassrooms.realestatemanager.repository.property.DefaultPropertyRepository
-import com.openclassrooms.realestatemanager.repository.property.PropertyRepository
+import com.openclassrooms.realestatemanager.data.remote.PropertyRemoteDataSource
+import com.openclassrooms.realestatemanager.data.repository.property.DefaultPropertyRepository
+import com.openclassrooms.realestatemanager.data.repository.property.PropertyRepository
 import com.openclassrooms.realestatemanager.util.GlideManager
 import com.openclassrooms.realestatemanager.util.GlideRequestManager
+import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
 import com.openclassrooms.realestatemanager.util.schedulers.BaseSchedulerProvider
 import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import dagger.Module
@@ -34,6 +38,23 @@ object BrowseModule {
     @JvmStatic
     @BrowseScope
     @Provides
-    fun providePropertyRepository(apiService: DefaultPropertyApiService): PropertyRepository
-        = DefaultPropertyRepository(apiService = apiService)
+    fun providePropertyRemoteDataSource(apiService: DefaultPropertyApiService): PropertyRemoteDataSource
+            = PropertyRemoteDataSource(apiService = apiService)
+
+    @JvmStatic
+    @BrowseScope
+    @Provides
+    fun providePropertyLocalDataSource(propertyDao: PropertyDao): PropertyLocalDataSource
+            = PropertyLocalDataSource(propertyDao = propertyDao)
+
+    @JvmStatic
+    @BrowseScope
+    @Provides
+    fun providePropertyRepository(networkConnectionLiveData: NetworkConnectionLiveData,
+                                  propertyRemoteDataSource: PropertyRemoteDataSource,
+                                  propertyLocalDataSource: PropertyLocalDataSource
+    ): PropertyRepository
+        = DefaultPropertyRepository(networkConnectionLiveData = networkConnectionLiveData,
+            propertyRemoteDataSource = propertyRemoteDataSource,
+            propertyLocalDataSource = propertyLocalDataSource)
 }

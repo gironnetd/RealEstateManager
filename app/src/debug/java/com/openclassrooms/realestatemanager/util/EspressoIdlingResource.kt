@@ -17,7 +17,7 @@ object EspressoIdlingResource {
         countingIdlingResource.increment()
     }
 
-    fun decrement() {
+    private fun decrement() {
         if (!countingIdlingResource.isIdleNow) {
             Timber.d("DECREMENTING.")
             countingIdlingResource.decrement()
@@ -25,11 +25,11 @@ object EspressoIdlingResource {
     }
 
     fun clear(): Boolean {
-        if (!countingIdlingResource.isIdleNow) {
+        return if (!countingIdlingResource.isIdleNow) {
             decrement()
-            return false
+            false
         } else {
-            return true
+            true
         }
     }
 }

@@ -3,11 +3,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.openclassrooms.realestatemanager"
         minSdkVersion 19
-        targetSdkVersion 30
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner 'com.openclassrooms.realestatemanager.MockTestRunner'
@@ -28,6 +28,10 @@ android {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
     }
+
+//    testOptions {
+//        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+//    }
 
     sourceSets {
         debug {
@@ -67,8 +71,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Multi dex dependencies
-    def multidex = "1.0.3"
-    implementation "com.android.support:multidex:$multidex"
+    def multi_dex_version = "1.0.3"
+    implementation "com.android.support:multidex:$multi_dex_version"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
@@ -83,8 +87,11 @@ dependencies {
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
 
-    def mockito_kotlin_version = "1.5.0"
-    testImplementation "com.nhaarman:mockito-kotlin:$mockito_kotlin_version"
+    def mockito_kotlin_version = "1.6.0"
+    androidTestImplementation "com.nhaarman:mockito-kotlin:$mockito_kotlin_version"
+
+    // https://mvnrepository.com/artifact/org.mockito/mockito-android
+    androidTestImplementation "org.mockito:mockito-android:3.8.0"
 
     // androidx.fragment testing
     def fragment_testing_version = "1.3.0"
@@ -100,8 +107,11 @@ dependencies {
     implementation "androidx.test.espresso:espresso-idling-resource:$androidx_espresso_idling_resource"
 
     // androidx.test
-    def androidx_test_runner = "1.2.0"
+    def androidx_test_runner = "1.3.0"
     androidTestImplementation "androidx.test:runner:$androidx_test_runner"
+
+    //def test_orchestrator_version = "1.4.0-alpha04"
+    //androidTestUtil "androidx.test:orchestrator:$test_orchestrator_version"
 
     def androidx_test_rules = "1.3.0"
     androidTestImplementation "androidx.test:rules:$androidx_test_rules"
@@ -151,8 +161,8 @@ dependencies {
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
 
-    def mockneat_version = "0.3.8"
-    implementation "net.andreinc.mockneat:mockneat:$mockneat_version"
+    def mock_neat_version = "0.3.8"
+    implementation "net.andreinc.mockneat:mockneat:$mock_neat_version"
 
     // Timber dependencies - log library
     def timber_version = "4.7.1"
@@ -173,6 +183,10 @@ dependencies {
     def room_version = "2.2.6"
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
+
+    // RxJava support for Room
+    def room_rxjava_version = "1.0.0-alpha5"
+    implementation "android.arch.persistence.room:rxjava2:$room_rxjava_version"
 }
 repositories {
     mavenCentral()

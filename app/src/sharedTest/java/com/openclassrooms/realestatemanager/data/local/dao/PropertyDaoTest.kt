@@ -24,12 +24,9 @@ import javax.inject.Inject
 @SmallTest
 class PropertyDaoTest: TestCase() {
 
-    @Inject
-    lateinit var database: AppDatabase
+    @Inject lateinit var database: AppDatabase
     private lateinit var propertyDao: PropertyDao
-
-    @Inject
-    lateinit var jsonUtil: JsonUtil
+    @Inject lateinit var jsonUtil: JsonUtil
     private lateinit var fakeProperties: List<Property>
 
     @Before
@@ -55,21 +52,21 @@ class PropertyDaoTest: TestCase() {
 
     @Test
     fun insert_properties_with_success() {
-        propertyDao.insertProperties(fakeProperties)
+        propertyDao.saveProperties(fakeProperties)
         assertThat(propertyDao.count()).isEqualTo(fakeProperties.size)
     }
 
     @Test
     fun is_properties_after_insertion_are_the_same_when_reading_result() {
-        fakeProperties.sortedBy { it.propertyId }
-        propertyDao.insertProperties(fakeProperties)
+        fakeProperties = fakeProperties.sortedBy { it.id }
+        propertyDao.saveProperties(fakeProperties)
         val cursor = propertyDao.findAllProperties()
 
-        val actualProperties = cursor.toList {
+        var actualProperties = cursor.toList {
             Property(it)
         }
 
-        actualProperties.sortedBy { it.propertyId }
+        actualProperties = actualProperties.sortedBy { it.id }
         actualProperties.forEachIndexed { index, property ->
             assertThat(property).isEqualTo(fakeProperties[index])
         }

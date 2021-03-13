@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.repository.property.properties
+package com.openclassrooms.realestatemanager.data.repository.property.properties
 
 import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso
@@ -30,7 +30,6 @@ class PropertiesFragmentIntegrationTest : BaseMainActivityTests() {
 
     @Test
     fun is_property_list_empty() {
-
         val app = InstrumentationRegistry
                 .getInstrumentation()
                 .targetContext
@@ -79,18 +78,18 @@ class PropertiesFragmentIntegrationTest : BaseMainActivityTests() {
         recyclerView.check(matches(isDisplayed()))
 
         recyclerView.perform(
-                RecyclerViewActions.scrollToPosition<PropertiesAdapter.PropertyViewHolder>(5)
+                RecyclerViewActions.scrollToPosition<PropertiesAdapter.PropertyViewHolder>(2)
         )
-        Espresso.onView(withText("21 Rue Kléber")).check(matches(isDisplayed()))
+        Espresso.onView(withText("2-8 Square de Castiglione")).check(matches(isDisplayed()))
 
         recyclerView.perform(
-                RecyclerViewActions.scrollToPosition<PropertiesAdapter.PropertyViewHolder>(8)
-        )
-        Espresso.onView(withText("2 Avenue Jeanne d'Arc")).check(matches(isDisplayed()))
+                RecyclerViewActions.scrollToPosition<PropertiesAdapter.PropertyViewHolder>(8))
+
+        Espresso.onView(withText("3 Place de la Loi")).check(matches(isDisplayed()))
 
         recyclerView.perform(
-                RecyclerViewActions.scrollToPosition<PropertiesAdapter.PropertyViewHolder>(0)
-        )
+                RecyclerViewActions.scrollToPosition<PropertiesAdapter.PropertyViewHolder>(0))
+
         Espresso.onView(withText("3 Square Fantin Latour")).check(matches(isDisplayed()))
 
         Espresso.onView(withId(R.id.no_data_text_view))

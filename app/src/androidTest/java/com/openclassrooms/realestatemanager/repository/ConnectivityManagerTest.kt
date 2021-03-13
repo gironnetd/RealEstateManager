@@ -1,13 +1,9 @@
 package com.openclassrooms.realestatemanager.repository
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
 import com.openclassrooms.realestatemanager.TestBaseApplication
@@ -18,31 +14,24 @@ import com.openclassrooms.realestatemanager.util.Constants.TIMEOUT_INTERNET_CONN
 import com.openclassrooms.realestatemanager.util.ConstantsTest
 import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
 import com.openclassrooms.realestatemanager.util.Utils.isInternetAvailable
+import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable
 import io.reactivex.Completable.concatArray
-import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ConnectivityManagerTest : BaseMainActivityTests() {
 
-    @get:Rule
-    var rule: TestRule = InstantTaskExecutorRule()
+    @get:Rule var rule: TestRule = InstantTaskExecutorRule()
 
-    @Inject
     lateinit var networkConnectionLiveData: NetworkConnectionLiveData
-
-    private lateinit var compositeDisposable: CompositeDisposable
 
     private lateinit var activityScenario: ActivityScenario<MainActivity>
     private lateinit var app : TestBaseApplication
@@ -52,7 +41,6 @@ class ConnectivityManagerTest : BaseMainActivityTests() {
         super.setUp()
         app = InstrumentationRegistry.getInstrumentation()
                 .targetContext.applicationContext as TestBaseApplication
-        compositeDisposable = CompositeDisposable()
 
         val apiService = configureFakeApiService(
                 propertiesDataSource = ConstantsTest.EMPTY_LIST, // empty list of data
@@ -61,150 +49,134 @@ class ConnectivityManagerTest : BaseMainActivityTests() {
         )
 
         configureFakeRepository(apiService, app)
-
         injectTest(app)
+
+        networkConnectionLiveData = NetworkConnectionLiveData(app.applicationContext)
 
         activityScenario = ActivityScenario.launch(MainActivity::class.java)
                 .onActivity { activity ->
                     mainActivity = activity
-                    if(!networkConnectionLiveData.value!!) {
-                        concatArray(switchNetworks(true),
-                                waitInternetStateChange(true))
+                    Completable.fromCallable { if(!isInternetAvailable()) {
+                        concatArray(switchAllNetworks(true),
+                                    waitInternetStateChange(true))
                                 .blockingAwait()
                     }
+                        networkConnectionLiveData.observe(mainActivity,{})
+                    }.subscribeOn(SchedulerProvider.io()).blockingAwait()
                 }
     }
 
     @After
     public override fun tearDown() {
-        if(!networkConnectionLiveData.value!!) {
-            concatArray(switchNetworks(true),
+        if(networkConnectionLiveData.value != true) {
+            concatArray(switchAllNetworks(true),
                         waitInternetStateChange(true))
-                    .blockingAwait().let {
+                    .doOnComplete {
                         if(networkConnectionLiveData.hasObservers()) {
                             networkConnectionLiveData.removeObservers(mainActivity)
                         }
                         super.tearDown()
-                    }
+                    }.blockingAwait()
         } else {
             super.tearDown()
         }
     }
 
     @Test
+    @Suppress("UnstableApiUsage")
     fun verify_when_connection_is_available() {
-        networkConnectionLiveData.observe(mainActivity, {})
+        Timber.tag(TAG).i("/** verify_when_connection_is_available **/")
 
-        concatArray(switchNetworks(false),
-                waitInternetStateChange(false))
+        concatArray(switchAllNetworks(false), waitInternetStateChange(false))
+                .delay(TIMEOUT_INTERNET_CONNECTION.toLong(), TimeUnit.MILLISECONDS)
                 .blockingAwait()
-                .let { assertThat(networkConnectionLiveData.value).isFalse() }
+                .let {
+                    Completable.fromAction { networkConnectionLiveDataValue(false) }
+                            .delaySubscription((TIMEOUT_INTERNET_CONNECTION.toLong() * 2), TimeUnit.MILLISECONDS)
+                            .blockingAwait()
+                }
 
-        concatArray(switchNetworks(true),
-                waitInternetStateChange(true))
+        concatArray(switchAllNetworks(true), waitInternetStateChange(true))
+                .delay(TIMEOUT_INTERNET_CONNECTION.toLong(), TimeUnit.MILLISECONDS)
                 .blockingAwait()
-                .let { assertThat(networkConnectionLiveData.value).isTrue() }
-
+                .let {
+                    Completable.fromAction { networkConnectionLiveDataValue(true) }
+                            .delaySubscription((TIMEOUT_INTERNET_CONNECTION.toLong() * 2), TimeUnit.MILLISECONDS)
+                            .blockingAwait()
+                }
     }
 
     @Test
+    @Suppress("UnstableApiUsage")
     fun verify_when_connection_is_unavailable() {
-        networkConnectionLiveData.observe(mainActivity, {})
+        Timber.tag(TAG).i("/** verify_when_connection_is_unavailable **/")
 
-        concatArray(switchNetworks(false),
-                    waitInternetStateChange(false))
+        concatArray(switchAllNetworks(false), waitInternetStateChange(false))
+                .delay(TIMEOUT_INTERNET_CONNECTION.toLong(), TimeUnit.MILLISECONDS)
                 .blockingAwait()
-                .let { assertThat(networkConnectionLiveData.value).isFalse() }
+                .let {
+                    Completable.fromAction { networkConnectionLiveDataValue(false) }
+                            .delaySubscription((TIMEOUT_INTERNET_CONNECTION.toLong() * 2), TimeUnit.MILLISECONDS)
+                            .blockingAwait()
+                }
     }
 
     @Test
+    @Suppress("UnstableApiUsage")
     fun verify_when_connection_is_switching() {
-        networkConnectionLiveData.observe(mainActivity, {})
+        Timber.tag(TAG).i("/** verify_when_connection_is_switching **/")
 
-        concatArray(switchNetworks(false),
-                    waitInternetStateChange(false))
+        concatArray(switchAllNetworks(false), waitInternetStateChange(false))
+                .delay(TIMEOUT_INTERNET_CONNECTION.toLong(), TimeUnit.MILLISECONDS)
                 .blockingAwait()
-                .let { assertThat(networkConnectionLiveData.value).isFalse() }
-
-        concatArray(switchNetworks(true),
-                    waitInternetStateChange(true))
-                .blockingAwait()
-                .let { assertThat(networkConnectionLiveData.value).isTrue() }
-
-        concatArray(switchNetworks(false),
-                    waitInternetStateChange(false))
-                .blockingAwait()
-                .let { assertThat(networkConnectionLiveData.value).isFalse() }
-    }
-
-    private fun switchNetworks(enabled: Boolean) : Completable {
-        return Completable.create { emitter ->
-            when {
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> {
-                    networkEnableLollipopMinSdkVersion(enabled = enabled)
+                .let {
+                    Completable.fromAction { networkConnectionLiveDataValue(false) }
+                            .delaySubscription((TIMEOUT_INTERNET_CONNECTION.toLong() * 2), TimeUnit.MILLISECONDS)
+                            .blockingAwait()
                 }
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP -> {
-                    networkEnableKitKatMaxSdkVersion(enabled = enabled)
+
+        concatArray(switchAllNetworks(true), waitInternetStateChange(true))
+                .delay(TIMEOUT_INTERNET_CONNECTION.toLong(), TimeUnit.MILLISECONDS)
+                .blockingAwait()
+                .let {
+                    Completable.fromAction { networkConnectionLiveDataValue(true) }
+                            .delaySubscription((TIMEOUT_INTERNET_CONNECTION.toLong() * 2), TimeUnit.MILLISECONDS)
+                            .blockingAwait()
                 }
-            }
-            emitter.onComplete()
-        }
+
+        concatArray(switchAllNetworks(false), waitInternetStateChange(false))
+                .delay(TIMEOUT_INTERNET_CONNECTION.toLong(), TimeUnit.MILLISECONDS)
+                .blockingAwait()
+                .let {
+                    Completable.fromAction { networkConnectionLiveDataValue(false) }
+                            .delaySubscription((TIMEOUT_INTERNET_CONNECTION.toLong() * 2), TimeUnit.MILLISECONDS)
+                            .blockingAwait()
+                }
     }
 
-    private fun waitInternetStateChange(isInternetAvailable: Boolean) : Completable {
-        return Completable.create { emitter ->
-            compositeDisposable.add(Single
-                    .fromCallable { isInternetAvailable() }
-                    .subscribeOn(Schedulers.io())
-                    .delay(TIMEOUT_INTERNET_CONNECTION.toLong(), TimeUnit.MILLISECONDS)
-                    .repeat()
-                    .delay(TIMEOUT_INTERNET_CONNECTION.toLong(), TimeUnit.MILLISECONDS)
-                    .skipWhile {
-                        it != isInternetAvailable
+    private fun networkConnectionLiveDataValue(enabled: Boolean) {
+                when(enabled) {
+                    true -> {
+                        assertThat(networkConnectionLiveData.value).isTrue()
+                        Timber.tag(TAG).i("networkConnectionLiveData value is expected to be true" +
+                                " and is : ${networkConnectionLiveData.value}")
                     }
-                    .subscribe {
-                        emitter.onComplete()
-                        compositeDisposable.clear()
+
+                    false -> {
+                        assertThat(networkConnectionLiveData.value).isFalse()
+                        Timber.tag(TAG).i("networkConnectionLiveData value is expected to be false" +
+                                " and is : ${networkConnectionLiveData.value}")
                     }
-            )
-        }
+                }
     }
 
-    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
-    private fun networkEnableLollipopMinSdkVersion(enabled: Boolean) {
-        val uiAutomation = InstrumentationRegistry.getInstrumentation().uiAutomation
-        when(enabled) {
-            true -> {
-                uiAutomation.executeShellCommand("svc wifi enable")
-                uiAutomation.executeShellCommand("svc data enable")
-            }
-
-            false -> {
-                uiAutomation.executeShellCommand("svc wifi disable")
-                uiAutomation.executeShellCommand("svc data disable")
-            }
-        }
-    }
-
-    @SdkSuppress(maxSdkVersion = Build.VERSION_CODES.KITKAT_WATCH)
-    private fun networkEnableKitKatMaxSdkVersion(enabled: Boolean) {
-        try {
-            val connectivityManager = app.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val connectivityManagerClass = Class.forName(connectivityManager.javaClass.name)
-            val iConnectivityManagerField = connectivityManagerClass.getDeclaredField("mService")
-            iConnectivityManagerField.isAccessible = true
-            val iConnectivityManager = iConnectivityManagerField[connectivityManager]
-            val iConnectivityManagerClass = Class.forName(iConnectivityManager.javaClass.name)
-            val setMobileDataEnabledMethod = iConnectivityManagerClass.getDeclaredMethod("setMobileDataEnabled", java.lang.Boolean.TYPE)
-            setMobileDataEnabledMethod.isAccessible = true
-            setMobileDataEnabledMethod.invoke(iConnectivityManager, enabled)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
 
     override fun injectTest(application: TestBaseApplication) {
         (application.appComponent as TestAppComponent)
                 .inject(this)
+    }
+
+    companion object {
+        private val TAG = ConnectivityManagerTest::class.simpleName
     }
 }

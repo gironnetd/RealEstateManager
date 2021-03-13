@@ -11,35 +11,24 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
-import androidx.lifecycle.LiveData
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
+import androidx.lifecycle.MutableLiveData
+import com.openclassrooms.realestatemanager.util.Utils.isInternetAvailable
+import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
 @Singleton
 class NetworkConnectionLiveData
 @Inject
-constructor(val context: Context) : LiveData<Boolean>() {
+constructor(val context: Context) : MutableLiveData<Boolean>() {
 
-    private var connectivityManager: ConnectivityManager
-            = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+    private var connectivityManager: ConnectivityManager =
+            context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
 
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
-
-    init {
-        compositeDisposable.add(Single.fromCallable { Utils.isInternetAvailable() }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { isInternetAvailable ->
-                    value = isInternetAvailable
-                    compositeDisposable.clear()
-                })
-    }
 
     override fun onActive() {
         super.onActive()
@@ -77,41 +66,52 @@ constructor(val context: Context) : LiveData<Boolean>() {
 
     private fun createNetworkCallback(): ConnectivityManager.NetworkCallback {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            networkCallback = object : ConnectivityManager.NetworkCallback() {
+            object : ConnectivityManager.NetworkCallback() {
                 override fun onAvailable(network: Network) {
                     val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
                     val hasInternetCapability = networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                    //Timber.d("onAvailable: ${network}, $hasInternetCapability")
-                    if (hasInternetCapability == true) {
-                        waitForInternetStateChange()
+
+                    if (hasInternetCapability == true && value == false
+                            && connectivityManager.allNetworks.size == 1) {
+                        hasInternetConnection()
+                    }
+
+                    if(hasInternetCapability == true && value == null) {
+                        hasInternetConnection()
                     }
                 }
 
                 override fun onLost(network: Network) {
-                    postValue(false)
+                    if(connectivityManager.allNetworks.size <= 1 && value == true) {
+                        hasInternetConnection()
+                    }
                 }
-            }
+            }.also { networkCallback = it }
             return networkCallback
         } else {
             throw IllegalAccessError("Should not happened")
         }
     }
 
-    private fun waitForInternetStateChange() {
-        compositeDisposable.add(Single.fromCallable { Utils.isInternetAvailable() }
-                .subscribeOn(Schedulers.io())
-                .repeat()
-                .skipWhile { isInternetAvailable -> isInternetAvailable == value }
-                .subscribe { isInternetAvailable ->
-                    postValue(isInternetAvailable)
-                    compositeDisposable.clear()
-                }
-        )
-    }
-
+    @Suppress("DEPRECATION")
     private val networkReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            waitForInternetStateChange()
+            val activeNetworkInfo = connectivityManager.activeNetworkInfo
+            if(activeNetworkInfo != null && activeNetworkInfo.isConnected) {
+                if(value != true) value = true
+            } else {
+                if(value != false) value = false
+            }
         }
+    }
+
+    private fun hasInternetConnection() {
+            if(value == null) {
+                compositeDisposable.add(Completable.fromCallable {
+                    postValue(isInternetAvailable())
+                }.subscribeOn(Schedulers.io()).subscribe())
+            } else {
+                postValue(!value!!)
+            }
     }
 }

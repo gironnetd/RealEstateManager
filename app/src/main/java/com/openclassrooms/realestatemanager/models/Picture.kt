@@ -20,7 +20,7 @@ fun Picture.storageUrl(isThumbnail: Boolean = false): String {
             .append(Constants.SLASH)
             .append(PICTURES_COLLECTION)
             .append(Constants.SLASH)
-            .append(pictureId)
+            .append(id)
             .append(Constants.SLASH)
 
     if (isThumbnail) url.append(THUMBNAIL_FILE_NAME) else url.append(MAIN_FILE_NAME)
@@ -30,18 +30,18 @@ fun Picture.storageUrl(isThumbnail: Boolean = false): String {
 data class Picture(
         @SerializedName(value = "id")
         @ColumnInfo(name = "id")
-        var pictureId: String = "",
+        var id: String = "",
 
         @ColumnInfo(name = "property_id")
         @get:Exclude var propertyId: String = "",
         var description: String = "",
         @SerializedName(value = "type")
         @ColumnInfo(name = "type")
-        var pictureType: PictureType = PictureType.NONE,
+        var type: PictureType = PictureType.NONE,
 ) {
     constructor(cursor: Cursor, isMainPicture: Boolean = false): this() {
         if(isMainPicture) {
-            pictureId = cursor.getString(
+            id = cursor.getString(
                     cursor.getColumnIndex(
                             PREFIX_MAIN_PICTURE + COLUMN_PICTURE_ID))
             propertyId = cursor.getString(
@@ -52,13 +52,13 @@ data class Picture(
                     cursor.getColumnIndex(
                         PREFIX_MAIN_PICTURE + COLUMN_PICTURE_DESCRIPTION
                     ))
-            pictureType = PictureType.valueOf(
+            type = PictureType.valueOf(
                     cursor.getString(
                             cursor.getColumnIndex(
                                     PREFIX_MAIN_PICTURE + COLUMN_PICTURE_TYPE
                             )))
         } else {
-            pictureId = cursor.getString(
+            id = cursor.getString(
                     cursor.getColumnIndex(
                             COLUMN_PICTURE_ID))
             propertyId = cursor.getString(
@@ -69,7 +69,7 @@ data class Picture(
                     cursor.getColumnIndex(
                             COLUMN_PICTURE_DESCRIPTION
                     ))
-            pictureType = PictureType.valueOf(
+            type = PictureType.valueOf(
                     cursor.getString(
                             cursor.getColumnIndex(
                                     COLUMN_PICTURE_TYPE

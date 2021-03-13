@@ -4,11 +4,12 @@ import android.app.Application
 import com.openclassrooms.realestatemanager.data.local.dao.PropertyDaoTest
 import com.openclassrooms.realestatemanager.data.local.provider.AppContentProviderTest
 import com.openclassrooms.realestatemanager.data.remote.PropertyApiServiceTest
+import com.openclassrooms.realestatemanager.data.repository.property.BrowseFragmentTest
+import com.openclassrooms.realestatemanager.data.repository.property.BrowseMasterFragmentTest
+import com.openclassrooms.realestatemanager.data.repository.property.PropertyRepositoryTest
+import com.openclassrooms.realestatemanager.data.repository.property.properties.PropertiesFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.di.property.TestBrowseComponent
 import com.openclassrooms.realestatemanager.repository.ConnectivityManagerTest
-import com.openclassrooms.realestatemanager.repository.property.BrowseFragmentTest
-import com.openclassrooms.realestatemanager.repository.property.BrowseMasterFragmentTest
-import com.openclassrooms.realestatemanager.repository.property.properties.PropertiesFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.MainActivityTest
 import com.openclassrooms.realestatemanager.ui.MainNavigationTest
 import com.openclassrooms.realestatemanager.ui.MainRotationTest
@@ -53,6 +54,8 @@ interface TestAppComponent : AppComponent {
     fun inject(propertyApiServiceTest: PropertyApiServiceTest)
 
     fun inject(connectivityManagerTest: ConnectivityManagerTest)
+
+    fun inject(propertyRepositoryTest: PropertyRepositoryTest)
 
     fun testBrowseComponent(): TestBrowseComponent.Factory
 }

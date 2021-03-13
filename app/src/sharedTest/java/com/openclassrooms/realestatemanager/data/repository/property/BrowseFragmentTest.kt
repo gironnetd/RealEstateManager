@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.repository.property
+package com.openclassrooms.realestatemanager.data.repository.property
 
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.content.res.Configuration.ORIENTATION_PORTRAIT

@@ -97,7 +97,7 @@ class AppContentProvider : ContentProvider() {
                 if (!::database.isInitialized) {
                       (context as BaseApplication).appComponent.inject(this)
                 }
-                val id: Long = database.propertyDao().insertProperty(Property.fromContentValues(values))
+                val id: Long = database.propertyDao().saveProperty(Property.fromContentValues(values))
                 context.contentResolver.notifyChange(uri, null)
                 ContentUris.withAppendedId(uri, id)
             }
@@ -140,7 +140,7 @@ class AppContentProvider : ContentProvider() {
                 if (!::database.isInitialized) {
                      (context as BaseApplication).appComponent.inject(this)
                 }
-                database.propertyDao().insertProperties(properties.toList() as List<Property>).size
+                database.propertyDao().saveProperties(properties.toList() as List<Property>).size
             }
             CODE_PROPERTY_ITEM -> throw java.lang.IllegalArgumentException("Invalid URI, cannot insert with ID: $uri")
             else -> throw java.lang.IllegalArgumentException("Unknown URI: $uri")

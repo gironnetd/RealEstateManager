@@ -21,12 +21,10 @@ import javax.inject.Inject
 @MediumTest
 class PropertyApiServiceTest : TestCase() {
 
-    @Inject
-    lateinit var jsonUtil: JsonUtil
+    @Inject lateinit var jsonUtil: JsonUtil
     private lateinit var fakeProperties: List<Property>
 
-    @Inject
-    lateinit var apiService: PropertyApiService
+    @Inject lateinit var apiService: PropertyApiService
 
     @Before
     fun initApiService() {
@@ -42,14 +40,14 @@ class PropertyApiServiceTest : TestCase() {
                 rawJson,
                 object : TypeToken<List<Property>>() {}.type
         )
-        fakeProperties = fakeProperties.sortedBy { it.propertyId }
+        fakeProperties = fakeProperties.sortedBy { it.id }
     }
 
     @Test
     fun insert_properties_with_success() {
-        apiService.insertProperties(properties = fakeProperties).blockingGet()
+        apiService.insertProperties(properties = fakeProperties).blockingAwait()
 
-        val actualProperties = apiService.findAllProperties().blockingFirst()
+        val actualProperties = apiService.findAllProperties().blockingGet()
         assertThat(actualProperties).isNotNull()
         assertThat(actualProperties.size).isEqualTo(fakeProperties.size)
     }
@@ -58,7 +56,7 @@ class PropertyApiServiceTest : TestCase() {
     fun is_properties_after_insertion_are_the_same_when_reading_result() {
         apiService.insertProperties(properties = fakeProperties).blockingAwait()
 
-        val actualProperties = apiService.findAllProperties().blockingFirst()
+        val actualProperties = apiService.findAllProperties().blockingGet()
         assertThat(actualProperties).isEqualTo(fakeProperties)
     }
 

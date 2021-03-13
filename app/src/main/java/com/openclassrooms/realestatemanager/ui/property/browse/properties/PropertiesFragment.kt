@@ -18,7 +18,7 @@ import com.openclassrooms.realestatemanager.ui.property.browse.properties.Proper
 import com.openclassrooms.realestatemanager.util.GlideManager
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
 /**
@@ -39,7 +39,8 @@ constructor(
     }
 
     private val loadConversationsIntentPublisher =
-            BehaviorSubject.create<PropertiesIntent.LoadPropertiesIntent>()
+            PublishSubject.create<PropertiesIntent.LoadPropertiesIntent>()
+    private val refreshIntentPublisher = PublishSubject.create<PropertiesIntent.RefreshPropertiesIntent>()
     private val compositeDisposable = CompositeDisposable()
 
     private lateinit var recyclerAdapter: PropertiesAdapter
@@ -50,24 +51,40 @@ constructor(
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentListBinding.inflate(inflater, container, false)
-
-        compositeDisposable.add(propertiesViewModel.states().subscribe { render(it) })
-        propertiesViewModel.processIntents(intents())
-
+        initRecyclerView()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initRecyclerView()
+
+        compositeDisposable.add(propertiesViewModel.states().subscribe(this::render))
+        propertiesViewModel.processIntents(intents())
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadConversationsIntentPublisher.onNext(PropertiesIntent.LoadPropertiesIntent)
     }
 
     override fun intents(): Observable<PropertiesIntent> {
-        return Observable.merge(initialIntent(), loadConversationsIntentPublisher)
+        return Observable.merge(
+                initialIntent(),
+                loadPropertiesIntentPublisher(),
+                refreshPropertiesIntentPublisher()
+        )
     }
 
     private fun initialIntent(): Observable<PropertiesIntent.InitialIntent> {
         return Observable.just(PropertiesIntent.InitialIntent)
+    }
+
+    private fun loadPropertiesIntentPublisher(): Observable<PropertiesIntent.LoadPropertiesIntent> {
+        return loadConversationsIntentPublisher
+    }
+
+    private fun refreshPropertiesIntentPublisher(): Observable<PropertiesIntent.RefreshPropertiesIntent> {
+        return refreshIntentPublisher
     }
 
     override fun render(state: PropertiesUiModel) {

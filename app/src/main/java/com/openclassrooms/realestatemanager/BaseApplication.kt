@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager
 
 import androidx.multidex.MultiDexApplication
+import com.google.firebase.firestore.FirebaseFirestore
 import com.openclassrooms.realestatemanager.di.AppComponent
 import com.openclassrooms.realestatemanager.di.DaggerAppComponent
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseComponent
@@ -19,6 +20,7 @@ open class BaseApplication: MultiDexApplication() {
 
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())
+            FirebaseFirestore.setLoggingEnabled(true)
         }
 
         // Call to Utils function to populate the firestore database

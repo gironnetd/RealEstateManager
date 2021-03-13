@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.repository.property
+package com.openclassrooms.realestatemanager.data.repository.property
 
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.Lifecycle

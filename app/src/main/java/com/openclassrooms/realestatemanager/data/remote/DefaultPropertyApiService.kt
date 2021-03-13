@@ -1,10 +1,11 @@
 package com.openclassrooms.realestatemanager.data.remote
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query.Direction.ASCENDING
 import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.util.Constants
+import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_PROPERTY_ID
+import com.openclassrooms.realestatemanager.util.Constants.PROPERTIES_COLLECTION
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Single
 import javax.inject.Inject
 
@@ -17,11 +18,11 @@ constructor(
     override fun insertProperties(properties: List<Property>): Completable {
         return Completable.unsafeCreate { emitter ->
             val collectionRef = firestore
-                    .collection(Constants.PROPERTIES_COLLECTION)
+                    .collection(PROPERTIES_COLLECTION)
             val batch = firestore.batch()
 
             for (property in properties) {
-                val documentRef = collectionRef.document(property.propertyId)
+                val documentRef = collectionRef.document(property.id)
                 batch.set(documentRef, property)
             }
 
@@ -35,14 +36,15 @@ constructor(
         }
     }
 
-    override fun findAllProperties(): Flowable<List<Property>> {
-        return Single.create<List<Property>> { emitter ->
-            firestore.collection(Constants.PROPERTIES_COLLECTION)
+    override fun findAllProperties(): Single<List<Property>> {
+        return Single.create { emitter ->
+           firestore.collection(PROPERTIES_COLLECTION)
+                    .orderBy(COLUMN_PROPERTY_ID, ASCENDING)
                     .get()
-                    .addOnSuccessListener { querySnapshot ->
-                        val properties = querySnapshot.toObjects(Property::class.java)
+                    .addOnSuccessListener { result ->
+                        val properties = result.toObjects(Property::class.java)
                         emitter.onSuccess(properties)
                     }
-        }.toFlowable()
+        }
     }
 }

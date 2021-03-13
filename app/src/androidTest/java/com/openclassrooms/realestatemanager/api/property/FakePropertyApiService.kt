@@ -7,29 +7,32 @@ import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import io.reactivex.Completable
-import io.reactivex.Flowable
+import io.reactivex.Single
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class FakePropertyApiService
+@Singleton
+open class FakePropertyApiService
 @Inject
 constructor(
-        private val jsonUtil: JsonUtil,
+        var jsonUtil: JsonUtil,
 ) : PropertyApiService {
     var propertiesJsonFileName: String = PROPERTIES_DATA_FILENAME
     var networkDelay: Long = 0L
 
+    var properties: List<Property> = mutableListOf()
+
     override fun insertProperties(properties: List<Property>): Completable {
-        TODO("Not yet implemented")
+        this.properties.toMutableList().addAll(properties)
+        return Completable.complete()
     }
 
-    override fun findAllProperties(): Flowable<List<Property>> {
+    override fun findAllProperties(): Single<List<Property>> {
         val rawJson = jsonUtil.readJSONFromAsset(propertiesJsonFileName)
-        val properties = Gson().fromJson<List<Property>>(
-                rawJson,
-                object : TypeToken<List<Property>>() {}.type
-        )
-        return Flowable.just(properties).delay(networkDelay, TimeUnit.MILLISECONDS)
+        properties = Gson().fromJson(rawJson, object : TypeToken<List<Property>>() {}.type)
+
+        properties = properties.sortedBy { it.id }
+        return Single.just(properties).delay(networkDelay, TimeUnit.MILLISECONDS)
     }
 }

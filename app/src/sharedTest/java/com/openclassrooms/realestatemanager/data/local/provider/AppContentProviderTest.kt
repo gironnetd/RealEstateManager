@@ -30,8 +30,7 @@ import javax.inject.Inject
 @SmallTest
 class AppContentProviderTest : TestCase() {
 
-    @Inject
-    lateinit var jsonUtil: JsonUtil
+    @Inject lateinit var jsonUtil: JsonUtil
     private lateinit var fakeProperties: List<Property>
 
     private lateinit var mContentResolver: ContentResolver
@@ -58,7 +57,7 @@ class AppContentProviderTest : TestCase() {
     @Test
     fun properties_initially_empty() {
         val cursor = mContentResolver.query(URI_PROPERTY,
-                arrayOf(Property.COLUMN_ID), null, null, null)
+                arrayOf(COLUMN_ID), null, null, null)
         assertThat(cursor).isNotNull()
         assertThat(cursor!!.count).isEqualTo(0)
         cursor.close()

@@ -1,9 +1,10 @@
 package com.openclassrooms.realestatemanager.repository.property
 
 import com.openclassrooms.realestatemanager.api.property.FakePropertyApiService
+import com.openclassrooms.realestatemanager.data.repository.property.PropertyRepository
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Property
-import io.reactivex.Flowable
+import io.reactivex.Observable
 import javax.inject.Inject
 
 @BrowseScope
@@ -22,8 +23,8 @@ constructor() : PropertyRepository {
     }
 
     @Throws(UninitializedPropertyAccessException::class)
-    override fun allProperties(): Flowable<List<Property>> {
+    override fun findAllProperties(): Observable<List<Property>> {
         throwExceptionIfApiServiceNotInitialized()
-        return apiService.findAllProperties()
+        return apiService.findAllProperties().toObservable()
     }
 }

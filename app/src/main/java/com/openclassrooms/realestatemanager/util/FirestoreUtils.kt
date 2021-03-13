@@ -57,7 +57,7 @@ class FirestoreUtils {
             val end = endDate.toEpochDay();
 
             var properties: List<Property> = listOf(
-                    Property(propertyType = PropertyType.FLAT,
+                    Property(type = PropertyType.FLAT,
                             price = (10000..20000).random(),
                             surface = (20..40).random(),
                             rooms = (2..5).random(),
@@ -99,7 +99,7 @@ class FirestoreUtils {
                                     .nextLong(start, end)),
                             soldDate = null
                     ),
-                    Property(propertyType = PropertyType.HOUSE,
+                    Property(type = PropertyType.HOUSE,
                             price = (10000..20000).random(),
                             surface = (60..80).random(),
                             rooms = (2..5).random(),
@@ -124,7 +124,7 @@ class FirestoreUtils {
                                     .nextLong(start, end)),
                             soldDate = null
                     ),
-                    Property(propertyType = PropertyType.DUPLEX,
+                    Property(type = PropertyType.DUPLEX,
                             price = (10000..20000).random(),
                             surface = (20..40).random(),
                             rooms = (2..5).random(),
@@ -162,7 +162,7 @@ class FirestoreUtils {
                             soldDate = null
                     ),
                     Property(
-                            propertyType = PropertyType.FLAT,
+                            type = PropertyType.FLAT,
                             price = (10000..20000).random(),
                             surface = (20..40).random(),
                             rooms = (2..5).random(),
@@ -255,55 +255,55 @@ class FirestoreUtils {
 
             for (property in properties) {
                 val documentRef = firestore.collection(PROPERTIES_COLLECTION).document()
-                property.propertyId = documentRef.id
+                property.id = documentRef.id
 
                 var pictures: List<Picture> = listOf(
                         Picture(
                                 description = "",
-                                pictureType = PictureType.MAIN,
+                                type = PictureType.MAIN,
                         ),
                         Picture(
                                 description = "",
-                                pictureType = PictureType.LOUNGE,
+                                type = PictureType.LOUNGE,
                         ),
                         Picture(
                                 description = "",
-                                pictureType = PictureType.LOUNGE,
+                                type = PictureType.LOUNGE,
                         ),
                         Picture(
                                 description = "",
-                                pictureType = PictureType.BATHROOM,
+                                type = PictureType.BATHROOM,
                         ),
                         Picture(
                                 description = "",
-                                pictureType = PictureType.BEDROOM,
+                                type = PictureType.BEDROOM,
                         ),
                         Picture(
                                 description = "",
-                                pictureType = PictureType.BEDROOM,
+                                type = PictureType.BEDROOM,
                         ),
                         Picture(
                                 description = "",
-                                pictureType = PictureType.BEDROOM,
+                                type = PictureType.BEDROOM,
                         ),
                         Picture(
                                 description = "",
-                                pictureType = PictureType.KITCHEN,
+                                type = PictureType.KITCHEN,
                         ),
                         Picture(
                                 description = "",
-                                pictureType = PictureType.FACADE,
+                                type = PictureType.FACADE,
                         ),
                 )
 
                 for (picture in pictures) {
                     val pictureRef = firestore.collection(PROPERTIES_COLLECTION)
-                            .document(property.propertyId)
+                            .document(property.id)
                             .collection(PICTURES_COLLECTION)
                             .document()
-                    picture.pictureId = pictureRef.id
+                    picture.id = pictureRef.id
 
-                    if (picture.pictureType != PictureType.MAIN) {
+                    if (picture.type != PictureType.MAIN) {
                         pictureRef.set(picture)
                     } else {
                         property.mainPicture = picture
