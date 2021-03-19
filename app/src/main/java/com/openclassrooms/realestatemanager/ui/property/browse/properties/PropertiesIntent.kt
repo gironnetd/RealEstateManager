@@ -7,6 +7,4 @@ sealed class PropertiesIntent : BaseIntent {
     object InitialIntent : PropertiesIntent()
 
     object LoadPropertiesIntent : PropertiesIntent()
-
-    object RefreshPropertiesIntent : PropertiesIntent()
 }
