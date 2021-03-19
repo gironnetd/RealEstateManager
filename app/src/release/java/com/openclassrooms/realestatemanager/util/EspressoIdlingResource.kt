@@ -1,4 +1,4 @@
-package com.codingwithmitch.espressodaggerexamples.util
+package com.openclassrooms.realestatemanager.util
 
 
 object EspressoIdlingResource {

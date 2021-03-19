@@ -10,6 +10,9 @@ import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests
 import com.openclassrooms.realestatemanager.ui.MainActivity
+import com.openclassrooms.realestatemanager.util.ConnectivityUtil
+import com.openclassrooms.realestatemanager.util.ConnectivityUtil.Companion.switchAllNetworks
+import com.openclassrooms.realestatemanager.util.ConnectivityUtil.Companion.waitInternetStateChange
 import com.openclassrooms.realestatemanager.util.Constants.TIMEOUT_INTERNET_CONNECTION
 import com.openclassrooms.realestatemanager.util.ConstantsTest
 import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
@@ -52,6 +55,8 @@ class ConnectivityManagerTest : BaseMainActivityTests() {
         injectTest(app)
 
         networkConnectionLiveData = NetworkConnectionLiveData(app.applicationContext)
+
+        ConnectivityUtil.context = app.applicationContext
 
         activityScenario = ActivityScenario.launch(MainActivity::class.java)
                 .onActivity { activity ->
@@ -169,7 +174,6 @@ class ConnectivityManagerTest : BaseMainActivityTests() {
                     }
                 }
     }
-
 
     override fun injectTest(application: TestBaseApplication) {
         (application.appComponent as TestAppComponent)

@@ -1,14 +1,11 @@
-package com.codingwithmitch.espressodaggerexamples.util
+package com.openclassrooms.realestatemanager.util
 
 import androidx.test.espresso.IdlingRegistry
-import com.openclassrooms.realestatemanager.util.EspressoIdlingResource
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import timber.log.Timber
 
 class EspressoIdlingResourceRule : TestWatcher() {
-
-    private val CLASS_NAME = "EspressoIdlingResourceRule"
 
     private val idlingResource = EspressoIdlingResource.countingIdlingResource
 

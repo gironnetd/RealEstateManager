@@ -8,7 +8,6 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
-import com.codingwithmitch.espressodaggerexamples.util.EspressoIdlingResourceRule
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.di.TestAppComponent
@@ -17,6 +16,7 @@ import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.browse.properties.PropertiesAdapter
 import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
+import com.openclassrooms.realestatemanager.util.EspressoIdlingResourceRule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,8 +25,7 @@ import org.junit.runner.RunWith
 @MediumTest
 class PropertiesFragmentIntegrationTest : BaseMainActivityTests() {
 
-    @get: Rule
-    val espressoIdlingResourceRule = EspressoIdlingResourceRule()
+    @get: Rule val espressoIdlingResourceRule = EspressoIdlingResourceRule()
 
     @Test
     fun is_property_list_empty() {

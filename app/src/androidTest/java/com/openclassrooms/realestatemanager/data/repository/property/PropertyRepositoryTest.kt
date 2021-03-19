@@ -21,13 +21,17 @@ import com.openclassrooms.realestatemanager.data.local.dao.PropertyDao
 import com.openclassrooms.realestatemanager.data.remote.PropertyRemoteDataSource
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests
+import com.openclassrooms.realestatemanager.util.ConnectivityUtil
+import com.openclassrooms.realestatemanager.util.ConnectivityUtil.Companion.switchAllNetworks
+import com.openclassrooms.realestatemanager.util.ConnectivityUtil.Companion.waitInternetStateChange
+import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
 import com.openclassrooms.realestatemanager.util.Utils.isInternetAvailable
 import io.reactivex.Completable
 import io.reactivex.Completable.concatArray
+import junit.framework.TestCase
 import org.junit.*
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
@@ -37,7 +41,7 @@ import javax.inject.Inject
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-class PropertyRepositoryTest : BaseMainActivityTests() {
+class PropertyRepositoryTest : TestCase() {
 
     @get:Rule val instantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -79,6 +83,8 @@ class PropertyRepositoryTest : BaseMainActivityTests() {
                 object : TypeToken<List<Property>>() {}.type
         )
         fakeProperties = fakeProperties.sortedBy { it.id }
+
+        ConnectivityUtil.context = app.applicationContext
 
         Completable.fromCallable {
             if(!isInternetAvailable()) {
@@ -181,7 +187,8 @@ class PropertyRepositoryTest : BaseMainActivityTests() {
         )
 
         propertyRepository.findAllProperties().doOnSubscribe {
-            concatArray(switchAllNetworks(false), waitInternetStateChange(false))
+            concatArray(switchAllNetworks(false),
+                    waitInternetStateChange(false))
                     .blockingAwait()
         }.map {
             Timber.tag(TAG).i("/** behavior_when_has_no_internet_and_local_storage_is_not_empty **/")
@@ -213,7 +220,8 @@ class PropertyRepositoryTest : BaseMainActivityTests() {
         )
 
         propertyRepository.findAllProperties().doOnSubscribe {
-            concatArray(switchAllNetworks(false), waitInternetStateChange(false))
+            concatArray(switchAllNetworks(false),
+                    waitInternetStateChange(false))
                     .blockingAwait()
         }.map { returnedProperties ->
             Timber.tag(TAG).i("/** data_result_when_has_no_internet_and_local_storage_is_not_empty **/")
@@ -325,6 +333,8 @@ class PropertyRepositoryTest : BaseMainActivityTests() {
     @Test
     fun data_result_when_has_no_internet_and_local_storage_is_empty() {
 
+        apiService.propertiesJsonFileName = EMPTY_LIST
+
         remoteDataSource = PropertyRemoteDataSource(apiService = apiService)
         localDataSource = PropertyLocalDataSource(propertyDao = propertyDao)
 
@@ -351,7 +361,7 @@ class PropertyRepositoryTest : BaseMainActivityTests() {
         }.blockingFirst()
     }
 
-    override fun injectTest(application: TestBaseApplication) {
+    private fun injectTest(application: TestBaseApplication) {
         (application.appComponent as TestAppComponent)
                 .inject(this)
     }

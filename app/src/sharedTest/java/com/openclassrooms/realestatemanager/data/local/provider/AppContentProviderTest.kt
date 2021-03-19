@@ -11,9 +11,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.openclassrooms.realestatemanager.TestBaseApplication
+import com.openclassrooms.realestatemanager.BaseApplication
 import com.openclassrooms.realestatemanager.data.local.provider.AppContentProvider.Companion.URI_PROPERTY
-import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_DESCRIPTION
 import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_ID
@@ -24,13 +23,12 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.*
-import javax.inject.Inject
 
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 class AppContentProviderTest : TestCase() {
 
-    @Inject lateinit var jsonUtil: JsonUtil
+    lateinit var jsonUtil: JsonUtil
     private lateinit var fakeProperties: List<Property>
 
     private lateinit var mContentResolver: ContentResolver
@@ -40,12 +38,12 @@ class AppContentProviderTest : TestCase() {
         val app = InstrumentationRegistry
                 .getInstrumentation()
                 .targetContext
-                .applicationContext as TestBaseApplication
-
-        injectTest(app)
+                .applicationContext as BaseApplication
 
         val context = ApplicationProvider.getApplicationContext<Context>()
         mContentResolver = context.contentResolver
+
+        jsonUtil = JsonUtil()
 
         val rawJson = jsonUtil.readJSONFromAsset(PROPERTIES_DATA_FILENAME)
         fakeProperties = Gson().fromJson(
@@ -129,10 +127,5 @@ class AppContentProviderTest : TestCase() {
         values.put(COLUMN_ID, id)
         values.put(COLUMN_DESCRIPTION, description)
         return values
-    }
-
-    private fun injectTest(application: TestBaseApplication) {
-        (application.appComponent as TestAppComponent)
-                .inject(this)
     }
 }

@@ -37,10 +37,8 @@ constructor(
     private val propertiesViewModel: PropertiesViewModel by viewModels {
         viewModelFactory
     }
-
     private val loadConversationsIntentPublisher =
             PublishSubject.create<PropertiesIntent.LoadPropertiesIntent>()
-    private val refreshIntentPublisher = PublishSubject.create<PropertiesIntent.RefreshPropertiesIntent>()
     private val compositeDisposable = CompositeDisposable()
 
     private lateinit var recyclerAdapter: PropertiesAdapter
@@ -55,23 +53,19 @@ constructor(
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        compositeDisposable.add(propertiesViewModel.states().subscribe(this::render))
-        propertiesViewModel.processIntents(intents())
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.dispose()
     }
 
     override fun onResume() {
         super.onResume()
-        loadConversationsIntentPublisher.onNext(PropertiesIntent.LoadPropertiesIntent)
+        compositeDisposable.add(propertiesViewModel.states().subscribe(this::render))
+        propertiesViewModel.processIntents(intents())
     }
 
     override fun intents(): Observable<PropertiesIntent> {
-        return Observable.merge(
-                initialIntent(),
-                loadPropertiesIntentPublisher(),
-                refreshPropertiesIntentPublisher()
+        return Observable.merge(initialIntent(), loadPropertiesIntentPublisher()
         )
     }
 
@@ -83,19 +77,16 @@ constructor(
         return loadConversationsIntentPublisher
     }
 
-    private fun refreshPropertiesIntentPublisher(): Observable<PropertiesIntent.RefreshPropertiesIntent> {
-        return refreshIntentPublisher
-    }
-
     override fun render(state: PropertiesUiModel) {
-        when (state) {
-            is InProgress -> {
+        when  {
+            state.inProgress -> {
                 setUpScreenForLoadingState()
             }
-            is Success -> {
+            state is Success -> {
                 setUpScreenForSuccess(state.properties)
             }
-            is Failed -> { }
+            state is Failed -> { }
+            state is Idle -> { }
             else -> { }
         }
     }

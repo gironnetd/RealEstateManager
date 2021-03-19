@@ -1,7 +1,5 @@
 package com.openclassrooms.realestatemanager.util
 
-import android.app.Application
-import android.content.res.AssetManager
 import java.io.IOException
 import java.io.InputStream
 import javax.inject.Inject
@@ -11,23 +9,16 @@ import javax.inject.Singleton
  * Class for parsing data from fake data assets
  */
 @Singleton
-class JsonUtil
+public class JsonUtil
 @Inject
-constructor(
-        private val application: Application,
-) {
-
-    private val CLASS_NAME = "JsonUtil"
-
+constructor() {
     fun readJSONFromAsset(fileName: String): String? {
-        var json: String? = null
-        json = try {
-            val inputStream: InputStream = (application.assets as AssetManager).open(fileName)
+        return try {
+            val inputStream: InputStream = javaClass.classLoader.getResourceAsStream(fileName)
             inputStream.bufferedReader().use { it.readText() }
         } catch (ex: IOException) {
             ex.printStackTrace()
             return null
         }
-        return json
     }
 }

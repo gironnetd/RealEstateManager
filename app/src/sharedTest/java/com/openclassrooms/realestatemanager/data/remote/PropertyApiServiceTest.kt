@@ -4,10 +4,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.openclassrooms.realestatemanager.TestBaseApplication
-import com.openclassrooms.realestatemanager.di.TestAppComponent
+import com.openclassrooms.realestatemanager.BaseApplication
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
@@ -15,26 +16,34 @@ import junit.framework.TestCase
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import javax.inject.Inject
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class PropertyApiServiceTest : TestCase() {
 
-    @Inject lateinit var jsonUtil: JsonUtil
+    lateinit var jsonUtil: JsonUtil
     private lateinit var fakeProperties: List<Property>
 
-    @Inject lateinit var apiService: PropertyApiService
+    lateinit var apiService: PropertyApiService
 
     @Before
     fun initApiService() {
-        var app : TestBaseApplication = InstrumentationRegistry
+        var app = InstrumentationRegistry
                 .getInstrumentation()
                 .targetContext
-                .applicationContext as TestBaseApplication
+                .applicationContext as BaseApplication
 
-        injectTest(app)
+        val settings = FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(false)
+                .build()
 
+        val firestore : FirebaseFirestore = FirebaseFirestore.getInstance()
+        firestore.useEmulator("10.0.2.2", 8080)
+        firestore.firestoreSettings = settings
+
+        apiService = DefaultPropertyApiService(firestore = firestore)
+
+        jsonUtil = JsonUtil()
         val rawJson = jsonUtil.readJSONFromAsset(PROPERTIES_DATA_FILENAME)
         fakeProperties = Gson().fromJson(
                 rawJson,
@@ -58,10 +67,5 @@ class PropertyApiServiceTest : TestCase() {
 
         val actualProperties = apiService.findAllProperties().blockingGet()
         assertThat(actualProperties).isEqualTo(fakeProperties)
-    }
-
-    private fun injectTest(application: TestBaseApplication) {
-        (application.appComponent as TestAppComponent)
-                .inject(this)
     }
 }

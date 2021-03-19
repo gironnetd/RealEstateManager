@@ -66,8 +66,8 @@ object TestAppModule {
     @JvmStatic
     @Singleton
     @Provides
-    fun provideJsonUtil(application: Application): JsonUtil {
-        return JsonUtil(application)
+    fun provideJsonUtil(): JsonUtil {
+        return JsonUtil()
     }
 
     @JvmStatic
