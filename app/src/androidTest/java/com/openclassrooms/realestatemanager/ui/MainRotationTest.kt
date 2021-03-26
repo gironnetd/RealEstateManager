@@ -62,22 +62,22 @@ class MainRotationTest : BaseMainActivityTests() {
                 }
 
         onView(withId(R.id.create_floating_action_button)).perform(click())
-        assertEquals(navController.currentDestination?.id, R.id.navigation_create)
+        onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
 
         val orientation = mainActivity.applicationContext.resources.configuration.orientation
         if(orientation == ORIENTATION_PORTRAIT) {
             onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity));
-            assertEquals(navController.currentDestination?.id, R.id.navigation_create)
+            onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
 
             onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity));
-            assertEquals(navController.currentDestination?.id, R.id.navigation_create)
+            onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
         }
         if(orientation == ORIENTATION_LANDSCAPE) {
             onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity));
-            assertEquals(navController.currentDestination?.id, R.id.navigation_create)
+            onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
 
             onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity));
-            assertEquals(navController.currentDestination?.id, R.id.navigation_create)
+            onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
         }
     }
 
@@ -90,15 +90,15 @@ class MainRotationTest : BaseMainActivityTests() {
                 }
 
         onView(withId(R.id.navigation_search)).perform(click())
-        assertEquals(navController.currentDestination?.id, R.id.navigation_search)
+        onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
 
         val orientation = mainActivity.applicationContext.resources.configuration.orientation
         if(orientation == ORIENTATION_PORTRAIT) {
             onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity));
-            assertEquals(navController.currentDestination?.id, R.id.navigation_search)
+            onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
 
             onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity));
-            assertEquals(navController.currentDestination?.id, R.id.navigation_search)
+            onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
         }
         if(orientation == ORIENTATION_LANDSCAPE) {
             onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity));
@@ -177,15 +177,15 @@ class MainRotationTest : BaseMainActivityTests() {
 
         onView(allOf(withId(R.id.navigation_simulation), isDisplayed()))
                 .perform(click())
-        assertEquals(navController.currentDestination?.id, R.id.navigation_simulation)
+        onView(withId(R.id.simulation_fragment)).check(matches(isDisplayed()))
 
         val orientation = mainActivity.applicationContext.resources.configuration.orientation
         if(orientation == ORIENTATION_PORTRAIT) {
             onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity));
-            assertEquals(navController.currentDestination?.id, R.id.navigation_simulation)
+            onView(withId(R.id.simulation_fragment)).check(matches(isDisplayed()))
 
             onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity));
-            assertEquals(navController.currentDestination?.id, R.id.navigation_simulation)
+            onView(withId(R.id.simulation_fragment)).check(matches(isDisplayed()))
         }
         if (orientation == ORIENTATION_LANDSCAPE) {
             onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity));

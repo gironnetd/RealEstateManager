@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.ui.property.browse.properties
+package com.openclassrooms.realestatemanager.ui.property.browse.shared
 
 import androidx.lifecycle.ViewModel
 import com.openclassrooms.realestatemanager.base.BaseIntent
@@ -65,15 +65,13 @@ class PropertiesViewModel @Inject internal constructor(
 
     companion object {
         private val reducer: BiFunction<PropertiesUiModel, PropertiesResult, PropertiesUiModel> =
-                BiFunction<PropertiesUiModel, PropertiesResult, PropertiesUiModel> { previousState, result ->
+                BiFunction<PropertiesUiModel, PropertiesResult, PropertiesUiModel> { _, result ->
                     when (result) {
                         is PropertiesResult.LoadPropertiesTask -> {
                             when (result.status) {
-                                TaskStatus.SUCCESS -> PropertiesUiModel.Success(
-                                        result.properties)
+                                TaskStatus.SUCCESS -> PropertiesUiModel.Success(result.properties)
                                 TaskStatus.FAILURE -> PropertiesUiModel.Failed
                                 TaskStatus.IN_FLIGHT -> PropertiesUiModel.InProgress
-                                else -> PropertiesUiModel.Idle()
                             }
                         }
                     }

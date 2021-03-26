@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.ui.property.browse.properties
+package com.openclassrooms.realestatemanager.ui.property.browse.shared
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

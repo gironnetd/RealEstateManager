@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager
 
 import androidx.multidex.MultiDexApplication
+import com.google.android.gms.maps.MapsInitializer
 import com.google.firebase.firestore.FirebaseFirestore
 import com.openclassrooms.realestatemanager.di.AppComponent
 import com.openclassrooms.realestatemanager.di.DaggerAppComponent
@@ -22,6 +23,9 @@ open class BaseApplication: MultiDexApplication() {
             Timber.plant(DebugTree())
             FirebaseFirestore.setLoggingEnabled(true)
         }
+
+        MapsInitializer.initialize(this)
+
 
         // Call to Utils function to populate the firestore database
 //        Firebase.firestore.collection(PROPERTIES_COLLECTION).get()

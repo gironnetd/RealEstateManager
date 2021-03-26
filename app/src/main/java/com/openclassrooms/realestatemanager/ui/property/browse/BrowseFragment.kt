@@ -9,6 +9,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentBrowseBinding
+import com.openclassrooms.realestatemanager.ui.navigation.KeepStateNavigator
 
 /**
  * Fragment to handle the display of real estate.
@@ -34,6 +35,11 @@ class BrowseFragment : Fragment() {
     private fun isTablet() {
         val navHostFragment = childFragmentManager.findFragmentById(R.id.real_estate_nav_host_fragment)
                 as NavHostFragment
+
+        val navigator = KeepStateNavigator(requireContext(), navHostFragment.childFragmentManager, R.id.real_estate_nav_host_fragment)
+        navHostFragment.navController.navigatorProvider.addNavigator(navigator)
+
+        navHostFragment.navController.setGraph(R.navigation.real_estate_navigation)
 
         val isTablet = context?.resources?.getBoolean(R.bool.isTablet) ?: false
         when {

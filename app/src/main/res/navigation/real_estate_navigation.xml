@@ -5,12 +5,12 @@
     android:id="@+id/real_estate_navigation"
     app:startDestination="@id/navigation_real_estate_master">
 
-    <fragment
+    <keep_state_fragment
         android:id="@+id/navigation_real_estate_master"
         android:name="com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment"
         android:label="fragment_real_estate_master"
         tools:layout="@layout/fragment_browse_master" />
-    <fragment
+    <keep_state_fragment
         android:id="@+id/navigation_real_estate_master_detail"
         android:name="com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterDetailFragment"
         android:label="fragment_real_estate_master_detail"

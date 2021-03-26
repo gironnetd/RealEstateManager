@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.ui.property.browse.properties
+package com.openclassrooms.realestatemanager.ui.property.browse.shared
 
 import com.openclassrooms.realestatemanager.base.BaseResult
 import com.openclassrooms.realestatemanager.base.model.TaskStatus

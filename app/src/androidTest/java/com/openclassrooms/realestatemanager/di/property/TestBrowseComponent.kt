@@ -13,7 +13,7 @@ import dagger.Subcomponent
 @Subcomponent(modules = [
     TestBrowseModule::class,
     BrowsePropertyFragmentsModule::class,
-    PropertyViewModelModule::class
+    TestPropertyViewModelModule::class
 ])
 interface TestBrowseComponent : BrowseComponent {
 

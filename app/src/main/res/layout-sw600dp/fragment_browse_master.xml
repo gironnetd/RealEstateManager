@@ -9,35 +9,35 @@
 
     <LinearLayout
         android:id="@+id/button_container"
-        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="16dp"
         android:orientation="horizontal"
+        style="?android:attr/buttonBarStyle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
             android:id="@+id/list_view_button"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="match_parent"
-            android:layout_height="36dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/selector_real_esate_button_state"
+            style="?android:attr/buttonBarButtonStyle"
             android:text="@string/button_list_title"
             android:textColor="@color/selector_text_color"
             android:textStyle="bold" />
 
         <Button
             android:id="@+id/map_view_button"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="match_parent"
-            android:layout_height="36dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/selector_real_esate_button_state"
+            style="?android:attr/buttonBarButtonStyle"
             android:text="@string/button_map_title"
             android:textColor="@color/selector_text_color"
             android:textStyle="bold" />
@@ -53,5 +53,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

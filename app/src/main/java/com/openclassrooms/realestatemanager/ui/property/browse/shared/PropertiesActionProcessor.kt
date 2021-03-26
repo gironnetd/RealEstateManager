@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.ui.property.browse.properties
+package com.openclassrooms.realestatemanager.ui.property.browse.shared
 
 import com.openclassrooms.realestatemanager.data.repository.property.PropertyRepository
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope

@@ -1,6 +1,8 @@
-package com.openclassrooms.realestatemanager.data.repository.property.properties
+package com.openclassrooms.realestatemanager.ui.property.browse.list
 
-import androidx.test.core.app.launchActivity
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.lifecycle.Lifecycle
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
@@ -8,24 +10,27 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
+import com.codingwithmitch.espressodaggerexamples.util.FakeGlideRequestManager
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests
-import com.openclassrooms.realestatemanager.ui.MainActivity
-import com.openclassrooms.realestatemanager.ui.property.browse.properties.PropertiesAdapter
 import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.EspressoIdlingResourceRule
+import com.openclassrooms.realestatemanager.viewmodels.FakePropertiesViewModelFactory
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-class PropertiesFragmentIntegrationTest : BaseMainActivityTests() {
+class PropertyListFragmentIntegrationTest : BaseMainActivityTests() {
 
     @get: Rule val espressoIdlingResourceRule = EspressoIdlingResourceRule()
+
+    lateinit var requestManager: FakeGlideRequestManager
+    lateinit var propertiesViewModelFactory: FakePropertiesViewModelFactory
 
     @Test
     fun is_property_list_empty() {
@@ -40,10 +45,18 @@ class PropertiesFragmentIntegrationTest : BaseMainActivityTests() {
                 application = app
         )
 
-        configureFakeRepository(apiService, app)
+        val propertiesRepository = configureFakeRepository(apiService, app)
         injectTest(app)
 
-        launchActivity<MainActivity>()
+        requestManager = FakeGlideRequestManager()
+        propertiesViewModelFactory = FakePropertiesViewModelFactory(propertiesRepository)
+
+        launchFragmentInContainer(null, R.style.AppTheme,
+                Lifecycle.State.RESUMED) {
+            PropertyListFragment(propertiesViewModelFactory, requestManager)
+        }.onFragment {
+            mainActivity = it.activity as FragmentActivity
+        }
 
         val recyclerView = Espresso.onView(withId(R.id.recycler_view))
 
@@ -67,27 +80,35 @@ class PropertiesFragmentIntegrationTest : BaseMainActivityTests() {
                 application = app
         )
 
-        configureFakeRepository(apiService, app)
+        val propertiesRepository = configureFakeRepository(apiService, app)
         injectTest(app)
 
-        launchActivity<MainActivity>()
+        requestManager = FakeGlideRequestManager()
+        propertiesViewModelFactory = FakePropertiesViewModelFactory(propertiesRepository)
+
+        launchFragmentInContainer(null, R.style.AppTheme,
+                Lifecycle.State.RESUMED) {
+            PropertyListFragment(propertiesViewModelFactory, requestManager)
+        }.onFragment {
+            mainActivity = it.activity as FragmentActivity
+        }
 
         val recyclerView = Espresso.onView(withId(R.id.recycler_view))
 
         recyclerView.check(matches(isDisplayed()))
 
         recyclerView.perform(
-                RecyclerViewActions.scrollToPosition<PropertiesAdapter.PropertyViewHolder>(2)
+                RecyclerViewActions.scrollToPosition<PropertyListAdapter.PropertyViewHolder>(2)
         )
         Espresso.onView(withText("2-8 Square de Castiglione")).check(matches(isDisplayed()))
 
         recyclerView.perform(
-                RecyclerViewActions.scrollToPosition<PropertiesAdapter.PropertyViewHolder>(8))
+                RecyclerViewActions.scrollToPosition<PropertyListAdapter.PropertyViewHolder>(8))
 
         Espresso.onView(withText("3 Place de la Loi")).check(matches(isDisplayed()))
 
         recyclerView.perform(
-                RecyclerViewActions.scrollToPosition<PropertiesAdapter.PropertyViewHolder>(0))
+                RecyclerViewActions.scrollToPosition<PropertyListAdapter.PropertyViewHolder>(0))
 
         Espresso.onView(withText("3 Square Fantin Latour")).check(matches(isDisplayed()))
 
@@ -109,10 +130,18 @@ class PropertiesFragmentIntegrationTest : BaseMainActivityTests() {
                 application = app
         )
 
-        configureFakeRepository(apiService, app)
+        val propertiesRepository = configureFakeRepository(apiService, app)
         injectTest(app)
 
-        val scenario = launchActivity<MainActivity>()
+        requestManager = FakeGlideRequestManager()
+        propertiesViewModelFactory = FakePropertiesViewModelFactory(propertiesRepository)
+
+        val scenario = launchFragmentInContainer(null, R.style.AppTheme,
+                Lifecycle.State.RESUMED) {
+            PropertyListFragment(propertiesViewModelFactory, requestManager)
+        }.onFragment {
+            mainActivity = it.activity as FragmentActivity
+        }
 
         val recyclerView = Espresso.onView(withId(R.id.recycler_view))
 
@@ -120,18 +149,17 @@ class PropertiesFragmentIntegrationTest : BaseMainActivityTests() {
                 .check(matches(isDisplayed()))
 
         recyclerView.perform(
-                RecyclerViewActions.scrollToPosition<PropertiesAdapter.PropertyViewHolder>(8)
+                RecyclerViewActions.scrollToPosition<PropertyListAdapter.PropertyViewHolder>(8)
         )
         Espresso.onView(withText("2 Avenue Jeanne d'Arc")).check(matches(isDisplayed()))
 
         scenario.recreate()
 
         recyclerView.perform(
-                RecyclerViewActions.scrollToPosition<PropertiesAdapter.PropertyViewHolder>(8)
+                RecyclerViewActions.scrollToPosition<PropertyListAdapter.PropertyViewHolder>(8)
         )
         Espresso.onView(withText("2 Avenue Jeanne d'Arc")).check(matches(isDisplayed()))
     }
-
 
     override fun injectTest(application: TestBaseApplication) {
         (application.appComponent as TestAppComponent)

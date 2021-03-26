@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.ui.property.browse.properties
+package com.openclassrooms.realestatemanager.ui.property.browse.list
 
 import android.view.LayoutInflater
 import android.view.View
@@ -15,9 +15,9 @@ import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.models.storageUrl
 import com.openclassrooms.realestatemanager.util.GlideManager
 
-class PropertiesAdapter(
+class PropertyListAdapter(
         private val requestManager: GlideManager,
-) : RecyclerView.Adapter<PropertiesAdapter.PropertyViewHolder>() {
+) : RecyclerView.Adapter<PropertyListAdapter.PropertyViewHolder>() {
 
     val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Property>() {
 

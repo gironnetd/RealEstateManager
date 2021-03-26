@@ -91,10 +91,10 @@
       "postalCode": "78150",
       "state": "Yvelines",
       "city": "Le Chesnay-Rocquencourt",
-      "longitude": 2.1300210866089233,
+      "longitude": 2.124670548907261,
       "country": "France",
-      "street": "29 Rue des Anciens Combattants",
-      "latitude": 48.815876267117254
+      "street": "29 Rue des cousins",
+      "latitude": 48.83052669143428
     },
     "mainPicture": {
       "id": "Erki1UuwOThRzE88VuLG",
@@ -202,10 +202,10 @@
       "postalCode": "78150",
       "state": "Yvelines",
       "city": "Le Chesnay-Rocquencourt",
-      "longitude": 2.132739760028256,
+      "longitude":  2.124512908574161,
       "country": "France",
       "street": "21 Rue Kléber",
-      "latitude": 48.820096411353546
+      "latitude": 48.82888799341022
     },
     "mainPicture": {
       "id": "lDKc1F0GZfHycUf43HC9",
@@ -239,10 +239,10 @@
       "postalCode": "78000",
       "state": "Yvelines",
       "city": "Versailles",
-      "longitude": 2.128016602048885,
+      "longitude": 2.124734251155427,
       "country": "France",
       "street": "3 Place de la Loi",
-      "latitude": 48.81528125230743
+      "latitude": 48.82812820341748
     },
     "mainPicture": {
       "id": "ydjypZLSjCbFuEOJlNfM",
@@ -258,7 +258,7 @@
     "updateTime": "2021-01-18T16:21:00.128326Z"
   },
   {
-    "agentId": "NITe6lIGdZYjiiAiIX3y",
+    "agentId": "NITe6lIGdZYjiiAiIX3t",
     "rooms": 4,
     "soldDate": "1970-01-01T00:00:18.307Z",
     "bathRooms": 3,
@@ -276,13 +276,13 @@
       "postalCode": "78150",
       "state": "Yvelines",
       "city": "Le Chesnay-Rocquencourt",
-      "longitude": 2.1300210866089233,
+      "longitude": 2.1277236469189873,
       "country": "France",
       "street": "29 Rue des Anciens Combattants",
-      "latitude": 48.815876267117254
+      "latitude": 48.82768584245489
     },
     "mainPicture": {
-      "id": "ydjypZLSjCbFuEOJlNfM ",
+      "id": "ydjypZLSjCbFuEOJlNfM",
       "url": "",
       "thumbnailUrl": "",
       "description": "",
@@ -313,10 +313,10 @@
       "postalCode": "78150",
       "state": "Yvelines",
       "city": "Le Chesnay-Rocquencourt",
-      "longitude": 2.1331529841600476,
+      "longitude": 2.1267068332246315,
       "country": "France",
       "street": "2 Avenue Jeanne d'Arc",
-      "latitude": 48.817718597959924
+      "latitude": 48.828327690540725
     },
     "mainPicture": {
       "id": "OWCrS4aotKLE0Oo29BBC",
@@ -350,10 +350,10 @@
       "postalCode": "78150",
       "state": "Yvelines",
       "city": "Le Chesnay-Rocquencourt",
-      "longitude": 2.1339121381354245,
+      "longitude": 2.1229286595212966,
       "country": "France",
       "street": "19 Rue Saint-Joseph",
-      "latitude": 48.816471266499676
+      "latitude": 48.82959261993131
     },
     "mainPicture": {
       "id": "fcijcR9oZQXU5WcJFYXh",

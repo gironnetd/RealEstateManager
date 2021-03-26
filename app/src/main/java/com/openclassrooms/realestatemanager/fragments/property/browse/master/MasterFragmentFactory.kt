@@ -4,8 +4,8 @@ import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.ui.property.browse.detail.PropertyDetailFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.list.PropertyListFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.properties.PropertiesFragment
 import com.openclassrooms.realestatemanager.util.GlideManager
 import javax.inject.Inject
 
@@ -19,8 +19,8 @@ constructor(
 
     override fun instantiate(classLoader: ClassLoader, className: String) =
             when (className) {
-                PropertiesFragment::class.java.name -> {
-                    val fragment = PropertiesFragment(viewModelFactory = viewModelFactory,
+                PropertyListFragment::class.java.name -> {
+                    val fragment = PropertyListFragment(viewModelFactory = viewModelFactory,
                             requestManager = requestManager
                     )
                     fragment
@@ -32,7 +32,7 @@ constructor(
                 }
 
                 PropertyMapFragment::class.java.name -> {
-                    val fragment = PropertyMapFragment()
+                    val fragment = PropertyMapFragment(viewModelFactory = viewModelFactory)
                     fragment
                 }
                 else -> super.instantiate(classLoader, className)

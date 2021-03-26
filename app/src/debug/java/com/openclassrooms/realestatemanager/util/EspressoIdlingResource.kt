@@ -5,19 +5,16 @@ import timber.log.Timber
 
 object EspressoIdlingResource {
 
-    private val CLASS_NAME = "EspressoIdlingResource"
-
     private const val RESOURCE = "GLOBAL"
 
-    @JvmField
-    val countingIdlingResource = CountingIdlingResource(RESOURCE)
+    @JvmField val countingIdlingResource = CountingIdlingResource(RESOURCE)
 
     fun increment() {
         Timber.d("INCREMENTING.")
         countingIdlingResource.increment()
     }
 
-    private fun decrement() {
+    fun decrement() {
         if (!countingIdlingResource.isIdleNow) {
             Timber.d("DECREMENTING.")
             countingIdlingResource.decrement()

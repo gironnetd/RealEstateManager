@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentBrowseMasterDetailBinding
+import com.openclassrooms.realestatemanager.ui.navigation.KeepStateNavigator
 
 /**
  * Fragment to handle the display of real estate for tablet.
@@ -24,6 +25,10 @@ class BrowseMasterDetailFragment : Fragment() {
         _binding = FragmentBrowseMasterDetailBinding.inflate(inflater, container, false)
 
         val master = childFragmentManager.findFragmentById(R.id.master_nav_fragment) as NavHostFragment?
+
+        val masterNavigator = KeepStateNavigator(requireContext(), master!!.childFragmentManager, R.id.master_nav_fragment)
+        master.navController.navigatorProvider.addNavigator(masterNavigator)
+
         master?.let {
             val navController = it.navController
             val navInflater = navController.navInflater
@@ -33,6 +38,10 @@ class BrowseMasterDetailFragment : Fragment() {
         }
 
         val detail = childFragmentManager.findFragmentById(R.id.detail_nav_fragment) as NavHostFragment?
+
+        val detailNavigator = KeepStateNavigator(requireContext(), detail!!.childFragmentManager, R.id.detail_nav_fragment)
+        detail.navController.navigatorProvider.addNavigator(detailNavigator)
+
         detail?.let {
             val navController = it.navController
             val navInflater = navController.navInflater

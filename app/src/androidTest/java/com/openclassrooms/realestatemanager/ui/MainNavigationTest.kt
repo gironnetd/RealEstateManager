@@ -6,6 +6,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.NavigationViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -74,7 +75,7 @@ class MainNavigationTest : BaseMainActivityTests() {
                 }
         onView(allOf(withId(R.id.navigation_simulation), isDisplayed()))
                 .perform(click())
-        assertEquals(navController.currentDestination?.id, R.id.navigation_simulation)
+        onView(withId(R.id.simulation_fragment)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -84,7 +85,7 @@ class MainNavigationTest : BaseMainActivityTests() {
                     navController = Navigation.findNavController(mainActivity, R.id.nav_host_fragment)
                 }
         onView(withId(R.id.create_floating_action_button)).perform(click())
-        assertEquals(navController.currentDestination?.id, R.id.navigation_create)
+        onView((withId(R.id.create_fragment))).check(matches(isDisplayed()))
     }
 
     @Test
@@ -126,7 +127,7 @@ class MainNavigationTest : BaseMainActivityTests() {
         )).perform(click())
         onView(withId(R.id.navigation_view))
                 .perform(NavigationViewActions.navigateTo(R.id.navigation_create))
-        assertEquals(navController.currentDestination?.id, R.id.navigation_create)
+        onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -141,7 +142,7 @@ class MainNavigationTest : BaseMainActivityTests() {
         )).perform(click())
         onView(withId(R.id.navigation_view))
                 .perform(NavigationViewActions.navigateTo(R.id.navigation_simulation))
-        assertEquals(navController.currentDestination?.id, R.id.navigation_simulation)
+        onView(withId(R.id.simulation_fragment)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -151,7 +152,8 @@ class MainNavigationTest : BaseMainActivityTests() {
                     navController = Navigation.findNavController(mainActivity, R.id.nav_host_fragment)
                 }
         onView(withId(R.id.navigation_search)).perform(click())
-        assertEquals(navController.currentDestination?.id, R.id.navigation_search)
+        onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
+
     }
 
     override fun injectTest(application: TestBaseApplication) {
