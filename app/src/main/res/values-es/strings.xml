@@ -12,4 +12,5 @@
     <string name="search">Buscar</string>
     <string name="button_list_title">lista</string>
     <string name="button_map_title">Mapa</string>
+    <string name="no_property_to_display">No hay propiedad para mostrar</string>
 </resources>

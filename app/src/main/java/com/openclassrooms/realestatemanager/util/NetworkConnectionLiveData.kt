@@ -30,6 +30,14 @@ constructor(val context: Context) : MutableLiveData<Boolean>() {
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
 
+    init {
+        if(value == null) {
+            compositeDisposable.add(Completable.fromCallable {
+                postValue(isInternetAvailable())
+            }.subscribeOn(Schedulers.io()).subscribe())
+        }
+    }
+
     override fun onActive() {
         super.onActive()
         when {
