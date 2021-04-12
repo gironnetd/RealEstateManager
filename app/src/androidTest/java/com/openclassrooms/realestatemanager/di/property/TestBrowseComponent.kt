@@ -4,8 +4,8 @@ import com.openclassrooms.realestatemanager.api.property.FakePropertyApiService
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseComponent
 import com.openclassrooms.realestatemanager.di.property.browse.BrowsePropertyFragmentsModule
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
+import com.openclassrooms.realestatemanager.fragments.property.browse.detail.MasterDetailNavHostFragment
 import com.openclassrooms.realestatemanager.fragments.property.browse.master.MasterNavHostFragment
-import com.openclassrooms.realestatemanager.fragments.property.browse.masterdetail.MasterDetailNavHostFragment
 import com.openclassrooms.realestatemanager.repository.property.FakePropertyRepository
 import dagger.Subcomponent
 

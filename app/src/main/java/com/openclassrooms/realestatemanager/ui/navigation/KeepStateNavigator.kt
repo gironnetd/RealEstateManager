@@ -10,9 +10,9 @@ import androidx.navigation.fragment.FragmentNavigator
 
 @Navigator.Name("keep_state_fragment") // `keep_state_fragment` is used in navigation xml
 class KeepStateNavigator(
-    private val context: Context,
-    private val manager: FragmentManager, // Should pass childFragmentManager.
-    private val containerId: Int
+        private val context: Context,
+        private val manager: FragmentManager, // Should pass childFragmentManager.
+        private val containerId: Int,
 ) : FragmentNavigator(context, manager, containerId) {
 
     override fun navigate(
@@ -36,8 +36,10 @@ class KeepStateNavigator(
         if (fragment == null) {
             val className = destination.className
             fragment = manager.fragmentFactory.instantiate(context.classLoader, className)
+            fragment.arguments = args
             transaction.add(containerId, fragment, tag)
         } else {
+            fragment.arguments = args
             transaction.attach(fragment)
         }
 

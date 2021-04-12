@@ -7,9 +7,9 @@
 
     <keep_state_fragment
         android:id="@+id/navigation_real_estate"
-        android:name="com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment"
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterDetailFragment"
         android:label="@string/app_name"
-        tools:layout="@layout/fragment_browse_master" />
+        tools:layout="@layout/fragment_browse_master_detail" />
     <keep_state_fragment
         android:id="@+id/navigation_simulation"
         android:name="com.openclassrooms.realestatemanager.ui.simulation.SimulationFragment"

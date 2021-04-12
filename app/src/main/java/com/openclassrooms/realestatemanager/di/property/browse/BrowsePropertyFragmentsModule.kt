@@ -2,8 +2,8 @@ package com.openclassrooms.realestatemanager.di.property.browse
 
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModelProvider
+import com.openclassrooms.realestatemanager.fragments.property.browse.detail.MasterDetailFragmentFactory
 import com.openclassrooms.realestatemanager.fragments.property.browse.master.MasterFragmentFactory
-import com.openclassrooms.realestatemanager.fragments.property.browse.masterdetail.MasterDetailFragmentFactory
 import com.openclassrooms.realestatemanager.util.GlideManager
 import dagger.Module
 import dagger.Provides

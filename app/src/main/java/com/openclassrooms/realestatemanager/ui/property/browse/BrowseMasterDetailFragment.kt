@@ -18,13 +18,16 @@ class BrowseMasterDetailFragment : Fragment() {
     private var _binding: FragmentBrowseMasterDetailBinding? = null
     private val binding get() = _binding!!
 
+    lateinit var master: NavHostFragment
+    lateinit var detail: NavHostFragment
+
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentBrowseMasterDetailBinding.inflate(inflater, container, false)
 
-        val master = childFragmentManager.findFragmentById(R.id.master_nav_fragment) as NavHostFragment?
+        master = childFragmentManager.findFragmentById(R.id.master_nav_fragment) as NavHostFragment
 
         val masterNavigator = KeepStateNavigator(requireContext(), master!!.childFragmentManager, R.id.master_nav_fragment)
         master.navController.navigatorProvider.addNavigator(masterNavigator)
@@ -37,7 +40,7 @@ class BrowseMasterDetailFragment : Fragment() {
             it.navController.graph = graph
         }
 
-        val detail = childFragmentManager.findFragmentById(R.id.detail_nav_fragment) as NavHostFragment?
+        detail = childFragmentManager.findFragmentById(R.id.detail_nav_fragment) as NavHostFragment
 
         val detailNavigator = KeepStateNavigator(requireContext(), detail!!.childFragmentManager, R.id.detail_nav_fragment)
         detail.navController.navigatorProvider.addNavigator(detailNavigator)

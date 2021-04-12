@@ -32,7 +32,7 @@ constructor(
 ) : BasePropertyFragment(R.layout.fragment_list, viewModelFactory), BaseView<PropertiesIntent, PropertiesUiModel> {
 
     private var _binding: FragmentListBinding? = null
-    private val binding get() = _binding!!
+    val binding get() = _binding!!
 
     private val loadConversationsIntentPublisher =
             PublishSubject.create<PropertiesIntent.LoadPropertiesIntent>()

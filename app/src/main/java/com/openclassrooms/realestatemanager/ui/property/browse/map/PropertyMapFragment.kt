@@ -13,7 +13,6 @@ import com.openclassrooms.realestatemanager.databinding.FragmentMapBinding
 import com.openclassrooms.realestatemanager.ui.property.BasePropertyFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesIntent
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesUiModel
-import com.openclassrooms.realestatemanager.util.EspressoIdlingResource
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
@@ -86,7 +85,6 @@ constructor(
 
     private fun initializeMap() {
         activity?.runOnUiThread {
-            EspressoIdlingResource.increment()
             (this.childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment)
                     .getMapAsync(this)
 
@@ -143,7 +141,6 @@ constructor(
 
     override fun onMapLoaded() {
         mMap.setContentDescription(GOOGLE_MAP_FINISH_LOADING)
-        EspressoIdlingResource.decrement()
     }
 
     override fun onDestroy() {
@@ -152,8 +149,16 @@ constructor(
     }
 
     companion object {
-        private const val DEFAULT_ZOOM: Float = 17f
+        var DEFAULT_ZOOM: Float = 17f
+        var INITIAL_ZOOM_LEVEL = 10f
+
+        var paris = LatLng(48.862725, 2.287592)
+        var defaultLocation = paris
+
+        // constant variable to perform ui automator testing
         const val GOOGLE_MAP_NOT_FINISH_LOADING = "google_maps_not_finish_loading"
         const val GOOGLE_MAP_FINISH_LOADING = "google_maps_finish_loading"
+        const val INFO_WINDOW_SHOW = "info_window_shown"
+        const val NO_INFO_WINDOW_SHOW = "no_info_window_shown"
     }
 }

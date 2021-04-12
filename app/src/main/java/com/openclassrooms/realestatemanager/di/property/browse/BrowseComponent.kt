@@ -1,8 +1,8 @@
 package com.openclassrooms.realestatemanager.di.property.browse
 
 import com.openclassrooms.realestatemanager.di.property.PropertyViewModelModule
+import com.openclassrooms.realestatemanager.fragments.property.browse.detail.MasterDetailNavHostFragment
 import com.openclassrooms.realestatemanager.fragments.property.browse.master.MasterNavHostFragment
-import com.openclassrooms.realestatemanager.fragments.property.browse.masterdetail.MasterDetailNavHostFragment
 import dagger.Subcomponent
 
 @BrowseScope

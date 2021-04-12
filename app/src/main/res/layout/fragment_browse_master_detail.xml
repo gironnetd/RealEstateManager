@@ -27,7 +27,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/detail_nav_fragment"
-            android:name="com.openclassrooms.realestatemanager.fragments.property.browse.masterdetail.MasterDetailNavHostFragment"
+            android:name="com.openclassrooms.realestatemanager.fragments.property.browse.detail.MasterDetailNavHostFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:defaultNavHost="false"

@@ -29,7 +29,7 @@
             android:background="@drawable/selector_real_esate_button_state"
             android:text="@string/button_list_title"
             android:textColor="@color/selector_text_color"
-            android:textStyle="bold" />
+            android:textStyle="normal" />
 
         <Button
             android:id="@+id/map_view_button"
@@ -40,8 +40,7 @@
             android:background="@drawable/selector_real_esate_button_state"
             android:text="@string/button_map_title"
             android:textColor="@color/selector_text_color"
-            android:textStyle="bold" />
-
+            android:textStyle="normal" />
     </LinearLayout>
 
     <androidx.fragment.app.FragmentContainerView

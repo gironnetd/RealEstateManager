@@ -3,7 +3,9 @@ package com.openclassrooms.realestatemanager.ui
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -12,12 +14,17 @@ import androidx.navigation.ui.setupWithNavController
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.ui.navigation.KeepStateNavigator
+import com.openclassrooms.realestatemanager.ui.property.create.PropertyCreateFragment
+import com.openclassrooms.realestatemanager.ui.property.search.PropertySearchFragment
+import com.openclassrooms.realestatemanager.ui.simulation.SimulationFragment
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
-    private lateinit var navController: NavController
-    private lateinit var appBarConfiguration: AppBarConfiguration
+    lateinit var binding: ActivityMainBinding
+    lateinit var navController: NavController
+    lateinit var appBarConfiguration: AppBarConfiguration
+
+    lateinit var navHostFragment: NavHostFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolBar)
 
-        val navHostFragment = supportFragmentManager
+        navHostFragment = supportFragmentManager
                 .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 
         navController = navHostFragment.navController
@@ -47,6 +54,32 @@ class MainActivity : AppCompatActivity() {
         initCreateFloatingActionButton()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        val primaryNavigationFragment =
+                (navHostFragment.childFragmentManager.primaryNavigationFragment as Fragment)::class.java.name
+
+        outState.putString(PRIMARY_NAVIGATION_FRAGMENT, primaryNavigationFragment)
+            for (fragment in supportFragmentManager.fragments) {
+                    supportFragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss()
+            }
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+        when(savedInstanceState?.getString(PRIMARY_NAVIGATION_FRAGMENT)) {
+            SimulationFragment::class.java.name -> {
+                navController.navigate(R.id.navigation_simulation)
+            }
+            PropertyCreateFragment::class.java.name -> {
+                navController.navigate(R.id.navigation_create)
+            }
+            PropertySearchFragment::class.java.name -> {
+                navController.navigate(R.id.navigation_search)
+            }
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return item.onNavDestinationSelected(navController) ||
                 super.onOptionsItemSelected(item)
@@ -61,5 +94,16 @@ class MainActivity : AppCompatActivity() {
         binding.createFloatingActionButton.setOnClickListener {
             navController.navigate(R.id.navigation_create)
         }
+    }
+
+    @VisibleForTesting
+    fun setFragment(fragment: Fragment) {
+        val transaction = navHostFragment.childFragmentManager.beginTransaction()
+        transaction.replace(R.id.nav_host_fragment, fragment)
+        transaction.commit()
+    }
+
+    companion object {
+        const val PRIMARY_NAVIGATION_FRAGMENT = "primary_navigation_fragment"
     }
 }

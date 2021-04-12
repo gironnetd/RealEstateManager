@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'com.google.gms.google-services'
     id 'com.google.secrets_gradle_plugin' version '0.5'
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 android {
@@ -75,6 +76,30 @@ android {
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
             jvmTarget = "1.8"
+        }
+    }
+
+    // Instead, use the bundle block to control which types of configuration APKs
+    // you want your app bundle to support.
+    bundle {
+        language {
+            // This property is set to true by default.
+            // You can specify `false` to turn off
+            // generating configuration APKs for language resources.
+            // These resources are instead packaged with each base and
+            // feature APK.
+            // Continue reading below to learn about situations when an app
+            // might change setting to `false`, otherwise consider leaving
+            // the default on for more optimized downloads.
+            enableSplit = true
+        }
+        density {
+            // This property is set to true by default.
+            enableSplit = true
+        }
+        abi {
+            // This property is set to true by default.
+            enableSplit = true
         }
     }
 }
@@ -155,7 +180,7 @@ dependencies {
     testImplementation "com.google.truth:truth:$truth_version"
 
     // jetpack navigation components
-    def nav_version = "2.3.4"
+    def nav_version = "2.3.5"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
@@ -219,5 +244,9 @@ dependencies {
     // Google Maps dependencies
     def maps_version = "17.0.0"
     implementation "com.google.android.gms:play-services-maps:$maps_version"
+
+    // Utilities for Maps SDK for Android (requires Google Play Services)
+    def maps_utils_version = "2.2.2"
+    implementation "com.google.maps.android:android-maps-utils:$maps_utils_version"
 }
 

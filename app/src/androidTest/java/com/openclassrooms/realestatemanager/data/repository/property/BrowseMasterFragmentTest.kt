@@ -1,7 +1,6 @@
 package com.openclassrooms.realestatemanager.data.repository.property
 
-import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.lifecycle.Lifecycle
+import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -13,6 +12,7 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests
+import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment
 import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
 import org.junit.Before
@@ -41,8 +41,9 @@ class BrowseMasterFragmentTest : BaseMainActivityTests() {
         configureFakeRepository(apiService, app)
         injectTest(app)
 
-        launchFragmentInContainer<BrowseMasterFragment>(null,
-                R.style.AppTheme, Lifecycle.State.RESUMED)
+        launch(MainActivity::class.java).onActivity {
+            it.setFragment(BrowseMasterFragment())
+        }
     }
 
     @Test

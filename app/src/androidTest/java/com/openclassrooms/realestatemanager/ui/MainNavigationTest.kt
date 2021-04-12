@@ -95,10 +95,9 @@ class MainNavigationTest : BaseMainActivityTests() {
                     navController = Navigation.findNavController(mainActivity, R.id.nav_host_fragment)
                 }
 
-        onView(withContentDescription(
-                activityScenario
-                        .getToolbarNavigationContentDescription()
-        )).perform(click())
+        onView(allOf(withContentDescription(
+                activityScenario.getToolbarNavigationContentDescription()), isDisplayed()))
+                .perform(click())
 
         if(navController.currentDestination?.id!! == R.id.navigation_real_estate ||
                 navController.currentDestination?.id!! == R.id.navigation_list) {
@@ -121,10 +120,9 @@ class MainNavigationTest : BaseMainActivityTests() {
                 .onActivity { mainActivity ->
                     navController = Navigation.findNavController(mainActivity, R.id.nav_host_fragment)
                 }
-        onView(withContentDescription(
-                activityScenario
-                        .getToolbarNavigationContentDescription()
-        )).perform(click())
+        onView(allOf(withContentDescription(
+                activityScenario.getToolbarNavigationContentDescription()), isDisplayed()))
+                .perform(click())
         onView(withId(R.id.navigation_view))
                 .perform(NavigationViewActions.navigateTo(R.id.navigation_create))
         onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
@@ -136,10 +134,9 @@ class MainNavigationTest : BaseMainActivityTests() {
                 .onActivity { mainActivity ->
                     navController = Navigation.findNavController(mainActivity, R.id.nav_host_fragment)
                 }
-        onView(withContentDescription(
-                activityScenario
-                        .getToolbarNavigationContentDescription()
-        )).perform(click())
+        onView(allOf(withContentDescription(
+                activityScenario.getToolbarNavigationContentDescription()), isDisplayed()))
+                .perform(click())
         onView(withId(R.id.navigation_view))
                 .perform(NavigationViewActions.navigateTo(R.id.navigation_simulation))
         onView(withId(R.id.simulation_fragment)).check(matches(isDisplayed()))

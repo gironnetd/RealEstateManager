@@ -3,8 +3,7 @@ package com.openclassrooms.realestatemanager.data.repository.property
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.lifecycle.Lifecycle
+import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.PositionAssertions.isCompletelyLeftOf
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -18,7 +17,7 @@ import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests
 import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests.ScreenSize.*
-import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
+import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
 import org.hamcrest.CoreMatchers.anyOf
 import org.junit.Before
@@ -53,11 +52,9 @@ class BrowseFragmentTest : BaseMainActivityTests() {
         configureFakeRepository(apiService, app)
         injectTest(app)
 
-        launchFragmentInContainer<BrowseFragment>(null, R.style.AppTheme,
-                Lifecycle.State.RESUMED)
-                .onFragment {
-                    mainActivity = it.activity as FragmentActivity
-                }
+        launch(MainActivity::class.java).onActivity {
+            mainActivity = it as FragmentActivity
+        }
 
         screenSize = screenSize()
         orientation = InstrumentationRegistry.getInstrumentation().targetContext
@@ -65,34 +62,25 @@ class BrowseFragmentTest : BaseMainActivityTests() {
     }
 
     @Test
-    fun when_smartphone_and_portrait_then_one_fragment_is_displayed() {
+    fun makeSureThatViewCorrespondWithSizeAndOrientation() {
         if(screenSize == SMARTPHONE && orientation == ORIENTATION_PORTRAIT) {
             onView(anyOf(withId(R.id.list_fragment),
                     withId(R.id.map_fragment)))
                     .check(matches(isDisplayed()))
         }
-    }
 
-    @Test
-    fun when_smartphone_and_landscape_then_one_fragment_is_displayed() {
         if(screenSize == SMARTPHONE && orientation == ORIENTATION_LANDSCAPE) {
             onView(anyOf(withId(R.id.list_fragment),
                     withId(R.id.map_fragment)))
                     .check(matches(isDisplayed()))
         }
-    }
 
-    @Test
-    fun when_phablet_and_portrait_then_one_fragment_is_displayed() {
         if(screenSize == PHABLET && orientation == ORIENTATION_PORTRAIT) {
             onView(anyOf(withId(R.id.list_fragment),
                     withId(R.id.map_fragment)))
                     .check(matches(isDisplayed()))
         }
-    }
 
-    @Test
-    fun when_phablet_and_landscape_then_two_fragment_is_displayed() {
         if(screenSize == PHABLET && orientation == ORIENTATION_LANDSCAPE) {
             onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
 
@@ -104,11 +92,8 @@ class BrowseFragmentTest : BaseMainActivityTests() {
             onView(anyOf(withId(R.id.map_fragment),
                     withId(R.id.detail_fragment)))
                     .check(matches(isDisplayed()))
-            }
-    }
+        }
 
-    @Test
-    fun when_tablet_and_portrait_then_two_fragment_is_displayed() {
         if(screenSize == TABLET && orientation == ORIENTATION_PORTRAIT) {
             onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
 
@@ -121,10 +106,7 @@ class BrowseFragmentTest : BaseMainActivityTests() {
                     withId(R.id.detail_fragment)))
                     .check(matches(isDisplayed()))
         }
-    }
 
-    @Test
-    fun when_tablet_and_landscape_then_two_fragment_is_displayed() {
         if(screenSize == TABLET && orientation == ORIENTATION_LANDSCAPE) {
             onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
 

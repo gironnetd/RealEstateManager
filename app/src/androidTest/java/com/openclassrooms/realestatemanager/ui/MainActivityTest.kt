@@ -15,10 +15,9 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
-import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.Matchers.`is`
-import org.junit.After
+import org.hamcrest.core.AllOf.allOf
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,14 +29,14 @@ class MainActivityTest : BaseMainActivityTests() {
 
     private lateinit var activityScenario: ActivityScenario<MainActivity>
 
+    val app = InstrumentationRegistry
+            .getInstrumentation()
+            .targetContext
+            .applicationContext as TestBaseApplication
+
     @Before
     public override fun setUp() {
         super.setUp()
-
-        val app = InstrumentationRegistry
-                .getInstrumentation()
-                .targetContext
-                .applicationContext as TestBaseApplication
 
         val apiService = configureFakeApiService(
                 propertiesDataSource = EMPTY_LIST, // empty list of data
@@ -51,12 +50,9 @@ class MainActivityTest : BaseMainActivityTests() {
         activityScenario = ActivityScenario.launch(MainActivity::class.java)
     }
 
-    @After
-    public override fun tearDown() {}
-
     @Test
     fun is_title_toolbar_displayed(){
-        onView(withText(R.string.app_name)).check(matches(isDisplayed()))
+        onView(allOf(withText(R.string.app_name), isDisplayed())).check(matches(isDisplayed()))
     }
 
     @Test
@@ -66,27 +62,24 @@ class MainActivityTest : BaseMainActivityTests() {
 
     @Test
     fun is_home_icon_displayed() {
-        onView(withContentDescription(
-                activityScenario
-                        .getToolbarNavigationContentDescription()
-        )).check(matches(isDisplayed()))
+        onView(allOf(withContentDescription(
+                activityScenario.getToolbarNavigationContentDescription()), isDisplayed()))
+                .check(matches(isDisplayed()))
     }
 
     @Test
     fun when_click_on_home_icon_then_open_navigation_view(){
-        onView(withContentDescription(
-                activityScenario
-                        .getToolbarNavigationContentDescription()
-        )).perform(click())
+        onView(allOf(withContentDescription(
+                activityScenario.getToolbarNavigationContentDescription()), isDisplayed()))
+                .perform(click())
         onView(withId(R.id.navigation_view)).check(matches(isDisplayed()))
     }
 
     @Test
     fun when_navigation_view_is_opened_then_real_estate_line_is_displayed() {
-        onView(withContentDescription(
-                activityScenario
-                        .getToolbarNavigationContentDescription()
-        )).perform(click())
+        onView(allOf(withContentDescription(
+                activityScenario.getToolbarNavigationContentDescription()), isDisplayed()))
+                .perform(click())
         onView(allOf(isAssignableFrom(NavigationMenuItemView::class.java),
                 withId(R.id.navigation_real_estate)))
                 .check(matches(isDisplayed()))
@@ -94,19 +87,17 @@ class MainActivityTest : BaseMainActivityTests() {
 
     @Test
     fun when_navigation_view_is_opened_then_add_real_estate_line_is_displayed() {
-        onView(withContentDescription(
-                activityScenario
-                        .getToolbarNavigationContentDescription()
-        )).perform(click())
+        onView(allOf(withContentDescription(
+                activityScenario.getToolbarNavigationContentDescription()), isDisplayed()))
+                .perform(click())
         onView(withId(R.id.navigation_create)).check(matches(isDisplayed()))
     }
 
     @Test
     fun when_navigation_view_is_opened_then_simulation_line_is_displayed() {
-        onView(withContentDescription(
-                activityScenario
-                        .getToolbarNavigationContentDescription()
-        )).perform(click())
+        onView(allOf(withContentDescription(
+                activityScenario.getToolbarNavigationContentDescription()), isDisplayed()))
+                .perform(click())
 
         onView(allOf(isAssignableFrom(NavigationMenuItemView::class.java), withId(R.id.navigation_simulation)))
                 .check(matches(isDisplayed()))
