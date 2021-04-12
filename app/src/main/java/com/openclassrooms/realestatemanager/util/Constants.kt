@@ -10,4 +10,8 @@ object Constants {
     const val THUMBNAIL_FILE_NAME = "thumbnail.jpg"
 
     const val TIMEOUT_INTERNET_CONNECTION = 1500
+
+    // keys for bundle when navigate
+    const val FROM = "from"
+    const val PROPERTY_ID = "propertyId"
 }

@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +19,16 @@ import com.openclassrooms.realestatemanager.util.GlideManager
 class PropertyListAdapter(
         private val requestManager: GlideManager,
 ) : RecyclerView.Adapter<PropertyListAdapter.PropertyViewHolder>() {
+
+    interface OnItemClickListener {
+        fun onItemClick(propertyId: String)
+    }
+
+    var callBack: OnItemClickListener? = null
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        callBack = listener
+    }
 
     val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Property>() {
 
@@ -39,6 +50,7 @@ class PropertyListAdapter(
                         parent,
                         false
                 ),
+                callBack,
                 requestManager
         )
     }
@@ -61,6 +73,7 @@ class PropertyListAdapter(
     class PropertyViewHolder
     constructor(
             itemView: View,
+            var callBack: OnItemClickListener?,
             private val requestManager: GlideManager,
     ) : RecyclerView.ViewHolder(itemView) {
 
@@ -79,6 +92,20 @@ class PropertyListAdapter(
             item.type.let { type.text = it.type }
             item.address?.let { street.text = it.street }
             item.price.let { price.text = "$".plus("$it") }
+
+            itemView.setOnClickListener {
+                when(context?.resources?.getBoolean(R.bool.isTablet)) {
+                    true -> { callBack?.onItemClick(item.id) }
+                    false -> {
+                        val propertyId = item.id
+                        val action = PropertyListFragmentDirections.navigationDetailAction(
+                                from = PropertyListFragment::class.java.name,
+                                propertyId = propertyId
+                        )
+                        it.findNavController().navigate(action)
+                    }
+                }
+            }
         }
     }
 }

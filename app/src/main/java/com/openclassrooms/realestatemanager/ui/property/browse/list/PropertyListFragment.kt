@@ -6,12 +6,16 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import androidx.core.view.GravityCompat.START
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.base.BaseView
 import com.openclassrooms.realestatemanager.databinding.FragmentListBinding
+import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.BasePropertyFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterDetailFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesIntent
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesUiModel
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesUiModel.*
@@ -62,6 +66,45 @@ constructor(
         } else {
             compositeDisposable.add(propertiesViewModel.states().subscribe(this::render))
             propertiesViewModel.processIntents(intents())
+        }
+
+        when(this.parentFragment?.parentFragment?.javaClass?.name) {
+            BrowseMasterFragment::class.java.name -> {
+                val masterFragment = this.parentFragment?.parentFragment as BrowseMasterFragment
+
+                masterFragment.binding.buttonContainer.visibility = VISIBLE
+                masterFragment.binding.mapViewButton.isSelected = false
+                masterFragment.binding.listViewButton.isSelected = true
+            }
+        }
+    }
+
+    override fun initializeToolbar() {
+        when(this.parentFragment?.parentFragment?.javaClass?.name) {
+            BrowseMasterFragment::class.java.name -> {
+                val masterFragment = this.parentFragment?.parentFragment as BrowseMasterFragment
+
+                masterFragment.binding.toolBar.setNavigationOnClickListener {
+                    val mainActivity = activity as MainActivity
+                    if (!mainActivity.binding.drawerLayout.isDrawerOpen(START)) {
+                        mainActivity.binding.drawerLayout.openDrawer(START)
+                    } else {
+                        mainActivity.binding.drawerLayout.closeDrawer(START)
+                    }
+                }
+            }
+            BrowseMasterDetailFragment::class.java.name -> {
+                val masterDetailFragment = this.parentFragment?.parentFragment as BrowseMasterDetailFragment
+
+                masterDetailFragment.binding.toolBar.setNavigationOnClickListener {
+                    val mainActivity = activity as MainActivity
+                    if (!mainActivity.binding.drawerLayout.isDrawerOpen(START)) {
+                        mainActivity.binding.drawerLayout.openDrawer(START)
+                    } else {
+                        mainActivity.binding.drawerLayout.closeDrawer(START)
+                    }
+                }
+            }
         }
     }
 
@@ -118,6 +161,7 @@ constructor(
             }
             recyclerAdapter.apply {
                 submitList(properties = properties)
+                notifyDataSetChanged()
             }
         } else {
             binding.recyclerView.visibility = GONE

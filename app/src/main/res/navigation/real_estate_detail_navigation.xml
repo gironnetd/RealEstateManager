@@ -5,19 +5,47 @@
     android:id="@+id/real_estate_detail_navigation"
     app:startDestination="@id/navigation_map">
 
-    <keep_state_fragment
-        android:id="@+id/navigation_detail"
-        android:name="com.openclassrooms.realestatemanager.ui.property.browse.detail.PropertyDetailFragment"
-        android:label="@string/detail"
-        tools:layout="@layout/fragment_detail" />
+    <action
+        android:id="@+id/navigation_map_action_from_master"
+        app:destination="@id/navigation_map" />
 
-    <keep_state_fragment
+    <browse_master_detail_fragment
         android:id="@+id/navigation_map"
         android:name="com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment"
         android:label="@string/map"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map">
 
-    <keep_state_fragment
+        <action android:id="@+id/navigation_detail_action"
+            app:destination="@id/navigation_detail"
+            app:popUpTo="@id/navigation_map"/>
+
+        <argument
+            android:name="propertyId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </browse_master_detail_fragment>
+
+    <browse_master_detail_fragment
+        android:id="@+id/navigation_detail"
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.detail.PropertyDetailFragment"
+        android:label="@string/detail"
+        tools:layout="@layout/fragment_detail">
+
+        <argument
+            android:name="from"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+
+        <argument
+            android:name="propertyId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </browse_master_detail_fragment>
+
+    <browse_master_detail_fragment
         android:id="@+id/navigation_edit"
         android:name="com.openclassrooms.realestatemanager.ui.property.browse.edit.PropertyEditFragment"
         android:label="@string/update"

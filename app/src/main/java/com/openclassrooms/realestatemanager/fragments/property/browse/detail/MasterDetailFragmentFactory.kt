@@ -34,7 +34,8 @@ constructor(
                 }
 
                 PropertyDetailFragment::class.java.name -> {
-                    val fragment = PropertyDetailFragment()
+                    val fragment = PropertyDetailFragment(viewModelFactory = viewModelFactory,
+                            requestManager = requestManager)
                     fragment
                 }
 

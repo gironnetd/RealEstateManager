@@ -2,17 +2,27 @@ package com.openclassrooms.realestatemanager.ui.property.browse.map
 
 import android.os.Bundle
 import android.view.View
+import android.view.View.VISIBLE
+import androidx.core.os.bundleOf
+import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.*
+import com.google.android.gms.maps.GoogleMap.CancelableCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.maps.android.clustering.ClusterManager
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.base.BaseView
 import com.openclassrooms.realestatemanager.databinding.FragmentMapBinding
+import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.BasePropertyFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterDetailFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesIntent
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesUiModel
+import com.openclassrooms.realestatemanager.util.Constants.FROM
+import com.openclassrooms.realestatemanager.util.Constants.PROPERTY_ID
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
@@ -26,11 +36,15 @@ class PropertyMapFragment
 constructor(
         viewModelFactory: ViewModelProvider.Factory,
 ) : BasePropertyFragment(R.layout.fragment_map, viewModelFactory),
-        OnMapReadyCallback, GoogleMap.OnMapLoadedCallback, BaseView<PropertiesIntent, PropertiesUiModel> {
+        OnMapReadyCallback, GoogleMap.OnMapLoadedCallback,
+        BaseView<PropertiesIntent, PropertiesUiModel> {
 
-    private val defaultLocation = LatLng(48.82958536116524, 2.125609030745346)
     lateinit var mMap: GoogleMap
-    lateinit var markers: LinkedHashMap<String, Marker>
+    lateinit var clusterManager: ClusterManager<CustomClusterItem>
+    lateinit var selectedItem: CustomClusterItem
+
+    lateinit var items: LinkedHashMap<CustomClusterItem, Boolean>
+    var markers : MutableList<Marker> = mutableListOf()
 
     private var _binding: FragmentMapBinding? = null
 
@@ -63,22 +77,18 @@ constructor(
     }
 
     override fun render(state: PropertiesUiModel) {
-        when  {
-            state.inProgress -> {
-            }
-            state is PropertiesUiModel.Success -> {
-                if(properties.isEmpty() && state.properties!!.isNotEmpty()) {
+        when (state) {
+            is PropertiesUiModel.Success -> {
+                if (properties.isEmpty() && state.properties!!.isNotEmpty()) {
                     properties.addAll(state.properties)
                 }
 
-                if(properties != state.properties) {
+                if (properties != state.properties) {
                     properties.clear()
                     properties.addAll(state.properties!!)
                 }
                 initializeMap()
             }
-            state is PropertiesUiModel.Failed -> { }
-            state is PropertiesUiModel.Idle -> { }
             else -> { }
         }
     }
@@ -87,60 +97,230 @@ constructor(
         activity?.runOnUiThread {
             (this.childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment)
                     .getMapAsync(this)
-
         }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-        mMap.setOnMapLoadedCallback(this)
-        mMap.setContentDescription(GOOGLE_MAP_NOT_FINISH_LOADING)
-
-        val location = CameraUpdateFactory.newLatLngZoom(
-                defaultLocation, DEFAULT_ZOOM)
-        mMap.animateCamera(location)
-
-        markers = linkedMapOf()
-
-        properties.forEach { property ->
-            val marker = mMap.addMarker(MarkerOptions()
-                    .position(LatLng(property.address!!.latitude, property.address!!.longitude))
-                    .title(property.address!!.street))
-            markers[property.address!!.street] = marker
+        if (::mMap.isInitialized) {
+            return
         }
 
-        mMap.setOnMapClickListener {
-            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                    it, DEFAULT_ZOOM - 0.5f)
-            mMap.animateCamera(cameraUpdate)
+        val location = CameraUpdateFactory.newLatLngZoom(defaultLocation, INITIAL_ZOOM_LEVEL)
+        googleMap.moveCamera(location)
+        mMap = googleMap
 
-            markers.values.forEach { marker ->
-                marker.tag = null
+        clusterManager = ClusterManager(context, mMap)
+        mMap.setOnCameraIdleListener(clusterManager)
+
+        clusterManager.renderer = object: CustomClusterRenderer(requireContext(), mMap, clusterManager) {
+
+            override fun onClusterItemRendered(clusterItem: CustomClusterItem, marker: Marker) {
+                if(!markers.contains(marker)) {
+                    markers.add(marker)
+
+                    if(::selectedItem.isInitialized) {
+                        if(marker.title == selectedItem.title) {
+                            if(!items[selectedItem]!!) {
+                                marker.showInfoWindow()
+                                items[selectedItem] = true
+                                mMap.setContentDescription(INFO_WINDOW_SHOW)
+                            } else {
+                                marker.hideInfoWindow()
+                                items[selectedItem] = false
+                                mMap.setContentDescription(NO_INFO_WINDOW_SHOW)
+                            }
+                        }
+                    }
+                }
+                super.onClusterItemRendered(clusterItem, marker)
             }
         }
 
-        mMap.setOnMarkerClickListener { marker ->
-            val cameraUpdate: CameraUpdate
-            if(marker.tag == null) {
-                marker.tag = 1
-                marker.showInfoWindow()
-                cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                        LatLng(marker.position.latitude, marker.position.longitude), (DEFAULT_ZOOM + 1))
+        mMap.setContentDescription(GOOGLE_MAP_NOT_FINISH_LOADING)
+        mMap.setOnMapLoadedCallback(this)
+    }
+
+    override fun onMapLoaded() {
+        items = linkedMapOf()
+
+        properties.forEach { property ->
+            val item = CustomClusterItem(property.address!!.latitude, property.address!!.longitude,
+                    property.address!!.street, "", property.id)
+            items[item] = false
+            clusterManager.addItem(item)
+        }
+        clusterManager.cluster()
+
+        mMap.setOnMapClickListener {
+            if(mMap.cameraPosition.zoom != 10f) {
+                val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                        it, DEFAULT_ZOOM + 1.5f)
                 mMap.animateCamera(cameraUpdate)
-            } else {
-                marker.tag = null
+            }
+
+            for (marker in clusterManager.markerCollection.markers) {
                 marker.hideInfoWindow()
-                cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                        LatLng(marker.position.latitude, marker.position.longitude),
-                        DEFAULT_ZOOM - 0.5f)
+            }
+
+            mMap.setContentDescription(NO_INFO_WINDOW_SHOW)
+
+            for ((item, _) in items) {
+                items[item] = false
+            }
+        }
+
+        clusterManager.setOnClusterItemClickListener { selectedItem ->
+            this.selectedItem = selectedItem
+            showOrHideInfoWindow()
+            true
+        }
+
+        clusterManager.setOnClusterClickListener { item  ->
+            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                    LatLng(item.position.latitude, item.position.longitude), (DEFAULT_ZOOM + 1.5f))
+
+            if(mMap.cameraPosition.zoom == 10f) {
+                mMap.animateCamera(cameraUpdate, 2500, null)
+            } else {
                 mMap.animateCamera(cameraUpdate)
             }
             true
         }
+
+        when(this.parentFragment?.parentFragment?.javaClass?.name) {
+            BrowseMasterFragment::class.java.name -> {
+                val masterFragment = this.parentFragment?.parentFragment as BrowseMasterFragment
+
+                clusterManager.setOnClusterItemInfoWindowClickListener { item ->
+                    val propertyId = item.getTag()
+                    val action = PropertyMapFragmentDirections.navigationDetailAction(
+                            from = PropertyMapFragment::class.java.name,
+                            propertyId = propertyId
+                    )
+                    masterFragment.master.findNavController().navigate(action)
+                }
+            }
+            BrowseMasterDetailFragment::class.java.name -> {
+                val masterDetailFragment = this.parentFragment?.parentFragment as BrowseMasterDetailFragment
+
+                clusterManager.setOnClusterItemInfoWindowClickListener { item ->
+                    val propertyId = item.getTag()
+                    val bundle = bundleOf(FROM to PropertyMapFragment::class.java.name,
+                            PROPERTY_ID to propertyId
+                    )
+                    masterDetailFragment.detail.findNavController().navigate(R.id.navigation_detail, bundle)
+                }
+            }
+        }
+        mMap.setContentDescription(GOOGLE_MAP_FINISH_LOADING)
     }
 
-    override fun onMapLoaded() {
-        mMap.setContentDescription(GOOGLE_MAP_FINISH_LOADING)
+    fun zoomOnMarkerPosition(propertyId: String) {
+        val property = properties.single { property -> property.id == propertyId }
+        selectedItem  = items.keys.single { item -> item.getTag() == property.id }
+
+        if(mMap.cameraPosition.zoom == 10f) {
+            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                    LatLng(selectedItem.position.latitude, selectedItem.position.longitude), (DEFAULT_ZOOM + 1.5f))
+
+            mMap.animateCamera(cameraUpdate, 2500, object : CancelableCallback {
+                override fun onCancel() {}
+                override fun onFinish() {
+                    showOrHideInfoWindow()
+                }
+            })
+        } else {
+            showOrHideInfoWindow()
+        }
+    }
+
+    private fun showOrHideInfoWindow() {
+        val isInfoWindowShown = items[selectedItem]!!
+
+        for ((item, _) in items) {
+            items[item] = false
+        }
+
+        var cameraUpdate: CameraUpdate
+        if(!isInfoWindowShown) {
+            cameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(selectedItem.position.latitude,
+                    selectedItem.position.longitude), (DEFAULT_ZOOM + 3))
+
+            if(mMap.cameraPosition.zoom == 10f) {
+                mMap.animateCamera(cameraUpdate, 2500, null)
+            } else {
+                mMap.animateCamera(cameraUpdate, object : CancelableCallback {
+                    override fun onCancel() {}
+                    override fun onFinish() {
+                        val marker = markers.find { marker -> marker.title == selectedItem.title }
+                        marker?.let {
+                            if(!items[selectedItem]!!) {
+                                it.showInfoWindow()
+
+                                items[selectedItem] = true
+                                mMap.setContentDescription(INFO_WINDOW_SHOW)
+                            }
+                        }
+                    }
+                })
+            }
+        } else {
+            cameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(selectedItem.position.latitude,
+                    selectedItem.position.longitude), DEFAULT_ZOOM + 1.5f)
+            mMap.animateCamera(cameraUpdate, object : CancelableCallback {
+                override fun onCancel() {}
+                override fun onFinish() {
+                    val marker = markers.find { marker -> marker.title == selectedItem.title }
+                    marker?.let {
+                        marker.hideInfoWindow()
+                        items[selectedItem] = false
+                        mMap.setContentDescription(NO_INFO_WINDOW_SHOW)
+                    }
+                }
+            })
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        when(this.parentFragment?.parentFragment?.javaClass?.name) {
+            BrowseMasterFragment::class.java.name -> {
+                val masterFragment = this.parentFragment?.parentFragment as BrowseMasterFragment
+
+                masterFragment.binding.buttonContainer.visibility = VISIBLE
+                masterFragment.binding.mapViewButton.isSelected = true
+                masterFragment.binding.listViewButton.isSelected = false
+            }
+        }
+    }
+
+    override fun initializeToolbar() {
+        when(this.parentFragment?.parentFragment?.javaClass?.name) {
+            BrowseMasterFragment::class.java.name -> {
+                val masterFragment = this.parentFragment?.parentFragment as BrowseMasterFragment
+
+                masterFragment.binding.toolBar.setNavigationOnClickListener {
+                    val mainActivity = activity as MainActivity
+                    if (!mainActivity.binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                        mainActivity.binding.drawerLayout.openDrawer(GravityCompat.START)
+                    } else {
+                        mainActivity.binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    }
+                }
+            }
+            BrowseMasterDetailFragment::class.java.name -> {
+                val masterDetailFragment = this.parentFragment?.parentFragment as BrowseMasterDetailFragment
+
+                masterDetailFragment.binding.toolBar.setNavigationOnClickListener {
+                    val mainActivity = activity as MainActivity
+                    if (!mainActivity.binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                        mainActivity.binding.drawerLayout.openDrawer(GravityCompat.START)
+                    } else {
+                        mainActivity.binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    }
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -149,7 +329,7 @@ constructor(
     }
 
     companion object {
-        var DEFAULT_ZOOM: Float = 17f
+        var DEFAULT_ZOOM: Float = 15f
         var INITIAL_ZOOM_LEVEL = 10f
 
         var paris = LatLng(48.862725, 2.287592)

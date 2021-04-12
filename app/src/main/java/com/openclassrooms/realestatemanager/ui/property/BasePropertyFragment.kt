@@ -11,12 +11,19 @@ abstract class BasePropertyFragment
 constructor(
         @LayoutRes
         private val layoutRes: Int,
-        private val viewModelFactory: ViewModelProvider.Factory
+        private val viewModelFactory: ViewModelProvider.Factory?
 ): Fragment(layoutRes) {
 
         val propertiesViewModel: PropertiesViewModel by viewModels {
-                viewModelFactory
+                viewModelFactory!!
         }
+
+        override fun onResume() {
+                super.onResume()
+                initializeToolbar()
+        }
+
+        abstract fun initializeToolbar()
 
         companion object {
                 var properties: MutableList<Property> = mutableListOf()
