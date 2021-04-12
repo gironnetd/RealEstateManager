@@ -2,8 +2,8 @@ package com.openclassrooms.realestatemanager.fragments
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
-import com.openclassrooms.realestatemanager.ui.property.create.PropertyCreateFragment
-import com.openclassrooms.realestatemanager.ui.property.search.PropertySearchFragment
+import com.openclassrooms.realestatemanager.ui.property.create.CreateFragment
+import com.openclassrooms.realestatemanager.ui.property.search.SearchFragment
 import com.openclassrooms.realestatemanager.ui.simulation.SimulationFragment
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -21,13 +21,13 @@ constructor() : FragmentFactory() {
                     fragment
                 }
 
-                PropertyCreateFragment::class.java.name -> {
-                    val fragment = PropertyCreateFragment()
+                CreateFragment::class.java.name -> {
+                    val fragment = CreateFragment()
                     fragment
                 }
 
-                PropertySearchFragment::class.java.name -> {
-                    val fragment = PropertySearchFragment()
+                SearchFragment::class.java.name -> {
+                    val fragment = SearchFragment()
                     fragment
                 }
                 else -> super.instantiate(classLoader, className)

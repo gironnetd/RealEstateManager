@@ -17,12 +17,12 @@
         tools:layout="@layout/fragment_simulation" />
     <keep_state_fragment
         android:id="@+id/navigation_create"
-        android:name="com.openclassrooms.realestatemanager.ui.property.create.PropertyCreateFragment"
+        android:name="com.openclassrooms.realestatemanager.ui.property.create.CreateFragment"
         android:label="@string/create"
         tools:layout="@layout/fragment_create" />
     <keep_state_fragment
         android:id="@+id/navigation_search"
-        android:name="com.openclassrooms.realestatemanager.ui.property.search.PropertySearchFragment"
+        android:name="com.openclassrooms.realestatemanager.ui.property.search.SearchFragment"
         android:label="@string/search"
         tools:layout="@layout/fragment_search" />
 </navigation>

@@ -27,15 +27,15 @@ import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests
 import com.openclassrooms.realestatemanager.ui.MainActivity
-import com.openclassrooms.realestatemanager.ui.property.BasePropertyFragment
+import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterDetailFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.list.PropertyListAdapter.PropertyViewHolder
-import com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment.Companion.GOOGLE_MAP_FINISH_LOADING
-import com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment.Companion.INFO_WINDOW_SHOW
-import com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment.Companion.INITIAL_ZOOM_LEVEL
-import com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment.Companion.defaultLocation
+import com.openclassrooms.realestatemanager.ui.property.browse.list.ListAdapter.PropertyViewHolder
+import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.GOOGLE_MAP_FINISH_LOADING
+import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.INFO_WINDOW_SHOW
+import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.INITIAL_ZOOM_LEVEL
+import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.defaultLocation
 import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.EspressoIdlingResourceRule
@@ -48,7 +48,7 @@ import org.junit.runners.MethodSorters
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-class PropertyListFragmentIntegrationTest : BaseMainActivityTests() {
+class ListFragmentIntegrationTest : BaseMainActivityTests() {
 
     @get: Rule val espressoIdlingResourceRule = EspressoIdlingResourceRule()
 
@@ -192,8 +192,8 @@ class PropertyListFragmentIntegrationTest : BaseMainActivityTests() {
             try {
                 if(title.exists()) {
 
-                    val mapFragment = masterDetailFragment!!.detail.childFragmentManager.primaryNavigationFragment as PropertyMapFragment
-                    val listFragment = masterDetailFragment!!.master.childFragmentManager.primaryNavigationFragment as PropertyListFragment
+                    val mapFragment = masterDetailFragment!!.detail.childFragmentManager.primaryNavigationFragment as MapFragment
+                    val listFragment = masterDetailFragment!!.master.childFragmentManager.primaryNavigationFragment as ListFragment
 
                     val display = mainActivity.windowManager.defaultDisplay
                     val size = Point()
@@ -217,7 +217,7 @@ class PropertyListFragmentIntegrationTest : BaseMainActivityTests() {
 
     @Test
     fun is_property_list_empty() {
-        BasePropertyFragment.properties.clear()
+        BaseFragment.properties.clear()
         apiService.propertiesJsonFileName = EMPTY_LIST
 
         val propertiesRepository = configureFakeRepository(apiService, app)
@@ -227,7 +227,7 @@ class PropertyListFragmentIntegrationTest : BaseMainActivityTests() {
         val propertiesViewModelFactory = FakePropertiesViewModelFactory(propertiesRepository)
 
         launchFragmentInContainer(null, AppTheme, RESUMED) {
-            PropertyListFragment(propertiesViewModelFactory, requestManager)
+            ListFragment(propertiesViewModelFactory, requestManager)
         }
 
         val recyclerView = onView(withId(R.id.recycler_view))
@@ -251,7 +251,7 @@ class PropertyListFragmentIntegrationTest : BaseMainActivityTests() {
         propertiesViewModelFactory = FakePropertiesViewModelFactory(propertiesRepository)
 
         launchFragmentInContainer(null, AppTheme, RESUMED) {
-            PropertyListFragment(propertiesViewModelFactory, requestManager)
+            ListFragment(propertiesViewModelFactory, requestManager)
         }.onFragment {
             val params = it.binding.recyclerView.layoutParams as ConstraintLayout.LayoutParams
             params.topMargin = 0
@@ -294,7 +294,7 @@ class PropertyListFragmentIntegrationTest : BaseMainActivityTests() {
         propertiesViewModelFactory = FakePropertiesViewModelFactory(propertiesRepository)
 
         val scenario = launchFragmentInContainer(null, AppTheme, RESUMED) {
-            PropertyListFragment(propertiesViewModelFactory, requestManager)
+            ListFragment(propertiesViewModelFactory, requestManager)
         }.onFragment {
             val params = it.binding.recyclerView.layoutParams as ConstraintLayout.LayoutParams
             params.topMargin = 0

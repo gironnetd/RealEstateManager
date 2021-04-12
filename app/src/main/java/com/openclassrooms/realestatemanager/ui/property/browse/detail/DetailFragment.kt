@@ -10,22 +10,22 @@ import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentDetailBinding
 import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.ui.property.BasePropertyFragment
+import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterDetailFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.list.PropertyListFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment
 import com.openclassrooms.realestatemanager.util.GlideManager
 import javax.inject.Inject
 
 /**
  * Fragment to display and edit a real estate.
  */
-class PropertyDetailFragment@Inject
+class DetailFragment@Inject
 constructor(
         viewModelFactory: ViewModelProvider.Factory,
         val requestManager: GlideManager,
-) : BasePropertyFragment(R.layout.fragment_detail, viewModelFactory) {
+) : BaseFragment(R.layout.fragment_detail, viewModelFactory) {
 
     private var _binding: FragmentDetailBinding? = null
     private val binding get() = _binding!!
@@ -87,7 +87,7 @@ constructor(
 
     private fun backPressedWhenTabletMode() {
         when(arguments?.getString("from")) {
-            PropertyMapFragment::class.java.name -> {
+            MapFragment::class.java.name -> {
                 (parentFragment?.parentFragment as BrowseMasterDetailFragment)
                         .detail
                         .navController
@@ -98,13 +98,13 @@ constructor(
 
     private fun backPressedWhenNormalMode() {
         when(arguments?.getString("from")) {
-            PropertyListFragment::class.java.name -> {
+            ListFragment::class.java.name -> {
                 (this.parentFragment?.parentFragment as BrowseMasterFragment)
                         .master
                         .navController
                         .navigate(R.id.navigation_list)
             }
-            PropertyMapFragment::class.java.name -> {
+            MapFragment::class.java.name -> {
                 (this.parentFragment?.parentFragment as BrowseMasterFragment)
                         .master
                         .navController

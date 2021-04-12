@@ -12,8 +12,8 @@ import com.openclassrooms.realestatemanager.repository.ConnectivityManagerTest
 import com.openclassrooms.realestatemanager.ui.MainActivityTest
 import com.openclassrooms.realestatemanager.ui.MainNavigationTest
 import com.openclassrooms.realestatemanager.ui.MainRotationTest
-import com.openclassrooms.realestatemanager.ui.property.browse.list.PropertyListFragmentIntegrationTest
-import com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragmentIntegrationTest
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -36,9 +36,9 @@ interface TestAppComponent : AppComponent {
         fun build(): TestAppComponent
     }
 
-    fun inject(listFragmentIntegrationTest: PropertyListFragmentIntegrationTest)
+    fun inject(listFragmentIntegrationTest: ListFragmentIntegrationTest)
 
-    fun inject(mapFragmentIntegrationTest: PropertyMapFragmentIntegrationTest)
+    fun inject(mapFragmentIntegrationTest: MapFragmentIntegrationTest)
 
     fun inject(mainActivityTest: MainActivityTest)
 

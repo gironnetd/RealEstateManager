@@ -25,12 +25,12 @@ import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterDetailFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.list.PropertyListFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment.Companion.DEFAULT_ZOOM
-import com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment.Companion.GOOGLE_MAP_FINISH_LOADING
-import com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment.Companion.INFO_WINDOW_SHOW
-import com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment.Companion.INITIAL_ZOOM_LEVEL
-import com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment.Companion.defaultLocation
+import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.DEFAULT_ZOOM
+import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.GOOGLE_MAP_FINISH_LOADING
+import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.INFO_WINDOW_SHOW
+import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.INITIAL_ZOOM_LEVEL
+import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.defaultLocation
 import com.openclassrooms.realestatemanager.util.ConstantsTest
 import com.openclassrooms.realestatemanager.viewmodels.FakePropertiesViewModelFactory
 import org.hamcrest.core.AllOf.allOf
@@ -42,12 +42,12 @@ import java.math.RoundingMode
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-class PropertyMapFragmentIntegrationTest : BaseMainActivityTests() {
+class MapFragmentIntegrationTest : BaseMainActivityTests() {
 
     lateinit var propertiesViewModelFactory: FakePropertiesViewModelFactory
     lateinit var fakeProperties: List<Property>
     lateinit var uiDevice: UiDevice
-    lateinit var mapFragment: PropertyMapFragment
+    lateinit var mapFragment: MapFragment
 
     private var leChesnay = LatLng(48.82958536116524, 2.125609030745346)
 
@@ -148,8 +148,8 @@ class PropertyMapFragmentIntegrationTest : BaseMainActivityTests() {
                     marker.click()
                     uiDevice.wait(Until.hasObject(By.desc(INFO_WINDOW_SHOW)), 15000)
 
-                    val mapFragment = masterDetailFragment!!.detail.childFragmentManager.primaryNavigationFragment as PropertyMapFragment
-                    val listFragment = masterDetailFragment!!.master.childFragmentManager.primaryNavigationFragment as PropertyListFragment
+                    val mapFragment = masterDetailFragment!!.detail.childFragmentManager.primaryNavigationFragment as MapFragment
+                    val listFragment = masterDetailFragment!!.master.childFragmentManager.primaryNavigationFragment as ListFragment
 
                     val display = mainActivity.windowManager.defaultDisplay
                     val size = Point()
@@ -277,8 +277,8 @@ class PropertyMapFragmentIntegrationTest : BaseMainActivityTests() {
                     marker.click()
                     uiDevice.wait(Until.hasObject(By.desc(INFO_WINDOW_SHOW)), 15000)
 
-                    val mapFragment = masterDetailFragment!!.detail.childFragmentManager.primaryNavigationFragment as PropertyMapFragment
-                    val listFragment = masterDetailFragment!!.master.childFragmentManager.primaryNavigationFragment as PropertyListFragment
+                    val mapFragment = masterDetailFragment!!.detail.childFragmentManager.primaryNavigationFragment as MapFragment
+                    val listFragment = masterDetailFragment!!.master.childFragmentManager.primaryNavigationFragment as ListFragment
 
                     val display = mainActivity.windowManager.defaultDisplay
                     val size = Point()
@@ -333,7 +333,7 @@ class PropertyMapFragmentIntegrationTest : BaseMainActivityTests() {
             INITIAL_ZOOM_LEVEL = 17f
             DEFAULT_ZOOM = 17f
             defaultLocation = leChesnay
-            PropertyMapFragment(propertiesViewModelFactory)
+            MapFragment(propertiesViewModelFactory)
         }.onFragment {
             mapFragment = it
         }
@@ -375,7 +375,7 @@ class PropertyMapFragmentIntegrationTest : BaseMainActivityTests() {
             INITIAL_ZOOM_LEVEL = 17f
             DEFAULT_ZOOM = 17f
             defaultLocation = leChesnay
-            PropertyMapFragment(propertiesViewModelFactory)
+            MapFragment(propertiesViewModelFactory)
         }.onFragment {
             mapFragment = it
         }
@@ -429,7 +429,7 @@ class PropertyMapFragmentIntegrationTest : BaseMainActivityTests() {
             INITIAL_ZOOM_LEVEL = 17f
             DEFAULT_ZOOM = 17f
             defaultLocation = leChesnay
-            PropertyMapFragment(propertiesViewModelFactory)
+            MapFragment(propertiesViewModelFactory)
         }.onFragment{
             mapFragment = it
         }
@@ -483,7 +483,7 @@ class PropertyMapFragmentIntegrationTest : BaseMainActivityTests() {
     }
 
     companion object {
-        private val TAG = PropertyMapFragmentIntegrationTest::class.simpleName
+        private val TAG = MapFragmentIntegrationTest::class.simpleName
     }
 }
 

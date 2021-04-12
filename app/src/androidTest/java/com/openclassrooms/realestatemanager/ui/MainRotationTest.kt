@@ -102,10 +102,12 @@ class MainRotationTest : BaseMainActivityTests() {
         }
         if(orientation == ORIENTATION_LANDSCAPE) {
             onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity));
-            assertEquals(navController.currentDestination?.id, R.id.navigation_search)
+            //assertEquals(navController.currentDestination?.id, R.id.navigation_search)
+            onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
 
             onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity));
-            assertEquals(navController.currentDestination?.id, R.id.navigation_search)
+            onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
+            //assertEquals(navController.currentDestination?.id, R.id.navigation_search)
         }
     }
 
@@ -189,10 +191,12 @@ class MainRotationTest : BaseMainActivityTests() {
         }
         if (orientation == ORIENTATION_LANDSCAPE) {
             onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity));
-            assertEquals(navController.currentDestination?.id, R.id.navigation_simulation)
+            //assertEquals(navController.currentDestination?.id, R.id.navigation_simulation)
+            onView(withId(R.id.simulation_fragment)).check(matches(isDisplayed()))
 
             onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity));
-            assertEquals(navController.currentDestination?.id, R.id.navigation_simulation)
+            //assertEquals(navController.currentDestination?.id, R.id.navigation_simulation)
+            onView(withId(R.id.simulation_fragment)).check(matches(isDisplayed()))
         }
     }
 

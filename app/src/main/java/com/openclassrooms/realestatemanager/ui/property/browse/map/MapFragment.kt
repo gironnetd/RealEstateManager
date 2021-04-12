@@ -16,7 +16,7 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.base.BaseView
 import com.openclassrooms.realestatemanager.databinding.FragmentMapBinding
 import com.openclassrooms.realestatemanager.ui.MainActivity
-import com.openclassrooms.realestatemanager.ui.property.BasePropertyFragment
+import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterDetailFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesIntent
@@ -31,11 +31,11 @@ import javax.inject.Inject
 /**
  * Fragment to display real estates on map.
  */
-class PropertyMapFragment
+class MapFragment
 @Inject
 constructor(
         viewModelFactory: ViewModelProvider.Factory,
-) : BasePropertyFragment(R.layout.fragment_map, viewModelFactory),
+) : BaseFragment(R.layout.fragment_map, viewModelFactory),
         OnMapReadyCallback, GoogleMap.OnMapLoadedCallback,
         BaseView<PropertiesIntent, PropertiesUiModel> {
 
@@ -193,8 +193,8 @@ constructor(
 
                 clusterManager.setOnClusterItemInfoWindowClickListener { item ->
                     val propertyId = item.getTag()
-                    val action = PropertyMapFragmentDirections.navigationDetailAction(
-                            from = PropertyMapFragment::class.java.name,
+                    val action = MapFragmentDirections.navigationDetailAction(
+                            from = MapFragment::class.java.name,
                             propertyId = propertyId
                     )
                     masterFragment.master.findNavController().navigate(action)
@@ -205,7 +205,7 @@ constructor(
 
                 clusterManager.setOnClusterItemInfoWindowClickListener { item ->
                     val propertyId = item.getTag()
-                    val bundle = bundleOf(FROM to PropertyMapFragment::class.java.name,
+                    val bundle = bundleOf(FROM to MapFragment::class.java.name,
                             PROPERTY_ID to propertyId
                     )
                     masterDetailFragment.detail.findNavController().navigate(R.id.navigation_detail, bundle)

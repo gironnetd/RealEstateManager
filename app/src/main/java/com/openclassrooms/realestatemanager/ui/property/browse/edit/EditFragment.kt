@@ -10,7 +10,7 @@ import com.openclassrooms.realestatemanager.R
 /**
  * Fragment to edit and update a real estate.
  */
-class PropertyEditFragment : Fragment() {
+class EditFragment : Fragment() {
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,

@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesViewModel
 
-abstract class BasePropertyFragment
+abstract class BaseFragment
 constructor(
         @LayoutRes
         private val layoutRes: Int,

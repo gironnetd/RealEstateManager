@@ -13,7 +13,7 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.base.BaseView
 import com.openclassrooms.realestatemanager.databinding.FragmentListBinding
 import com.openclassrooms.realestatemanager.ui.MainActivity
-import com.openclassrooms.realestatemanager.ui.property.BasePropertyFragment
+import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterDetailFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesIntent
@@ -28,12 +28,12 @@ import javax.inject.Inject
 /**
  * Fragment to list real estates.
  */
-class PropertyListFragment
+class ListFragment
 @Inject
 constructor(
         viewModelFactory: ViewModelProvider.Factory,
         val requestManager: GlideManager,
-) : BasePropertyFragment(R.layout.fragment_list, viewModelFactory), BaseView<PropertiesIntent, PropertiesUiModel> {
+) : BaseFragment(R.layout.fragment_list, viewModelFactory), BaseView<PropertiesIntent, PropertiesUiModel> {
 
     private var _binding: FragmentListBinding? = null
     val binding get() = _binding!!
@@ -42,7 +42,7 @@ constructor(
             PublishSubject.create<PropertiesIntent.LoadPropertiesIntent>()
     private val compositeDisposable = CompositeDisposable()
 
-    private lateinit var recyclerAdapter: PropertyListAdapter
+    private lateinit var recyclerAdapter: ListAdapter
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -145,8 +145,8 @@ constructor(
 
     private fun initRecyclerView() {
         binding.recyclerView.apply {
-            layoutManager = LinearLayoutManager(this@PropertyListFragment.context)
-            recyclerAdapter = PropertyListAdapter(requestManager)
+            layoutManager = LinearLayoutManager(this@ListFragment.context)
+            recyclerAdapter = ListAdapter(requestManager)
             adapter = recyclerAdapter
         }
     }

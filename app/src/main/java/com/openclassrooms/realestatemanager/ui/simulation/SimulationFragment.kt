@@ -8,12 +8,12 @@ import androidx.navigation.ui.setupWithNavController
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentSimulationBinding
 import com.openclassrooms.realestatemanager.ui.MainActivity
-import com.openclassrooms.realestatemanager.ui.property.BasePropertyFragment
+import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 
 /**
  * Fragment make simulation
  */
-class SimulationFragment : BasePropertyFragment(R.layout.fragment_simulation, null) {
+class SimulationFragment : BaseFragment(R.layout.fragment_simulation, null) {
 
     private var _binding: FragmentSimulationBinding? = null
     val binding get() = _binding!!

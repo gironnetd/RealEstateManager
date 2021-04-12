@@ -11,8 +11,8 @@
 
     <browse_master_detail_fragment
         android:id="@+id/navigation_map"
-        android:name="com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment"
-        android:label="@string/map"
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment"
+        android:label="@string/app_name"
         tools:layout="@layout/fragment_map">
 
         <action android:id="@+id/navigation_detail_action"
@@ -28,7 +28,7 @@
 
     <browse_master_detail_fragment
         android:id="@+id/navigation_detail"
-        android:name="com.openclassrooms.realestatemanager.ui.property.browse.detail.PropertyDetailFragment"
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragment"
         android:label="@string/detail"
         tools:layout="@layout/fragment_detail">
 
@@ -47,7 +47,7 @@
 
     <browse_master_detail_fragment
         android:id="@+id/navigation_edit"
-        android:name="com.openclassrooms.realestatemanager.ui.property.browse.edit.PropertyEditFragment"
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.edit.EditFragment"
         android:label="@string/update"
         tools:layout="@layout/fragment_edit" />
 </navigation>

@@ -10,16 +10,16 @@ import com.openclassrooms.realestatemanager.databinding.FragmentBrowseMasterDeta
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.navigation.browse.detail.BrowseMasterDetailFragmentNavigator
 import com.openclassrooms.realestatemanager.ui.navigation.browse.master.BrowseMasterFragmentNavigator
-import com.openclassrooms.realestatemanager.ui.property.BasePropertyFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.list.PropertyListAdapter
-import com.openclassrooms.realestatemanager.ui.property.browse.list.PropertyListFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment
+import com.openclassrooms.realestatemanager.ui.property.BaseFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.list.ListAdapter
+import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment
 
 /**
  * Fragment to handle the display of real estate for tablet.
  */
-class BrowseMasterDetailFragment : BasePropertyFragment(R.layout.fragment_browse_master_detail, null),
-        PropertyListAdapter.OnItemClickListener {
+class BrowseMasterDetailFragment : BaseFragment(R.layout.fragment_browse_master_detail, null),
+        ListAdapter.OnItemClickListener {
 
     private var _binding: FragmentBrowseMasterDetailBinding? = null
     val binding get() = _binding!!
@@ -63,8 +63,8 @@ class BrowseMasterDetailFragment : BasePropertyFragment(R.layout.fragment_browse
 
     override fun onResume() {
         super.onResume()
-        val adapter = (master.childFragmentManager.primaryNavigationFragment as PropertyListFragment)
-                .binding.recyclerView.adapter as PropertyListAdapter
+        val adapter = (master.childFragmentManager.primaryNavigationFragment as ListFragment)
+                .binding.recyclerView.adapter as ListAdapter
         adapter.setOnItemClickListener(this)
     }
 
@@ -79,7 +79,7 @@ class BrowseMasterDetailFragment : BasePropertyFragment(R.layout.fragment_browse
     }
 
     override fun onItemClick(propertyId: String) {
-        (detail.childFragmentManager.primaryNavigationFragment as PropertyMapFragment)
+        (detail.childFragmentManager.primaryNavigationFragment as MapFragment)
                 .zoomOnMarkerPosition(propertyId = propertyId)
     }
 }

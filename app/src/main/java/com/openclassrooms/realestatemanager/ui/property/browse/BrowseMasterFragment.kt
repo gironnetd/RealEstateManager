@@ -10,12 +10,12 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentBrowseMasterBinding
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.navigation.browse.master.BrowseMasterFragmentNavigator
-import com.openclassrooms.realestatemanager.ui.property.BasePropertyFragment
+import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 
 /**
  * Fragment to handle the display of real estate for smartphone.
  */
-class BrowseMasterFragment : BasePropertyFragment(R.layout.fragment_browse_master, null) {
+class BrowseMasterFragment : BaseFragment(R.layout.fragment_browse_master, null) {
 
     private var _binding: FragmentBrowseMasterBinding? = null
     val binding get() = _binding!!

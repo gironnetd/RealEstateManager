@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.ui.property.search
+package com.openclassrooms.realestatemanager.ui.property.create
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,19 +7,19 @@ import android.view.ViewGroup
 import androidx.navigation.ui.setupWithNavController
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.ui.MainActivity
-import com.openclassrooms.realestatemanager.ui.property.BasePropertyFragment
+import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 
 /**
- * Fragment to Search one or several real estates.
+ * Fragment to Create a real estate.
  */
-class PropertySearchFragment : BasePropertyFragment(R.layout.fragment_search, null) {
+class CreateFragment : BaseFragment(R.layout.fragment_create, null) {
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_search, container, false)
+        return inflater.inflate(R.layout.fragment_create, container, false)
     }
 
     override fun initializeToolbar() {

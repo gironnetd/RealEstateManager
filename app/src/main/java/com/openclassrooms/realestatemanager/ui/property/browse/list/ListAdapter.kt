@@ -16,9 +16,9 @@ import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.models.storageUrl
 import com.openclassrooms.realestatemanager.util.GlideManager
 
-class PropertyListAdapter(
+class ListAdapter(
         private val requestManager: GlideManager,
-) : RecyclerView.Adapter<PropertyListAdapter.PropertyViewHolder>() {
+) : RecyclerView.Adapter<ListAdapter.PropertyViewHolder>() {
 
     interface OnItemClickListener {
         fun onItemClick(propertyId: String)
@@ -98,8 +98,8 @@ class PropertyListAdapter(
                     true -> { callBack?.onItemClick(item.id) }
                     false -> {
                         val propertyId = item.id
-                        val action = PropertyListFragmentDirections.navigationDetailAction(
-                                from = PropertyListFragment::class.java.name,
+                        val action = ListFragmentDirections.navigationDetailAction(
+                                from = ListFragment::class.java.name,
                                 propertyId = propertyId
                         )
                         it.findNavController().navigate(action)

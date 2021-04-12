@@ -14,8 +14,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.ui.navigation.KeepStateNavigator
-import com.openclassrooms.realestatemanager.ui.property.create.PropertyCreateFragment
-import com.openclassrooms.realestatemanager.ui.property.search.PropertySearchFragment
+import com.openclassrooms.realestatemanager.ui.property.create.CreateFragment
+import com.openclassrooms.realestatemanager.ui.property.search.SearchFragment
 import com.openclassrooms.realestatemanager.ui.simulation.SimulationFragment
 
 class MainActivity : AppCompatActivity() {
@@ -71,10 +71,10 @@ class MainActivity : AppCompatActivity() {
             SimulationFragment::class.java.name -> {
                 navController.navigate(R.id.navigation_simulation)
             }
-            PropertyCreateFragment::class.java.name -> {
+            CreateFragment::class.java.name -> {
                 navController.navigate(R.id.navigation_create)
             }
-            PropertySearchFragment::class.java.name -> {
+            SearchFragment::class.java.name -> {
                 navController.navigate(R.id.navigation_search)
             }
         }

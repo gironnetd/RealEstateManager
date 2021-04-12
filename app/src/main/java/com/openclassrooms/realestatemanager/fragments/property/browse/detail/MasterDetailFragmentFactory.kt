@@ -3,10 +3,10 @@ package com.openclassrooms.realestatemanager.fragments.property.browse.detail
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
-import com.openclassrooms.realestatemanager.ui.property.browse.detail.PropertyDetailFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.edit.PropertyEditFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.list.PropertyListFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.map.PropertyMapFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.edit.EditFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment
 import com.openclassrooms.realestatemanager.util.GlideManager
 import javax.inject.Inject
 
@@ -21,26 +21,26 @@ constructor(
     override fun instantiate(classLoader: ClassLoader, className: String) =
 
             when (className) {
-                PropertyListFragment::class.java.name -> {
-                    val fragment = PropertyListFragment(viewModelFactory = viewModelFactory,
+                ListFragment::class.java.name -> {
+                    val fragment = ListFragment(viewModelFactory = viewModelFactory,
                             requestManager = requestManager
                     )
                     fragment
                 }
 
-                PropertyMapFragment::class.java.name -> {
-                    val fragment = PropertyMapFragment(viewModelFactory = viewModelFactory)
+                MapFragment::class.java.name -> {
+                    val fragment = MapFragment(viewModelFactory = viewModelFactory)
                     fragment
                 }
 
-                PropertyDetailFragment::class.java.name -> {
-                    val fragment = PropertyDetailFragment(viewModelFactory = viewModelFactory,
+                DetailFragment::class.java.name -> {
+                    val fragment = DetailFragment(viewModelFactory = viewModelFactory,
                             requestManager = requestManager)
                     fragment
                 }
 
-                PropertyEditFragment::class.java.name -> {
-                    val fragment = PropertyEditFragment()
+                EditFragment::class.java.name -> {
+                    val fragment = EditFragment()
                     fragment
                 }
                 else -> super.instantiate(classLoader, className)
