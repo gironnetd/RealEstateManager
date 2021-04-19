@@ -3,7 +3,9 @@ package com.openclassrooms.realestatemanager.api.property
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.data.remote.PropertyApiService
+import com.openclassrooms.realestatemanager.models.Picture
 import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.util.ConstantsTest.PICTURES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import io.reactivex.Completable
@@ -19,9 +21,11 @@ constructor(
         var jsonUtil: JsonUtil,
 ) : PropertyApiService {
     var propertiesJsonFileName: String = PROPERTIES_DATA_FILENAME
+    var picturesJsonFileName: String = PICTURES_DATA_FILENAME
     var networkDelay: Long = 0L
 
     var properties: List<Property> = mutableListOf()
+    var pictures: List<Picture> = mutableListOf()
 
     override fun insertProperties(properties: List<Property>): Completable {
         this.properties.toMutableList().addAll(properties)
@@ -29,10 +33,19 @@ constructor(
     }
 
     override fun findAllProperties(): Single<List<Property>> {
-        val rawJson = jsonUtil.readJSONFromAsset(propertiesJsonFileName)
+        var rawJson = jsonUtil.readJSONFromAsset(propertiesJsonFileName)
         properties = Gson().fromJson(rawJson, object : TypeToken<List<Property>>() {}.type)
 
         properties = properties.sortedBy { it.id }
+
+        rawJson =  jsonUtil.readJSONFromAsset(picturesJsonFileName)
+
+        pictures = Gson().fromJson(rawJson, object : TypeToken<List<Picture>>() {}.type)
+
+        properties.forEach {
+            it.pictures.addAll(pictures)
+        }
+
         return Single.just(properties).delay(networkDelay, TimeUnit.MILLISECONDS)
     }
 }

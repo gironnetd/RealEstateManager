@@ -1,9 +1,8 @@
-package com.codingwithmitch.espressodaggerexamples.util
+package com.openclassrooms.realestatemanager.util
 
 import android.widget.ImageView
 import com.google.firebase.storage.StorageReference
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
-import com.openclassrooms.realestatemanager.util.GlideManager
 import javax.inject.Inject
 
 @BrowseScope
@@ -15,7 +14,7 @@ constructor() : GlideManager {
         // does nothing
     }
 
-    override fun setImage(storageReference: StorageReference, imageView: ImageView) {
+    override fun setImage(storageReference: StorageReference, imageView: ImageView, synchronized: Boolean) {
         // does nothing
     }
 }

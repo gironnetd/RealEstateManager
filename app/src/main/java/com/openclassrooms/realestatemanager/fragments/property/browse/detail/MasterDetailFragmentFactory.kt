@@ -29,7 +29,8 @@ constructor(
                 }
 
                 MapFragment::class.java.name -> {
-                    val fragment = MapFragment(viewModelFactory = viewModelFactory)
+                    val fragment = MapFragment(viewModelFactory = viewModelFactory,
+                            requestManager = requestManager)
                     fragment
                 }
 

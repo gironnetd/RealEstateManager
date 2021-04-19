@@ -2,7 +2,9 @@ package com.openclassrooms.realestatemanager.ui.property.browse
 
 import android.os.Bundle
 import android.view.*
+import androidx.core.os.bundleOf
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.openclassrooms.realestatemanager.R
@@ -14,6 +16,8 @@ import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListAdapter
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment
+import com.openclassrooms.realestatemanager.util.Constants.FROM
+import com.openclassrooms.realestatemanager.util.Constants.PROPERTY_ID
 
 /**
  * Fragment to handle the display of real estate for tablet.
@@ -79,7 +83,13 @@ class BrowseMasterDetailFragment : BaseFragment(R.layout.fragment_browse_master_
     }
 
     override fun onItemClick(propertyId: String) {
-        (detail.childFragmentManager.primaryNavigationFragment as MapFragment)
-                .zoomOnMarkerPosition(propertyId = propertyId)
+        if(detail.childFragmentManager.primaryNavigationFragment is MapFragment) {
+            (detail.childFragmentManager.primaryNavigationFragment as MapFragment)
+                    .zoomOnMarkerPosition(propertyId = propertyId)
+        } else {
+            val bundle = bundleOf(FROM to MapFragment::class.java.name,
+                    PROPERTY_ID to propertyId)
+            detail.findNavController().navigate(R.id.navigation_detail, bundle)
+        }
     }
 }

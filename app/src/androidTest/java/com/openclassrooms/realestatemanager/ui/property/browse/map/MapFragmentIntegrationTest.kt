@@ -25,6 +25,7 @@ import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterDetailFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.DEFAULT_ZOOM
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.GOOGLE_MAP_FINISH_LOADING
@@ -32,6 +33,7 @@ import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.C
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.INITIAL_ZOOM_LEVEL
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.defaultLocation
 import com.openclassrooms.realestatemanager.util.ConstantsTest
+import com.openclassrooms.realestatemanager.util.FakeGlideRequestManager
 import com.openclassrooms.realestatemanager.viewmodels.FakePropertiesViewModelFactory
 import org.hamcrest.core.AllOf.allOf
 import org.junit.Test
@@ -44,12 +46,147 @@ import java.math.RoundingMode
 @MediumTest
 class MapFragmentIntegrationTest : BaseMainActivityTests() {
 
-    lateinit var propertiesViewModelFactory: FakePropertiesViewModelFactory
-    lateinit var fakeProperties: List<Property>
-    lateinit var uiDevice: UiDevice
-    lateinit var mapFragment: MapFragment
+    private lateinit var requestManager: FakeGlideRequestManager
+    private lateinit var propertiesViewModelFactory: FakePropertiesViewModelFactory
+    private lateinit var fakeProperties: List<Property>
+    private lateinit var uiDevice: UiDevice
+    private lateinit var mapFragment: MapFragment
 
     private var leChesnay = LatLng(48.82958536116524, 2.125609030745346)
+
+    @Test
+    fun when_navigate_in_detail_fragment_then_right_property_is_selected() {
+        val app = getInstrumentation()
+                .targetContext
+                .applicationContext as TestBaseApplication
+
+        val apiService = configureFakeApiService(
+                propertiesDataSource = ConstantsTest.PROPERTIES_DATA_FILENAME, // empty list of data
+                networkDelay = 0L,
+                application = app
+        )
+
+        val propertiesRepository = configureFakeRepository(apiService, app)
+        injectTest(app)
+
+        fakeProperties = propertiesRepository.apiService.findAllProperties().blockingGet()
+
+        val isTablet = app.resources.getBoolean(R.bool.isTablet)
+
+        if(!isTablet) {
+            var masterFragment: BrowseMasterFragment? = null
+
+            launch(MainActivity::class.java).onActivity {
+                INITIAL_ZOOM_LEVEL = 17f
+                defaultLocation = leChesnay
+                mainActivity = it
+                masterFragment = BrowseMasterFragment()
+                it.setFragment(masterFragment!!)
+            }
+
+            uiDevice = UiDevice.getInstance(getInstrumentation())
+            val mapButton = uiDevice.findObject(UiSelector().textContains(app.resources.getString(R.string.button_map_title)))
+
+            try {
+                if(mapButton.exists()) {
+                    mapButton.click()
+
+                    val mapIsFinishLoading = uiDevice.wait(Until.hasObject(By.desc(GOOGLE_MAP_FINISH_LOADING)),
+                            30000)
+                    assertThat(mapIsFinishLoading).isTrue()
+
+                    val firstProperty = fakeProperties[0]
+                    firstProperty.mainPicture!!.propertyId = firstProperty.id
+
+                    val marker = uiDevice.findObject(UiSelector()
+                            .descriptionContains(firstProperty.address!!.street))
+
+                    if(marker.exists()) {
+                        marker.click()
+                        uiDevice.wait(Until.hasObject(By.desc(INFO_WINDOW_SHOW)), 15000)
+
+                        val display = mainActivity.windowManager.defaultDisplay
+                        val size = Point()
+                        display.getRealSize(size)
+                        val screenWidth = size.x
+                        val screenHeight = size.y
+                        val x = screenWidth / 2
+                        val y = (screenHeight * 0.43).toInt()
+
+                        // Click on the InfoWindow, using UIAutomator
+                        uiDevice.click(x, y)
+                        uiDevice.wait(Until.hasObject(By.res(mainActivity.packageName,
+                                "detail_fragment")), 2000)
+
+                        onView(withId(R.id.detail_fragment)).check(matches(isDisplayed()))
+
+                        val detailFragment: DetailFragment = masterFragment!!.master
+                                .childFragmentManager.primaryNavigationFragment as DetailFragment
+
+                        assertThat(detailFragment.property).isEqualTo(firstProperty)
+
+                    }
+                }
+            } catch (e: UiObjectNotFoundException) {
+                e.printStackTrace()
+            }
+        }
+
+        if(isTablet) {
+            var masterDetailFragment: BrowseMasterDetailFragment? = null
+
+            launch(MainActivity::class.java).onActivity {
+                INITIAL_ZOOM_LEVEL = 17f
+                defaultLocation = leChesnay
+                mainActivity = it
+                masterDetailFragment = BrowseMasterDetailFragment()
+                it.setFragment(masterDetailFragment!!)
+            }
+
+            uiDevice = UiDevice.getInstance(getInstrumentation())
+
+            try {
+                val mapIsFinishLoading = uiDevice.wait(Until.hasObject(By.desc(GOOGLE_MAP_FINISH_LOADING)),
+                        30000)
+                assertThat(mapIsFinishLoading).isTrue()
+
+                val firstProperty = fakeProperties[0]
+                firstProperty.mainPicture!!.propertyId = firstProperty.id
+
+                val marker = uiDevice.findObject(UiSelector()
+                        .descriptionContains(firstProperty.address!!.street))
+
+                if(marker.exists()) {
+                    marker.click()
+                    uiDevice.wait(Until.hasObject(By.desc(INFO_WINDOW_SHOW)), 15000)
+
+                    val mapFragment = masterDetailFragment!!.detail.childFragmentManager.primaryNavigationFragment as MapFragment
+                    val listFragment = masterDetailFragment!!.master.childFragmentManager.primaryNavigationFragment as ListFragment
+
+                    val display = mainActivity.windowManager.defaultDisplay
+                    val size = Point()
+                    display.getRealSize(size)
+                    val screenHeight = size.y
+                    val x = listFragment.view!!.width + mapFragment.view!!.width / 2
+                    val y = (screenHeight * 0.40).toInt()
+
+                    // Click on the InfoWindow, using UIAutomator
+                    uiDevice.click(x, y)
+                    uiDevice.wait(Until.hasObject(By.res(mainActivity.packageName,
+                            "detail_fragment")), 2000)
+
+                    onView(withId(R.id.detail_fragment)).check(matches(isDisplayed()))
+
+                    val detailFragment: DetailFragment = masterDetailFragment!!.detail
+                            .childFragmentManager.primaryNavigationFragment as DetailFragment
+
+                    assertThat(detailFragment.property).isEqualTo(firstProperty)
+                }
+            } catch (e: UiObjectNotFoundException) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     @Test
     fun is_navigate_in_detail_fragment_when_click_on_info_window() {
@@ -154,10 +291,8 @@ class MapFragmentIntegrationTest : BaseMainActivityTests() {
                     val display = mainActivity.windowManager.defaultDisplay
                     val size = Point()
                     display.getRealSize(size)
-                    val screenWidth = size.x
                     val screenHeight = size.y
                     val x = listFragment.view!!.width + mapFragment.view!!.width / 2
-                    //val x = mapFragment.view!!.x + mapFragment.view!!.width / 2
                     val y = (screenHeight * 0.40).toInt()
 
                     // Click on the InfoWindow, using UIAutomator
@@ -283,10 +418,8 @@ class MapFragmentIntegrationTest : BaseMainActivityTests() {
                     val display = mainActivity.windowManager.defaultDisplay
                     val size = Point()
                     display.getRealSize(size)
-                    val screenWidth = size.x
                     val screenHeight = size.y
                     val x = listFragment.view!!.width + mapFragment.view!!.width / 2
-                    //val x = mapFragment.view!!.x + mapFragment.view!!.width / 2
                     val y = (screenHeight * 0.40).toInt()
 
                     // Click on the InfoWindow, using UIAutomator
@@ -325,6 +458,7 @@ class MapFragmentIntegrationTest : BaseMainActivityTests() {
         val propertiesRepository = configureFakeRepository(apiService, app)
         injectTest(app)
 
+        requestManager = FakeGlideRequestManager()
         propertiesViewModelFactory = FakePropertiesViewModelFactory(propertiesRepository)
 
         fakeProperties = propertiesRepository.apiService.findAllProperties().blockingGet()
@@ -333,7 +467,7 @@ class MapFragmentIntegrationTest : BaseMainActivityTests() {
             INITIAL_ZOOM_LEVEL = 17f
             DEFAULT_ZOOM = 17f
             defaultLocation = leChesnay
-            MapFragment(propertiesViewModelFactory)
+            MapFragment(propertiesViewModelFactory, requestManager)
         }.onFragment {
             mapFragment = it
         }
@@ -367,6 +501,7 @@ class MapFragmentIntegrationTest : BaseMainActivityTests() {
         val propertiesRepository = configureFakeRepository(apiService, app)
         injectTest(app)
 
+        requestManager = FakeGlideRequestManager()
         propertiesViewModelFactory = FakePropertiesViewModelFactory(propertiesRepository)
 
         fakeProperties = propertiesRepository.apiService.findAllProperties().blockingGet()
@@ -375,7 +510,7 @@ class MapFragmentIntegrationTest : BaseMainActivityTests() {
             INITIAL_ZOOM_LEVEL = 17f
             DEFAULT_ZOOM = 17f
             defaultLocation = leChesnay
-            MapFragment(propertiesViewModelFactory)
+            MapFragment(propertiesViewModelFactory, requestManager)
         }.onFragment {
             mapFragment = it
         }
@@ -421,6 +556,7 @@ class MapFragmentIntegrationTest : BaseMainActivityTests() {
         val propertiesRepository = configureFakeRepository(apiService, app)
         injectTest(app)
 
+        requestManager = FakeGlideRequestManager()
         propertiesViewModelFactory = FakePropertiesViewModelFactory(propertiesRepository)
 
         fakeProperties = propertiesRepository.apiService.findAllProperties().blockingGet()
@@ -429,7 +565,7 @@ class MapFragmentIntegrationTest : BaseMainActivityTests() {
             INITIAL_ZOOM_LEVEL = 17f
             DEFAULT_ZOOM = 17f
             defaultLocation = leChesnay
-            MapFragment(propertiesViewModelFactory)
+            MapFragment(propertiesViewModelFactory, requestManager)
         }.onFragment{
             mapFragment = it
         }

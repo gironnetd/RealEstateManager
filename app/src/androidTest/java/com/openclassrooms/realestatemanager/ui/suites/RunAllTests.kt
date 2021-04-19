@@ -9,6 +9,7 @@ import com.openclassrooms.realestatemanager.repository.ConnectivityManagerTest
 import com.openclassrooms.realestatemanager.ui.MainActivityTest
 import com.openclassrooms.realestatemanager.ui.MainNavigationTest
 import com.openclassrooms.realestatemanager.ui.MainRotationTest
+import com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragmentIntegrationTest
 import org.junit.runner.RunWith
@@ -26,6 +27,7 @@ import org.junit.runners.Suite
         AppContentProviderTest::class,
         ConnectivityManagerTest::class,
         PropertyRepositoryTest::class,
-        MapFragmentIntegrationTest::class
+        MapFragmentIntegrationTest::class,
+        DetailFragmentIntegrationTest::class
 )
 class RunAllTests

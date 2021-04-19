@@ -42,6 +42,29 @@
         android:label="@string/detail"
         tools:layout="@layout/fragment_detail">
 
+        <action android:id="@+id/navigation_edit_action"
+            app:destination="@id/navigation_edit"
+            app:popUpTo="@id/navigation_detail"/>
+
+        <argument
+            android:name="from"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+
+        <argument
+            android:name="propertyId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </browse_master_fragment>
+
+    <browse_master_fragment
+        android:id="@+id/navigation_edit"
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.edit.EditFragment"
+        android:label="@string/update"
+        tools:layout="@layout/fragment_edit">
+
         <argument
             android:name="from"
             app:argType="string"

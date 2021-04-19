@@ -10,7 +10,16 @@
     <string name="list">Liste des biens immobiliers</string>
     <string name="detail">Detail de bien immobilier</string>
     <string name="search">Rechercher</string>
+    <string name="edit">Editer</string>
     <string name="button_list_title">Liste</string>
     <string name="button_map_title">Carte</string>
     <string name="no_property_to_display">Aucune propriété à afficher</string>
+    <string name="number_of_bedrooms">Number of bedrooms</string>
+    <string name="none">none</string>
+    <string name="number_of_bathrooms">Number of bathrooms</string>
+    <string name="number_of_rooms">Number of rooms</string>
+    <string name="surface">Surface</string>
+    <string name="description">Description</string>
+    <string name="media">Media</string>
+    <string name="location">Location</string>
 </resources>

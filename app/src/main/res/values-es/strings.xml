@@ -10,8 +10,16 @@
     <string name="list">Lista de inmuebles</string>
     <string name="detail">Detalle de bienes raíces</string>
     <string name="search">Buscar</string>
+    <string name="edit">Editar</string>
     <string name="button_list_title">lista</string>
     <string name="button_map_title">Mapa</string>
     <string name="no_property_to_display">No hay propiedad para mostrar</string>
-
+    <string name="number_of_bedrooms">Numero de habitaciones</string>
+    <string name="none">ninguna</string>
+    <string name="number_of_bathrooms">Cantidad de baños</string>
+    <string name="number_of_rooms">Número de habitaciones</string>
+    <string name="surface">Área</string>
+    <string name="description">Descripción</string>
+    <string name="media">Medios</string>
+    <string name="location">Localización</string>
 </resources>

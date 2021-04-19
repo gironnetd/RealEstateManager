@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.repository
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -58,7 +59,7 @@ class ConnectivityManagerTest : BaseMainActivityTests() {
 
         ConnectivityUtil.context = app.applicationContext
 
-        activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        activityScenario = launch(MainActivity::class.java)
                 .onActivity { activity ->
                     mainActivity = activity
                     Completable.fromCallable { if(!isInternetAvailable()) {

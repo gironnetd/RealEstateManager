@@ -45,4 +45,8 @@ data class Address(
         /** The name of the longitude column.  */
         const val COLUMN_ADDRESS_LONGITUDE = "longitude"
     }
+
+    override fun toString(): String {
+        return "$street\n$city\n$postalCode\n$country\n$state"
+    }
 }

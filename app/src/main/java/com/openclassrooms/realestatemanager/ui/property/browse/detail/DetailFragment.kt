@@ -28,9 +28,9 @@ constructor(
 ) : BaseFragment(R.layout.fragment_detail, viewModelFactory) {
 
     private var _binding: FragmentDetailBinding? = null
-    private val binding get() = _binding!!
+    val binding get() = _binding!!
 
-    private lateinit var property: Property
+    lateinit var property: Property
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,

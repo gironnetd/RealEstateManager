@@ -14,7 +14,7 @@ public class JsonUtil
 constructor() {
     fun readJSONFromAsset(fileName: String): String? {
         return try {
-            val inputStream: InputStream = javaClass.classLoader.getResourceAsStream(fileName)
+            val inputStream: InputStream = javaClass.classLoader!!.getResourceAsStream(fileName)
             inputStream.bufferedReader().use { it.readText() }
         } catch (ex: IOException) {
             ex.printStackTrace()

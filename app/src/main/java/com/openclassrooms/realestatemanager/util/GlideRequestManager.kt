@@ -1,6 +1,8 @@
 package com.openclassrooms.realestatemanager.util
 
+import android.graphics.drawable.BitmapDrawable
 import android.widget.ImageView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.firebase.storage.StorageReference
@@ -21,9 +23,18 @@ constructor(
                 .into(imageView)
     }
 
-    override fun setImage(storageReference: StorageReference, imageView: ImageView) {
-        GlideApp.with(imageView.context)
-                .load(storageReference)
-                .into(imageView)
+    override fun setImage(storageReference: StorageReference, imageView: ImageView, synchronized: Boolean ) {
+        if(synchronized) {
+                val futureBitmap = Glide.with(imageView.context)
+                        .asBitmap()
+                        .load(storageReference)
+                        .submit()
+                val mainPicture = futureBitmap.get()
+                imageView.setImageDrawable(BitmapDrawable(imageView.context.resources, mainPicture))
+        } else {
+            GlideApp.with(imageView.context)
+                    .load(storageReference)
+                    .into(imageView)
+        }
     }
 }

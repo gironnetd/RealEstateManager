@@ -136,6 +136,7 @@ public class BrowseMasterDetailFragmentNavigator extends Navigator<androidx.navi
 
         Boolean initialNavigate = false;
         Fragment currentFragment = mFragmentManager.getPrimaryNavigationFragment();
+
         if (currentFragment != null) {
             ft.detach(currentFragment);
             //transaction.hide(currentFragment)
@@ -145,7 +146,13 @@ public class BrowseMasterDetailFragmentNavigator extends Navigator<androidx.navi
 
         Fragment fragment = mFragmentManager.findFragmentByTag(tag);
 
-        if (fragment == null) {
+        if(currentFragment != null
+                && currentFragment.getClass().getName().equals(className)
+                && fragment != null) {
+            fragment = instantiateFragment(mContext, mFragmentManager, className, args);
+            fragment.setArguments(args);
+            ft.replace(mContainerId, fragment, tag);
+        } else if (fragment == null) {
             //String className = destination.getClassName();
             fragment = instantiateFragment(mContext, mFragmentManager, className, args);
             fragment.setArguments(args);

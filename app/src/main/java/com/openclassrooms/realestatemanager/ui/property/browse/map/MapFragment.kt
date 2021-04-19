@@ -1,20 +1,26 @@
 package com.openclassrooms.realestatemanager.ui.property.browse.map
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.view.View.VISIBLE
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.GoogleMap.CancelableCallback
+import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.google.maps.android.clustering.ClusterManager
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.base.BaseView
 import com.openclassrooms.realestatemanager.databinding.FragmentMapBinding
+import com.openclassrooms.realestatemanager.models.storageUrl
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterDetailFragment
@@ -23,10 +29,14 @@ import com.openclassrooms.realestatemanager.ui.property.browse.shared.Properties
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesUiModel
 import com.openclassrooms.realestatemanager.util.Constants.FROM
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTY_ID
+import com.openclassrooms.realestatemanager.util.GlideManager
+import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
+
 
 /**
  * Fragment to display real estates on map.
@@ -35,8 +45,9 @@ class MapFragment
 @Inject
 constructor(
         viewModelFactory: ViewModelProvider.Factory,
+        val requestManager: GlideManager,
 ) : BaseFragment(R.layout.fragment_map, viewModelFactory),
-        OnMapReadyCallback, GoogleMap.OnMapLoadedCallback,
+        OnMapReadyCallback, OnMapLoadedCallback,
         BaseView<PropertiesIntent, PropertiesUiModel> {
 
     lateinit var mMap: GoogleMap
@@ -138,9 +149,7 @@ constructor(
 
         mMap.setContentDescription(GOOGLE_MAP_NOT_FINISH_LOADING)
         mMap.setOnMapLoadedCallback(this)
-    }
 
-    override fun onMapLoaded() {
         items = linkedMapOf()
 
         properties.forEach { property ->
@@ -176,11 +185,22 @@ constructor(
         }
 
         clusterManager.setOnClusterClickListener { item  ->
-            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+            var cameraUpdate = CameraUpdateFactory.newLatLngZoom(
                     LatLng(item.position.latitude, item.position.longitude), (DEFAULT_ZOOM + 1.5f))
 
             if(mMap.cameraPosition.zoom == 10f) {
-                mMap.animateCamera(cameraUpdate, 2500, null)
+                cameraUpdate = CameraUpdateFactory.newLatLng(
+                        LatLng(item.position.latitude, item.position.longitude))
+
+                mMap.animateCamera(cameraUpdate, object : CancelableCallback {
+                    override fun onCancel() {}
+                    override fun onFinish() {
+                        cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                                LatLng(item.position.latitude, item.position.longitude), DEFAULT_ZOOM + 1.5f)
+
+                        mMap.animateCamera(cameraUpdate, 2500, null)
+                    }
+                })
             } else {
                 mMap.animateCamera(cameraUpdate)
             }
@@ -212,6 +232,39 @@ constructor(
                 }
             }
         }
+    }
+
+    @SuppressLint("PotentialBehaviorOverride")
+    override fun onMapLoaded() {
+        mMap.setInfoWindowAdapter(object : InfoWindowAdapter {
+
+            override fun getInfoWindow(marker: Marker?): View? {
+                return null
+            }
+
+            override fun getInfoContents(marker: Marker?): View {
+                val markerView = layoutInflater.inflate(R.layout.layout_marker, null)
+
+                val title = markerView.findViewById<TextView>(R.id.property_address_street)
+                title.text = marker!!.title
+
+                val mainPicture = markerView.findViewById<ImageView>(R.id.main_picture)
+
+                val property = properties.single { property -> property.id == selectedItem.getTag() }
+
+                val picture = property.mainPicture
+                picture!!.propertyId = property.id
+
+                val gsReference = Firebase.storage.getReferenceFromUrl(picture.storageUrl(isThumbnail = true))
+
+                Completable.fromAction {
+                    requestManager.setImage(gsReference, mainPicture, true)
+                }.subscribeOn(SchedulerProvider.io()).blockingAwait()
+
+                return markerView
+            }
+        })
+
         mMap.setContentDescription(GOOGLE_MAP_FINISH_LOADING)
     }
 
@@ -220,13 +273,21 @@ constructor(
         selectedItem  = items.keys.single { item -> item.getTag() == property.id }
 
         if(mMap.cameraPosition.zoom == 10f) {
-            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                    LatLng(selectedItem.position.latitude, selectedItem.position.longitude), (DEFAULT_ZOOM + 1.5f))
+            var cameraUpdate = CameraUpdateFactory.newLatLng(
+                    LatLng(selectedItem.position.latitude, selectedItem.position.longitude))
 
-            mMap.animateCamera(cameraUpdate, 2500, object : CancelableCallback {
+            mMap.animateCamera(cameraUpdate, object : CancelableCallback {
                 override fun onCancel() {}
                 override fun onFinish() {
-                    showOrHideInfoWindow()
+                    cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                            LatLng(selectedItem.position.latitude, selectedItem.position.longitude), DEFAULT_ZOOM + 1.5f)
+
+                    mMap.animateCamera(cameraUpdate, 2500, object : CancelableCallback {
+                        override fun onCancel() {}
+                        override fun onFinish() {
+                            showOrHideInfoWindow()
+                        }
+                    })
                 }
             })
         } else {
@@ -247,14 +308,25 @@ constructor(
                     selectedItem.position.longitude), (DEFAULT_ZOOM + 3))
 
             if(mMap.cameraPosition.zoom == 10f) {
-                mMap.animateCamera(cameraUpdate, 2500, null)
+                cameraUpdate = CameraUpdateFactory.newLatLng(
+                        LatLng(selectedItem.position.latitude, selectedItem.position.longitude))
+
+                mMap.animateCamera(cameraUpdate, object: CancelableCallback {
+                    override fun onCancel() {}
+                    override fun onFinish() {
+                        cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                                LatLng(selectedItem.position.latitude, selectedItem.position.longitude), DEFAULT_ZOOM + 1.5f)
+
+                        mMap.animateCamera(cameraUpdate, 2500, null)
+                    }
+                })
             } else {
                 mMap.animateCamera(cameraUpdate, object : CancelableCallback {
                     override fun onCancel() {}
                     override fun onFinish() {
                         val marker = markers.find { marker -> marker.title == selectedItem.title }
                         marker?.let {
-                            if(!items[selectedItem]!!) {
+                            if (!items[selectedItem]!!) {
                                 it.showInfoWindow()
 
                                 items[selectedItem] = true

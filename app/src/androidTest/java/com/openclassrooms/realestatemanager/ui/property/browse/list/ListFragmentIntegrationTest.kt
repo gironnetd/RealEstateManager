@@ -16,7 +16,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.*
-import com.codingwithmitch.espressodaggerexamples.util.FakeGlideRequestManager
 import com.google.android.gms.maps.model.LatLng
 import com.google.common.truth.Truth.assertThat
 import com.openclassrooms.realestatemanager.R
@@ -30,6 +29,7 @@ import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterDetailFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListAdapter.PropertyViewHolder
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.GOOGLE_MAP_FINISH_LOADING
@@ -39,9 +39,13 @@ import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.C
 import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.EspressoIdlingResourceRule
+import com.openclassrooms.realestatemanager.util.FakeGlideRequestManager
 import com.openclassrooms.realestatemanager.viewmodels.FakePropertiesViewModelFactory
 import org.hamcrest.core.AllOf
-import org.junit.*
+import org.junit.Before
+import org.junit.FixMethodOrder
+import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
 
@@ -77,9 +81,109 @@ class ListFragmentIntegrationTest : BaseMainActivityTests() {
         )
     }
 
-    @After
-    public override fun tearDown() {
-        super.tearDown()
+    @Test
+    fun when_navigate_in_detail_fragment_then_right_property_is_selected() {
+
+        val app = InstrumentationRegistry
+                .getInstrumentation()
+                .targetContext
+                .applicationContext as TestBaseApplication
+
+        val apiService = configureFakeApiService(
+                propertiesDataSource = PROPERTIES_DATA_FILENAME, // empty list of data
+                networkDelay = 0L,
+                application = app
+        )
+
+        val propertiesRepository = configureFakeRepository(apiService, app)
+        injectTest(app)
+
+        fakeProperties = propertiesRepository.apiService.findAllProperties().blockingGet()
+
+        val isTablet = app.resources.getBoolean(R.bool.isTablet)
+
+        if(!isTablet) {
+            var masterFragment: BrowseMasterFragment? = null
+
+            launch(MainActivity::class.java).onActivity {
+                masterFragment = BrowseMasterFragment()
+                it.setFragment(masterFragment!!)
+            }
+
+            val recyclerView = onView(withId(R.id.recycler_view))
+            recyclerView.check(matches(isDisplayed()))
+
+            val firstProperty = fakeProperties[2]
+            firstProperty.mainPicture!!.propertyId = firstProperty.id
+
+            recyclerView.perform(RecyclerViewActions.actionOnItemAtPosition<PropertyViewHolder>(2, click()))
+            onView(withId(R.id.detail_fragment)).check(matches(isDisplayed()))
+
+            val detailFragment: DetailFragment = masterFragment!!.master
+                    .childFragmentManager.primaryNavigationFragment as DetailFragment
+
+            assertThat(detailFragment.property).isEqualTo(firstProperty)
+        }
+
+        if(isTablet) {
+
+            var masterDetailFragment: BrowseMasterDetailFragment ? = null
+
+            launch(MainActivity::class.java).onActivity {
+                INITIAL_ZOOM_LEVEL = 17f
+                defaultLocation = leChesnay
+                mainActivity = it
+                masterDetailFragment = BrowseMasterDetailFragment()
+                it.setFragment(masterDetailFragment!!)
+            }
+
+            uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+
+            val mapIsFinishLoading = uiDevice.wait(Until.hasObject(By.desc(GOOGLE_MAP_FINISH_LOADING)), 20000)
+            assertThat(mapIsFinishLoading).isTrue()
+
+            val firstProperty = fakeProperties[0]
+            firstProperty.mainPicture!!.propertyId = firstProperty.id
+
+            val recyclerView = onView(withId(R.id.recycler_view))
+            recyclerView.check(matches(isDisplayed()))
+
+            recyclerView.perform(RecyclerViewActions.actionOnItemAtPosition<PropertyViewHolder>(0, click()))
+
+            uiDevice.wait(Until.hasObject(By.desc(INFO_WINDOW_SHOW)), 15000)
+
+            val title = uiDevice.findObject(UiSelector().text(firstProperty.address!!.street))
+
+            try {
+                if(title.exists()) {
+
+                    val mapFragment = masterDetailFragment!!.detail.childFragmentManager.primaryNavigationFragment as MapFragment
+                    val listFragment = masterDetailFragment!!.master.childFragmentManager.primaryNavigationFragment as ListFragment
+
+                    val display = mainActivity.windowManager.defaultDisplay
+                    val size = Point()
+                    display.getRealSize(size)
+                    val screenHeight = size.y
+                    val x = listFragment.view!!.width + mapFragment.view!!.width / 2
+                    val y = (screenHeight * 0.40).toInt()
+
+                    // Click on the InfoWindow, using UIAutomator
+                    uiDevice.click(x, y)
+                    uiDevice.wait(Until.hasObject(By.res(mainActivity.packageName,
+                            "detail_fragment")), 2000)
+
+                    onView(withId(R.id.detail_fragment)).check(matches(isDisplayed()))
+
+                    val detailFragment: DetailFragment = masterDetailFragment!!.detail
+                            .childFragmentManager.primaryNavigationFragment as DetailFragment
+
+                    assertThat(detailFragment.property).isEqualTo(firstProperty)
+                }
+            } catch (e: UiObjectNotFoundException) {
+                e.printStackTrace()
+            }
+        }
+
     }
 
     @Test

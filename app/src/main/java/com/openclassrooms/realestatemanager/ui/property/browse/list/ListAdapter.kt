@@ -14,11 +14,12 @@ import com.google.firebase.storage.ktx.storage
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.models.storageUrl
+import com.openclassrooms.realestatemanager.ui.property.browse.list.ListAdapter.PropertyViewHolder
 import com.openclassrooms.realestatemanager.util.GlideManager
 
 class ListAdapter(
         private val requestManager: GlideManager,
-) : RecyclerView.Adapter<ListAdapter.PropertyViewHolder>() {
+) : RecyclerView.Adapter<PropertyViewHolder>() {
 
     interface OnItemClickListener {
         fun onItemClick(propertyId: String)
@@ -86,7 +87,7 @@ class ListAdapter(
             item.mainPicture?.let { picture ->
                 picture.propertyId = item.id
                 val gsReference = Firebase.storage.getReferenceFromUrl(picture.storageUrl(isThumbnail = true))
-                requestManager.setImage(gsReference, mainPicture)
+                requestManager.setImage(gsReference, mainPicture, false)
             }
 
             item.type.let { type.text = it.type }

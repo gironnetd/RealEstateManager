@@ -57,6 +57,9 @@ data class Property(
 
         @ColumnInfo(name = "sold_date")
         var soldDate: Date? = null,
+
+        @Ignore
+        var pictures: MutableList<Picture> = mutableListOf()
 ) {
 
         constructor(cursor: Cursor) : this() {

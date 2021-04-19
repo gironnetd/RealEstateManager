@@ -7,5 +7,5 @@ interface GlideManager {
 
     fun setImage(imageUrl: String, imageView: ImageView)
 
-    fun setImage(storageReference: StorageReference, imageView: ImageView)
+    fun setImage(storageReference: StorageReference, imageView: ImageView, synchronized: Boolean)
 }
