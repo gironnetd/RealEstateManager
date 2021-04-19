@@ -20,11 +20,13 @@ import com.openclassrooms.realestatemanager.data.local.PropertyLocalDataSource
 import com.openclassrooms.realestatemanager.data.local.dao.PropertyDao
 import com.openclassrooms.realestatemanager.data.remote.PropertyRemoteDataSource
 import com.openclassrooms.realestatemanager.di.TestAppComponent
+import com.openclassrooms.realestatemanager.models.Picture
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil.Companion.switchAllNetworks
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil.Companion.waitInternetStateChange
 import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
+import com.openclassrooms.realestatemanager.util.ConstantsTest.PICTURES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
@@ -77,11 +79,24 @@ class PropertyRepositoryTest : TestCase() {
 
         networkConnectionLiveData = NetworkConnectionLiveData(app.applicationContext)
 
-        val rawJson = jsonUtil.readJSONFromAsset(PROPERTIES_DATA_FILENAME)
+        var rawJson = jsonUtil.readJSONFromAsset(PROPERTIES_DATA_FILENAME)
         fakeProperties = Gson().fromJson(
                 rawJson,
                 object : TypeToken<List<Property>>() {}.type
         )
+
+        rawJson =  jsonUtil.readJSONFromAsset(PICTURES_DATA_FILENAME)
+
+        fakeProperties.forEachIndexed { index, property ->
+
+            var pictures: List<Picture> = Gson().fromJson(rawJson, object : TypeToken<List<Picture>>() {}.type)
+            pictures.forEach { picture ->
+                picture.propertyId = property.id
+            }
+
+            fakeProperties[index].pictures.addAll(pictures)
+        }
+
         fakeProperties = fakeProperties.sortedBy { it.id }
 
         ConnectivityUtil.context = app.applicationContext

@@ -1,9 +1,14 @@
 package com.openclassrooms.realestatemanager.models
 
 import android.database.Cursor
+import android.provider.BaseColumns
 import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.TypeConverter
 import com.google.firebase.firestore.Exclude
 import com.google.gson.annotations.SerializedName
+import com.openclassrooms.realestatemanager.models.Picture.Companion.COLUMN_ID
+import com.openclassrooms.realestatemanager.models.Picture.Companion.TABLE_NAME
 import com.openclassrooms.realestatemanager.util.Constants
 import com.openclassrooms.realestatemanager.util.Constants.GS_REFERENCE
 import com.openclassrooms.realestatemanager.util.Constants.MAIN_FILE_NAME
@@ -27,9 +32,10 @@ fun Picture.storageUrl(isThumbnail: Boolean = false): String {
     return url.toString()
 }
 
+@Entity(tableName = TABLE_NAME, primaryKeys = [COLUMN_ID, "property_id"])
 data class Picture(
         @SerializedName(value = "id")
-        @ColumnInfo(name = "id")
+        @ColumnInfo(index = true, name = COLUMN_ID)
         var id: String = "",
 
         @ColumnInfo(name = "property_id")
@@ -43,14 +49,14 @@ data class Picture(
         if(isMainPicture) {
             id = cursor.getString(
                     cursor.getColumnIndex(
-                            PREFIX_MAIN_PICTURE + COLUMN_PICTURE_ID))
+                            PREFIX_MAIN_PICTURE + COLUMN_ID))
             propertyId = cursor.getString(
                     cursor.getColumnIndex(
                             PREFIX_MAIN_PICTURE + COLUMN_PICTURE_PROPERTY_ID
-                            ))
+                    ))
             description = cursor.getString(
                     cursor.getColumnIndex(
-                        PREFIX_MAIN_PICTURE + COLUMN_PICTURE_DESCRIPTION
+                            PREFIX_MAIN_PICTURE + COLUMN_PICTURE_DESCRIPTION
                     ))
             type = PictureType.valueOf(
                     cursor.getString(
@@ -60,7 +66,7 @@ data class Picture(
         } else {
             id = cursor.getString(
                     cursor.getColumnIndex(
-                            COLUMN_PICTURE_ID))
+                            COLUMN_ID))
             propertyId = cursor.getString(
                     cursor.getColumnIndex(
                             COLUMN_PICTURE_PROPERTY_ID
@@ -77,7 +83,35 @@ data class Picture(
         }
     }
 
+    override fun toString(): String {
+        return StringBuffer()
+                .append(id)
+                .append(SEPARATOR)
+                .append(propertyId)
+                .append(SEPARATOR)
+                .append(description)
+                .append(SEPARATOR)
+                .append(type)
+                .toString()
+    }
+
+    constructor(string: String): this() {
+        val split = string.split(SEPARATOR)
+        id = split[0]
+        propertyId = split[1]
+        description = split[2]
+        type = PictureType.valueOf(split[3])
+    }
+
     companion object {
+
+        const val SEPARATOR = ","
+        /** The name of the Picture table.  */
+        const val TABLE_NAME: String = "pictures"
+
+        /** The name of the ID column.  */
+        const val COLUMN_ID: String = BaseColumns._ID
+
         /** The name of the id column.  */
         const val COLUMN_PICTURE_ID = "id"
 
@@ -92,6 +126,20 @@ data class Picture(
 
         /** The name of the prefix main picture in database.  */
         const val PREFIX_MAIN_PICTURE = "main_picture_"
+    }
+}
+
+class PictureConverter {
+    @TypeConverter
+    fun picturesToString(pictures: MutableList<Picture>?): String? =
+            pictures?.joinToString(separator = SEPARATOR) { it.toString() }
+
+    @TypeConverter
+    fun stringToPictures(stringPictures: String?): MutableList<Picture>? =
+            stringPictures?.split(SEPARATOR)?.map { Picture(it) }?.toMutableList()
+
+    companion object {
+        private const val SEPARATOR: String = ";"
     }
 }
 

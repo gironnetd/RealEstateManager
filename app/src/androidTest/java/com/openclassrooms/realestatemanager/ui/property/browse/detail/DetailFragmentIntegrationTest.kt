@@ -159,11 +159,11 @@ class DetailFragmentIntegrationTest : BaseMainActivityTests() {
         val isTablet = app.resources.getBoolean(R.bool.isTablet)
 
         if(!isTablet) {
-            onView(withId(R.id.map_container)).check(isCompletelyBelow(withId(R.id.layout_bathrooms)))
+            onView(withId(R.id.map_fragment)).check(isCompletelyBelow(withId(R.id.layout_bathrooms)))
         }
 
         if(isTablet) {
-            onView(withId(R.id.map_container)).check(isCompletelyRightOf(withId(R.id.layout_location)))
+            onView(withId(R.id.map_fragment)).check(isCompletelyRightOf(withId(R.id.layout_location)))
         }
     }
 

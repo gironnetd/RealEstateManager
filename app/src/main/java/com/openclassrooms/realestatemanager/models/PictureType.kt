@@ -9,7 +9,7 @@ enum class PictureType(val type: String) {
     FACADE("facade"),
     KITCHEN("kitchen"),
     LOUNGE("lounge"),
-    NONE("None")
+    NONE("none")
 }
 
 class PictureTypeConverter {

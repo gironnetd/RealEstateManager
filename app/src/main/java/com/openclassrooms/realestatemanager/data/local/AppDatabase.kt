@@ -6,10 +6,11 @@ import androidx.room.TypeConverters
 import com.openclassrooms.realestatemanager.data.local.dao.PropertyDao
 import com.openclassrooms.realestatemanager.models.*
 
-@Database(entities = [Property::class], version = 1, exportSchema = false)
+@Database(entities = [Property::class, Picture::class], version = 1, exportSchema = false)
 @TypeConverters(*arrayOf(PropertyTypeConverter::class,
         PropertyStatusConverter::class,
         PictureTypeConverter::class,
+        PictureConverter::class,
         InterestPointConverter::class,
         DateConverter::class
 ))

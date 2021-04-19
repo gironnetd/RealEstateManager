@@ -321,29 +321,16 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <FrameLayout
-                android:id="@+id/map_container"
+            <fragment
+                android:id="@+id/map_fragment"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_marginEnd="16dp"
                 android:layout_width="250dp"
                 android:layout_height="250dp"
                 android:background="@android:color/darker_gray"
-                android:layout_gravity="center"
-                />
+                android:layout_gravity="center" />
 
         </LinearLayout>
-
-
-        <!--            <fragment-->
-        <!--                android:name="com.google.android.gms.maps.MapFragment"-->
-        <!--                android:id="@+id/lite_mode_map"-->
-        <!--                android:layout_marginTop="16dp"-->
-        <!--                android:layout_marginBottom="16dp"-->
-        <!--                android:layout_width="350dp"-->
-        <!--                android:layout_height="350dp"-->
-        <!--                android:layout_gravity="center"-->
-        <!--                app:cameraZoom="17"-->
-        <!--                app:mapType="normal"-->
-        <!--                app:liteMode="true"/>-->
 
         <TextView
             android:id="@+id/property_address_street"

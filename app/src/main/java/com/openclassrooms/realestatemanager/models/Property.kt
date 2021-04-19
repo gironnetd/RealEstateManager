@@ -2,10 +2,22 @@ package com.openclassrooms.realestatemanager.models
 
 import android.content.ContentValues
 import android.database.Cursor
+import android.database.MatrixCursor
 import android.provider.BaseColumns
 import androidx.annotation.NonNull
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
+import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_CITY
+import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_COUNTRY
+import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_LATITUDE
+import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_LONGITUDE
+import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_POSTAL_CODE
+import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_STATE
+import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_STREET
+import com.openclassrooms.realestatemanager.models.Picture.Companion.COLUMN_PICTURE_DESCRIPTION
+import com.openclassrooms.realestatemanager.models.Picture.Companion.COLUMN_PICTURE_PROPERTY_ID
+import com.openclassrooms.realestatemanager.models.Picture.Companion.COLUMN_PICTURE_TYPE
+import com.openclassrooms.realestatemanager.models.Picture.Companion.PREFIX_MAIN_PICTURE
 import com.openclassrooms.realestatemanager.models.Property.Companion.TABLE_NAME
 import java.util.*
 
@@ -49,7 +61,7 @@ data class Property(
         @ColumnInfo(name = "agent_id")
         var agentId: String? = null,
 
-        @Embedded(prefix = Picture.PREFIX_MAIN_PICTURE)
+        @Embedded(prefix = PREFIX_MAIN_PICTURE)
         var mainPicture: Picture? = null,
 
         @ColumnInfo(name = "entry_date")
@@ -72,10 +84,14 @@ data class Property(
                 bedRooms = cursor.getInt(cursor.getColumnIndex(COLUMN_BEDROOMS))
                 bathRooms = cursor.getInt(cursor.getColumnIndex(COLUMN_BATHROOMS))
                 description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION))
-                address = Address(cursor = cursor)
+                if (!cursor.isNull(cursor.getColumnIndex(COLUMN_ADDRESS_STREET))) {
+                        address = Address(cursor = cursor)
+                }
+
                 cursor.getString(cursor.getColumnIndex(COLUMN_INTEREST_POINTS))?.let {
                         interestPoints = InterestPointConverter().stringToInterestPoints(it)!!
                 }
+
                 status = PropertyStatus.valueOf(
                         cursor.getString(cursor.getColumnIndex(COLUMN_PROPERTY_STATUS)))
                 agentId = cursor.getString(cursor.getColumnIndex(COLUMN_AGENT_ID))
@@ -87,6 +103,9 @@ data class Property(
                 if(!cursor.isNull(cursor.getColumnIndex(COLUMN_SOLD_DATE))) {
                         soldDate = DateConverter()
                                 .fromTimestamp(cursor.getLong(cursor.getColumnIndex(COLUMN_SOLD_DATE)))!!
+                }
+                if(!cursor.isNull(cursor.getColumnIndex(COLUMN_PICTURES))) {
+                        pictures = PictureConverter().stringToPictures(cursor.getString(cursor.getColumnIndex(COLUMN_PICTURES)))!!
                 }
         }
 
@@ -142,6 +161,70 @@ data class Property(
                 /** The name of the sold date column.  */
                 const val COLUMN_SOLD_DATE = "sold_date"
 
+                /** The name of the pictures column.  */
+                const val COLUMN_PICTURES = "pictures"
+
+                fun cursorFromProperties(properties: List<Property>): Cursor {
+                        val cursor = MatrixCursor(arrayOf(
+                                COLUMN_ID,
+                                COLUMN_PROPERTY_TYPE,
+                                COLUMN_PRICE,
+                                COLUMN_SURFACE,
+                                COLUMN_ROOMS,
+                                COLUMN_BEDROOMS,
+                                COLUMN_BATHROOMS,
+                                COLUMN_DESCRIPTION,
+                                COLUMN_ADDRESS_STREET,
+                                COLUMN_ADDRESS_CITY,
+                                COLUMN_ADDRESS_POSTAL_CODE,
+                                COLUMN_ADDRESS_COUNTRY,
+                                COLUMN_ADDRESS_STATE,
+                                COLUMN_ADDRESS_LATITUDE,
+                                COLUMN_ADDRESS_LONGITUDE,
+                                COLUMN_INTEREST_POINTS,
+                                COLUMN_PROPERTY_STATUS,
+                                COLUMN_AGENT_ID,
+                                PREFIX_MAIN_PICTURE + Picture.COLUMN_ID,
+                                PREFIX_MAIN_PICTURE + COLUMN_PICTURE_PROPERTY_ID,
+                                PREFIX_MAIN_PICTURE + COLUMN_PICTURE_DESCRIPTION,
+                                PREFIX_MAIN_PICTURE + COLUMN_PICTURE_TYPE,
+                                COLUMN_ENTRY_DATE,
+                                COLUMN_SOLD_DATE,
+                                COLUMN_PICTURES
+                        ))
+
+                        properties.forEach { property ->
+                                cursor.newRow()
+                                        .add(COLUMN_ID, property.id)
+                                        .add(COLUMN_PROPERTY_TYPE, property.type.name)
+                                        .add(COLUMN_PRICE, property.price)
+                                        .add(COLUMN_SURFACE, property.surface)
+                                        .add(COLUMN_ROOMS, property.rooms)
+                                        .add(COLUMN_BEDROOMS, property.bedRooms)
+                                        .add(COLUMN_BATHROOMS, property.bathRooms)
+                                        .add(COLUMN_DESCRIPTION, property.description)
+                                        .add(COLUMN_ADDRESS_STREET, property.address?.street)
+                                        .add(COLUMN_ADDRESS_CITY, property.address?.city)
+                                        .add(COLUMN_ADDRESS_POSTAL_CODE, property.address?.postalCode)
+                                        .add(COLUMN_ADDRESS_COUNTRY, property.address?.country)
+                                        .add(COLUMN_ADDRESS_STATE, property.address?.state)
+                                        .add(COLUMN_ADDRESS_LATITUDE, property.address?.latitude)
+                                        .add(COLUMN_ADDRESS_LONGITUDE, property.address?.longitude)
+                                        .add(COLUMN_INTEREST_POINTS, InterestPointConverter().interestPointsToString(property.interestPoints))
+                                        .add(COLUMN_PROPERTY_STATUS, property.status.name)
+                                        .add(COLUMN_AGENT_ID, property.agentId)
+                                        .add(PREFIX_MAIN_PICTURE + Picture.COLUMN_ID, property.mainPicture?.id )
+                                        .add(PREFIX_MAIN_PICTURE + COLUMN_PICTURE_PROPERTY_ID, property.mainPicture?.propertyId)
+                                        .add(PREFIX_MAIN_PICTURE + COLUMN_PICTURE_DESCRIPTION, property.mainPicture?.description)
+                                        .add(PREFIX_MAIN_PICTURE + COLUMN_PICTURE_TYPE, property.mainPicture?.type?.name)
+                                        .add(COLUMN_ENTRY_DATE, DateConverter().dateToTimestamp(property.entryDate))
+                                        .add(COLUMN_SOLD_DATE, DateConverter().dateToTimestamp(property.soldDate))
+                                        .add(COLUMN_PICTURES, PictureConverter().picturesToString(property.pictures))
+
+                        }
+                        return cursor
+                }
+
                 @NonNull
                 fun fromContentValues(values: ContentValues?): Property {
                         val property = Property()
@@ -171,12 +254,40 @@ data class Property(
                                         property.description = it.getAsString(COLUMN_DESCRIPTION)
                                 }
 
-                                if (it.containsKey(COLUMN_ADDRESS)) {
-                                        // property.description = it.getAsString(COLUMN_ADDRESS)
+                                if(property.address == null) {
+                                        property.address = Address()
+                                }
+
+                                if (it.containsKey(COLUMN_ADDRESS_STREET)) {
+                                         property.address!!.street = it.getAsString(COLUMN_ADDRESS_STREET)
+                                }
+
+                                if (it.containsKey(COLUMN_ADDRESS_CITY)) {
+                                        property.address!!.city = it.getAsString(COLUMN_ADDRESS_CITY)
+                                }
+
+                                if (it.containsKey(COLUMN_ADDRESS_POSTAL_CODE)) {
+                                        property.address!!.postalCode = it.getAsString(COLUMN_ADDRESS_POSTAL_CODE)
+                                }
+
+                                if (it.containsKey(COLUMN_ADDRESS_COUNTRY)) {
+                                        property.address!!.country = it.getAsString(COLUMN_ADDRESS_COUNTRY)
+                                }
+
+                                if (it.containsKey(COLUMN_ADDRESS_STATE)) {
+                                        property.address!!.state = it.getAsString(COLUMN_ADDRESS_STATE)
+                                }
+
+                                if (it.containsKey(COLUMN_ADDRESS_LATITUDE)) {
+                                        property.address!!.latitude = it.getAsDouble(COLUMN_ADDRESS_LATITUDE)
+                                }
+
+                                if (it.containsKey(COLUMN_ADDRESS_LONGITUDE)) {
+                                        property.address!!.longitude = it.getAsDouble(COLUMN_ADDRESS_LONGITUDE)
                                 }
 
                                 if (it.containsKey(COLUMN_INTEREST_POINTS)) {
-                                        //   property.description = it.getAsString(COLUMN_INTEREST_POINTS)
+                                        property.interestPoints = InterestPointConverter().stringToInterestPoints(it.getAsString(COLUMN_INTEREST_POINTS))!!
                                 }
 
                                 if (it.containsKey(COLUMN_PROPERTY_STATUS)) {
@@ -187,16 +298,41 @@ data class Property(
                                         property.agentId = it.getAsString(COLUMN_AGENT_ID)
                                 }
 
-                                if (it.containsKey(COLUMN_MAIN_PICTURE)) {
-                                        //  property.description = it.getAsString(COLUMN_MAIN_PICTURE)
+                                if(property.mainPicture == null) {
+                                        property.mainPicture = Picture()
+                                }
+
+                                if (it.containsKey(PREFIX_MAIN_PICTURE + Picture.COLUMN_ID)) {
+                                          property.mainPicture!!.id = it.getAsString(PREFIX_MAIN_PICTURE + Picture.COLUMN_ID)
+                                }
+
+                                if (it.containsKey(PREFIX_MAIN_PICTURE + COLUMN_PICTURE_PROPERTY_ID)) {
+                                        property.mainPicture!!.propertyId = it.getAsString(PREFIX_MAIN_PICTURE + COLUMN_PICTURE_PROPERTY_ID)
+
+                                }
+
+                                if (it.containsKey(PREFIX_MAIN_PICTURE + COLUMN_PICTURE_DESCRIPTION)) {
+                                        property.mainPicture!!.description = it.getAsString(PREFIX_MAIN_PICTURE + COLUMN_PICTURE_DESCRIPTION)
+                                }
+
+                                if (it.containsKey(PREFIX_MAIN_PICTURE + COLUMN_PICTURE_TYPE)) {
+                                        property.mainPicture!!.type = PictureTypeConverter()
+                                                .toPictureType(it.getAsString(PREFIX_MAIN_PICTURE + COLUMN_PICTURE_TYPE))
                                 }
 
                                 if (it.containsKey(COLUMN_ENTRY_DATE)) {
-                                        // property.entryDate = it.getAsString(COLUMN_ENTRY_DATE)
+                                         property.entryDate = DateConverter()
+                                                 .fromTimestamp(it.getAsLong(COLUMN_ENTRY_DATE))!!
                                 }
 
                                 if (it.containsKey(COLUMN_SOLD_DATE)) {
-                                        //  property.description = it.getAsString(COLUMN_SOLD_DATE)
+                                        it.getAsLong(COLUMN_SOLD_DATE)?.let { soldDate ->
+                                                property.entryDate = DateConverter()
+                                                        .fromTimestamp(soldDate)!!
+                                        }
+                                }
+                                if(it.containsKey(COLUMN_PICTURES)) {
+                                        property.pictures = PictureConverter().stringToPictures(it.getAsString(COLUMN_PICTURES))!!
                                 }
                         }
                         return property

@@ -40,10 +40,16 @@ constructor(
 
         rawJson =  jsonUtil.readJSONFromAsset(picturesJsonFileName)
 
-        pictures = Gson().fromJson(rawJson, object : TypeToken<List<Picture>>() {}.type)
+        //pictures = Gson().fromJson(rawJson, object : TypeToken<List<Picture>>() {}.type)
 
-        properties.forEach {
-            it.pictures.addAll(pictures)
+        properties.forEachIndexed { index, property ->
+
+            var pictures: List<Picture> = Gson().fromJson(rawJson, object : TypeToken<List<Picture>>() {}.type)
+            pictures.forEach { picture ->
+                picture.propertyId = property.id
+            }
+
+            properties[index].pictures.addAll(pictures)
         }
 
         return Single.just(properties).delay(networkDelay, TimeUnit.MILLISECONDS)
