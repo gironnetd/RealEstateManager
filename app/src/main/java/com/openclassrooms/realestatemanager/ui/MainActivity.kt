@@ -13,10 +13,7 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
-import com.openclassrooms.realestatemanager.ui.navigation.KeepStateNavigator
-import com.openclassrooms.realestatemanager.ui.property.create.CreateFragment
-import com.openclassrooms.realestatemanager.ui.property.search.SearchFragment
-import com.openclassrooms.realestatemanager.ui.simulation.SimulationFragment
+import com.openclassrooms.realestatemanager.ui.navigation.browse.MainFragmentNavigator
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,12 +34,12 @@ class MainActivity : AppCompatActivity() {
 
         navController = navHostFragment.navController
 
-        val navigator = KeepStateNavigator(this, navHostFragment.childFragmentManager, R.id.nav_host_fragment)
+        val navigator = MainFragmentNavigator(this, navHostFragment.childFragmentManager, R.id.nav_host_fragment)
         navController.navigatorProvider.addNavigator(navigator)
 
         navController.setGraph(R.navigation.navigation)
 
-        appBarConfiguration = AppBarConfiguration.Builder(R.id.navigation_simulation,
+        appBarConfiguration = AppBarConfiguration.Builder(
                 R.id.navigation_search, R.id.navigation_create, R.id.navigation_real_estate)
                 .setOpenableLayout(binding.drawerLayout)
                 .build()
@@ -50,34 +47,6 @@ class MainActivity : AppCompatActivity() {
         binding.toolBar.setupWithNavController(navController, appBarConfiguration)
         binding.navigationView.setupWithNavController(navController)
         binding.bottomNavigationView.setupWithNavController(navController)
-
-        initCreateFloatingActionButton()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        val primaryNavigationFragment =
-                (navHostFragment.childFragmentManager.primaryNavigationFragment as Fragment)::class.java.name
-
-        outState.putString(PRIMARY_NAVIGATION_FRAGMENT, primaryNavigationFragment)
-            for (fragment in supportFragmentManager.fragments) {
-                    supportFragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss()
-            }
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
-        when(savedInstanceState?.getString(PRIMARY_NAVIGATION_FRAGMENT)) {
-            SimulationFragment::class.java.name -> {
-                navController.navigate(R.id.navigation_simulation)
-            }
-            CreateFragment::class.java.name -> {
-                navController.navigate(R.id.navigation_create)
-            }
-            SearchFragment::class.java.name -> {
-                navController.navigate(R.id.navigation_search)
-            }
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -90,20 +59,13 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    private fun initCreateFloatingActionButton() {
-        binding.createFloatingActionButton.setOnClickListener {
-            navController.navigate(R.id.navigation_create)
-        }
-    }
-
     @VisibleForTesting
     fun setFragment(fragment: Fragment) {
+        for (fragment in navHostFragment.childFragmentManager.fragments) {
+            navHostFragment.childFragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss()
+        }
         val transaction = navHostFragment.childFragmentManager.beginTransaction()
-        transaction.replace(R.id.nav_host_fragment, fragment)
+        transaction.add(R.id.nav_host_fragment, fragment)
         transaction.commit()
-    }
-
-    companion object {
-        const val PRIMARY_NAVIGATION_FRAGMENT = "primary_navigation_fragment"
     }
 }

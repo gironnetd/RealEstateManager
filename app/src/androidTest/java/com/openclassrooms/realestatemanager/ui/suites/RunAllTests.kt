@@ -1,9 +1,9 @@
 package com.openclassrooms.realestatemanager.ui.suites
 
+import com.openclassrooms.realestatemanager.data.local.dao.PictureDaoTest
 import com.openclassrooms.realestatemanager.data.local.dao.PropertyDaoTest
 import com.openclassrooms.realestatemanager.data.local.provider.AppContentProviderTest
 import com.openclassrooms.realestatemanager.data.repository.property.BrowseFragmentTest
-import com.openclassrooms.realestatemanager.data.repository.property.BrowseMasterFragmentTest
 import com.openclassrooms.realestatemanager.data.repository.property.PropertyRepositoryTest
 import com.openclassrooms.realestatemanager.repository.ConnectivityManagerTest
 import com.openclassrooms.realestatemanager.ui.MainActivityTest
@@ -21,9 +21,9 @@ import org.junit.runners.Suite
         MainNavigationTest::class,
         MainRotationTest::class,
         BrowseFragmentTest::class,
-        BrowseMasterFragmentTest::class,
         ListFragmentIntegrationTest::class,
         PropertyDaoTest::class,
+        PictureDaoTest::class,
         AppContentProviderTest::class,
         ConnectivityManagerTest::class,
         PropertyRepositoryTest::class,

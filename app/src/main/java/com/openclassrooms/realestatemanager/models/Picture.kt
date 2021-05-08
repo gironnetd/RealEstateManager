@@ -1,10 +1,11 @@
 package com.openclassrooms.realestatemanager.models
 
+import android.content.ContentValues
 import android.database.Cursor
 import android.provider.BaseColumns
+import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.TypeConverter
 import com.google.firebase.firestore.Exclude
 import com.google.gson.annotations.SerializedName
 import com.openclassrooms.realestatemanager.models.Picture.Companion.COLUMN_ID
@@ -64,22 +65,10 @@ data class Picture(
                                     PREFIX_MAIN_PICTURE + COLUMN_PICTURE_TYPE
                             )))
         } else {
-            id = cursor.getString(
-                    cursor.getColumnIndex(
-                            COLUMN_ID))
-            propertyId = cursor.getString(
-                    cursor.getColumnIndex(
-                            COLUMN_PICTURE_PROPERTY_ID
-                    ))
-            description = cursor.getString(
-                    cursor.getColumnIndex(
-                            COLUMN_PICTURE_DESCRIPTION
-                    ))
-            type = PictureType.valueOf(
-                    cursor.getString(
-                            cursor.getColumnIndex(
-                                    COLUMN_PICTURE_TYPE
-                            )))
+            id = cursor.getString(cursor.getColumnIndex(COLUMN_ID))
+            propertyId = cursor.getString(cursor.getColumnIndex(COLUMN_PICTURE_PROPERTY_ID))
+            description = cursor.getString(cursor.getColumnIndex(COLUMN_PICTURE_DESCRIPTION))
+            type = PictureType.valueOf(cursor.getString(cursor.getColumnIndex(COLUMN_PICTURE_TYPE)))
         }
     }
 
@@ -112,9 +101,6 @@ data class Picture(
         /** The name of the ID column.  */
         const val COLUMN_ID: String = BaseColumns._ID
 
-        /** The name of the id column.  */
-        const val COLUMN_PICTURE_ID = "id"
-
         /** The name of the property id column.  */
         const val COLUMN_PICTURE_PROPERTY_ID = "property_id"
 
@@ -126,20 +112,30 @@ data class Picture(
 
         /** The name of the prefix main picture in database.  */
         const val PREFIX_MAIN_PICTURE = "main_picture_"
-    }
-}
 
-class PictureConverter {
-    @TypeConverter
-    fun picturesToString(pictures: MutableList<Picture>?): String? =
-            pictures?.joinToString(separator = SEPARATOR) { it.toString() }
+        @NonNull
+        fun fromContentValues(values: ContentValues?): Picture {
+            val picture = Picture()
+            values?.let {
 
-    @TypeConverter
-    fun stringToPictures(stringPictures: String?): MutableList<Picture>? =
-            stringPictures?.split(SEPARATOR)?.map { Picture(it) }?.toMutableList()
+                if ( it.containsKey(COLUMN_ID)) {
+                    picture.id = it.getAsString(Property.COLUMN_ID)
+                }
 
-    companion object {
-        private const val SEPARATOR: String = ";"
+                if ( it.containsKey(COLUMN_PICTURE_PROPERTY_ID)) {
+                    picture.propertyId = it.getAsString(COLUMN_PICTURE_PROPERTY_ID)
+                }
+
+                if ( it.containsKey(COLUMN_PICTURE_DESCRIPTION)) {
+                    picture.description = it.getAsString(COLUMN_PICTURE_DESCRIPTION)
+                }
+
+                if (it.containsKey(COLUMN_PICTURE_TYPE)) {
+                    picture.type = PictureType.valueOf(it.getAsString(COLUMN_PICTURE_TYPE))
+                }
+            }
+            return picture
+        }
     }
 }
 

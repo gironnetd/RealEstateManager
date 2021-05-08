@@ -5,22 +5,17 @@
     android:id="@+id/navigation"
     app:startDestination="@id/navigation_real_estate">
 
-    <keep_state_fragment
+    <main_fragment
         android:id="@+id/navigation_real_estate"
-        android:name="com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment"
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment"
         android:label="@string/app_name"
-        tools:layout="@layout/fragment_browse_master" />
-    <keep_state_fragment
-        android:id="@+id/navigation_simulation"
-        android:name="com.openclassrooms.realestatemanager.ui.simulation.SimulationFragment"
-        android:label="@string/simulation"
-        tools:layout="@layout/fragment_simulation" />
-    <keep_state_fragment
+        tools:layout="@layout/fragment_browse" />
+    <main_fragment
         android:id="@+id/navigation_create"
         android:name="com.openclassrooms.realestatemanager.ui.property.create.CreateFragment"
         android:label="@string/create"
         tools:layout="@layout/fragment_create" />
-    <keep_state_fragment
+    <main_fragment
         android:id="@+id/navigation_search"
         android:name="com.openclassrooms.realestatemanager.ui.property.search.SearchFragment"
         android:label="@string/search"

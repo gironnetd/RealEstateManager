@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.fragments.property.browse.master
+package com.openclassrooms.realestatemanager.fragments.property.browse.detail
 
 import android.content.Context
 import androidx.fragment.app.FragmentFactory
@@ -9,16 +9,16 @@ import javax.inject.Inject
 import javax.inject.Named
 
 @BrowseScope
-class MasterNavHostFragment : NavHostFragment() {
+class BrowseDetailNavHostFragment : NavHostFragment() {
 
     @Inject
-    @Named("MasterFragmentFactory")
-    lateinit var masterFragmentFactory: FragmentFactory
+    @Named("BrowseDetailFragmentFactory")
+    lateinit var browseDetailFragmentFactory: FragmentFactory
 
     override fun onAttach(context: Context) {
         (activity?.application as BaseApplication).browseComponent()
                 .inject(this)
-        childFragmentManager.fragmentFactory = masterFragmentFactory
+        childFragmentManager.fragmentFactory = browseDetailFragmentFactory
         super.onAttach(context)
     }
 }

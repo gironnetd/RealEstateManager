@@ -12,5 +12,5 @@ interface PropertyDataSource {
 
     fun findAllProperties(): Single<List<Property>>
 
-    fun deleteAllProperties(properties: List<Property>): Completable
+    fun deleteAllProperties(): Completable
 }

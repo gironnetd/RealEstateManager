@@ -9,19 +9,15 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.internal.NavigationMenuItemView
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
-import org.hamcrest.CoreMatchers.instanceOf
-import org.hamcrest.Matchers.`is`
 import org.hamcrest.core.AllOf.allOf
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -90,16 +86,17 @@ class MainActivityTest : BaseMainActivityTests() {
         onView(allOf(withContentDescription(
                 activityScenario.getToolbarNavigationContentDescription()), isDisplayed()))
                 .perform(click())
-        onView(withId(R.id.navigation_create)).check(matches(isDisplayed()))
+        onView(allOf(isAssignableFrom(NavigationMenuItemView::class.java), withId(R.id.navigation_real_estate)))
+                .check(matches(isDisplayed()))
     }
 
     @Test
-    fun when_navigation_view_is_opened_then_simulation_line_is_displayed() {
+    fun when_navigation_view_is_opened_then_create_line_is_displayed() {
         onView(allOf(withContentDescription(
                 activityScenario.getToolbarNavigationContentDescription()), isDisplayed()))
                 .perform(click())
 
-        onView(allOf(isAssignableFrom(NavigationMenuItemView::class.java), withId(R.id.navigation_simulation)))
+        onView(allOf(isAssignableFrom(NavigationMenuItemView::class.java), withId(R.id.navigation_create)))
                 .check(matches(isDisplayed()))
     }
 
@@ -113,7 +110,7 @@ class MainActivityTest : BaseMainActivityTests() {
     fun when_click_on_real_estate_bottom_navigation_view_then_button_is_checked() {
         onView(allOf(withText(R.string.real_estate), isDisplayed()))
                 .perform(click())
-        onView(allOf(withId(R.id.navigation_simulation),
+        onView(allOf(withId(R.id.navigation_create),
                 isDisplayed()))
                 .check(matches(withBottomNavItemCheckedStatus(false)))
         onView(allOf(withId(R.id.navigation_real_estate),
@@ -121,20 +118,14 @@ class MainActivityTest : BaseMainActivityTests() {
     }
 
     @Test
-    fun when_click_on_simulation_bottom_navigation_view_then_button_is_checked() {
-        onView(allOf(withText(R.string.simulation), isDisplayed()))
+    fun when_click_on_create_bottom_navigation_view_then_button_is_checked() {
+        onView(allOf(withText(R.string.create), isDisplayed()))
                 .perform(click())
         onView(allOf(withId(R.id.navigation_real_estate),
                 isDisplayed()))
                 .check(matches(withBottomNavItemCheckedStatus(false)))
-        onView(allOf(withId(R.id.navigation_simulation),
+        onView(allOf(withId(R.id.navigation_create),
                 isDisplayed())).check(matches(withBottomNavItemCheckedStatus(true)))
-    }
-
-    @Test
-    fun is_add_real_estate_floating_action_button_displayed() {
-        onView(allOf(`is`(instanceOf(FloatingActionButton::class.java))
-        )).check(matches(isDisplayed()))
     }
 
     override fun injectTest(application: TestBaseApplication) {

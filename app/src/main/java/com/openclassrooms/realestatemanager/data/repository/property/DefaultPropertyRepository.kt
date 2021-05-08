@@ -23,9 +23,14 @@ constructor(
     private var cachedProperties: MutableList<Property> =  mutableListOf()
     private var isInternetSubject: ReplaySubject<Boolean> = ReplaySubject.create()
 
+    private var isInternetAvailable: Boolean? = null
+
     init {
         networkConnectionLiveData.observeForever { isInternetAvailable ->
-            isInternetSubject.onNext(isInternetAvailable)
+            if(isInternetAvailable != this.isInternetAvailable) {
+                this.isInternetAvailable = isInternetAvailable
+                isInternetSubject.onNext(isInternetAvailable)
+            }
         }
     }
 

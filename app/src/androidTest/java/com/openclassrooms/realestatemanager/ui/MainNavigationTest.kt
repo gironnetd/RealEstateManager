@@ -55,10 +55,10 @@ class MainNavigationTest : BaseMainActivityTests() {
                 .onActivity { mainActivity ->
                     navController = Navigation.findNavController(mainActivity, R.id.nav_host_fragment)
                 }
-        onView(allOf(withId(R.id.navigation_simulation), isDisplayed())).perform(click())
-        if (navController.currentDestination?.id!! != R.id.navigation_simulation) {
+        onView(allOf(withId(R.id.navigation_create), isDisplayed())).perform(click())
+        if (navController.currentDestination?.id!! != R.id.navigation_create) {
             runOnUiThread {
-                navController.navigate(R.id.navigation_simulation)
+                navController.navigate(R.id.navigation_create)
             }
         }
         onView(allOf(withId(R.id.navigation_real_estate), isDisplayed()))
@@ -68,24 +68,14 @@ class MainNavigationTest : BaseMainActivityTests() {
     }
 
     @Test
-    fun nav_from_bottom_navigation_view_to_simulation_fragment() {
+    fun nav_from_bottom_navigation_view_to_create_fragment() {
         activityScenario = launch(MainActivity::class.java)
                 .onActivity { mainActivity ->
                     navController = Navigation.findNavController(mainActivity, R.id.nav_host_fragment)
                 }
-        onView(allOf(withId(R.id.navigation_simulation), isDisplayed()))
+        onView(allOf(withId(R.id.navigation_create), isDisplayed()))
                 .perform(click())
-        onView(withId(R.id.simulation_fragment)).check(matches(isDisplayed()))
-    }
-
-    @Test
-    fun nav_from_add_floating_action_button_to_create_fragment() {
-        activityScenario = launch(MainActivity::class.java)
-                .onActivity { mainActivity ->
-                    navController = Navigation.findNavController(mainActivity, R.id.nav_host_fragment)
-                }
-        onView(withId(R.id.create_floating_action_button)).perform(click())
-        onView((withId(R.id.create_fragment))).check(matches(isDisplayed()))
+        onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -99,10 +89,9 @@ class MainNavigationTest : BaseMainActivityTests() {
                 activityScenario.getToolbarNavigationContentDescription()), isDisplayed()))
                 .perform(click())
 
-        if(navController.currentDestination?.id!! == R.id.navigation_real_estate ||
-                navController.currentDestination?.id!! == R.id.navigation_list) {
+        if(navController.currentDestination?.id!! == R.id.navigation_real_estate) {
             runOnUiThread {
-                navController.navigate(R.id.navigation_simulation)
+                navController.navigate(R.id.navigation_create)
             }
         }
 
@@ -129,7 +118,7 @@ class MainNavigationTest : BaseMainActivityTests() {
     }
 
     @Test
-    fun nav_from_navigation_view_to_simulation_fragment() {
+    fun nav_from_navigation_view_to_create_fragment() {
         activityScenario = launch(MainActivity::class.java)
                 .onActivity { mainActivity ->
                     navController = Navigation.findNavController(mainActivity, R.id.nav_host_fragment)
@@ -138,8 +127,8 @@ class MainNavigationTest : BaseMainActivityTests() {
                 activityScenario.getToolbarNavigationContentDescription()), isDisplayed()))
                 .perform(click())
         onView(withId(R.id.navigation_view))
-                .perform(NavigationViewActions.navigateTo(R.id.navigation_simulation))
-        onView(withId(R.id.simulation_fragment)).check(matches(isDisplayed()))
+                .perform(NavigationViewActions.navigateTo(R.id.navigation_create))
+        onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
     }
 
     @Test

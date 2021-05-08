@@ -13,8 +13,4 @@ abstract class TestPropertyViewModelModule {
     @BrowseScope
     abstract fun bindPropertiesViewModelFactory(factory: FakePropertiesViewModelFactory): ViewModelProvider.Factory
 
-//    @Binds
-//    @IntoMap
-//    @PropertyViewModelKey(PropertiesViewModel::class)
-//    abstract fun bindPropertiesViewModel(propertiesViewModel: PropertiesViewModel): ViewModel
 }

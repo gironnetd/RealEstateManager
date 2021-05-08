@@ -5,8 +5,10 @@ import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import androidx.fragment.app.FragmentActivity
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.PositionAssertions.isCompletelyLeftOf
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -34,14 +36,14 @@ class BrowseFragmentTest : BaseMainActivityTests() {
     // orientation variables
     private var orientation: Int = -1
 
+    val app = InstrumentationRegistry
+            .getInstrumentation()
+            .targetContext
+            .applicationContext as TestBaseApplication
+
     @Before
     public override fun setUp() {
         super.setUp()
-
-        val app = InstrumentationRegistry
-                .getInstrumentation()
-                .targetContext
-                .applicationContext as TestBaseApplication
 
         val apiService = configureFakeApiService(
                 propertiesDataSource = EMPTY_LIST, // empty list of data
@@ -62,23 +64,37 @@ class BrowseFragmentTest : BaseMainActivityTests() {
     }
 
     @Test
+    fun verify_segmented_control_behavior_when_non_tablet_mode() {
+        if(!app.resources.getBoolean(R.bool.isMasterDetail)) {
+            onView(withId(R.id.list_view_button)).perform(ViewActions.click())
+            onView(withId(R.id.list_view_button)).check(matches(ViewMatchers.isSelected()))
+
+            onView(withId(R.id.map_view_button)).perform(ViewActions.click())
+            onView(withId(R.id.map_view_button)).check(matches(ViewMatchers.isSelected()))
+
+            onView(withId(R.id.list_view_button)).perform(ViewActions.click())
+            onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
+
+            onView(withId(R.id.map_view_button)).perform(ViewActions.click())
+            onView(withId(R.id.map_fragment)).check(matches(isDisplayed()))
+        }
+    }
+
+    @Test
     fun makeSureThatViewCorrespondWithSizeAndOrientation() {
         if(screenSize == SMARTPHONE && orientation == ORIENTATION_PORTRAIT) {
-            onView(anyOf(withId(R.id.list_fragment),
-                    withId(R.id.map_fragment)))
-                    .check(matches(isDisplayed()))
+            onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
+            onView(withId(R.id.button_container)).check(matches(isDisplayed()))
         }
 
         if(screenSize == SMARTPHONE && orientation == ORIENTATION_LANDSCAPE) {
-            onView(anyOf(withId(R.id.list_fragment),
-                    withId(R.id.map_fragment)))
-                    .check(matches(isDisplayed()))
+            onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
+            onView(withId(R.id.button_container)).check(matches(isDisplayed()))
         }
 
         if(screenSize == PHABLET && orientation == ORIENTATION_PORTRAIT) {
-            onView(anyOf(withId(R.id.list_fragment),
-                    withId(R.id.map_fragment)))
-                    .check(matches(isDisplayed()))
+            onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
+            onView(withId(R.id.button_container)).check(matches(isDisplayed()))
         }
 
         if(screenSize == PHABLET && orientation == ORIENTATION_LANDSCAPE) {

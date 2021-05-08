@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.ui.navigation.browse.detail
+package com.openclassrooms.realestatemanager.ui.navigation.browse
 
 import android.content.Context
 import android.os.Bundle
@@ -11,8 +11,8 @@ import androidx.navigation.Navigator
 import androidx.navigation.fragment.FragmentNavigator
 import java.util.*
 
-@Navigator.Name("browse_master_detail_fragment")
-class BrowseMasterDetailFragmentNavigator(
+@Navigator.Name("main_fragment")
+class MainFragmentNavigator(
         private val mContext: Context,
         private val mFragmentManager: FragmentManager, // Should pass childFragmentManager.
         private val mContainerId: Int,
@@ -23,7 +23,6 @@ class BrowseMasterDetailFragmentNavigator(
     private val mBackStack = ArrayDeque<Int>()
 
     override fun navigate(destination: Destination, args: Bundle?, navOptions: NavOptions?, navigatorExtras: Navigator.Extras?): NavDestination? {
-
         if (mFragmentManager.isStateSaved) {
             Log.i(TAG, "Ignoring navigate() call: FragmentManager has already"
                     + " saved its state")
@@ -38,24 +37,21 @@ class BrowseMasterDetailFragmentNavigator(
         val tag = destination.id.toString()
 
         val currentFragment = mFragmentManager.primaryNavigationFragment
-
         if (currentFragment != null) {
-            ft.detach(currentFragment)
+            ft.hide(currentFragment)
+            //ft.detach(currentFragment)
         }
 
         var fragment = mFragmentManager.findFragmentByTag(tag)
 
-        if (currentFragment != null && currentFragment.javaClass.name == className && fragment != null) {
-            fragment = instantiateFragment(mContext, mFragmentManager, className, args)
-            fragment.arguments = args
-            ft.replace(mContainerId, fragment, tag)
-        } else if (fragment == null) {
-            fragment = instantiateFragment(mContext, mFragmentManager, className, args)
+        if (fragment == null) {
+            fragment = mFragmentManager.fragmentFactory.instantiate(mContext.classLoader, className)
             fragment.arguments = args
             ft.add(mContainerId, fragment, tag)
         } else {
             fragment.arguments = args
-            ft.attach(fragment)
+            ft.show(fragment)
+            //ft.attach(fragment)
         }
 
         ft.setPrimaryNavigationFragment(fragment)

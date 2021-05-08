@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="master_width_weight" type="dimen" format="float">0.3</item>
+    <item name="detail_width_weight" type="dimen" format="float">0.7</item>
+</resources>

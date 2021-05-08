@@ -3,10 +3,9 @@ package com.openclassrooms.realestatemanager.data.local.provider
 import android.content.*
 import android.database.Cursor
 import android.net.Uri
-import androidx.annotation.Nullable
 import com.openclassrooms.realestatemanager.BaseApplication
 import com.openclassrooms.realestatemanager.data.local.AppDatabase
-import com.openclassrooms.realestatemanager.data.local.dao.PropertyDao
+import com.openclassrooms.realestatemanager.models.Picture
 import com.openclassrooms.realestatemanager.models.Property
 import java.util.*
 import java.util.concurrent.Callable
@@ -26,101 +25,138 @@ fun <T> Cursor.toList(block: (Cursor) -> T) : List<T> {
 @Singleton
 class AppContentProvider : ContentProvider() {
 
-    @Inject
-    lateinit var database: AppDatabase
-
-    companion object {
-        /** The authority of this content provider.  */
-        val AUTHORITY = "com.openclassrooms.realestatemanager.provider"
-
-        /** The URI for the Cheese table.  */
-        val URI_PROPERTY = Uri.parse(
-                "content://" + AUTHORITY + "/" + Property.TABLE_NAME)
-
-        /** The match code for some items in the Cheese table.  */
-        private val CODE_PROPERTY_DIR = 1
-
-        /** The match code for an item in the Cheese table.  */
-        private val CODE_PROPERTY_ITEM = 2
-
-        /** The URI matcher.  */
-        private val MATCHER = UriMatcher(UriMatcher.NO_MATCH)
-    }
-
-    init {
-        MATCHER.addURI(AUTHORITY, Property.TABLE_NAME, CODE_PROPERTY_DIR)
-        MATCHER.addURI(AUTHORITY, Property.TABLE_NAME + "/*", CODE_PROPERTY_ITEM)
-    }
-
     override fun onCreate(): Boolean {
         return true
     }
 
-    @Nullable
-    override fun query(
-            uri: Uri, projection: Array<out String>?, selection: String?,
-            selectionArgs: Array<out String>?, sortOrder: String?,
-    ): Cursor? {
-        val code: Int = MATCHER.match(uri)
-        return if (code == CODE_PROPERTY_DIR || code == CODE_PROPERTY_ITEM) {
-            val context = context ?: return null
-            if(!::database.isInitialized) {
-                    (context as BaseApplication).appComponent.inject(this)
-            }
-            val propertyDao: PropertyDao = database.propertyDao()
-            val cursor: Cursor = if (code == CODE_PROPERTY_DIR) {
-                propertyDao.findAllProperties()
-            } else {
-                propertyDao.findPropertyById(ContentUris.parseId(uri))
-            }
-            cursor.setNotificationUri(context.contentResolver, uri)
-            cursor
-        } else {
-            throw java.lang.IllegalArgumentException("Unknown URI: $uri")
-        }
-    }
+    @Inject
+    lateinit var database: AppDatabase
 
-    @Nullable
     override fun getType(uri: Uri): String? {
-        return when (MATCHER.match(uri)) {
-            CODE_PROPERTY_DIR -> "vnd.android.cursor.dir/" + AUTHORITY + "." + Property.TABLE_NAME
-            CODE_PROPERTY_ITEM -> "vnd.android.cursor.item/" + AUTHORITY + "." + Property.TABLE_NAME
-            else -> throw IllegalArgumentException("Unknown URI: $uri")
+        return when (sUriMatcher.match(uri)) {
+            PROPERTY -> PropertyContract.PropertyEntry.CONTENT_TYPE
+            PROPERTY_ID -> PropertyContract.PropertyEntry.CONTENT_ITEM_TYPE
+            PICTURE -> PropertyContract.PictureEntry.CONTENT_TYPE
+            PICTURE_ID -> PropertyContract.PictureEntry.CONTENT_ITEM_TYPE
+            else -> throw UnsupportedOperationException("Unknown uri: $uri")
         }
     }
 
-    @Nullable
-    override fun insert(uri: Uri, values: ContentValues?): Uri? {
-        return when (MATCHER.match(uri)) {
-            CODE_PROPERTY_DIR -> {
-                val context = context ?: return null
-                if (!::database.isInitialized) {
-                      (context as BaseApplication).appComponent.inject(this)
-                }
-                val id: Long = database.propertyDao().saveProperty(Property.fromContentValues(values))
-                context.contentResolver.notifyChange(uri, null)
-                ContentUris.withAppendedId(uri, id)
+    override fun query(uri: Uri, projection: Array<String>?, selection: String?, selectionArgs: Array<String>?, sortOrder: String?): Cursor? {
+        val retCursor: Cursor
+        if(!::database.isInitialized) {
+            (context as BaseApplication).appComponent.inject(this)
+        }
+
+        when (sUriMatcher.match(uri)) {
+            PROPERTY -> retCursor = database.propertyDao().findAllProperties()
+
+            PROPERTY_ID -> {
+                val _id = ContentUris.parseId(uri)
+                retCursor = database.propertyDao().findPropertyById(_id)
             }
-            CODE_PROPERTY_ITEM -> throw java.lang.IllegalArgumentException("Invalid URI, cannot insert with ID: $uri")
-            else -> throw java.lang.IllegalArgumentException("Unknown URI: $uri")
+            PICTURE -> retCursor = database.pictureDao().findAllPictures()
+            PICTURE_ID -> {
+                val _id = ContentUris.parseId(uri)
+                retCursor = database.pictureDao().findPictureById(_id)
+            }
+            else -> throw UnsupportedOperationException("Unknown uri: $uri")
         }
+
+        // Set the notification URI for the cursor to the one passed into the function. This
+        // causes the cursor to register a content observer to watch for changes that happen to
+        // this URI and any of it's descendants. By descendants, we mean any URI that begins
+        // with this path.
+        retCursor.setNotificationUri(context!!.contentResolver, uri)
+        return retCursor
     }
 
-    override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
-        TODO("Not yet implemented")
+    override fun insert(uri: Uri, values: ContentValues?): Uri? {
+        val _id: Long
+        val returnUri: Uri
+
+        if(!::database.isInitialized) {
+            (context as BaseApplication).appComponent.inject(this)
+        }
+        when (sUriMatcher.match(uri)) {
+            PROPERTY -> {
+                _id = database.propertyDao().saveProperty(Property.fromContentValues(values))
+                returnUri = if (_id > 0) {
+                    PropertyContract.PropertyEntry.buildPropertyUri(_id)
+                } else {
+                    throw UnsupportedOperationException("Unable to insert rows into: $uri")
+                }
+            }
+            PICTURE -> {
+                _id = database.pictureDao().savePicture(Picture.fromContentValues(values))
+                returnUri = if (_id > 0) {
+                    PropertyContract.PictureEntry.buildPictureUri(_id)
+                } else {
+                    throw UnsupportedOperationException("Unable to insert rows into: $uri")
+                }
+            }
+            else -> throw UnsupportedOperationException("Unknown uri: $uri")
+        }
+
+        // Use this on the URI passed into the function to notify any observers that the uri has
+        // changed.
+        context!!.contentResolver.notifyChange(uri, null)
+        return returnUri
     }
 
-    override fun update(
-            uri: Uri, values: ContentValues?, selection: String?,
-            selectionArgs: Array<out String>?,
-    ): Int {
-        TODO("Not yet implemented")
+    override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
+        val context = context ?: return 0
+        if (!::database.isInitialized) {
+            (context as BaseApplication).appComponent.inject(this)
+        }
+
+        val rows = when (sUriMatcher.match(uri)) {
+            PROPERTY -> {
+                database.propertyDao().deleteAllProperties()
+            }
+            PROPERTY_ID -> {
+                database.propertyDao().deleteById(ContentUris.parseId(uri))
+            }
+            PICTURE -> {
+                database.pictureDao().deleteAllPictures()
+            }
+            PICTURE_ID -> {
+                database.pictureDao().deleteById(ContentUris.parseId(uri))
+            }
+            else -> throw UnsupportedOperationException("Unknown uri: $uri")
+        }
+        if (rows != 0) {
+            context.contentResolver.notifyChange(uri, null)
+        }
+        return rows
+    }
+
+    override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<String>?): Int {
+        val context = context ?: return 0
+        if (!::database.isInitialized) {
+            (context as BaseApplication).appComponent.inject(this)
+        }
+
+        val rows = when (sUriMatcher.match(uri)) {
+            PROPERTY -> {
+                val property = Property.fromContentValues(values)
+                database.propertyDao().updateProperty(property)
+            }
+            PICTURE -> {
+                val picture: Picture = Picture.fromContentValues(values)
+                database.pictureDao().updatePicture(picture)
+            }
+            else -> throw UnsupportedOperationException("Unknown uri: $uri")
+        }
+        if (rows != 0) {
+            context.contentResolver.notifyChange(uri, null)
+        }
+        return rows
     }
 
     override fun applyBatch(operations: ArrayList<ContentProviderOperation>): Array<out ContentProviderResult> {
 
         val context = context ?: return arrayOf()
-
         if(!::database.isInitialized) {
             (context as BaseApplication).appComponent.inject(this)
         }
@@ -129,21 +165,59 @@ class AppContentProvider : ContentProvider() {
     }
 
     override fun bulkInsert(uri: Uri, valuesArray: Array<out ContentValues>): Int {
-        return when (MATCHER.match(uri)) {
-            CODE_PROPERTY_DIR -> {
-                val context = context ?: return 0
-
+        val context = context ?: return 0
+        if (!::database.isInitialized) {
+            (context as BaseApplication).appComponent.inject(this)
+        }
+        return when (sUriMatcher.match(uri)) {
+            PROPERTY -> {
                 val properties: Array<Property?> = arrayOfNulls(valuesArray.size)
                 for (i in valuesArray.indices) {
                     properties[i] = Property.fromContentValues(valuesArray[i])
                 }
-                if (!::database.isInitialized) {
-                     (context as BaseApplication).appComponent.inject(this)
-                }
                 database.propertyDao().saveProperties(properties.toList() as List<Property>).size
             }
-            CODE_PROPERTY_ITEM -> throw java.lang.IllegalArgumentException("Invalid URI, cannot insert with ID: $uri")
+            PROPERTY_ID -> {
+                val property: Property = Property.fromContentValues(valuesArray[0])
+                database.propertyDao().saveProperty(property).toInt()
+            }
+            PICTURE -> {
+                val pictures: Array<Picture?> = arrayOfNulls(valuesArray.size)
+                for (i in valuesArray.indices) {
+                    pictures[i] = Picture.fromContentValues(valuesArray[i])
+                }
+                database.pictureDao().savePictures(pictures.toList() as List<Picture>).size
+            }
+            PICTURE_ID -> {
+                val picture: Picture = Picture.fromContentValues(valuesArray[0])
+                database.pictureDao().savePicture(picture).toInt()
+            }
             else -> throw java.lang.IllegalArgumentException("Unknown URI: $uri")
+        }
+    }
+
+    companion object {
+        // Use an int for each URI we will run, this represents the different queries
+        private const val PROPERTY = 100
+        private const val PROPERTY_ID = 101
+        private const val PICTURE = 200
+        private const val PICTURE_ID = 201
+        private val sUriMatcher = buildUriMatcher()
+
+        /**
+         * Builds a UriMatcher that is used to determine witch database request is being made.
+         */
+        private fun buildUriMatcher(): UriMatcher {
+            val content: String = PropertyContract.CONTENT_AUTHORITY
+
+            // All paths to the UriMatcher have a corresponding code to return
+            // when a match is found (the ints above).
+            val matcher = UriMatcher(UriMatcher.NO_MATCH)
+            matcher.addURI(content, PropertyContract.PATH_PROPERTY, PROPERTY)
+            matcher.addURI(content, PropertyContract.PATH_PROPERTY + "/#", PROPERTY_ID)
+            matcher.addURI(content, PropertyContract.PATH_PICTURE, PICTURE)
+            matcher.addURI(content, PropertyContract.PATH_PICTURE + "/#", PICTURE_ID)
+            return matcher
         }
     }
 }

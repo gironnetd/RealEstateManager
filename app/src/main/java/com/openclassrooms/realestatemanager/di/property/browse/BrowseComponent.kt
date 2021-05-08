@@ -1,8 +1,8 @@
 package com.openclassrooms.realestatemanager.di.property.browse
 
 import com.openclassrooms.realestatemanager.di.property.PropertyViewModelModule
-import com.openclassrooms.realestatemanager.fragments.property.browse.detail.MasterDetailNavHostFragment
-import com.openclassrooms.realestatemanager.fragments.property.browse.master.MasterNavHostFragment
+import com.openclassrooms.realestatemanager.fragments.property.browse.detail.BrowseDetailNavHostFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragment
 import dagger.Subcomponent
 
 @BrowseScope
@@ -19,7 +19,7 @@ interface BrowseComponent {
         fun create(): BrowseComponent
     }
 
-    fun inject(masterNavHostFragment: MasterNavHostFragment)
+    fun inject(listFragment: ListFragment)
 
-    fun inject(masterDetailNavHostFragment: MasterDetailNavHostFragment)
+    fun inject(browseDetailNavHostFragment: BrowseDetailNavHostFragment)
 }

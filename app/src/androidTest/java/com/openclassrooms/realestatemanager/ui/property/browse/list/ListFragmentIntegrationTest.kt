@@ -3,7 +3,6 @@ package com.openclassrooms.realestatemanager.ui.property.browse.list
 import android.graphics.Point
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.lifecycle.Lifecycle.State.RESUMED
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -27,8 +26,7 @@ import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.BaseFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterDetailFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListAdapter.PropertyViewHolder
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment
@@ -39,8 +37,6 @@ import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.C
 import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.EspressoIdlingResourceRule
-import com.openclassrooms.realestatemanager.util.FakeGlideRequestManager
-import com.openclassrooms.realestatemanager.viewmodels.FakePropertiesViewModelFactory
 import org.hamcrest.core.AllOf
 import org.junit.Before
 import org.junit.FixMethodOrder
@@ -56,14 +52,15 @@ class ListFragmentIntegrationTest : BaseMainActivityTests() {
 
     @get: Rule val espressoIdlingResourceRule = EspressoIdlingResourceRule()
 
-    private lateinit var requestManager: FakeGlideRequestManager
-    private lateinit var propertiesViewModelFactory: FakePropertiesViewModelFactory
-
     lateinit var apiService: FakePropertyApiService
     private lateinit var fakeProperties: List<Property>
 
     private lateinit var uiDevice: UiDevice
     private var leChesnay = LatLng(48.82958536116524, 2.125609030745346)
+
+    companion object {
+        const val LIST_ITEM_SELECTED = 2
+    }
 
     val app = InstrumentationRegistry
             .getInstrumentation()
@@ -73,22 +70,111 @@ class ListFragmentIntegrationTest : BaseMainActivityTests() {
     @Before
     public override fun setUp() {
         super.setUp()
-
         apiService = configureFakeApiService(
                 propertiesDataSource = PROPERTIES_DATA_FILENAME, // empty list of data
                 networkDelay = 0L,
                 application = app
         )
+        BrowseFragment.NAV_HOST_FRAGMENT_SELECTED_WHEN_NON_TABLET_MODE = ListFragment::class.java.name
+    }
+
+    @Test
+    fun is_property_list_empty() {
+        BaseFragment.properties.clear()
+        apiService.propertiesJsonFileName = EMPTY_LIST
+
+        configureFakeRepository(apiService, app)
+        injectTest(app)
+
+        launchFragmentInContainer(null, AppTheme) {
+            ListFragment()
+        }
+
+        val recyclerView = onView(withId(R.id.recycler_view))
+
+        recyclerView.check(matches(withEffectiveVisibility(GONE)))
+
+        onView(withId(R.id.no_data_text_view))
+            .check(matches(withEffectiveVisibility(VISIBLE)))
+    }
+
+    @Test
+    fun is_properties_list_scrolling() {
+
+        apiService.propertiesJsonFileName = PROPERTIES_DATA_FILENAME
+
+        configureFakeRepository(apiService, app)
+        injectTest(app)
+
+        launchFragmentInContainer(null, AppTheme) {
+            ListFragment()
+        }.onFragment {
+            val params = it.binding.recyclerView.layoutParams as ConstraintLayout.LayoutParams
+            params.topMargin = 0
+            it.binding.recyclerView.requestLayout()
+            it.binding.recyclerView.adapter!!.notifyDataSetChanged()
+        }
+
+        val recyclerView = onView(withId(R.id.recycler_view))
+
+        recyclerView.check(matches(isDisplayed()))
+
+        recyclerView.perform(
+            RecyclerViewActions.scrollToPosition<PropertyViewHolder>(2)
+        )
+        onView(withText("2-8 Square de Castiglione")).check(matches(isDisplayed()))
+
+        recyclerView.perform(
+            RecyclerViewActions.scrollToPosition<PropertyViewHolder>(8))
+
+        onView(withText("3 Place de la Loi")).check(matches(isDisplayed()))
+
+        recyclerView.perform(
+            RecyclerViewActions.scrollToPosition<PropertyViewHolder>(0))
+
+        onView(withText("3 Square Fantin Latour")).check(matches(isDisplayed()))
+
+        onView(withId(R.id.no_data_text_view))
+            .check(matches(withEffectiveVisibility(GONE)))
+    }
+
+    @Test
+    fun is_instance_state_saved_and_restored_on_destroy_activity() {
+
+        apiService.propertiesJsonFileName = PROPERTIES_DATA_FILENAME
+
+        configureFakeRepository(apiService, app)
+        injectTest(app)
+
+        val scenario = launchFragmentInContainer(null, AppTheme) {
+            ListFragment()
+        }.onFragment {
+            val params = it.binding.recyclerView.layoutParams as ConstraintLayout.LayoutParams
+            params.topMargin = 0
+            it.binding.recyclerView.requestLayout()
+            it.binding.recyclerView.adapter!!.notifyDataSetChanged()
+        }
+
+        val recyclerView = onView(withId(R.id.recycler_view))
+
+        onView(withId(R.id.recycler_view)).check(matches(isDisplayed()))
+
+        recyclerView.perform(
+            RecyclerViewActions.scrollToPosition<PropertyViewHolder>(8)
+        )
+        onView(withText("2 Avenue Jeanne d'Arc")).check(matches(isDisplayed()))
+
+        scenario.recreate()
+
+        recyclerView.perform(
+            RecyclerViewActions.scrollToPosition<PropertyViewHolder>(8)
+        )
+        onView(withText("2 Avenue Jeanne d'Arc")).check(matches(isDisplayed()))
     }
 
     @Test
     fun when_navigate_in_detail_fragment_then_right_property_is_selected() {
 
-        val app = InstrumentationRegistry
-                .getInstrumentation()
-                .targetContext
-                .applicationContext as TestBaseApplication
-
         val apiService = configureFakeApiService(
                 propertiesDataSource = PROPERTIES_DATA_FILENAME, // empty list of data
                 networkDelay = 0L,
@@ -100,100 +186,40 @@ class ListFragmentIntegrationTest : BaseMainActivityTests() {
 
         fakeProperties = propertiesRepository.apiService.findAllProperties().blockingGet()
 
-        val isTablet = app.resources.getBoolean(R.bool.isTablet)
+        val firstProperty = fakeProperties[LIST_ITEM_SELECTED]
+        firstProperty.mainPicture!!.propertyId = firstProperty.id
 
-        if(!isTablet) {
-            var masterFragment: BrowseMasterFragment? = null
+        var browseFragment: BrowseFragment ? = null
 
-            launch(MainActivity::class.java).onActivity {
-                masterFragment = BrowseMasterFragment()
-                it.setFragment(masterFragment!!)
-            }
-
-            val recyclerView = onView(withId(R.id.recycler_view))
-            recyclerView.check(matches(isDisplayed()))
-
-            val firstProperty = fakeProperties[2]
-            firstProperty.mainPicture!!.propertyId = firstProperty.id
-
-            recyclerView.perform(RecyclerViewActions.actionOnItemAtPosition<PropertyViewHolder>(2, click()))
-            onView(withId(R.id.detail_fragment)).check(matches(isDisplayed()))
-
-            val detailFragment: DetailFragment = masterFragment!!.master
-                    .childFragmentManager.primaryNavigationFragment as DetailFragment
-
-            assertThat(detailFragment.property).isEqualTo(firstProperty)
+        launch(MainActivity::class.java).onActivity {
+            INITIAL_ZOOM_LEVEL = 17f
+            defaultLocation = leChesnay
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment!!)
         }
 
-        if(isTablet) {
+        val isMasterDetail = app.resources.getBoolean(R.bool.isMasterDetail)
 
-            var masterDetailFragment: BrowseMasterDetailFragment ? = null
-
-            launch(MainActivity::class.java).onActivity {
-                INITIAL_ZOOM_LEVEL = 17f
-                defaultLocation = leChesnay
-                mainActivity = it
-                masterDetailFragment = BrowseMasterDetailFragment()
-                it.setFragment(masterDetailFragment!!)
-            }
-
-            uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-
-            val mapIsFinishLoading = uiDevice.wait(Until.hasObject(By.desc(GOOGLE_MAP_FINISH_LOADING)), 20000)
-            assertThat(mapIsFinishLoading).isTrue()
-
-            val firstProperty = fakeProperties[0]
-            firstProperty.mainPicture!!.propertyId = firstProperty.id
-
-            val recyclerView = onView(withId(R.id.recycler_view))
-            recyclerView.check(matches(isDisplayed()))
-
-            recyclerView.perform(RecyclerViewActions.actionOnItemAtPosition<PropertyViewHolder>(0, click()))
-
-            uiDevice.wait(Until.hasObject(By.desc(INFO_WINDOW_SHOW)), 15000)
-
-            val title = uiDevice.findObject(UiSelector().text(firstProperty.address!!.street))
-
-            try {
-                if(title.exists()) {
-
-                    val mapFragment = masterDetailFragment!!.detail.childFragmentManager.primaryNavigationFragment as MapFragment
-                    val listFragment = masterDetailFragment!!.master.childFragmentManager.primaryNavigationFragment as ListFragment
-
-                    val display = mainActivity.windowManager.defaultDisplay
-                    val size = Point()
-                    display.getRealSize(size)
-                    val screenHeight = size.y
-                    val x = listFragment.view!!.width + mapFragment.view!!.width / 2
-                    val y = (screenHeight * 0.40).toInt()
-
-                    // Click on the InfoWindow, using UIAutomator
-                    uiDevice.click(x, y)
-                    uiDevice.wait(Until.hasObject(By.res(mainActivity.packageName,
-                            "detail_fragment")), 2000)
-
-                    onView(withId(R.id.detail_fragment)).check(matches(isDisplayed()))
-
-                    val detailFragment: DetailFragment = masterDetailFragment!!.detail
-                            .childFragmentManager.primaryNavigationFragment as DetailFragment
-
-                    assertThat(detailFragment.property).isEqualTo(firstProperty)
-                }
-            } catch (e: UiObjectNotFoundException) {
-                e.printStackTrace()
-            }
+        if(!isMasterDetail) {
+            navigateToDetailFragmentInNormalMode()
         }
 
+        if(isMasterDetail) {
+            navigateToDetailFragmentInMasterDetailMode(browseFragment = browseFragment!!)
+        }
+
+        onView(withId(R.id.detail_fragment)).check(matches(isDisplayed()))
+
+        val detailFragment: DetailFragment = browseFragment!!.detail
+            .childFragmentManager.primaryNavigationFragment as DetailFragment
+
+        assertThat(detailFragment.property).isEqualTo(firstProperty)
     }
 
     @Test
     fun given_detail_fragment_when_click_on_navigation_tool_bar_then_return_on_list_fragment() {
 
-        val app = InstrumentationRegistry
-                .getInstrumentation()
-                .targetContext
-                .applicationContext as TestBaseApplication
-
         val apiService = configureFakeApiService(
                 propertiesDataSource = PROPERTIES_DATA_FILENAME, // empty list of data
                 networkDelay = 0L,
@@ -205,18 +231,17 @@ class ListFragmentIntegrationTest : BaseMainActivityTests() {
 
         fakeProperties = propertiesRepository.apiService.findAllProperties().blockingGet()
 
-        val isTablet = app.resources.getBoolean(R.bool.isTablet)
+        val isMasterDetail = app.resources.getBoolean(R.bool.isMasterDetail)
 
-        if(!isTablet) {
-            launch(MainActivity::class.java).onActivity {
-                mainActivity = it
-                it.setFragment(BrowseMasterFragment())
-            }
+        launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            it.setFragment(BrowseFragment())
+        }
 
-            val recyclerView = onView(withId(R.id.recycler_view))
-            recyclerView.check(matches(isDisplayed()))
+        if(!isMasterDetail) {
 
-            recyclerView.perform(RecyclerViewActions.actionOnItemAtPosition<PropertyViewHolder>(2, click()))
+            navigateToDetailFragmentInNormalMode()
+
             onView(withId(R.id.detail_fragment)).check(matches(isDisplayed()))
 
             onView(AllOf.allOf(withContentDescription(R.string.abc_action_bar_up_description), isDisplayed()))
@@ -235,11 +260,6 @@ class ListFragmentIntegrationTest : BaseMainActivityTests() {
     @Test
     fun is_navigate_in_detail_fragment_when_click_on_item() {
 
-        val app = InstrumentationRegistry
-                .getInstrumentation()
-                .targetContext
-                .applicationContext as TestBaseApplication
-
         val apiService = configureFakeApiService(
                 propertiesDataSource = PROPERTIES_DATA_FILENAME, // empty list of data
                 networkDelay = 0L,
@@ -251,176 +271,93 @@ class ListFragmentIntegrationTest : BaseMainActivityTests() {
 
         fakeProperties = propertiesRepository.apiService.findAllProperties().blockingGet()
 
-        val isTablet = app.resources.getBoolean(R.bool.isTablet)
+        var browseFragment: BrowseFragment ? = null
 
-        if(!isTablet) {
-            launch(MainActivity::class.java).onActivity {
-                it.setFragment(BrowseMasterFragment())
-            }
+        launch(MainActivity::class.java).onActivity {
+            INITIAL_ZOOM_LEVEL = 17f
+            defaultLocation = leChesnay
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment!!)
+        }
+
+        val isMasterDetail = app.resources.getBoolean(R.bool.isMasterDetail)
+
+        if(!isMasterDetail) {
 
             val recyclerView = onView(withId(R.id.recycler_view))
             recyclerView.check(matches(isDisplayed()))
 
-            recyclerView.perform(RecyclerViewActions.actionOnItemAtPosition<PropertyViewHolder>(2, click()))
+            recyclerView.perform(RecyclerViewActions.actionOnItemAtPosition<PropertyViewHolder>(
+                LIST_ITEM_SELECTED, click()))
             onView(withId(R.id.detail_fragment)).check(matches(isDisplayed()))
         }
 
-        if(isTablet) {
-
-            var masterDetailFragment: BrowseMasterDetailFragment ? = null
-
-            launch(MainActivity::class.java).onActivity {
-                INITIAL_ZOOM_LEVEL = 17f
-                defaultLocation = leChesnay
-                mainActivity = it
-                masterDetailFragment = BrowseMasterDetailFragment()
-                it.setFragment(masterDetailFragment!!)
-            }
-
-            uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-
-            val mapIsFinishLoading = uiDevice.wait(Until.hasObject(By.desc(GOOGLE_MAP_FINISH_LOADING)), 20000)
-            assertThat(mapIsFinishLoading).isTrue()
-
-            val firstProperty = fakeProperties[0]
-
-            val recyclerView = onView(withId(R.id.recycler_view))
-            recyclerView.check(matches(isDisplayed()))
-
-            recyclerView.perform(RecyclerViewActions.actionOnItemAtPosition<PropertyViewHolder>(0, click()))
-
-            uiDevice.wait(Until.hasObject(By.desc(INFO_WINDOW_SHOW)), 15000)
-
-            val title = uiDevice.findObject(UiSelector().text(firstProperty.address!!.street))
-
+        if(isMasterDetail) {
+            navigateToDetailFragmentInMasterDetailMode(browseFragment = browseFragment!!)
             try {
-                if(title.exists()) {
-
-                    val mapFragment = masterDetailFragment!!.detail.childFragmentManager.primaryNavigationFragment as MapFragment
-                    val listFragment = masterDetailFragment!!.master.childFragmentManager.primaryNavigationFragment as ListFragment
-
-                    val display = mainActivity.windowManager.defaultDisplay
-                    val size = Point()
-                    display.getRealSize(size)
-                    val screenHeight = size.y
-                    val x = listFragment.view!!.width + mapFragment.view!!.width / 2
-                    val y = (screenHeight * 0.40).toInt()
-
-                    // Click on the InfoWindow, using UIAutomator
-                    uiDevice.click(x, y)
-                    uiDevice.wait(Until.hasObject(By.res(mainActivity.packageName,
-                            "detail_fragment")), 2000)
-
-                    onView(withId(R.id.detail_fragment)).check(matches(isDisplayed()))
-                }
+                onView(withId(R.id.detail_fragment)).check(matches(isDisplayed()))
             } catch (e: UiObjectNotFoundException) {
                 e.printStackTrace()
             }
         }
     }
 
-    @Test
-    fun is_property_list_empty() {
-        BaseFragment.properties.clear()
-        apiService.propertiesJsonFileName = EMPTY_LIST
-
-        val propertiesRepository = configureFakeRepository(apiService, app)
-        injectTest(app)
-
-        val requestManager = FakeGlideRequestManager()
-        val propertiesViewModelFactory = FakePropertiesViewModelFactory(propertiesRepository)
-
-        launchFragmentInContainer(null, AppTheme, RESUMED) {
-            ListFragment(propertiesViewModelFactory, requestManager)
-        }
-
+    private fun navigateToDetailFragmentInNormalMode() {
         val recyclerView = onView(withId(R.id.recycler_view))
-
-        recyclerView.check(matches(withEffectiveVisibility(GONE)))
-
-        onView(withId(R.id.no_data_text_view))
-                .check(matches(withEffectiveVisibility(VISIBLE)))
-
-    }
-
-    @Test
-    fun is_properties_list_scrolling() {
-
-        apiService.propertiesJsonFileName = PROPERTIES_DATA_FILENAME
-
-        val propertiesRepository = configureFakeRepository(apiService, app)
-        injectTest(app)
-
-        requestManager = FakeGlideRequestManager()
-        propertiesViewModelFactory = FakePropertiesViewModelFactory(propertiesRepository)
-
-        launchFragmentInContainer(null, AppTheme, RESUMED) {
-            ListFragment(propertiesViewModelFactory, requestManager)
-        }.onFragment {
-            val params = it.binding.recyclerView.layoutParams as ConstraintLayout.LayoutParams
-            params.topMargin = 0
-            it.binding.recyclerView.requestLayout()
-            it.binding.recyclerView.adapter!!.notifyDataSetChanged()
-        }
-
-        val recyclerView = onView(withId(R.id.recycler_view))
-
         recyclerView.check(matches(isDisplayed()))
 
-        recyclerView.perform(
-                RecyclerViewActions.scrollToPosition<PropertyViewHolder>(2)
-        )
-        onView(withText("2-8 Square de Castiglione")).check(matches(isDisplayed()))
-
-        recyclerView.perform(
-                RecyclerViewActions.scrollToPosition<PropertyViewHolder>(8))
-
-        onView(withText("3 Place de la Loi")).check(matches(isDisplayed()))
-
-        recyclerView.perform(
-                RecyclerViewActions.scrollToPosition<PropertyViewHolder>(0))
-
-        onView(withText("3 Square Fantin Latour")).check(matches(isDisplayed()))
-
-        onView(withId(R.id.no_data_text_view))
-                .check(matches(withEffectiveVisibility(GONE)))
+        recyclerView.perform(RecyclerViewActions.actionOnItemAtPosition<PropertyViewHolder>(
+            LIST_ITEM_SELECTED,
+            click()))
+        onView(withId(R.id.detail_fragment)).check(matches(isDisplayed()))
     }
 
-    @Test
-    fun is_instance_state_saved_and_restored_on_destroy_activity() {
+    private fun navigateToDetailFragmentInMasterDetailMode(browseFragment: BrowseFragment) {
 
-        apiService.propertiesJsonFileName = PROPERTIES_DATA_FILENAME
+        uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
-        val propertiesRepository = configureFakeRepository(apiService, app)
-        injectTest(app)
+        try {
 
-        requestManager = FakeGlideRequestManager()
-        propertiesViewModelFactory = FakePropertiesViewModelFactory(propertiesRepository)
+            uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
-        val scenario = launchFragmentInContainer(null, AppTheme, RESUMED) {
-            ListFragment(propertiesViewModelFactory, requestManager)
-        }.onFragment {
-            val params = it.binding.recyclerView.layoutParams as ConstraintLayout.LayoutParams
-            params.topMargin = 0
-            it.binding.recyclerView.requestLayout()
-            it.binding.recyclerView.adapter!!.notifyDataSetChanged()
+            val mapIsFinishLoading = uiDevice.wait(Until.hasObject(By.desc(GOOGLE_MAP_FINISH_LOADING)), 20000)
+            assertThat(mapIsFinishLoading).isTrue()
+
+            val firstProperty = fakeProperties[LIST_ITEM_SELECTED]
+
+            val recyclerView = onView(withId(R.id.recycler_view))
+            recyclerView.check(matches(isDisplayed()))
+
+            recyclerView.perform(RecyclerViewActions.actionOnItemAtPosition<PropertyViewHolder>(
+                LIST_ITEM_SELECTED,
+                click()))
+
+            uiDevice.wait(Until.hasObject(By.desc(INFO_WINDOW_SHOW)), 15000)
+
+            val title = uiDevice.findObject(UiSelector().text(firstProperty.address!!.street))
+
+            if(title.exists()) {
+                uiDevice.wait(Until.hasObject(By.desc(INFO_WINDOW_SHOW)), 30000)
+
+                val mapFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as MapFragment
+                val listFragment = browseFragment.master
+
+                val display = mainActivity.windowManager.defaultDisplay
+                val size = Point()
+                display.getRealSize(size)
+                val screenHeight = size.y
+                val x = listFragment.view!!.width + mapFragment.view!!.width / 2
+                val y = (screenHeight * 0.40).toInt()
+
+                // Click on the InfoWindow, using UIAutomator
+                uiDevice.click(x, y)
+                uiDevice.wait(Until.hasObject(By.res(mainActivity.packageName,
+                    "detail_fragment")), 10000)
+            }
+        } catch (e: UiObjectNotFoundException) {
+            e.printStackTrace()
         }
-
-        val recyclerView = onView(withId(R.id.recycler_view))
-
-        onView(withId(R.id.recycler_view)).check(matches(isDisplayed()))
-
-        recyclerView.perform(
-                RecyclerViewActions.scrollToPosition<PropertyViewHolder>(8)
-        )
-        onView(withText("2 Avenue Jeanne d'Arc")).check(matches(isDisplayed()))
-
-        scenario.recreate()
-
-        recyclerView.perform(
-                RecyclerViewActions.scrollToPosition<PropertyViewHolder>(8)
-        )
-        onView(withText("2 Avenue Jeanne d'Arc")).check(matches(isDisplayed()))
     }
 
     override fun injectTest(application: TestBaseApplication) {

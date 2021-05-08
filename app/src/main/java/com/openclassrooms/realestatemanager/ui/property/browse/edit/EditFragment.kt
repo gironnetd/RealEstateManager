@@ -1,15 +1,17 @@
 package com.openclassrooms.realestatemanager.ui.property.browse.edit
 
+import android.content.res.Configuration
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.*
-import androidx.activity.OnBackPressedCallback
+import android.widget.FrameLayout
 import androidx.core.os.bundleOf
+import androidx.navigation.fragment.NavHostFragment
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentEditBinding
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.ui.property.BaseFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterDetailFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.util.Constants.FROM
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTY_ID
 
@@ -31,6 +33,7 @@ class EditFragment : BaseFragment(R.layout.fragment_edit, null) {
         _binding = FragmentEditBinding.inflate(inflater, container, false)
         property = properties.single { property -> property.id == arguments?.getString(PROPERTY_ID) }
         setHasOptionsMenu(true)
+        configureView()
         return binding.root
     }
 
@@ -39,52 +42,43 @@ class EditFragment : BaseFragment(R.layout.fragment_edit, null) {
         editItem.isVisible = false
     }
 
-    override fun initializeToolbar() {
-        when(this.parentFragment?.parentFragment?.javaClass?.name) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        configureView()
+    }
 
-            BrowseMasterFragment::class.java.name -> {
-                val masterFragment = this.parentFragment?.parentFragment as BrowseMasterFragment
-                masterFragment.binding.toolBar.setNavigationOnClickListener {
-                    backPressedWhenNormalMode()
-                }
-            }
+    private fun configureView() {
+        val detailLayoutParams = FrameLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT)
+        val detailFragment = this.parentFragment as NavHostFragment
 
-            BrowseMasterDetailFragment::class.java.name -> {
-                val masterDetailFragment =  this.parentFragment?.parentFragment as BrowseMasterDetailFragment
+        val displayMetrics = DisplayMetrics()
+        requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
 
-                masterDetailFragment.binding.toolBar.setNavigationOnClickListener {
-                    backPressedWhenTabletMode()
-                }
-            }
+        if(!resources.getBoolean(R.bool.isMasterDetail)) {
+            detailLayoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+            detailLayoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+
+            detailLayoutParams.leftMargin = 0
+            detailFragment.requireView().layoutParams = detailLayoutParams
+            detailFragment.requireView().requestLayout()
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        when(this.parentFragment?.parentFragment?.javaClass?.name) {
-
-            BrowseMasterFragment::class.java.name -> {
-                (this.parentFragment?.parentFragment as BrowseMasterFragment).binding.buttonContainer.visibility = View.GONE
-
-                activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        backPressedWhenNormalMode()
-                    }
-                })
-            }
-
-            BrowseMasterDetailFragment::class.java.name -> {
-                activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        backPressedWhenTabletMode()
-                    }
-                })
+    override fun initializeToolbar() {
+        this.parentFragment?.parentFragment?.let {
+            val browseFragment =  this.parentFragment?.parentFragment as BrowseFragment
+            browseFragment.binding.toolBar.setNavigationOnClickListener {
+                if(resources.getBoolean(R.bool.isMasterDetail)) {
+                    backPressedWhenTabletMode()
+                } else {
+                    backPressedWhenNormalMode()
+                }
             }
         }
     }
 
     private fun backPressedWhenTabletMode() {
-        (parentFragment?.parentFragment as BrowseMasterDetailFragment)
+        (parentFragment?.parentFragment as BrowseFragment)
                 .detail
                 .navController
                 .navigate(R.id.navigation_detail, bundleOf(FROM to arguments?.getString(FROM),
@@ -92,8 +86,8 @@ class EditFragment : BaseFragment(R.layout.fragment_edit, null) {
     }
 
     private fun backPressedWhenNormalMode() {
-        (this.parentFragment?.parentFragment as BrowseMasterFragment)
-                .master
+        (this.parentFragment?.parentFragment as BrowseFragment)
+                .detail
                 .navController
                 .navigate(R.id.navigation_detail, bundleOf(FROM to arguments?.getString(FROM),
                         PROPERTY_ID to property.id))

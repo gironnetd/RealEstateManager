@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="list_properties_margin_top">70dp</dimen>
+    <item name="master_width_weight" type="dimen" format="float">0.0</item>
+    <item name="detail_width_weight" type="dimen" format="float">0.0</item>
+</resources>

@@ -10,9 +10,4 @@
         android:title="@string/create"
         android:icon="@drawable/ic_baseline_add_real_estate_24"
         />
-    <item
-        android:id="@+id/navigation_simulation"
-        android:title="@string/simulation"
-        android:icon="@drawable/ic_baseline_bar_chart_24"
-        />
 </menu>

@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.ui.navigation.browse.master
+package com.openclassrooms.realestatemanager.ui.navigation.browse.detail
 
 import android.content.Context
 import android.os.Bundle
@@ -11,8 +11,8 @@ import androidx.navigation.Navigator
 import androidx.navigation.fragment.FragmentNavigator
 import java.util.*
 
-@Navigator.Name("browse_master_fragment")
-class BrowseMasterFragmentNavigator(
+@Navigator.Name("browse_detail_fragment")
+class BrowseDetailFragmentNavigator(
         private val mContext: Context,
         private val mFragmentManager: FragmentManager, // Should pass childFragmentManager.
         private val mContainerId: Int,
@@ -23,6 +23,7 @@ class BrowseMasterFragmentNavigator(
     private val mBackStack = ArrayDeque<Int>()
 
     override fun navigate(destination: Destination, args: Bundle?, navOptions: NavOptions?, navigatorExtras: Navigator.Extras?): NavDestination? {
+
         if (mFragmentManager.isStateSaved) {
             Log.i(TAG, "Ignoring navigate() call: FragmentManager has already"
                     + " saved its state")
@@ -37,19 +38,20 @@ class BrowseMasterFragmentNavigator(
         val tag = destination.id.toString()
 
         val currentFragment = mFragmentManager.primaryNavigationFragment
+
         if (currentFragment != null) {
-            ft.detach(currentFragment)
+            ft.hide(currentFragment)
         }
 
         var fragment = mFragmentManager.findFragmentByTag(tag)
 
         if (fragment == null) {
-            fragment = instantiateFragment(mContext, mFragmentManager, className, args)
+            fragment = mFragmentManager.fragmentFactory.instantiate(mContext.classLoader, className)
             fragment.arguments = args
             ft.add(mContainerId, fragment, tag)
         } else {
             fragment.arguments = args
-            ft.attach(fragment)
+            ft.show(fragment)
         }
 
         ft.setPrimaryNavigationFragment(fragment)

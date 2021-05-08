@@ -1,14 +1,22 @@
 package com.openclassrooms.realestatemanager.ui.property.browse.map
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.os.Bundle
+import android.util.DisplayMetrics
+import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
-import android.view.View.VISIBLE
+import android.view.View.GONE
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.GoogleMap.*
@@ -23,10 +31,10 @@ import com.openclassrooms.realestatemanager.databinding.FragmentMapBinding
 import com.openclassrooms.realestatemanager.models.storageUrl
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.BaseFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterDetailFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.BrowseMasterFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesIntent
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesUiModel
+import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesViewModel
 import com.openclassrooms.realestatemanager.util.Constants.FROM
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTY_ID
 import com.openclassrooms.realestatemanager.util.GlideManager
@@ -50,6 +58,10 @@ constructor(
         OnMapReadyCallback, OnMapLoadedCallback,
         BaseView<PropertiesIntent, PropertiesUiModel> {
 
+    private val propertiesViewModel: PropertiesViewModel by viewModels {
+        viewModelFactory
+    }
+
     lateinit var mMap: GoogleMap
     lateinit var clusterManager: ClusterManager<CustomClusterItem>
     lateinit var selectedItem: CustomClusterItem
@@ -58,20 +70,22 @@ constructor(
     var markers : MutableList<Marker> = mutableListOf()
 
     private var _binding: FragmentMapBinding? = null
+    val binding get() = _binding!!
 
     private val loadConversationsIntentPublisher =
             PublishSubject.create<PropertiesIntent.LoadPropertiesIntent>()
     private val compositeDisposable = CompositeDisposable()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentMapBinding.bind(view)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentMapBinding.inflate(inflater, container, false)
+        configureView()
         if(properties.isNotEmpty() && !::mMap.isInitialized) {
             initializeMap()
         } else if(properties.isEmpty() || !::mMap.isInitialized) {
             compositeDisposable.add(propertiesViewModel.states().subscribe(this::render))
             propertiesViewModel.processIntents(intents())
         }
+        return binding.root
     }
 
     override fun intents(): Observable<PropertiesIntent> {
@@ -101,6 +115,45 @@ constructor(
                 initializeMap()
             }
             else -> { }
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        configureView()
+    }
+
+    private fun configureView() {
+        val detailLayoutParams = FrameLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT)
+        this.parentFragment?.let {
+            val detailFragment = this.parentFragment as NavHostFragment
+
+            val displayMetrics = DisplayMetrics()
+            requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
+            val screenWidth = displayMetrics.widthPixels
+
+            if(resources.getBoolean(R.bool.isMasterDetail)) {
+
+                val detailWidthWeight = TypedValue()
+                resources.getValue(R.dimen.detail_width_weight, detailWidthWeight, false)
+                detailLayoutParams.width = (screenWidth * detailWidthWeight.float).toInt()
+                detailLayoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+
+                binding.mapFragment.layoutParams = detailLayoutParams
+                binding.mapFragment.requestLayout()
+            }
+
+            if(!resources.getBoolean(R.bool.isMasterDetail)) {
+
+                detailLayoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+                detailLayoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+
+                detailFragment.requireView().layoutParams = detailLayoutParams
+                detailFragment.requireView().requestLayout()
+
+                binding.mapFragment.layoutParams = detailLayoutParams
+                binding.mapFragment.requestLayout()
+            }
         }
     }
 
@@ -207,29 +260,16 @@ constructor(
             true
         }
 
-        when(this.parentFragment?.parentFragment?.javaClass?.name) {
-            BrowseMasterFragment::class.java.name -> {
-                val masterFragment = this.parentFragment?.parentFragment as BrowseMasterFragment
+        this.parentFragment?.parentFragment?.let {
+            val masterDetailFragment = this.parentFragment?.parentFragment as BrowseFragment
 
-                clusterManager.setOnClusterItemInfoWindowClickListener { item ->
-                    val propertyId = item.getTag()
-                    val action = MapFragmentDirections.navigationDetailAction(
-                            from = MapFragment::class.java.name,
-                            propertyId = propertyId
-                    )
-                    masterFragment.master.findNavController().navigate(action)
-                }
-            }
-            BrowseMasterDetailFragment::class.java.name -> {
-                val masterDetailFragment = this.parentFragment?.parentFragment as BrowseMasterDetailFragment
-
-                clusterManager.setOnClusterItemInfoWindowClickListener { item ->
-                    val propertyId = item.getTag()
-                    val bundle = bundleOf(FROM to MapFragment::class.java.name,
-                            PROPERTY_ID to propertyId
-                    )
-                    masterDetailFragment.detail.findNavController().navigate(R.id.navigation_detail, bundle)
-                }
+            clusterManager.setOnClusterItemInfoWindowClickListener { item ->
+                val propertyId = item.getTag()
+                val bundle = bundleOf(FROM to MapFragment::class.java.name,
+                        PROPERTY_ID to propertyId
+                )
+                masterDetailFragment.detail.findNavController().navigate(R.id.navigation_detail, bundle)
+                masterDetailFragment.binding.buttonContainer.visibility = GONE
             }
         }
     }
@@ -353,43 +393,16 @@ constructor(
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        when(this.parentFragment?.parentFragment?.javaClass?.name) {
-            BrowseMasterFragment::class.java.name -> {
-                val masterFragment = this.parentFragment?.parentFragment as BrowseMasterFragment
-
-                masterFragment.binding.buttonContainer.visibility = VISIBLE
-                masterFragment.binding.mapViewButton.isSelected = true
-                masterFragment.binding.listViewButton.isSelected = false
-            }
-        }
-    }
-
     override fun initializeToolbar() {
-        when(this.parentFragment?.parentFragment?.javaClass?.name) {
-            BrowseMasterFragment::class.java.name -> {
-                val masterFragment = this.parentFragment?.parentFragment as BrowseMasterFragment
+        this.parentFragment?.parentFragment?.let {
+            val browseFragment = this.parentFragment?.parentFragment as BrowseFragment
 
-                masterFragment.binding.toolBar.setNavigationOnClickListener {
-                    val mainActivity = activity as MainActivity
-                    if (!mainActivity.binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                        mainActivity.binding.drawerLayout.openDrawer(GravityCompat.START)
-                    } else {
-                        mainActivity.binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    }
-                }
-            }
-            BrowseMasterDetailFragment::class.java.name -> {
-                val masterDetailFragment = this.parentFragment?.parentFragment as BrowseMasterDetailFragment
-
-                masterDetailFragment.binding.toolBar.setNavigationOnClickListener {
-                    val mainActivity = activity as MainActivity
-                    if (!mainActivity.binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                        mainActivity.binding.drawerLayout.openDrawer(GravityCompat.START)
-                    } else {
-                        mainActivity.binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    }
+            browseFragment.binding.toolBar.setNavigationOnClickListener {
+                val mainActivity = activity as MainActivity
+                if (!mainActivity.binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    mainActivity.binding.drawerLayout.openDrawer(GravityCompat.START)
+                } else {
+                    mainActivity.binding.drawerLayout.closeDrawer(GravityCompat.START)
                 }
             }
         }

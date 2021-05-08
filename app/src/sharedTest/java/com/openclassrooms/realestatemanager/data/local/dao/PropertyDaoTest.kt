@@ -9,9 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.data.local.AppDatabase
 import com.openclassrooms.realestatemanager.data.local.provider.toList
-import com.openclassrooms.realestatemanager.models.Picture
 import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.util.ConstantsTest
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import junit.framework.TestCase
@@ -43,18 +41,6 @@ class PropertyDaoTest: TestCase() {
                 rawJson,
                 object : TypeToken<List<Property>>() {}.type
         )
-
-        rawJson =  jsonUtil.readJSONFromAsset(ConstantsTest.PICTURES_DATA_FILENAME)
-
-        fakeProperties.forEachIndexed { index, property ->
-
-            var pictures: List<Picture> = Gson().fromJson(rawJson, object : TypeToken<List<Picture>>() {}.type)
-            pictures.forEach { picture ->
-                picture.propertyId = property.id
-            }
-
-            fakeProperties[index].pictures.addAll(pictures)
-        }
 
         propertyDao = database.propertyDao()
     }

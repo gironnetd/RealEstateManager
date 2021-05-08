@@ -2,8 +2,8 @@ package com.openclassrooms.realestatemanager.di.property.browse
 
 import android.app.Application
 import com.bumptech.glide.Glide
+import com.openclassrooms.realestatemanager.data.local.AppDatabase
 import com.openclassrooms.realestatemanager.data.local.PropertyLocalDataSource
-import com.openclassrooms.realestatemanager.data.local.dao.PropertyDao
 import com.openclassrooms.realestatemanager.data.remote.DefaultPropertyApiService
 import com.openclassrooms.realestatemanager.data.remote.PropertyRemoteDataSource
 import com.openclassrooms.realestatemanager.data.repository.property.DefaultPropertyRepository
@@ -44,8 +44,8 @@ object BrowseModule {
     @JvmStatic
     @BrowseScope
     @Provides
-    fun providePropertyLocalDataSource(propertyDao: PropertyDao): PropertyLocalDataSource
-            = PropertyLocalDataSource(propertyDao = propertyDao)
+    fun providePropertyLocalDataSource(db: AppDatabase): PropertyLocalDataSource
+            = PropertyLocalDataSource(database = db)
 
     @JvmStatic
     @BrowseScope

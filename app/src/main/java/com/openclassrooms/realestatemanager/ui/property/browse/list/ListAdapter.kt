@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -64,10 +63,7 @@ class ListAdapter(
         return differ.currentList.size
     }
 
-    fun submitList(
-            properties: List<Property>?,
-
-            ) {
+    fun submitList(properties: List<Property>?, ) {
         differ.submitList(properties)
     }
 
@@ -95,17 +91,7 @@ class ListAdapter(
             item.price.let { price.text = "$".plus("$it") }
 
             itemView.setOnClickListener {
-                when(context?.resources?.getBoolean(R.bool.isTablet)) {
-                    true -> { callBack?.onItemClick(item.id) }
-                    false -> {
-                        val propertyId = item.id
-                        val action = ListFragmentDirections.navigationDetailAction(
-                                from = ListFragment::class.java.name,
-                                propertyId = propertyId
-                        )
-                        it.findNavController().navigate(action)
-                    }
-                }
+                callBack?.onItemClick(item.id)
             }
         }
     }

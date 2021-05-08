@@ -5,7 +5,6 @@ import com.openclassrooms.realestatemanager.data.local.dao.PropertyDaoTest
 import com.openclassrooms.realestatemanager.data.local.provider.AppContentProviderTest
 import com.openclassrooms.realestatemanager.data.remote.PropertyApiServiceTest
 import com.openclassrooms.realestatemanager.data.repository.property.BrowseFragmentTest
-import com.openclassrooms.realestatemanager.data.repository.property.BrowseMasterFragmentTest
 import com.openclassrooms.realestatemanager.data.repository.property.PropertyRepositoryTest
 import com.openclassrooms.realestatemanager.di.property.TestBrowseComponent
 import com.openclassrooms.realestatemanager.repository.ConnectivityManagerTest
@@ -50,8 +49,6 @@ interface TestAppComponent : AppComponent {
     fun inject(mainRotationTest: MainRotationTest)
 
     fun inject(browseFragmentTest: BrowseFragmentTest)
-
-    fun inject(browseMasterFragmentTest: BrowseMasterFragmentTest)
 
     fun inject(propertyDaoTest: PropertyDaoTest)
 

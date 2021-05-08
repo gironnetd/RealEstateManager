@@ -24,7 +24,7 @@ constructor(val apiService: PropertyApiService): PropertyDataSource {
        return apiService.findAllProperties()
     }
 
-    override fun deleteAllProperties(properties: List<Property>): Completable {
+    override fun deleteAllProperties(): Completable {
         TODO("Not yet implemented")
     }
 }

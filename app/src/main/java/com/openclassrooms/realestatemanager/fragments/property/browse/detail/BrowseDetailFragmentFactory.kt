@@ -5,13 +5,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.edit.EditFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment
 import com.openclassrooms.realestatemanager.util.GlideManager
 import javax.inject.Inject
 
 @BrowseScope
-class MasterDetailFragmentFactory
+class BrowseDetailFragmentFactory
 @Inject
 constructor(
         private val viewModelFactory: ViewModelProvider.Factory,
@@ -21,13 +20,6 @@ constructor(
     override fun instantiate(classLoader: ClassLoader, className: String) =
 
             when (className) {
-                ListFragment::class.java.name -> {
-                    val fragment = ListFragment(viewModelFactory = viewModelFactory,
-                            requestManager = requestManager
-                    )
-                    fragment
-                }
-
                 MapFragment::class.java.name -> {
                     val fragment = MapFragment(viewModelFactory = viewModelFactory,
                             requestManager = requestManager)
