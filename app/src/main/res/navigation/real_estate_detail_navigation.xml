@@ -5,21 +5,62 @@
     android:id="@+id/real_estate_detail_navigation"
     app:startDestination="@id/navigation_map">
 
-    <fragment
-        android:id="@+id/navigation_detail"
-        android:name="com.openclassrooms.realestatemanager.view.realestate.detail.DetailFragment"
-        android:label="@string/detail"
-        tools:layout="@layout/fragment_detail" />
-
-    <fragment
+    <browse_detail_fragment
         android:id="@+id/navigation_map"
-        android:name="com.openclassrooms.realestatemanager.view.realestate.map.MapFragment"
-        android:label="@string/map"
-        tools:layout="@layout/fragment_map" />
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_map">
 
-    <fragment
+        <action android:id="@+id/navigation_detail_action"
+            app:destination="@id/navigation_detail"
+            app:popUpTo="@id/navigation_map"/>
+
+        <argument
+            android:name="propertyId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </browse_detail_fragment>
+
+    <browse_detail_fragment
+        android:id="@+id/navigation_detail"
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragment"
+        android:label="@string/detail"
+        tools:layout="@layout/fragment_detail">
+
+        <action android:id="@+id/navigation_edit_action"
+            app:destination="@id/navigation_edit"
+            app:popUpTo="@id/navigation_detail"/>
+
+        <argument
+            android:name="from"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+
+        <argument
+            android:name="propertyId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </browse_detail_fragment>
+
+    <browse_detail_fragment
         android:id="@+id/navigation_edit"
-        android:name="com.openclassrooms.realestatemanager.view.realestate.edit.EditFragment"
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.edit.EditFragment"
         android:label="@string/update"
-        tools:layout="@layout/fragment_edit" />
+        tools:layout="@layout/fragment_edit">
+
+        <argument
+            android:name="from"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+
+        <argument
+            android:name="propertyId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </browse_detail_fragment>
 </navigation>

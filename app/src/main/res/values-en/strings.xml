@@ -10,6 +10,16 @@
     <string name="list">Real estate List</string>
     <string name="detail">Real estate Detail</string>
     <string name="search">Search</string>
+    <string name="edit">Edit</string>
     <string name="button_list_title">List</string>
     <string name="button_map_title">Map</string>
+    <string name="no_property_to_display">No Property to Display</string>
+    <string name="number_of_bedrooms">Number of bedrooms</string>
+    <string name="none">none</string>
+    <string name="number_of_bathrooms">Number of bathrooms</string>
+    <string name="number_of_rooms">Number of rooms</string>
+    <string name="surface">Surface</string>
+    <string name="description">Description</string>
+    <string name="media">Media</string>
+    <string name="location">Location</string>
 </resources>

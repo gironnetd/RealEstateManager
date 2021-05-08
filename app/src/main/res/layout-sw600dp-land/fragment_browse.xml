@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/real_estate_master_detail_fragment"
+    tools:context=".ui.property.browse.BrowseFragment">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/tool_bar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+            app:titleTextColor="@android:color/white" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize">
+
+                <fragment
+                    android:id="@+id/list_fragment"
+                    android:name="com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    />
+
+                <fragment
+                    android:id="@+id/detail_nav_fragment"
+                    android:name="com.openclassrooms.realestatemanager.fragments.property.browse.detail.BrowseDetailNavHostFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:defaultNavHost="false" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/button_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="84dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="horizontal"
+            style="?android:attr/buttonBarStyle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tool_bar">
+
+                <Button
+                    android:id="@+id/list_view_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_real_esate_button_state"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:text="@string/button_list_title"
+                    android:textColor="@color/selector_text_color"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/map_view_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_real_esate_button_state"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:text="@string/button_map_title"
+                    android:textColor="@color/selector_text_color"
+                    android:textStyle="bold" />
+        </LinearLayout>
+</FrameLayout>

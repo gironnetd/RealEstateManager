@@ -1,0 +1,42 @@
+[
+  {
+    "description": "",
+    "id": "9uCYQYqQGrW2JvqJlj5B",
+    "type": "BEDROOM"
+  },
+  {
+    "type": "BEDROOM",
+    "description": "",
+    "id": "FVsDhjrKwTOcAdUpCRUs"
+  },
+  {
+    "id": "GV2AOKK9irGc6aVBIeLT",
+    "type": "BEDROOM",
+    "description": ""
+  },
+  {
+    "id": "HKTPtuo8lAvnE7Htzmht",
+    "description": "",
+    "type": "LOUNGE"
+  },
+  {
+    "id": "Mt8i6uiPh6C4MhjK8z76",
+    "description": "",
+    "type": "LOUNGE"
+  },
+  {
+    "id": "P01rOBPqtUXqSPTMTCJa",
+    "type": "BATHROOM",
+    "description": ""
+  },
+  {
+    "type": "FACADE",
+    "id": "bM6e2nNhRgGmKEEFkuj3",
+    "description": ""
+  },
+  {
+    "type": "KITCHEN",
+    "description": "",
+    "id": "uzObZucRNvFvoeJBhyJx"
+  }
+]

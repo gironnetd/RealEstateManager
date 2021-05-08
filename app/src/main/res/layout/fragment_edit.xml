@@ -4,9 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/edit_fragment"
-    tools:context=".view.realestate.edit.EditFragment">
+    tools:context=".ui.property.browse.edit.EditFragment">
 
     <TextView
+        android:id="@+id/property_address_street"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
