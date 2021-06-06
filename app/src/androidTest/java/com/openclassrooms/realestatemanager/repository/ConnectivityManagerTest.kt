@@ -5,15 +5,14 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil
-import com.openclassrooms.realestatemanager.util.ConnectivityUtil.Companion.switchAllNetworks
-import com.openclassrooms.realestatemanager.util.ConnectivityUtil.Companion.waitInternetStateChange
+import com.openclassrooms.realestatemanager.util.ConnectivityUtil.switchAllNetworks
+import com.openclassrooms.realestatemanager.util.ConnectivityUtil.waitInternetStateChange
 import com.openclassrooms.realestatemanager.util.Constants.TIMEOUT_INTERNET_CONNECTION
 import com.openclassrooms.realestatemanager.util.ConstantsTest
 import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
@@ -38,26 +37,20 @@ class ConnectivityManagerTest : BaseMainActivityTests() {
     lateinit var networkConnectionLiveData: NetworkConnectionLiveData
 
     private lateinit var activityScenario: ActivityScenario<MainActivity>
-    private lateinit var app : TestBaseApplication
 
     @Before
     public override fun setUp() {
         super.setUp()
-        app = InstrumentationRegistry.getInstrumentation()
-                .targetContext.applicationContext as TestBaseApplication
 
-        val apiService = configureFakeApiService(
-                propertiesDataSource = ConstantsTest.EMPTY_LIST, // empty list of data
-                networkDelay = 0L,
-                application = app
-        )
+        configure_fake_repository(apiService = configure_fake_api_service(
+            propertiesDataSource = ConstantsTest.EMPTY_LIST,
+            networkDelay = 0L,))
 
-        configureFakeRepository(apiService, app)
-        injectTest(app)
+        injectTest(testApplication)
 
-        networkConnectionLiveData = NetworkConnectionLiveData(app.applicationContext)
+        networkConnectionLiveData = NetworkConnectionLiveData(testApplication.applicationContext)
 
-        ConnectivityUtil.context = app.applicationContext
+        ConnectivityUtil.context = testApplication.applicationContext
 
         activityScenario = launch(MainActivity::class.java)
                 .onActivity { activity ->
@@ -90,7 +83,7 @@ class ConnectivityManagerTest : BaseMainActivityTests() {
 
     @Test
     @Suppress("UnstableApiUsage")
-    fun verify_when_connection_is_available() {
+    fun given_main_activity_launched_when_connection_is_available_then_inspect_network_live_data_status() {
         Timber.tag(TAG).i("/** verify_when_connection_is_available **/")
 
         concatArray(switchAllNetworks(false), waitInternetStateChange(false))
@@ -114,7 +107,8 @@ class ConnectivityManagerTest : BaseMainActivityTests() {
 
     @Test
     @Suppress("UnstableApiUsage")
-    fun verify_when_connection_is_unavailable() {
+    fun given_main_activity_launched_when_connection_is_unavailable_then_inspect_network_live_data_status() {
+
         Timber.tag(TAG).i("/** verify_when_connection_is_unavailable **/")
 
         concatArray(switchAllNetworks(false), waitInternetStateChange(false))
@@ -129,7 +123,7 @@ class ConnectivityManagerTest : BaseMainActivityTests() {
 
     @Test
     @Suppress("UnstableApiUsage")
-    fun verify_when_connection_is_switching() {
+    fun given_main_activity_launched_when_connection_is_switching_then_inspect_network_live_data_status() {
         Timber.tag(TAG).i("/** verify_when_connection_is_switching **/")
 
         concatArray(switchAllNetworks(false), waitInternetStateChange(false))

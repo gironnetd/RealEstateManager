@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.Room
+import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -12,6 +13,8 @@ import com.openclassrooms.realestatemanager.data.local.AppDatabase.Companion.DAT
 import com.openclassrooms.realestatemanager.data.local.dao.PropertyDao
 import com.openclassrooms.realestatemanager.data.remote.DefaultPropertyApiService
 import com.openclassrooms.realestatemanager.data.remote.PropertyApiService
+import com.openclassrooms.realestatemanager.util.GlideManager
+import com.openclassrooms.realestatemanager.util.GlideRequestManager
 import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
 import dagger.Module
 import dagger.Provides
@@ -46,21 +49,22 @@ object AppModule {
     @JvmStatic
     @Singleton
     @Provides
-    fun providePropertyDao(db: AppDatabase): PropertyDao {
-        return db.propertyDao()
-    }
+    fun providePropertyDao(db: AppDatabase): PropertyDao = db.propertyDao()
 
     @JvmStatic
     @Singleton
     @Provides
-    fun provideContext(application: Application): Context {
-        return application
-    }
+    fun provideGlideRequestManager(application: Application ): GlideManager =
+         GlideRequestManager(Glide.with(application))
 
     @JvmStatic
     @Singleton
     @Provides
-    fun provideNetworkConnectionLiveData(context: Context): LiveData<Boolean> {
-        return NetworkConnectionLiveData(context = context)
-    }
+    fun provideContext(application: Application): Context = application
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideNetworkConnectionLiveData(context: Context): LiveData<Boolean> =
+         NetworkConnectionLiveData(context = context)
 }

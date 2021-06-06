@@ -1,32 +1,48 @@
 package com.openclassrooms.realestatemanager.data.local
 
+import android.content.Context
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.openclassrooms.realestatemanager.data.PropertyDataSource
 import com.openclassrooms.realestatemanager.data.local.provider.toList
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
-import com.openclassrooms.realestatemanager.models.Picture
+import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.storageLocalDatabase
+import com.openclassrooms.realestatemanager.models.storageUrl
 import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable
 import io.reactivex.Single
+import java.io.File
 import javax.inject.Inject
 
 @BrowseScope
 open class PropertyLocalDataSource
 @Inject
-constructor(val database: AppDatabase) : PropertyDataSource {
+constructor(val database: AppDatabase, val context: Context) : PropertyDataSource {
 
     override fun saveProperty(property: Property): Completable {
         return Completable.fromAction {
+            //property.mainPhoto?.propertyId = property.id
             database.propertyDao().saveProperty(property = property)
-            database.pictureDao().savePictures(property.pictures)
+            database.photoDao().savePhotos(property.photos)
         }.subscribeOn(SchedulerProvider.io())
     }
 
     override fun saveProperties(properties: List<Property>): Completable {
         return Completable.fromAction {
-            database.propertyDao().saveProperties(properties = properties)
             properties.forEach { property ->
-                database.pictureDao().savePictures(property.pictures)
+                //property.mainPhoto?.propertyId = property.id
+                database.propertyDao().saveProperty(property)
+                database.photoDao().savePhotos(property.photos)
+
+                property.photos.forEach { photo ->
+                    val localFile = File(photo.storageLocalDatabase(context, true))
+                    if(!localFile.exists()) {
+                        val gsReference = Firebase.storage.getReferenceFromUrl(photo.storageUrl(isThumbnail = true))
+                        gsReference.getFile(localFile)
+                    }
+                }
             }
         }.subscribeOn(SchedulerProvider.io())
     }
@@ -35,7 +51,8 @@ constructor(val database: AppDatabase) : PropertyDataSource {
         return Single.fromCallable {
            val properties: List<Property> = database.propertyDao().findAllProperties().toList { Property(it) }
             properties.forEach { property ->
-                property.pictures.addAll(database.pictureDao().findPicturesByPropertyId(property.id).toList { Picture(it) })
+                val photos: List<Photo> = database.photoDao().findPhotosByPropertyId(property.id).toList { Photo(it) }
+                property.photos.addAll(photos)
             }
             properties
         }.subscribeOn(SchedulerProvider.io()).flatMap {

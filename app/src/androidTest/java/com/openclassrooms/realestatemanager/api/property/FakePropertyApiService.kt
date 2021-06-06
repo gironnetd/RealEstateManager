@@ -3,9 +3,9 @@ package com.openclassrooms.realestatemanager.api.property
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.data.remote.PropertyApiService
-import com.openclassrooms.realestatemanager.models.Picture
+import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.util.ConstantsTest.PICTURES_DATA_FILENAME
+import com.openclassrooms.realestatemanager.util.ConstantsTest.PHOTOS_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import io.reactivex.Completable
@@ -21,13 +21,12 @@ constructor(
         var jsonUtil: JsonUtil,
 ) : PropertyApiService {
     var propertiesJsonFileName: String = PROPERTIES_DATA_FILENAME
-    var picturesJsonFileName: String = PICTURES_DATA_FILENAME
+    var photosJsonFileName: String = PHOTOS_DATA_FILENAME
     var networkDelay: Long = 0L
 
     var properties: List<Property> = mutableListOf()
-    var pictures: List<Picture> = mutableListOf()
 
-    override fun insertProperties(properties: List<Property>): Completable {
+    override fun saveProperties(properties: List<Property>): Completable {
         this.properties.toMutableList().addAll(properties)
         return Completable.complete()
     }
@@ -38,18 +37,17 @@ constructor(
 
         properties = properties.sortedBy { it.id }
 
-        rawJson =  jsonUtil.readJSONFromAsset(picturesJsonFileName)
-
-        //pictures = Gson().fromJson(rawJson, object : TypeToken<List<Picture>>() {}.type)
+        rawJson =  jsonUtil.readJSONFromAsset(photosJsonFileName)
 
         properties.forEachIndexed { index, property ->
 
-            var pictures: List<Picture> = Gson().fromJson(rawJson, object : TypeToken<List<Picture>>() {}.type)
-            pictures.forEach { picture ->
-                picture.propertyId = property.id
-            }
+            property.mainPhotoId = property.id
+            val photos: List<Photo> = Gson().fromJson(rawJson, object : TypeToken<List<Photo>>() {}.type)
 
-            properties[index].pictures.addAll(pictures)
+            photos.forEach { photo ->
+                photo.propertyId = property.id
+            }
+            properties[index].photos.addAll(photos)
         }
 
         return Single.just(properties).delay(networkDelay, TimeUnit.MILLISECONDS)

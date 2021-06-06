@@ -3,21 +3,21 @@ package com.openclassrooms.realestatemanager.data.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.openclassrooms.realestatemanager.data.local.dao.PictureDao
+import com.openclassrooms.realestatemanager.data.local.dao.PhotoDao
 import com.openclassrooms.realestatemanager.data.local.dao.PropertyDao
 import com.openclassrooms.realestatemanager.models.*
 
-@Database(entities = [Property::class, Picture::class], version = 1, exportSchema = false)
+@Database(entities = [Property::class, Photo::class], version = 1, exportSchema = false)
 @TypeConverters(*arrayOf(PropertyTypeConverter::class,
         PropertyStatusConverter::class,
-        PictureTypeConverter::class,
+        PhotoTypeConverter::class,
         InterestPointConverter::class,
         DateConverter::class
 ))
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun propertyDao(): PropertyDao
-    abstract fun pictureDao(): PictureDao
+    abstract fun photoDao(): PhotoDao
 
     companion object {
         const val DATABASE_NAME: String = "real_estate_manger.db"

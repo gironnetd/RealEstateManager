@@ -2,8 +2,8 @@ package com.openclassrooms.realestatemanager.di.property
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.codingwithmitch.openapi.di.auth.keys.PropertyViewModelKey
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
+import com.openclassrooms.realestatemanager.di.property.keys.PropertyViewModelKey
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesViewModel
 import com.openclassrooms.realestatemanager.viewmodels.PropertiesViewModelFactory
 import dagger.Binds

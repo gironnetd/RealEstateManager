@@ -8,7 +8,7 @@ import javax.inject.Singleton
 @Singleton
 interface PropertyApiService {
 
-    fun insertProperties(properties: List<Property>): Completable
+    fun saveProperties(properties: List<Property>): Completable
 
     fun findAllProperties(): Single<List<Property>>
 }

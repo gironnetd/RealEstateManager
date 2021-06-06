@@ -3,14 +3,12 @@ package com.openclassrooms.realestatemanager.ui.property.browse.list
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GravityCompat.START
 import androidx.fragment.app.viewModels
@@ -36,8 +34,7 @@ import javax.inject.Inject
 /**
  * Fragment to list real estates.
  */
-class ListFragment
-@Inject constructor() : BaseFragment(R.layout.fragment_list, null), BaseView<PropertiesIntent, PropertiesUiModel> {
+class ListFragment @Inject constructor() : BaseFragment(R.layout.fragment_list, null), BaseView<PropertiesIntent, PropertiesUiModel> {
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     @Inject lateinit var requestManager: GlideManager
@@ -67,7 +64,7 @@ class ListFragment
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentListBinding.inflate(inflater, container, false)
-        configureView()
+        applyDisposition()
         initRecyclerView()
         return binding.root
     }
@@ -139,41 +136,29 @@ class ListFragment
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        configureView()
+        applyDisposition()
     }
 
-    private fun configureView() {
+    private fun applyDisposition() {
         this.parentFragment?.let {
-            val masterLayoutParams = FrameLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT)
-
-            val listLayoutParams = binding.recyclerView.layoutParams as ConstraintLayout.LayoutParams
 
             if (resources.getBoolean(R.bool.isMasterDetail)) {
+                screenWidth = screenWidth(requireActivity())
 
-                val displayMetrics = DisplayMetrics()
-                requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
-                val screenWidth = displayMetrics.widthPixels
-
-                val masterWidthWeight = TypedValue()
-                resources.getValue(R.dimen.master_width_weight, masterWidthWeight, false)
-
-                masterLayoutParams.width = (screenWidth * masterWidthWeight.float).toInt()
-                binding.listFragment.layoutParams = masterLayoutParams
-
-                listLayoutParams.topMargin = 0
-
-                binding.recyclerView.layoutParams = listLayoutParams
-                binding.recyclerView.requestLayout()
-            } else if(!resources.getBoolean(R.bool.isMasterDetail)) {
-
-                masterLayoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
-
-                binding.listFragment.layoutParams = masterLayoutParams
-                binding.listFragment.requestLayout()
-
-                listLayoutParams.topMargin = resources.getDimension(R.dimen.list_properties_margin_top).toInt()
-                binding.recyclerView.layoutParams = listLayoutParams
-                binding.recyclerView.requestLayout()
+                binding.listFragment.layoutParams?.let { layoutParams ->
+                    val masterWidthWeight = TypedValue()
+                    resources.getValue(R.dimen.master_width_weight, masterWidthWeight, false)
+                    layoutParams.width = (screenWidth * masterWidthWeight.float).toInt()
+                }
+                (binding.recyclerView.layoutParams as ConstraintLayout.LayoutParams).topMargin = 0
+            } else {
+                binding.listFragment.layoutParams?.let { layoutParams ->
+                    layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+                }
+                binding.recyclerView.layoutParams?.let { layoutParams ->
+                    (layoutParams as ConstraintLayout.LayoutParams).topMargin =
+                        resources.getDimension(R.dimen.list_properties_margin_top).toInt()
+                }
             }
         }
     }

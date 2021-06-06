@@ -6,12 +6,12 @@
     <string name="simulation">Simulation</string>
     <string name="add_real_estate">Add real estate</string>
     <string name="create">Create real estate</string>
-    <string name="update">Modification of real estate</string>
+    <string name="update">&#160;&#160;update</string>
     <string name="map">Real estate Map</string>
     <string name="list">Real estate List</string>
     <string name="detail">Real estate Detail</string>
     <string name="search">Search</string>
-    <string name="edit">Edit</string>
+    <string name="edit">&#160;&#160;Edit</string>
     <string name="button_list_title">List</string>
     <string name="button_map_title">Map</string>
     <string name="no_property_to_display">No Property to Display</string>
@@ -20,7 +20,72 @@
     <string name="number_of_bathrooms">Number of bathrooms</string>
     <string name="number_of_rooms">Number of rooms</string>
     <string name="surface">Surface</string>
-    <string name="description">Description</string>
+    <string name="description"><b>Description</b></string>
     <string name="media">Media</string>
     <string name="location">Location</string>
+    <string name="property_type">Type of property</string>
+    <string name="property_price">Price</string>
+    <string name="property_entry_date">Entry Date</string>
+    <string name="property_sold_date">Sold Date</string>
+    <string name="euros_symbol" translatable="false">€</string>
+    <string name="street">Street</string>
+    <string name="postal_code">Postal Code</string>
+    <string name="city">City</string>
+    <string name="country">Country</string>
+    <string name="state">State</string>
+    <string name="square_meter" translatable="false">m²</string>
+    <string name="interest_points">Interest Points</string>
+    <string name="label_map">Map</string>
+    <string name="content_description">Content Description</string>
+    <string name="property_status">Status</string>
+    <string name="no_sold_date">no sold date</string>
+    <string name="choose_property_type">CHOOSE TYPE OF PROPERTY</string>
+    <string name="choose_property_status">CHOOSE A STATUS FOR PROPERTY</string>
+
+    <string name="property_type_flat">Flat</string>
+    <string name="property_type_townhouse">Townhouse</string>
+    <string name="property_type_penthouse">Penthouse</string>
+    <string name="property_type_house">House</string>
+    <string name="property_type_duplex">Duplex</string>
+    <string name="property_type_none">None</string>
+
+    <string name="property_status_sold">Sold</string>
+    <string name="property_status_for_rent">For Rent</string>
+    <string name="property_status_in_sale">In Sale</string>
+    <string name="property_status_none">None</string>
+
+    <string name="interest_point_school">School</string>
+    <string name="interest_point_playground">Playground</string>
+    <string name="interest_point_shop">Shop</string>
+    <string name="interest_point_buses">Buses</string>
+    <string name="interest_point_subway">Subway</string>
+    <string name="interest_point_park">Park</string>
+    <string name="interest_point_hospital">Hospital</string>
+    <string name="interest_point_restaurants">Restaurant</string>
+    <string name="interest_point_gas_stations">Gas Station</string>
+
+    <string name="photo_type_main">main</string>
+    <string name="photo_type_bathroom">bathroom</string>
+    <string name="photo_type_bedroom">bedroom</string>
+    <string name="photo_type_facade">facade</string>
+    <string name="photo_type_kitchen">kitchen</string>
+    <string name="photo_type_lounge">lounge</string>
+    <string name="photo_type_none">none</string>
+
+    <string name="property_update_locally">The changes have been saved locally and will be saved remotely once the connection is reestablished</string>
+    <string name="property_update_totally">The changes have been saved</string>
+    <string name="add_a_photo">Add a photo</string>
+    <string name="enter_a_description">Enter a description</string>
+    <string name="change_property_type">CHANGE TYPE</string>
+    <string name="cancel">CANCEL</string>
+    <string name="change_property_status">CHANGE STATUS</string>
+    <string name="add_photo">ADD PHOTO</string>
+    <string name="change_photo">Change photo</string>
+    <string name="update_photo_detail">UPDATE PHOTO</string>
+    <string name="delete_photo">DELETE PHOTO</string>
+    <string name="confirm_save_changes_dialog_title">PROPERTY UPDATE</string>
+    <string name="confirm_save_changes_dialog_message">You made changes.Would you like to save them?</string>
+    <string name="confirm_save_changes">CONFIRM CHANGES</string>
+    <string name="is_main_photo_question">is the main photo?</string>
+    <string name="cannot_delete_photo">You cannot delete this photo because it is the main one</string>
 </resources>

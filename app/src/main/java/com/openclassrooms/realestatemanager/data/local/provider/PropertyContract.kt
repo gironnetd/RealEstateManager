@@ -25,7 +25,7 @@ class PropertyContract {
          * tables.
          */
         const val PATH_PROPERTY = "property"
-        const val PATH_PICTURE = "picture"
+        const val PATH_PHOTO = "photo"
     }
 
     /**
@@ -52,18 +52,18 @@ class PropertyContract {
      * Create one class for each table that handles all information regarding the table schema and
      * the URIs related to it.
      */
-    class PictureEntry : BaseColumns {
+    class PhotoEntry : BaseColumns {
 
         companion object {
             // Content URI represents the base location for the table
-            val CONTENT_URI: Uri = BASE_CONTENT_URI.buildUpon().appendPath(PATH_PICTURE).build()
+            val CONTENT_URI: Uri = BASE_CONTENT_URI.buildUpon().appendPath(PATH_PHOTO).build()
 
             // These are special type prefixes that specify if a URI returns a list or a specific item
-            val CONTENT_TYPE = "vnd.android.cursor.dir/$CONTENT_URI/$PATH_PICTURE"
-            val CONTENT_ITEM_TYPE = "vnd.android.cursor.item/$CONTENT_URI/$PATH_PICTURE"
+            val CONTENT_TYPE = "vnd.android.cursor.dir/$CONTENT_URI/$PATH_PHOTO"
+            val CONTENT_ITEM_TYPE = "vnd.android.cursor.item/$CONTENT_URI/$PATH_PHOTO"
 
             // Define a function to build a URI to find a specific movie by it's identifier
-            fun buildPictureUri(id: Long): Uri {
+            fun buildPhotoUri(id: Long): Uri {
                 return ContentUris.withAppendedId(CONTENT_URI, id)
             }
         }

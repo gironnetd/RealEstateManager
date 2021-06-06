@@ -20,7 +20,7 @@ object BrowsePropertyFragmentsModule {
             glideManager: GlideManager,
     ): FragmentFactory {
         return BrowseDetailFragmentFactory(viewModelFactory = viewModelFactory,
-                requestManager = glideManager
+                requestManager = glideManager, registry = null
         )
     }
 }

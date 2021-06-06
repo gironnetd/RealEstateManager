@@ -13,10 +13,6 @@ import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDR
 import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_POSTAL_CODE
 import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_STATE
 import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_STREET
-import com.openclassrooms.realestatemanager.models.Picture.Companion.COLUMN_PICTURE_DESCRIPTION
-import com.openclassrooms.realestatemanager.models.Picture.Companion.COLUMN_PICTURE_PROPERTY_ID
-import com.openclassrooms.realestatemanager.models.Picture.Companion.COLUMN_PICTURE_TYPE
-import com.openclassrooms.realestatemanager.models.Picture.Companion.PREFIX_MAIN_PICTURE
 import com.openclassrooms.realestatemanager.models.Property.Companion.TABLE_NAME
 import java.util.*
 
@@ -55,13 +51,19 @@ data class Property(
 
         @ColumnInfo(name = "interest_points")
         var interestPoints: MutableList<InterestPoint> = mutableListOf(),
+
         var status: PropertyStatus = PropertyStatus.NONE,
 
         @ColumnInfo(name = "agent_id")
         var agentId: String? = null,
 
-        @Embedded(prefix = PREFIX_MAIN_PICTURE)
-        var mainPicture: Picture? = null,
+//        @get:PropertyName("mainPicture")
+//        @set:PropertyName("mainPicture")
+//        @Embedded(prefix = PREFIX_MAIN_PHOTO)
+//        var mainPhoto: Photo? = null,
+
+        @ColumnInfo(name = "main_photo_id")
+        var mainPhotoId: String? = null,
 
         @ColumnInfo(name = "entry_date")
         var entryDate: Date = Date(),
@@ -70,7 +72,7 @@ data class Property(
         var soldDate: Date? = null,
 
         @Ignore
-        var pictures: MutableList<Picture> = mutableListOf()
+        var photos: MutableList<Photo> = mutableListOf()
 ) {
 
         constructor(cursor: Cursor) : this() {
@@ -94,7 +96,8 @@ data class Property(
                 status = PropertyStatus.valueOf(
                         cursor.getString(cursor.getColumnIndex(COLUMN_PROPERTY_STATUS)))
                 agentId = cursor.getString(cursor.getColumnIndex(COLUMN_AGENT_ID))
-                mainPicture = Picture(cursor = cursor, isMainPicture = true)
+                mainPhotoId = cursor.getString(cursor.getColumnIndex(COLUMN_MAIN_PHOTO_ID))
+                //mainPhoto = Photo(cursor = cursor, isMainPhoto = true)
                 if(!cursor.isNull(cursor.getColumnIndex(COLUMN_ENTRY_DATE))) {
                         entryDate = DateConverter()
                                 .fromTimestamp(cursor.getLong(cursor.getColumnIndex(COLUMN_ENTRY_DATE)))!!
@@ -145,8 +148,8 @@ data class Property(
                 /** The name of the agent id column.  */
                 const val COLUMN_AGENT_ID = "agent_id"
 
-                /** The name of the main picture column.  */
-                const val COLUMN_MAIN_PICTURE = "main_picture"
+                /** The name of the main Photo column.  */
+                const val COLUMN_MAIN_PHOTO_ID = "main_photo_id"
 
                 /** The name of the entry date column.  */
                 const val COLUMN_ENTRY_DATE = "entry_date"
@@ -227,27 +230,31 @@ data class Property(
                                         property.agentId = it.getAsString(COLUMN_AGENT_ID)
                                 }
 
-                                if(property.mainPicture == null) {
-                                        property.mainPicture = Picture()
+//                                if(property.mainPhoto == null) {
+//                                        property.mainPhoto = Photo()
+//                                }
+
+                                if (it.containsKey(COLUMN_MAIN_PHOTO_ID)) {
+                                        property.mainPhotoId = it.getAsString(COLUMN_MAIN_PHOTO_ID)
                                 }
 
-                                if (it.containsKey(PREFIX_MAIN_PICTURE + Picture.COLUMN_ID)) {
-                                          property.mainPicture!!.id = it.getAsString(PREFIX_MAIN_PICTURE + Picture.COLUMN_ID)
-                                }
-
-                                if (it.containsKey(PREFIX_MAIN_PICTURE + COLUMN_PICTURE_PROPERTY_ID)) {
-                                        property.mainPicture!!.propertyId = it.getAsString(PREFIX_MAIN_PICTURE + COLUMN_PICTURE_PROPERTY_ID)
-
-                                }
-
-                                if (it.containsKey(PREFIX_MAIN_PICTURE + COLUMN_PICTURE_DESCRIPTION)) {
-                                        property.mainPicture!!.description = it.getAsString(PREFIX_MAIN_PICTURE + COLUMN_PICTURE_DESCRIPTION)
-                                }
-
-                                if (it.containsKey(PREFIX_MAIN_PICTURE + COLUMN_PICTURE_TYPE)) {
-                                        property.mainPicture!!.type = PictureTypeConverter()
-                                                .toPictureType(it.getAsString(PREFIX_MAIN_PICTURE + COLUMN_PICTURE_TYPE))
-                                }
+//                                if (it.containsKey(PREFIX_MAIN_PHOTO + Photo.COLUMN_ID)) {
+//                                          property.mainPhoto!!.id = it.getAsString(PREFIX_MAIN_PHOTO + Photo.COLUMN_ID)
+//                                }
+//
+//                                if (it.containsKey(PREFIX_MAIN_PHOTO + COLUMN_PHOTO_PROPERTY_ID)) {
+//                                        property.mainPhoto!!.propertyId = it.getAsString(PREFIX_MAIN_PHOTO + COLUMN_PHOTO_PROPERTY_ID)
+//
+//                                }
+//
+//                                if (it.containsKey(PREFIX_MAIN_PHOTO + COLUMN_PHOTO_DESCRIPTION)) {
+//                                        property.mainPhoto!!.description = it.getAsString(PREFIX_MAIN_PHOTO + COLUMN_PHOTO_DESCRIPTION)
+//                                }
+//
+//                                if (it.containsKey(PREFIX_MAIN_PHOTO + COLUMN_PHOTO_TYPE)) {
+//                                        property.mainPhoto!!.type = PhotoTypeConverter()
+//                                                .toPhotoType(it.getAsString(PREFIX_MAIN_PHOTO + COLUMN_PHOTO_TYPE))
+//                                }
 
                                 if (it.containsKey(COLUMN_ENTRY_DATE)) {
                                          property.entryDate = DateConverter()
@@ -263,6 +270,11 @@ data class Property(
                         }
                         return property
                 }
+        }
+
+        fun titleInToolbar(): String {
+                return address!!.street + ", " +
+                        address!!.postalCode + " " + address!!.city
         }
 }
 

@@ -35,18 +35,22 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.navController
 
         val navigator = MainFragmentNavigator(this, navHostFragment.childFragmentManager, R.id.nav_host_fragment)
-        navController.navigatorProvider.addNavigator(navigator)
 
-        navController.setGraph(R.navigation.navigation)
+        with(navController) {
+            navigatorProvider.addNavigator(navigator)
+            setGraph(R.navigation.navigation)
+        }
 
         appBarConfiguration = AppBarConfiguration.Builder(
                 R.id.navigation_search, R.id.navigation_create, R.id.navigation_real_estate)
                 .setOpenableLayout(binding.drawerLayout)
                 .build()
 
-        binding.toolBar.setupWithNavController(navController, appBarConfiguration)
-        binding.navigationView.setupWithNavController(navController)
-        binding.bottomNavigationView.setupWithNavController(navController)
+        with(binding) {
+            toolBar.setupWithNavController(navController, appBarConfiguration)
+            navigationView.setupWithNavController(navController)
+            bottomNavigationView.setupWithNavController(navController)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -60,12 +64,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     @VisibleForTesting
-    fun setFragment(fragment: Fragment) {
+    fun setFragment(testFragment: Fragment) {
         for (fragment in navHostFragment.childFragmentManager.fragments) {
             navHostFragment.childFragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss()
         }
         val transaction = navHostFragment.childFragmentManager.beginTransaction()
-        transaction.add(R.id.nav_host_fragment, fragment)
+        transaction.add(R.id.nav_host_fragment, testFragment)
         transaction.commit()
     }
 }

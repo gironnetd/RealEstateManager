@@ -2,10 +2,10 @@ package com.openclassrooms.realestatemanager.data.remote
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query.Direction.ASCENDING
-import com.openclassrooms.realestatemanager.models.Picture
+import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_PROPERTY_ID
-import com.openclassrooms.realestatemanager.util.Constants.PICTURES_COLLECTION
+import com.openclassrooms.realestatemanager.util.Constants.PHOTOS_COLLECTION
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTIES_COLLECTION
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -13,14 +13,11 @@ import javax.inject.Inject
 
 class DefaultPropertyApiService
 @Inject
-constructor(
-        var firestore: FirebaseFirestore
-) : PropertyApiService {
+constructor(var firestore: FirebaseFirestore) : PropertyApiService {
 
-    override fun insertProperties(properties: List<Property>): Completable {
+    override fun saveProperties(properties: List<Property>): Completable {
         return Completable.unsafeCreate { emitter ->
-            val collectionRef = firestore
-                    .collection(PROPERTIES_COLLECTION)
+            val collectionRef = firestore.collection(PROPERTIES_COLLECTION)
             val batch = firestore.batch()
 
             for (property in properties) {
@@ -49,16 +46,16 @@ constructor(
                         properties.forEachIndexed { index, property ->
                             firestore.collection(PROPERTIES_COLLECTION)
                                     .document(property.id)
-                                    .collection(PICTURES_COLLECTION)
+                                    .collection(PHOTOS_COLLECTION)
                                     .get()
                                     .addOnSuccessListener { result ->
-                                        val pictures = result.toObjects(Picture::class.java)
+                                        val photos = result.toObjects(Photo::class.java)
 
-                                        pictures.forEach { picture ->
-                                            picture.propertyId = properties[index].id
+                                        photos.forEach { photo ->
+                                            photo.propertyId = properties[index].id
                                         }
 
-                                        properties[index].pictures.addAll(pictures)
+                                        properties[index].photos.addAll(photos)
 
                                         if(index == properties.size - 1) {
                                             emitter.onSuccess(properties)

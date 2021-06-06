@@ -5,12 +5,12 @@
     <string name="simulation">Simulación</string>
     <string name="add_real_estate">Agregar bienes raíces</string>
     <string name="create">Crear bienes raíces</string>
-    <string name="update">Modificación de bienes inmuebles</string>
+    <string name="update">&#160;&#160;&#160;Modificación de bienes inmuebles</string>
     <string name="map">Mapa inmobiliario</string>
     <string name="list">Lista de inmuebles</string>
     <string name="detail">Detalle de bienes raíces</string>
-    <string name="search">Buscar</string>
-    <string name="edit">Editar</string>
+    <string name="search">&#160;&#160;&#160;Buscar</string>
+    <string name="edit">&#160;&#160;&#160;Editar</string>
     <string name="button_list_title">lista</string>
     <string name="button_map_title">Mapa</string>
     <string name="no_property_to_display">No hay propiedad para mostrar</string>
@@ -22,4 +22,68 @@
     <string name="description">Descripción</string>
     <string name="media">Medios</string>
     <string name="location">Localización</string>
+    <string name="property_type">Tipo de propiedad</string>
+    <string name="property_price">Precio</string>
+    <string name="property_entry_date">Fecha de entrada</string>
+    <string name="property_sold_date">Fecha de venta</string>
+    <string name="street">Calle</string>
+    <string name="postal_code">Código postal</string>
+    <string name="city">Ciudad</string>
+    <string name="country">País</string>
+    <string name="state">Departamento</string>
+    <string name="interest_points">Puntos de interés</string>
+    <string name="label_map">Mapa</string>
+    <string name="content_description">Content Description</string>
+    <string name="property_status">Estado</string>
+    <string name="no_sold_date">sin fecha</string>
+    <string name="choose_property_type">ELIJA UN TIPO DE PROPRIEDAD</string>
+    <string name="choose_property_status">ELIJA UN ESTADO PARA LA PROPRIEDAD</string>
+
+    <string name="property_type_flat">Piso</string>
+    <string name="property_type_townhouse">Casa adosada</string>
+    <string name="property_type_penthouse">Atico</string>
+    <string name="property_type_house">Casa</string>
+    <string name="property_type_duplex">Dúplex</string>
+    <string name="property_type_none">Ninguna</string>
+
+    <string name="property_status_sold">Vendida</string>
+    <string name="property_status_for_rent">En renta</string>
+    <string name="property_status_in_sale">En venta</string>
+    <string name="property_status_none">Ninguna</string>
+
+    <string name="interest_point_school">Colegio</string>
+    <string name="interest_point_playground">Patio de recreo</string>
+    <string name="interest_point_shop">Tienda</string>
+    <string name="interest_point_buses">Autobuses</string>
+    <string name="interest_point_subway">Subterraneo</string>
+    <string name="interest_point_park">Parque</string>
+    <string name="interest_point_hospital">Hospital</string>
+    <string name="interest_point_restaurants">Restaurante</string>
+    <string name="interest_point_gas_stations">Gasolinera</string>
+
+    <string name="photo_type_main">principal</string>
+    <string name="photo_type_bathroom">baño</string>
+    <string name="photo_type_bedroom">Cuarto</string>
+    <string name="photo_type_facade">fachada</string>
+    <string name="photo_type_kitchen">cocina</string>
+    <string name="photo_type_lounge">salón</string>
+    <string name="photo_type_none">ninguna</string>
+
+    <string name="property_update_locally">Los cambios se han guardado localmente y se guardarán de forma remota una vez que se restablezca la conexión</string>
+    <string name="property_update_totally">Los cambios han sido guardados</string>
+    <string name="add_a_photo">Añadir una foto</string>
+    <string name="enter_a_description">Ingrese una descripción</string>
+    <string name="change_property_type">CAMBIO TIPO</string>
+    <string name="cancel">CANCELAR</string>
+    <string name="change_property_status">CAMBIO ESTADO</string>
+    <string name="add_photo">AÑADIR FOTO</string>
+    <string name="change_photo">Cambiar foto</string>
+    <string name="update_photo_detail">ACTUALIZAR FOTO</string>
+    <string name="delete_photo">BORRAR FOTO</string>
+    <string name="confirm_save_changes_dialog_title">ACTUALIZACION DE LA PROPRIEDAD</string>
+    <string name="confirm_save_changes_dialog_message">Hiciste cambios.¿Te gustaría salvarlos?</string>
+    <string name="confirm_save_changes">CONFIRMAR CAMBIOS</string>
+    <string name="is_main_photo_question">is the main photo?</string>
+    <string name="cannot_delete_photo">No puedes borrar esta foto porque es la principal</string>
+
 </resources>

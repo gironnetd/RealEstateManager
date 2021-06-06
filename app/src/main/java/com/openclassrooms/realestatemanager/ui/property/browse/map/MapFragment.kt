@@ -3,7 +3,6 @@ package com.openclassrooms.realestatemanager.ui.property.browse.map
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.viewModels
@@ -22,36 +22,31 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import com.google.maps.android.clustering.ClusterManager
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.base.BaseView
 import com.openclassrooms.realestatemanager.databinding.FragmentMapBinding
-import com.openclassrooms.realestatemanager.models.storageUrl
+import com.openclassrooms.realestatemanager.models.storageLocalDatabase
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesIntent
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesUiModel
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesViewModel
 import com.openclassrooms.realestatemanager.util.Constants.FROM
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTY_ID
 import com.openclassrooms.realestatemanager.util.GlideManager
-import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
+import java.io.File
 import javax.inject.Inject
-
 
 /**
  * Fragment to display real estates on map.
  */
-class MapFragment
-@Inject
-constructor(
+class MapFragment @Inject constructor(
         viewModelFactory: ViewModelProvider.Factory,
         val requestManager: GlideManager,
 ) : BaseFragment(R.layout.fragment_map, viewModelFactory),
@@ -73,12 +68,12 @@ constructor(
     val binding get() = _binding!!
 
     private val loadConversationsIntentPublisher =
-            PublishSubject.create<PropertiesIntent.LoadPropertiesIntent>()
+        PublishSubject.create<PropertiesIntent.LoadPropertiesIntent>()
     private val compositeDisposable = CompositeDisposable()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
-        configureView()
+        applyDisposition()
         if(properties.isNotEmpty() && !::mMap.isInitialized) {
             initializeMap()
         } else if(properties.isEmpty() || !::mMap.isInitialized) {
@@ -120,39 +115,41 @@ constructor(
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        configureView()
+        applyDisposition()
     }
 
-    private fun configureView() {
-        val detailLayoutParams = FrameLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT)
+    private fun applyDisposition() {
+
         this.parentFragment?.let {
             val detailFragment = this.parentFragment as NavHostFragment
 
-            val displayMetrics = DisplayMetrics()
-            requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
-            val screenWidth = displayMetrics.widthPixels
-
             if(resources.getBoolean(R.bool.isMasterDetail)) {
 
-                val detailWidthWeight = TypedValue()
-                resources.getValue(R.dimen.detail_width_weight, detailWidthWeight, false)
-                detailLayoutParams.width = (screenWidth * detailWidthWeight.float).toInt()
-                detailLayoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                screenWidth = screenWidth(requireActivity())
 
-                binding.mapFragment.layoutParams = detailLayoutParams
-                binding.mapFragment.requestLayout()
+                binding.mapFragment.apply {
+                    val detailWidthWeight = TypedValue()
+                    resources.getValue(R.dimen.detail_width_weight, detailWidthWeight, false)
+                    layoutParams.width = (screenWidth * detailWidthWeight.float).toInt()
+                    layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                }
             }
 
             if(!resources.getBoolean(R.bool.isMasterDetail)) {
+                val detailLayoutParams =
+                    FrameLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT)
+                        .apply {
+                            width = ViewGroup.LayoutParams.MATCH_PARENT
+                            height = ViewGroup.LayoutParams.MATCH_PARENT
+                        }
 
-                detailLayoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
-                detailLayoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                detailFragment.requireView().apply {
+                    layoutParams = detailLayoutParams
+                }
 
-                detailFragment.requireView().layoutParams = detailLayoutParams
-                detailFragment.requireView().requestLayout()
-
-                binding.mapFragment.layoutParams = detailLayoutParams
-                binding.mapFragment.requestLayout()
+                binding.mapFragment.apply {
+                    layoutParams = detailLayoutParams
+                }
             }
         }
     }
@@ -160,7 +157,7 @@ constructor(
     private fun initializeMap() {
         activity?.runOnUiThread {
             (this.childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment)
-                    .getMapAsync(this)
+                .getMapAsync(this)
         }
     }
 
@@ -187,11 +184,11 @@ constructor(
                             if(!items[selectedItem]!!) {
                                 marker.showInfoWindow()
                                 items[selectedItem] = true
-                                mMap.setContentDescription(INFO_WINDOW_SHOW)
+                                mMap.setContentDescription(INFO_WINDOW_SHOWN)
                             } else {
                                 marker.hideInfoWindow()
                                 items[selectedItem] = false
-                                mMap.setContentDescription(NO_INFO_WINDOW_SHOW)
+                                mMap.setContentDescription(NO_INFO_WINDOW_SHOWN)
                             }
                         }
                     }
@@ -200,14 +197,14 @@ constructor(
             }
         }
 
-        mMap.setContentDescription(GOOGLE_MAP_NOT_FINISH_LOADING)
+        mMap.setContentDescription(MAP_NOT_FINISH_LOADING)
         mMap.setOnMapLoadedCallback(this)
 
         items = linkedMapOf()
 
         properties.forEach { property ->
             val item = CustomClusterItem(property.address!!.latitude, property.address!!.longitude,
-                    property.address!!.street, "", property.id)
+                property.address!!.street, "", property.id)
             items[item] = false
             clusterManager.addItem(item)
         }
@@ -216,7 +213,7 @@ constructor(
         mMap.setOnMapClickListener {
             if(mMap.cameraPosition.zoom != 10f) {
                 val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                        it, DEFAULT_ZOOM + 1.5f)
+                    it, DEFAULT_ZOOM + 1.5f)
                 mMap.animateCamera(cameraUpdate)
             }
 
@@ -224,7 +221,7 @@ constructor(
                 marker.hideInfoWindow()
             }
 
-            mMap.setContentDescription(NO_INFO_WINDOW_SHOW)
+            mMap.setContentDescription(NO_INFO_WINDOW_SHOWN)
 
             for ((item, _) in items) {
                 items[item] = false
@@ -239,17 +236,17 @@ constructor(
 
         clusterManager.setOnClusterClickListener { item  ->
             var cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                    LatLng(item.position.latitude, item.position.longitude), (DEFAULT_ZOOM + 1.5f))
+                LatLng(item.position.latitude, item.position.longitude), (DEFAULT_ZOOM + 1.5f))
 
             if(mMap.cameraPosition.zoom == 10f) {
                 cameraUpdate = CameraUpdateFactory.newLatLng(
-                        LatLng(item.position.latitude, item.position.longitude))
+                    LatLng(item.position.latitude, item.position.longitude))
 
                 mMap.animateCamera(cameraUpdate, object : CancelableCallback {
                     override fun onCancel() {}
                     override fun onFinish() {
                         cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                                LatLng(item.position.latitude, item.position.longitude), DEFAULT_ZOOM + 1.5f)
+                            LatLng(item.position.latitude, item.position.longitude), DEFAULT_ZOOM + 1.5f)
 
                         mMap.animateCamera(cameraUpdate, 2500, null)
                     }
@@ -264,11 +261,23 @@ constructor(
             val masterDetailFragment = this.parentFragment?.parentFragment as BrowseFragment
 
             clusterManager.setOnClusterItemInfoWindowClickListener { item ->
-                val propertyId = item.getTag()
-                val bundle = bundleOf(FROM to MapFragment::class.java.name,
+
+                if(masterDetailFragment.detail.childFragmentManager
+                        .findFragmentByTag(R.id.navigation_detail.toString()) != null) {
+
+                    val detailFragment: DetailFragment = masterDetailFragment.detail.childFragmentManager
+                        .findFragmentByTag(R.id.navigation_detail.toString()) as DetailFragment
+
+                    detailFragment.showDetails(item.getTag())
+                    val bundle = bundleOf(FROM to MapFragment::class.java.name,)
+                    masterDetailFragment.detail.findNavController().navigate(R.id.navigation_detail, bundle)
+                } else {
+                    val propertyId = item.getTag()
+                    val bundle = bundleOf(FROM to MapFragment::class.java.name,
                         PROPERTY_ID to propertyId
-                )
-                masterDetailFragment.detail.findNavController().navigate(R.id.navigation_detail, bundle)
+                    )
+                    masterDetailFragment.detail.findNavController().navigate(R.id.navigation_detail, bundle)
+                }
                 masterDetailFragment.binding.buttonContainer.visibility = GONE
             }
         }
@@ -288,24 +297,26 @@ constructor(
                 val title = markerView.findViewById<TextView>(R.id.property_address_street)
                 title.text = marker!!.title
 
-                val mainPicture = markerView.findViewById<ImageView>(R.id.main_picture)
+                val mainPhoto = markerView.findViewById<ImageView>(R.id.main_photo)
 
                 val property = properties.single { property -> property.id == selectedItem.getTag() }
 
-                val picture = property.mainPicture
-                picture!!.propertyId = property.id
+                val photo = property.photos.single { photo -> photo.mainPhoto }
+                photo.propertyId = property.id
 
-                val gsReference = Firebase.storage.getReferenceFromUrl(picture.storageUrl(isThumbnail = true))
+                val mainPhotoFile = File(photo.storageLocalDatabase(requireContext(), true))
 
-                Completable.fromAction {
-                    requestManager.setImage(gsReference, mainPicture, true)
-                }.subscribeOn(SchedulerProvider.io()).blockingAwait()
+                mainPhoto.setImageURI(mainPhotoFile.toUri())
+//                val gsReference = Firebase.storage.getReferenceFromUrl(photo.storageUrl(isThumbnail = true))
+//
+//                Completable.fromAction {
+//                    requestManager.setImage(gsReference, mainPhoto, true)
+//                }.subscribeOn(SchedulerProvider.io()).blockingAwait()
 
                 return markerView
             }
         })
-
-        mMap.setContentDescription(GOOGLE_MAP_FINISH_LOADING)
+        mMap.setContentDescription(MAP_FINISH_LOADING)
     }
 
     fun zoomOnMarkerPosition(propertyId: String) {
@@ -320,7 +331,7 @@ constructor(
                 override fun onCancel() {}
                 override fun onFinish() {
                     cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                            LatLng(selectedItem.position.latitude, selectedItem.position.longitude), DEFAULT_ZOOM + 1.5f)
+                        LatLng(selectedItem.position.latitude, selectedItem.position.longitude), DEFAULT_ZOOM + 1.5f)
 
                     mMap.animateCamera(cameraUpdate, 2500, object : CancelableCallback {
                         override fun onCancel() {}
@@ -345,17 +356,17 @@ constructor(
         var cameraUpdate: CameraUpdate
         if(!isInfoWindowShown) {
             cameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(selectedItem.position.latitude,
-                    selectedItem.position.longitude), (DEFAULT_ZOOM + 3))
+                selectedItem.position.longitude), (DEFAULT_ZOOM + 3))
 
             if(mMap.cameraPosition.zoom == 10f) {
                 cameraUpdate = CameraUpdateFactory.newLatLng(
-                        LatLng(selectedItem.position.latitude, selectedItem.position.longitude))
+                    LatLng(selectedItem.position.latitude, selectedItem.position.longitude))
 
                 mMap.animateCamera(cameraUpdate, object: CancelableCallback {
                     override fun onCancel() {}
                     override fun onFinish() {
                         cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                                LatLng(selectedItem.position.latitude, selectedItem.position.longitude), DEFAULT_ZOOM + 1.5f)
+                            LatLng(selectedItem.position.latitude, selectedItem.position.longitude), DEFAULT_ZOOM + 1.5f)
 
                         mMap.animateCamera(cameraUpdate, 2500, null)
                     }
@@ -370,7 +381,7 @@ constructor(
                                 it.showInfoWindow()
 
                                 items[selectedItem] = true
-                                mMap.setContentDescription(INFO_WINDOW_SHOW)
+                                mMap.setContentDescription(INFO_WINDOW_SHOWN)
                             }
                         }
                     }
@@ -378,7 +389,7 @@ constructor(
             }
         } else {
             cameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(selectedItem.position.latitude,
-                    selectedItem.position.longitude), DEFAULT_ZOOM + 1.5f)
+                selectedItem.position.longitude), DEFAULT_ZOOM + 1.5f)
             mMap.animateCamera(cameraUpdate, object : CancelableCallback {
                 override fun onCancel() {}
                 override fun onFinish() {
@@ -386,7 +397,7 @@ constructor(
                     marker?.let {
                         marker.hideInfoWindow()
                         items[selectedItem] = false
-                        mMap.setContentDescription(NO_INFO_WINDOW_SHOW)
+                        mMap.setContentDescription(NO_INFO_WINDOW_SHOWN)
                     }
                 }
             })
@@ -417,13 +428,13 @@ constructor(
         var DEFAULT_ZOOM: Float = 15f
         var INITIAL_ZOOM_LEVEL = 10f
 
-        var paris = LatLng(48.862725, 2.287592)
+        private var paris = LatLng(48.862725, 2.287592)
         var defaultLocation = paris
 
         // constant variable to perform ui automator testing
-        const val GOOGLE_MAP_NOT_FINISH_LOADING = "google_maps_not_finish_loading"
-        const val GOOGLE_MAP_FINISH_LOADING = "google_maps_finish_loading"
-        const val INFO_WINDOW_SHOW = "info_window_shown"
-        const val NO_INFO_WINDOW_SHOW = "no_info_window_shown"
+        const val MAP_NOT_FINISH_LOADING = "map_not_finish_loading"
+        const val MAP_FINISH_LOADING = "map_finish_loading"
+        const val INFO_WINDOW_SHOWN = "info_window_shown"
+        const val NO_INFO_WINDOW_SHOWN = "no_info_window_shown"
     }
 }

@@ -5,7 +5,7 @@ import android.database.Cursor
 import android.net.Uri
 import com.openclassrooms.realestatemanager.BaseApplication
 import com.openclassrooms.realestatemanager.data.local.AppDatabase
-import com.openclassrooms.realestatemanager.models.Picture
+import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Property
 import java.util.*
 import java.util.concurrent.Callable
@@ -36,8 +36,8 @@ class AppContentProvider : ContentProvider() {
         return when (sUriMatcher.match(uri)) {
             PROPERTY -> PropertyContract.PropertyEntry.CONTENT_TYPE
             PROPERTY_ID -> PropertyContract.PropertyEntry.CONTENT_ITEM_TYPE
-            PICTURE -> PropertyContract.PictureEntry.CONTENT_TYPE
-            PICTURE_ID -> PropertyContract.PictureEntry.CONTENT_ITEM_TYPE
+            PHOTO -> PropertyContract.PhotoEntry.CONTENT_TYPE
+            PHOTO_ID -> PropertyContract.PhotoEntry.CONTENT_ITEM_TYPE
             else -> throw UnsupportedOperationException("Unknown uri: $uri")
         }
     }
@@ -55,10 +55,10 @@ class AppContentProvider : ContentProvider() {
                 val _id = ContentUris.parseId(uri)
                 retCursor = database.propertyDao().findPropertyById(_id)
             }
-            PICTURE -> retCursor = database.pictureDao().findAllPictures()
-            PICTURE_ID -> {
+            PHOTO -> retCursor = database.photoDao().findAllPhotos()
+            PHOTO_ID -> {
                 val _id = ContentUris.parseId(uri)
-                retCursor = database.pictureDao().findPictureById(_id)
+                retCursor = database.photoDao().findPhotoById(_id)
             }
             else -> throw UnsupportedOperationException("Unknown uri: $uri")
         }
@@ -87,10 +87,10 @@ class AppContentProvider : ContentProvider() {
                     throw UnsupportedOperationException("Unable to insert rows into: $uri")
                 }
             }
-            PICTURE -> {
-                _id = database.pictureDao().savePicture(Picture.fromContentValues(values))
+            PHOTO -> {
+                _id = database.photoDao().savePhoto(Photo.fromContentValues(values))
                 returnUri = if (_id > 0) {
-                    PropertyContract.PictureEntry.buildPictureUri(_id)
+                    PropertyContract.PhotoEntry.buildPhotoUri(_id)
                 } else {
                     throw UnsupportedOperationException("Unable to insert rows into: $uri")
                 }
@@ -117,11 +117,11 @@ class AppContentProvider : ContentProvider() {
             PROPERTY_ID -> {
                 database.propertyDao().deleteById(ContentUris.parseId(uri))
             }
-            PICTURE -> {
-                database.pictureDao().deleteAllPictures()
+            PHOTO -> {
+                database.photoDao().deleteAllPhotos()
             }
-            PICTURE_ID -> {
-                database.pictureDao().deleteById(ContentUris.parseId(uri))
+            PHOTO_ID -> {
+                database.photoDao().deleteById(ContentUris.parseId(uri))
             }
             else -> throw UnsupportedOperationException("Unknown uri: $uri")
         }
@@ -142,9 +142,9 @@ class AppContentProvider : ContentProvider() {
                 val property = Property.fromContentValues(values)
                 database.propertyDao().updateProperty(property)
             }
-            PICTURE -> {
-                val picture: Picture = Picture.fromContentValues(values)
-                database.pictureDao().updatePicture(picture)
+            PHOTO -> {
+                val photo: Photo = Photo.fromContentValues(values)
+                database.photoDao().updatePhoto(photo)
             }
             else -> throw UnsupportedOperationException("Unknown uri: $uri")
         }
@@ -181,16 +181,16 @@ class AppContentProvider : ContentProvider() {
                 val property: Property = Property.fromContentValues(valuesArray[0])
                 database.propertyDao().saveProperty(property).toInt()
             }
-            PICTURE -> {
-                val pictures: Array<Picture?> = arrayOfNulls(valuesArray.size)
+            PHOTO -> {
+                val photos: Array<Photo?> = arrayOfNulls(valuesArray.size)
                 for (i in valuesArray.indices) {
-                    pictures[i] = Picture.fromContentValues(valuesArray[i])
+                    photos[i] = Photo.fromContentValues(valuesArray[i])
                 }
-                database.pictureDao().savePictures(pictures.toList() as List<Picture>).size
+                database.photoDao().savePhotos(photos.toList() as List<Photo>).size
             }
-            PICTURE_ID -> {
-                val picture: Picture = Picture.fromContentValues(valuesArray[0])
-                database.pictureDao().savePicture(picture).toInt()
+            PHOTO_ID -> {
+                val photo: Photo = Photo.fromContentValues(valuesArray[0])
+                database.photoDao().savePhoto(photo).toInt()
             }
             else -> throw java.lang.IllegalArgumentException("Unknown URI: $uri")
         }
@@ -200,8 +200,8 @@ class AppContentProvider : ContentProvider() {
         // Use an int for each URI we will run, this represents the different queries
         private const val PROPERTY = 100
         private const val PROPERTY_ID = 101
-        private const val PICTURE = 200
-        private const val PICTURE_ID = 201
+        private const val PHOTO = 200
+        private const val PHOTO_ID = 201
         private val sUriMatcher = buildUriMatcher()
 
         /**
@@ -215,8 +215,8 @@ class AppContentProvider : ContentProvider() {
             val matcher = UriMatcher(UriMatcher.NO_MATCH)
             matcher.addURI(content, PropertyContract.PATH_PROPERTY, PROPERTY)
             matcher.addURI(content, PropertyContract.PATH_PROPERTY + "/#", PROPERTY_ID)
-            matcher.addURI(content, PropertyContract.PATH_PICTURE, PICTURE)
-            matcher.addURI(content, PropertyContract.PATH_PICTURE + "/#", PICTURE_ID)
+            matcher.addURI(content, PropertyContract.PATH_PHOTO, PHOTO)
+            matcher.addURI(content, PropertyContract.PATH_PHOTO + "/#", PHOTO_ID)
             return matcher
         }
     }

@@ -25,7 +25,6 @@
     <browse_detail_fragment
         android:id="@+id/navigation_detail"
         android:name="com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragment"
-        android:label="@string/detail"
         tools:layout="@layout/fragment_detail">
 
         <action android:id="@+id/navigation_edit_action"
@@ -47,9 +46,8 @@
 
     <browse_detail_fragment
         android:id="@+id/navigation_edit"
-        android:name="com.openclassrooms.realestatemanager.ui.property.browse.edit.EditFragment"
-        android:label="@string/update"
-        tools:layout="@layout/fragment_edit">
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.update.UpdateFragment"
+        tools:layout="@layout/fragment_update">
 
         <argument
             android:name="from"

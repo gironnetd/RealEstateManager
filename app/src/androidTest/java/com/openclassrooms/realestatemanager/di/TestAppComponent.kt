@@ -12,8 +12,12 @@ import com.openclassrooms.realestatemanager.ui.MainActivityTest
 import com.openclassrooms.realestatemanager.ui.MainNavigationTest
 import com.openclassrooms.realestatemanager.ui.MainRotationTest
 import com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.browse.detail.view.PhotoDetailDialogFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.browse.update.UpdateFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.browse.update.view.add.AddPhotoDialogFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.browse.update.view.update.PhotoUpdateDialogFragmentIntegrationTest
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -41,6 +45,14 @@ interface TestAppComponent : AppComponent {
     fun inject(mapFragmentIntegrationTest: MapFragmentIntegrationTest)
 
     fun inject(detailFragmentIntegrationTest: DetailFragmentIntegrationTest)
+
+    fun inject(photoDetailDialogFragmentIntegrationTest: PhotoDetailDialogFragmentIntegrationTest)
+
+    fun inject(updateFragmentIntegrationTest: UpdateFragmentIntegrationTest)
+
+    fun inject(addPhotoDialogFragmentIntegrationTest: AddPhotoDialogFragmentIntegrationTest)
+
+    fun inject(photoUpdateDialogFragmentIntegrationTest: PhotoUpdateDialogFragmentIntegrationTest)
 
     fun inject(mainActivityTest: MainActivityTest)
 

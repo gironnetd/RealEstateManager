@@ -13,7 +13,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.di.TestAppComponent
@@ -36,36 +36,32 @@ class BrowseFragmentTest : BaseMainActivityTests() {
     // orientation variables
     private var orientation: Int = -1
 
-    val app = InstrumentationRegistry
-            .getInstrumentation()
-            .targetContext
-            .applicationContext as TestBaseApplication
-
     @Before
     public override fun setUp() {
         super.setUp()
 
-        val apiService = configureFakeApiService(
-                propertiesDataSource = EMPTY_LIST, // empty list of data
-                networkDelay = 0L,
-                application = app
+        configure_fake_repository(apiService = configure_fake_api_service(
+            propertiesDataSource = EMPTY_LIST,
+            networkDelay = 0L)
         )
-
-        configureFakeRepository(apiService, app)
-        injectTest(app)
+        injectTest(testApplication)
 
         launch(MainActivity::class.java).onActivity {
             mainActivity = it as FragmentActivity
         }
 
-        screenSize = screenSize()
-        orientation = InstrumentationRegistry.getInstrumentation().targetContext
-                .resources.configuration.orientation
+        screenSize = screen_size()
+        orientation = getInstrumentation().targetContext.resources.configuration.orientation
     }
 
     @Test
-    fun verify_segmented_control_behavior_when_non_tablet_mode() {
-        if(!app.resources.getBoolean(R.bool.isMasterDetail)) {
+    fun given_main_activity_when_normal_mode_then_segmented_control_behavior_is_correct() {
+        // Given Main Activity launched
+
+        // When layout is in Normal mode
+        if(!testApplication.resources.getBoolean(R.bool.isMasterDetail)) {
+
+            // Then the behavior of SegmentedControl work correctly
             onView(withId(R.id.list_view_button)).perform(ViewActions.click())
             onView(withId(R.id.list_view_button)).check(matches(ViewMatchers.isSelected()))
 
@@ -81,7 +77,12 @@ class BrowseFragmentTest : BaseMainActivityTests() {
     }
 
     @Test
-    fun makeSureThatViewCorrespondWithSizeAndOrientation() {
+    fun given_main_activity_when_launched_then_view_correspond_with_size_and_orientation() {
+        // Given Main Activity
+
+        // When is launched
+
+        // Then the view correspond with size and orientation layout
         if(screenSize == SMARTPHONE && orientation == ORIENTATION_PORTRAIT) {
             onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
             onView(withId(R.id.button_container)).check(matches(isDisplayed()))

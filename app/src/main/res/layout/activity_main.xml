@@ -6,6 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     tools:context="com.openclassrooms.realestatemanager.ui.MainActivity">
 
         <LinearLayout
@@ -51,10 +52,8 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
                 android:theme="@style/BottomNavigationViewTheme"
-
                 android:layout_gravity="bottom"
                 app:layout_anchor="@+id/nav_host_fragment"
-
                 app:layout_constraintTop_toBottomOf="@+id/nav_host_fragment"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

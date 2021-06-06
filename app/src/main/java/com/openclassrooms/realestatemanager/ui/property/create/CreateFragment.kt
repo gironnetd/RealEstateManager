@@ -27,21 +27,20 @@ class CreateFragment : BaseFragment(R.layout.fragment_create, null) {
         return inflater.inflate(R.layout.fragment_create, container, false)
     }
 
-    override fun initializeToolbar() {
-        mainActivity.binding.toolBar.visibility = VISIBLE
-        mainActivity.setSupportActionBar(mainActivity.binding.toolBar)
-
-        mainActivity.binding.toolBar.setupWithNavController(
-                mainActivity.navController,
-                mainActivity.appBarConfiguration)
-    }
-
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if(hidden) {
             mainActivity.binding.toolBar.visibility = GONE
         } else {
             initializeToolbar()
+        }
+    }
+
+    override fun initializeToolbar() {
+        with(mainActivity) {
+            binding.toolBar.visibility = VISIBLE
+            setSupportActionBar(binding.toolBar)
+            binding.toolBar.setupWithNavController(navController, appBarConfiguration)
         }
     }
 }

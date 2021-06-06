@@ -52,7 +52,7 @@ class PropertiesViewModelTest {
     }
 
     @Test
-    fun load_all_properties_intent_return_success() {
+    fun given_properties_when_load_all_properties_then_intent_return_success() {
         // Given that properties are available in the repository
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.just(fakeProperties))
 
@@ -64,7 +64,7 @@ class PropertiesViewModelTest {
     }
 
     @Test
-    fun load_all_properties_returns_loading() {
+    fun given_properties_when_load_all_properties_then_returns_loading() {
         // Given that properties are available in the repository
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.just(fakeProperties))
 
@@ -76,7 +76,7 @@ class PropertiesViewModelTest {
     }
 
     @Test
-    fun load_all_properties_intent_when_success_is_not_in_progress() {
+    fun given_properties_when_load_all_properties_then_intent_when_success_is_not_in_progress() {
         // Given that properties are available in the repository
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.just(fakeProperties))
 
@@ -88,7 +88,7 @@ class PropertiesViewModelTest {
     }
 
     @Test
-    fun load_all_properties_intent_return_data() {
+    fun given_properties_when_load_all_properties_then_intent_return_data() {
         // Given that properties are available in the repository
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.just(fakeProperties))
 
@@ -100,7 +100,7 @@ class PropertiesViewModelTest {
     }
 
     @Test
-    fun load_all_properties_returns_error() {
+    fun given_properties_when_load_all_properties_then_returns_error() {
         // Given that no properties are available in the repository
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.error(Exception()))
 
@@ -112,7 +112,7 @@ class PropertiesViewModelTest {
     }
 
     @Test
-    fun load_all_properties_when_error_is_not_in_progress() {
+    fun given_properties_when_error_then_is_not_in_progress() {
         // Given that no properties are available in the repository
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.error(Exception()))
 
@@ -124,7 +124,7 @@ class PropertiesViewModelTest {
     }
 
     @Test
-    fun load_all_properties_when_error__is_not_contains_data() {
+    fun given_properties_when_error_then_is_not_contains_data() {
         // Given that no properties are available in the repository
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.error(Exception()))
 
@@ -136,7 +136,7 @@ class PropertiesViewModelTest {
     }
 
     @Test
-    fun load_all_properties_intent_begin_as_idle() {
+    fun given_properties_when_load_all_properties_then_intent_begin_as_idle() {
         // Given that no properties are available in the repository
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.error(Exception()))
 

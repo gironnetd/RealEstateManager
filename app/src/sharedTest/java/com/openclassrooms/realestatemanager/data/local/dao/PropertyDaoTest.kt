@@ -30,18 +30,12 @@ class PropertyDaoTest: TestCase() {
     @Before
     fun initDatabase() {
 
-        database = Room.inMemoryDatabaseBuilder(
-                ApplicationProvider.getApplicationContext(),
-                AppDatabase::class.java
-        ).allowMainThreadQueries().build()
+        database = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext(),
+                AppDatabase::class.java).allowMainThreadQueries().build()
 
         jsonUtil = JsonUtil()
         var rawJson = jsonUtil.readJSONFromAsset(PROPERTIES_DATA_FILENAME)
-        fakeProperties = Gson().fromJson(
-                rawJson,
-                object : TypeToken<List<Property>>() {}.type
-        )
-
+        fakeProperties = Gson().fromJson(rawJson, object : TypeToken<List<Property>>() {}.type)
         propertyDao = database.propertyDao()
     }
 
@@ -49,14 +43,21 @@ class PropertyDaoTest: TestCase() {
     fun clearDatabase() = database.clearAllTables()
 
     @Test
-    fun insert_properties_with_success() {
+    fun given_properties_when_saved_then_properties_are_inserted_with_success() {
+        // Given properties list
+        // When properties list saved
         propertyDao.saveProperties(fakeProperties)
+
+        // Then count of properties in database is equal to given properties list size
         assertThat(propertyDao.count()).isEqualTo(fakeProperties.size)
     }
 
     @Test
-    fun is_properties_after_insertion_are_the_same_when_reading_result() {
+    fun given_properties_when_saved_then_reading_result_is_equal_to() {
+        // Given properties list
         fakeProperties = fakeProperties.sortedBy { it.id }
+
+        // When properties list saved
         propertyDao.saveProperties(fakeProperties)
         val cursor = propertyDao.findAllProperties()
 
@@ -64,6 +65,7 @@ class PropertyDaoTest: TestCase() {
             Property(it)
         }
 
+        // Then returned properties in database is equal to given properties list
         actualProperties = actualProperties.sortedBy { it.id }
         actualProperties.forEachIndexed { index, property ->
             assertThat(property).isEqualTo(fakeProperties[index])

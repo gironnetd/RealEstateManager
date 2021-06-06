@@ -2,14 +2,14 @@ package com.openclassrooms.realestatemanager.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.repository.property.FakePropertyRepository
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesActionProcessor
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesViewModel
 import com.openclassrooms.realestatemanager.util.schedulers.ImmediateSchedulerProvider
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@BrowseScope
+@Singleton
 class FakePropertiesViewModelFactory
 @Inject
 constructor(

@@ -2,31 +2,28 @@ package com.openclassrooms.realestatemanager.ui.navigation.browse.detail
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.annotation.IdRes
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.FragmentNavigator
+import timber.log.Timber
 import java.util.*
 
 @Navigator.Name("browse_detail_fragment")
 class BrowseDetailFragmentNavigator(
         private val mContext: Context,
-        private val mFragmentManager: FragmentManager, // Should pass childFragmentManager.
+        private val mFragmentManager: FragmentManager,
         private val mContainerId: Int,
 ) : FragmentNavigator(mContext, mFragmentManager, mContainerId) {
-
-    private val TAG = "BrowseMasterFragmentNavigator"
 
     private val mBackStack = ArrayDeque<Int>()
 
     override fun navigate(destination: Destination, args: Bundle?, navOptions: NavOptions?, navigatorExtras: Navigator.Extras?): NavDestination? {
 
         if (mFragmentManager.isStateSaved) {
-            Log.i(TAG, "Ignoring navigate() call: FragmentManager has already"
-                    + " saved its state")
+            Timber.tag(TAG).i("Ignoring navigate() call: FragmentManager has already saved its state")
             return null
         }
         var className = destination.className
@@ -73,7 +70,7 @@ class BrowseDetailFragmentNavigator(
                 // remove it from the back stack and put our replacement
                 // on the back stack in its place
                 mFragmentManager.popBackStack(
-                        generateBackStackName(mBackStack.size, mBackStack.peekLast()),
+                        generateBackStackName(mBackStack.size, mBackStack.peekLast()!!),
                         FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 ft.addToBackStack(generateBackStackName(mBackStack.size, destId))
             }
@@ -100,5 +97,9 @@ class BrowseDetailFragmentNavigator(
 
     private fun generateBackStackName(backStackIndex: Int, destId: Int): String {
         return "$backStackIndex-$destId"
+    }
+
+    companion object {
+        private const val TAG = "BrowseMasterFragmentNav"
     }
 }

@@ -6,7 +6,13 @@
         android:title="@string/edit"
         android:visible="false"
         android:icon="@drawable/ic_baseline_edit_24"
-        app:showAsAction="always"/>
+        app:showAsAction="always|withText"/>
+
+    <item android:id="@+id/navigation_update"
+        android:title="@string/update"
+        android:visible="false"
+        android:icon="@drawable/ic_baseline_update_24"
+        app:showAsAction="always|withText"/>
 
     <item android:id="@+id/navigation_search"
         android:title="@string/search"

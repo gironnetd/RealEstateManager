@@ -19,14 +19,14 @@ import com.openclassrooms.realestatemanager.data.local.AppDatabase
 import com.openclassrooms.realestatemanager.data.local.PropertyLocalDataSource
 import com.openclassrooms.realestatemanager.data.remote.PropertyRemoteDataSource
 import com.openclassrooms.realestatemanager.di.TestAppComponent
-import com.openclassrooms.realestatemanager.models.Picture
+import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil
-import com.openclassrooms.realestatemanager.util.ConnectivityUtil.Companion.switchAllNetworks
-import com.openclassrooms.realestatemanager.util.ConnectivityUtil.Companion.waitInternetStateChange
+import com.openclassrooms.realestatemanager.util.ConnectivityUtil.switchAllNetworks
+import com.openclassrooms.realestatemanager.util.ConnectivityUtil.waitInternetStateChange
 import com.openclassrooms.realestatemanager.util.Constants.TIMEOUT_INTERNET_CONNECTION
 import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
-import com.openclassrooms.realestatemanager.util.ConstantsTest.PICTURES_DATA_FILENAME
+import com.openclassrooms.realestatemanager.util.ConstantsTest.PHOTOS_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
@@ -58,7 +58,7 @@ class PropertyRepositoryTest : TestCase() {
     private lateinit var localDataSource: PropertyLocalDataSource
     private lateinit var propertyRepository: DefaultPropertyRepository
 
-    var app : TestBaseApplication = InstrumentationRegistry
+    var testApplication : TestBaseApplication = InstrumentationRegistry
             .getInstrumentation()
             .targetContext
             .applicationContext as TestBaseApplication
@@ -67,37 +67,30 @@ class PropertyRepositoryTest : TestCase() {
     public override fun setUp() {
         super.setUp()
 
-        injectTest(app)
+        injectTest(testApplication)
 
         apiService = FakePropertyApiService(jsonUtil = jsonUtil)
         apiService.propertiesJsonFileName = PROPERTIES_DATA_FILENAME
 
-        database = Room.inMemoryDatabaseBuilder(
-                ApplicationProvider.getApplicationContext(),
-                AppDatabase::class.java
-        ).allowMainThreadQueries().build()
+        database = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext(),
+                AppDatabase::class.java).allowMainThreadQueries().build()
 
         var rawJson = jsonUtil.readJSONFromAsset(PROPERTIES_DATA_FILENAME)
-        fakeProperties = Gson().fromJson(
-                rawJson,
-                object : TypeToken<List<Property>>() {}.type
-        )
-
-        rawJson = jsonUtil.readJSONFromAsset(PICTURES_DATA_FILENAME)
+        fakeProperties = Gson().fromJson(rawJson,
+                object : TypeToken<List<Property>>() {}.type)
+        rawJson = jsonUtil.readJSONFromAsset(PHOTOS_DATA_FILENAME)
 
         fakeProperties.forEachIndexed { index, property ->
-
-            val pictures: List<Picture> = Gson().fromJson(rawJson, object : TypeToken<List<Picture>>() {}.type)
-            pictures.forEach { picture ->
-                picture.propertyId = property.id
+            property.mainPhotoId = property.id
+            val photos: List<Photo> = Gson().fromJson(rawJson, object : TypeToken<List<Photo>>() {}.type)
+            photos.forEach { photo ->
+                photo.propertyId = property.id
             }
 
-            fakeProperties[index].pictures.addAll(pictures)
+            fakeProperties[index].photos.addAll(photos)
         }
-
         fakeProperties = fakeProperties.sortedBy { it.id }
-
-        ConnectivityUtil.context = app.applicationContext
+        ConnectivityUtil.context = testApplication.applicationContext
     }
 
     @After
@@ -115,15 +108,17 @@ class PropertyRepositoryTest : TestCase() {
 
     @Test
     @Suppress("UnstableApiUsage")
-    fun behavior_when_has_internet_and_local_storage_is_not_empty() {
+    fun given_property_repository_when_has_internet_and_local_storage_is_not_empty_then_inspect_behavior() {
+        // Given PropertyRepository
+        // When has internet and local storage is not empty
 
         remoteDataSource = spy(PropertyRemoteDataSource(apiService = apiService))
-        localDataSource = spy(PropertyLocalDataSource(database = database))
+        localDataSource = spy(PropertyLocalDataSource(database = database, testApplication.applicationContext))
 
         Completable.fromAction {
             localDataSource.database.propertyDao().saveProperties(properties = fakeProperties)
             fakeProperties.forEach { property ->
-                localDataSource.database.pictureDao().savePictures(property.pictures)
+                localDataSource.database.photoDao().savePhotos(property.photos)
             }
         }.blockingAwait()
 
@@ -132,7 +127,7 @@ class PropertyRepositoryTest : TestCase() {
             .blockingAwait().let {
                 Completable.fromAction {
 
-                    networkConnectionLiveData = NetworkConnectionLiveData(app.applicationContext)
+                    networkConnectionLiveData = NetworkConnectionLiveData(testApplication.applicationContext)
 
                     propertyRepository = DefaultPropertyRepository(
                         networkConnectionLiveData = networkConnectionLiveData,
@@ -140,6 +135,7 @@ class PropertyRepositoryTest : TestCase() {
                         propertyLocalDataSource = localDataSource
                     )
 
+                    // Then inspect repository behavior with Mockito
                     propertyRepository.findAllProperties().map {
                         tag(TAG).i("/** behavior_when_has_internet_and_local_storage_is_not_empty **/")
                         verify(remoteDataSource).findAllProperties()
@@ -154,15 +150,17 @@ class PropertyRepositoryTest : TestCase() {
 
     @Test
     @Suppress("UnstableApiUsage")
-    fun data_result_when_has_internet_and_local_storage_is_not_empty() {
+    fun given_property_repository_when_has_internet_and_local_storage_is_not_empty_then_inspect_data_result() {
+        // Given PropertyRepository
+        // When has internet and local storage is not empty
 
         remoteDataSource = PropertyRemoteDataSource(apiService = apiService)
-        localDataSource = PropertyLocalDataSource(database = database)
+        localDataSource = PropertyLocalDataSource(database = database, testApplication.applicationContext)
 
         Completable.fromAction {
             localDataSource.database.propertyDao().saveProperties(properties = fakeProperties)
             fakeProperties.forEach { property ->
-                localDataSource.database.pictureDao().savePictures(property.pictures)
+                localDataSource.database.photoDao().savePhotos(property.photos)
             }
         }.blockingAwait()
 
@@ -171,7 +169,7 @@ class PropertyRepositoryTest : TestCase() {
             .blockingAwait().let {
                 Completable.fromAction {
 
-                    networkConnectionLiveData = NetworkConnectionLiveData(app.applicationContext)
+                    networkConnectionLiveData = NetworkConnectionLiveData(testApplication.applicationContext)
 
                     propertyRepository = DefaultPropertyRepository(
                         networkConnectionLiveData = networkConnectionLiveData,
@@ -179,6 +177,7 @@ class PropertyRepositoryTest : TestCase() {
                         propertyLocalDataSource = localDataSource
                     )
 
+                    // Then inspect repository data result with Truth
                     propertyRepository.findAllProperties().map { returnedProperties ->
                         tag(TAG).i("/** data_result_when_has_internet_and_local_storage_is_not_empty **/")
                         assertThat(returnedProperties).isNotNull()
@@ -198,15 +197,17 @@ class PropertyRepositoryTest : TestCase() {
 
     @Test
     @Suppress("UnstableApiUsage")
-    fun behavior_when_has_no_internet_and_local_storage_is_not_empty() {
+    fun given_property_repository_when_has_no_internet_and_local_storage_is_not_empty_then_inspect_behavior() {
+        // Given PropertyRepository
+        // When has no internet and local storage is not empty
 
         remoteDataSource = spy(PropertyRemoteDataSource(apiService = apiService))
-        localDataSource = spy(PropertyLocalDataSource(database = database))
+        localDataSource = spy(PropertyLocalDataSource(database = database, testApplication.applicationContext))
 
         Completable.fromAction {
             localDataSource.database.propertyDao().saveProperties(properties = fakeProperties)
             fakeProperties.forEach { property ->
-                localDataSource.database.pictureDao().savePictures(property.pictures)
+                localDataSource.database.photoDao().savePhotos(property.photos)
             }
         }.blockingAwait()
 
@@ -215,7 +216,7 @@ class PropertyRepositoryTest : TestCase() {
             .blockingAwait().let {
                 Completable.fromAction {
 
-                    networkConnectionLiveData = NetworkConnectionLiveData(app.applicationContext)
+                    networkConnectionLiveData = NetworkConnectionLiveData(testApplication.applicationContext)
 
                     propertyRepository = DefaultPropertyRepository(
                         networkConnectionLiveData = networkConnectionLiveData,
@@ -223,6 +224,7 @@ class PropertyRepositoryTest : TestCase() {
                         propertyLocalDataSource = localDataSource
                     )
 
+                    // Then inspect repository behavior with Mockito
                     propertyRepository.findAllProperties().map {
                         tag(TAG).i("/** behavior_when_has_no_internet_and_local_storage_is_not_empty **/")
                         verify(localDataSource).findAllProperties()
@@ -236,10 +238,12 @@ class PropertyRepositoryTest : TestCase() {
 
     @Test
     @Suppress("UnstableApiUsage")
-    fun data_result_when_has_no_internet_and_local_storage_is_not_empty() {
+    fun given_property_repository_when_has_no_internet_and_local_storage_is_not_empty_then_inspect_data_result() {
+        // Given PropertyRepository
+        // When has no internet and local storage is not empty
 
         remoteDataSource = PropertyRemoteDataSource(apiService = apiService)
-        localDataSource = PropertyLocalDataSource(database = database)
+        localDataSource = PropertyLocalDataSource(database = database, testApplication.applicationContext)
 
         localDataSource.saveProperties(properties = fakeProperties).blockingAwait()
 
@@ -248,7 +252,7 @@ class PropertyRepositoryTest : TestCase() {
             .blockingAwait().let {
                 Completable.fromAction {
 
-                    networkConnectionLiveData = NetworkConnectionLiveData(app.applicationContext)
+                    networkConnectionLiveData = NetworkConnectionLiveData(testApplication.applicationContext)
 
                     propertyRepository = DefaultPropertyRepository(
                         networkConnectionLiveData = networkConnectionLiveData,
@@ -256,6 +260,7 @@ class PropertyRepositoryTest : TestCase() {
                         propertyLocalDataSource = localDataSource
                     )
 
+                    // Then inspect repository data result with Truth
                     propertyRepository.findAllProperties().map { returnedProperties ->
                         tag(TAG).i("/** data_result_when_has_no_internet_and_local_storage_is_not_empty **/")
                         assertThat(returnedProperties).isNotNull()
@@ -275,10 +280,12 @@ class PropertyRepositoryTest : TestCase() {
 
     @Test
     @Suppress("UnstableApiUsage")
-    fun behavior_when_has_internet_and_local_storage_is_empty() {
+    fun given_property_repository_when_has_internet_and_local_storage_is_empty_then_inspect_behavior() {
+        // Given PropertyRepository
+        // When has internet and local storage is empty
 
         remoteDataSource = spy(PropertyRemoteDataSource(apiService = apiService))
-        localDataSource = spy(PropertyLocalDataSource(database = database))
+        localDataSource = spy(PropertyLocalDataSource(database = database, testApplication.applicationContext))
 
         localDataSource.deleteAllProperties().blockingAwait()
 
@@ -287,7 +294,7 @@ class PropertyRepositoryTest : TestCase() {
             .blockingAwait().let {
                 Completable.fromAction {
 
-                    networkConnectionLiveData = NetworkConnectionLiveData(app.applicationContext)
+                    networkConnectionLiveData = NetworkConnectionLiveData(testApplication.applicationContext)
 
                     propertyRepository = DefaultPropertyRepository(
                         networkConnectionLiveData = networkConnectionLiveData,
@@ -295,6 +302,7 @@ class PropertyRepositoryTest : TestCase() {
                         propertyLocalDataSource = localDataSource
                     )
 
+                    // Then inspect repository behavior with Mockito
                     propertyRepository.findAllProperties().map {
                         tag(TAG).i("/** behavior_when_has_internet_and_local_storage_is_empty **/")
                         verify(remoteDataSource).findAllProperties()
@@ -309,10 +317,12 @@ class PropertyRepositoryTest : TestCase() {
 
     @Test
     @Suppress("UnstableApiUsage")
-    fun data_result_when_has_internet_and_local_storage_is_empty() {
+    fun given_property_repository_when_has_internet_and_local_storage_is_empty_then_inspect_data_result() {
+        // Given PropertyRepository
+        // When has internet and local storage is empty
 
         remoteDataSource = PropertyRemoteDataSource(apiService = apiService)
-        localDataSource = PropertyLocalDataSource(database = database)
+        localDataSource = PropertyLocalDataSource(database = database, testApplication.applicationContext)
 
         localDataSource.deleteAllProperties().blockingAwait()
 
@@ -321,7 +331,7 @@ class PropertyRepositoryTest : TestCase() {
             .blockingAwait().let {
                 Completable.fromAction {
 
-                    networkConnectionLiveData = NetworkConnectionLiveData(app.applicationContext)
+                    networkConnectionLiveData = NetworkConnectionLiveData(testApplication.applicationContext)
 
                     propertyRepository = DefaultPropertyRepository(
                         networkConnectionLiveData = networkConnectionLiveData,
@@ -329,6 +339,7 @@ class PropertyRepositoryTest : TestCase() {
                         propertyLocalDataSource = localDataSource
                     )
 
+                    // Then inspect repository data result with Truth
                     propertyRepository.findAllProperties().map {returnedProperties ->
                         tag(TAG).i("/** data_result_when_has_internet_and_local_storage_is_empty **/")
                         assertThat(returnedProperties).isNotNull()
@@ -348,10 +359,12 @@ class PropertyRepositoryTest : TestCase() {
 
     @Test
     @Suppress("UnstableApiUsage")
-    fun behavior_when_has_no_internet_and_local_storage_is_empty() {
+    fun given_property_repository_when_has_no_internet_and_local_storage_is_empty_then_inspect_behavior() {
+        // Given PropertyRepository
+        // When has no internet and local storage is empty
 
         remoteDataSource = spy(PropertyRemoteDataSource(apiService = apiService))
-        localDataSource = spy(PropertyLocalDataSource(database = database))
+        localDataSource = spy(PropertyLocalDataSource(database = database, testApplication.applicationContext))
 
         localDataSource.deleteAllProperties().blockingAwait()
 
@@ -360,7 +373,7 @@ class PropertyRepositoryTest : TestCase() {
             .blockingAwait().let {
                 Completable.fromAction {
 
-                    networkConnectionLiveData = NetworkConnectionLiveData(app.applicationContext)
+                    networkConnectionLiveData = NetworkConnectionLiveData(testApplication.applicationContext)
 
                     propertyRepository = DefaultPropertyRepository(
                         networkConnectionLiveData = networkConnectionLiveData,
@@ -368,6 +381,7 @@ class PropertyRepositoryTest : TestCase() {
                         propertyLocalDataSource = localDataSource
                     )
 
+                    // Then inspect repository behavior with Mockito
                     propertyRepository.findAllProperties().map {
                         tag(TAG).i("/** behavior_when_has_no_internet_and_local_storage_is_empty **/")
                         verify(localDataSource).findAllProperties()
@@ -381,12 +395,14 @@ class PropertyRepositoryTest : TestCase() {
 
     @Test
     @Suppress("UnstableApiUsage")
-    fun data_result_when_has_no_internet_and_local_storage_is_empty() {
+    fun given_property_repository_when_has_no_internet_and_local_storage_is_empty_then_inspect_data_result() {
+        // Given PropertyRepository
+        // When has no internet and local storage is empty
 
         apiService.propertiesJsonFileName = EMPTY_LIST
 
         remoteDataSource = PropertyRemoteDataSource(apiService = apiService)
-        localDataSource = PropertyLocalDataSource(database = database)
+        localDataSource = PropertyLocalDataSource(database = database, testApplication.applicationContext)
 
         localDataSource.deleteAllProperties().blockingAwait()
 
@@ -395,7 +411,7 @@ class PropertyRepositoryTest : TestCase() {
             .blockingAwait().let {
                 Completable.fromAction {
 
-                    networkConnectionLiveData = NetworkConnectionLiveData(app.applicationContext)
+                    networkConnectionLiveData = NetworkConnectionLiveData(testApplication.applicationContext)
 
                     propertyRepository = DefaultPropertyRepository(
                         networkConnectionLiveData = networkConnectionLiveData,
@@ -403,6 +419,7 @@ class PropertyRepositoryTest : TestCase() {
                         propertyLocalDataSource = localDataSource
                     )
 
+                    // Then inspect repository data result with Truth
                     propertyRepository.findAllProperties().doOnSubscribe {
                         concatArray(switchAllNetworks(false), waitInternetStateChange(false))
                             .blockingAwait()
