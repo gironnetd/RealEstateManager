@@ -21,9 +21,12 @@ open class PropertyLocalDataSource
 @Inject
 constructor(val database: AppDatabase, val context: Context) : PropertyDataSource {
 
+    override fun count(): Int {
+        TODO("Not yet implemented")
+    }
+
     override fun saveProperty(property: Property): Completable {
         return Completable.fromAction {
-            //property.mainPhoto?.propertyId = property.id
             database.propertyDao().saveProperty(property = property)
             database.photoDao().savePhotos(property.photos)
         }.subscribeOn(SchedulerProvider.io())
@@ -32,7 +35,6 @@ constructor(val database: AppDatabase, val context: Context) : PropertyDataSourc
     override fun saveProperties(properties: List<Property>): Completable {
         return Completable.fromAction {
             properties.forEach { property ->
-                //property.mainPhoto?.propertyId = property.id
                 database.propertyDao().saveProperty(property)
                 database.photoDao().savePhotos(property.photos)
 
@@ -45,6 +47,10 @@ constructor(val database: AppDatabase, val context: Context) : PropertyDataSourc
                 }
             }
         }.subscribeOn(SchedulerProvider.io())
+    }
+
+    override fun findPropertyById(id: String): Single<Property> {
+        TODO("Not yet implemented")
     }
 
     override fun findAllProperties(): Single<List<Property>> {
@@ -60,8 +66,16 @@ constructor(val database: AppDatabase, val context: Context) : PropertyDataSourc
         }
     }
 
+    override fun updateProperty(property: Property): Completable {
+        TODO("Not yet implemented")
+    }
+
     override fun deleteAllProperties(): Completable {
         return Completable.fromAction { database.propertyDao().deleteAllProperties() }
                 .subscribeOn(SchedulerProvider.io())
+    }
+
+    override fun deleteById(id: String): Completable {
+        TODO("Not yet implemented")
     }
 }

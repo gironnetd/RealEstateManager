@@ -26,6 +26,9 @@ interface PhotoDao {
     @Query("SELECT * FROM $TABLE_NAME WHERE $COLUMN_ID = :id")
     fun findPhotoById(id: Long): Cursor
 
+    @Query("SELECT * FROM $TABLE_NAME WHERE $COLUMN_ID = :id")
+    fun findPhotoById(id: String): Cursor
+
     @Query("SELECT * FROM $TABLE_NAME ORDER BY _id ASC")
     fun findAllPhotos(): Cursor
 
@@ -37,6 +40,9 @@ interface PhotoDao {
 
     @Query("DELETE FROM $TABLE_NAME WHERE $COLUMN_ID = :id")
     fun deleteById(id: Long): Int
+
+    @Query("DELETE FROM $TABLE_NAME WHERE $COLUMN_ID = :id")
+    fun deleteById(id: String): Int
 
     @Update
     fun updatePhoto(photo: Photo): Int

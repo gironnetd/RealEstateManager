@@ -11,6 +11,9 @@ import javax.inject.Inject
 open class PropertyRemoteDataSource
 @Inject
 constructor(val apiService: PropertyApiService): PropertyDataSource {
+    override fun count(): Int {
+        TODO("Not yet implemented")
+    }
 
     override fun saveProperty(property: Property): Completable {
         TODO("Not yet implemented")
@@ -20,11 +23,23 @@ constructor(val apiService: PropertyApiService): PropertyDataSource {
         TODO("Not yet implemented")
     }
 
+    override fun findPropertyById(id: String): Single<Property> {
+        TODO("Not yet implemented")
+    }
+
     override fun findAllProperties(): Single<List<Property>> {
        return apiService.findAllProperties()
     }
 
+    override fun updateProperty(property: Property): Completable {
+        TODO("Not yet implemented")
+    }
+
     override fun deleteAllProperties(): Completable {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteById(id: String): Completable {
         TODO("Not yet implemented")
     }
 }

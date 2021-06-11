@@ -22,6 +22,9 @@ interface PropertyDao {
     @Query("SELECT * FROM $TABLE_NAME WHERE $COLUMN_ID = :id")
     fun findPropertyById(id: Long): Cursor
 
+    @Query("SELECT * FROM $TABLE_NAME WHERE $COLUMN_ID = :id")
+    fun findPropertyById(id: String): Cursor
+
     @Query("SELECT * FROM $TABLE_NAME ORDER BY _id ASC")
     fun findAllProperties(): Cursor
 
@@ -33,6 +36,9 @@ interface PropertyDao {
 
     @Query("DELETE FROM $TABLE_NAME WHERE $COLUMN_ID = :id")
     fun deleteById(id: Long): Int
+
+    @Query("DELETE FROM $TABLE_NAME WHERE $COLUMN_ID = :id")
+    fun deleteById(id: String): Int
 
     @Update
     fun updateProperty(property: Property): Int
