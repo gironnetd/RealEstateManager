@@ -80,6 +80,20 @@ class PhotoDaoTest: TestCase() {
     }
 
     @Test
+    fun given_photo_dao_when_one_photo_saved_then_saved_successfully() {
+        // Given photo and When photo saved
+        val savedPhoto: Photo = fakePhotos[fakePhotos.indices.random()]
+        photoDao.savePhoto(savedPhoto)
+
+        // Then result  of reading is equal to given properties list
+        val actualPhoto = photoDao.findPhotoById(savedPhoto.id).toList { Photo(it) }
+            .singleOrNull { photo ->  photo.id == savedPhoto.id }
+
+        assertThat(actualPhoto).isNotNull()
+        assertThat(actualPhoto).isEqualTo(savedPhoto)
+    }
+
+    @Test
     fun given_photo_dao_when_update_photo_then_updated_successfully() {
         val initialPhoto = fakePhotos[fakePhotos.indices.random()]
 

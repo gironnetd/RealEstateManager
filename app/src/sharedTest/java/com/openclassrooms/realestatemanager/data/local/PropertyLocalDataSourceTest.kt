@@ -44,12 +44,12 @@ class PropertyLocalDataSourceTest : TestCase() {
     fun clearDatabase() = database.clearAllTables()
 
     @Test
-    fun given_local_data_source_when_saved_then_saved_successfully() {
+    fun given_local_data_source_when_save_properties_then_saved_successfully() {
         // Given properties list and When properties list saved
         localDataSource.saveProperties(fakeProperties).blockingAwait()
 
         // Then count of properties in database is equal to given properties list size
-        assertThat(localDataSource.count()).isEqualTo(fakeProperties.size)
+        assertThat(localDataSource.count().blockingGet()).isEqualTo(fakeProperties.size)
     }
 
     @Test

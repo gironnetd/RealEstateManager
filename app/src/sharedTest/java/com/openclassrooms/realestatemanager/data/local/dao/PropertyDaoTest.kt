@@ -43,7 +43,7 @@ class PropertyDaoTest: TestCase() {
     fun clearDatabase() = database.clearAllTables()
 
     @Test
-    fun given_property_dao_when_saved_then_saved_successfully() {
+    fun given_property_dao_when_save_properties_then_saved_successfully() {
         // Given properties list and When properties list saved
         propertyDao.saveProperties(fakeProperties)
 
@@ -75,6 +75,20 @@ class PropertyDaoTest: TestCase() {
         val property = fakeProperties[fakeProperties.indices.random()]
         val expectedProperty: Property = propertyDao.findPropertyById(property.id).toList { Property(it) }.single()
         assertThat(expectedProperty).isEqualTo(property)
+    }
+
+    @Test
+    fun given_property_dao_when_one_property_saved_then_saved_successfully() {
+        // Given property and When property saved
+        val savedProperty: Property = fakeProperties[fakeProperties.indices.random()]
+        propertyDao.saveProperty(savedProperty)
+
+        // Then result  of reading is equal to given properties list
+        val actualProperty = propertyDao.findPropertyById(savedProperty.id).toList { Property(it) }
+            .single()
+
+        assertThat(actualProperty).isNotNull()
+        assertThat(actualProperty).isEqualTo(savedProperty)
     }
 
     @Test

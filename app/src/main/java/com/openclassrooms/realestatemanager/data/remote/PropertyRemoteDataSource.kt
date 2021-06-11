@@ -11,7 +11,7 @@ import javax.inject.Inject
 open class PropertyRemoteDataSource
 @Inject
 constructor(val apiService: PropertyApiService): PropertyDataSource {
-    override fun count(): Int {
+    override fun count(): Single<Int> {
         TODO("Not yet implemented")
     }
 

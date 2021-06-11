@@ -6,7 +6,7 @@ import io.reactivex.Single
 
 interface PropertyDataSource {
 
-    fun count(): Int
+    fun count(): Single<Int>
 
     fun saveProperty(property: Property): Completable
 

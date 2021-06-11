@@ -21,8 +21,9 @@ open class PropertyLocalDataSource
 @Inject
 constructor(val database: AppDatabase, val context: Context) : PropertyDataSource {
 
-    override fun count(): Int {
-        TODO("Not yet implemented")
+    override fun count(): Single<Int> {
+        return Single.fromCallable { database.propertyDao().count() }
+            .subscribeOn(SchedulerProvider.io())
     }
 
     override fun saveProperty(property: Property): Completable {
@@ -50,12 +51,14 @@ constructor(val database: AppDatabase, val context: Context) : PropertyDataSourc
     }
 
     override fun findPropertyById(id: String): Single<Property> {
-        TODO("Not yet implemented")
+        return Single.fromCallable {
+            database.propertyDao().findPropertyById(id).toList { Property(it) }.single()
+        }.subscribeOn(SchedulerProvider.io())
     }
 
     override fun findAllProperties(): Single<List<Property>> {
         return Single.fromCallable {
-           val properties: List<Property> = database.propertyDao().findAllProperties().toList { Property(it) }
+            val properties: List<Property> = database.propertyDao().findAllProperties().toList { Property(it) }
             properties.forEach { property ->
                 val photos: List<Photo> = database.photoDao().findPhotosByPropertyId(property.id).toList { Photo(it) }
                 property.photos.addAll(photos)
@@ -67,15 +70,17 @@ constructor(val database: AppDatabase, val context: Context) : PropertyDataSourc
     }
 
     override fun updateProperty(property: Property): Completable {
-        TODO("Not yet implemented")
+        return Completable.fromAction { database.propertyDao().updateProperty(property) }
+            .subscribeOn(SchedulerProvider.io())
     }
 
     override fun deleteAllProperties(): Completable {
         return Completable.fromAction { database.propertyDao().deleteAllProperties() }
-                .subscribeOn(SchedulerProvider.io())
+            .subscribeOn(SchedulerProvider.io())
     }
 
     override fun deleteById(id: String): Completable {
-        TODO("Not yet implemented")
+        return Completable.fromAction { database.propertyDao().deleteById(id) }
+            .subscribeOn(SchedulerProvider.io())
     }
 }
