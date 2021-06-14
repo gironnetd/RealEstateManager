@@ -1,6 +1,6 @@
 package com.openclassrooms.realestatemanager.data.remote
 
-import com.openclassrooms.realestatemanager.data.PropertyDataSource
+import com.openclassrooms.realestatemanager.data.source.PropertyDataSource
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Property
 import io.reactivex.Completable
@@ -27,11 +27,27 @@ constructor(val apiService: PropertyApiService): PropertyDataSource {
         TODO("Not yet implemented")
     }
 
+    override fun findPropertiesByIds(ids: List<String>): Single<List<Property>> {
+        TODO("Not yet implemented")
+    }
+
     override fun findAllProperties(): Single<List<Property>> {
        return apiService.findAllProperties()
     }
 
     override fun updateProperty(property: Property): Completable {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateProperties(properties: List<Property>): Completable {
+        TODO("Not yet implemented")
+    }
+
+    override fun deletePropertiesByIds(ids: List<String>): Completable {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteProperties(properties: List<Property>): Completable {
         TODO("Not yet implemented")
     }
 

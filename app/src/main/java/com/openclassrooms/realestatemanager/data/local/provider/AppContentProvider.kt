@@ -171,11 +171,11 @@ class AppContentProvider : ContentProvider() {
         }
         return when (sUriMatcher.match(uri)) {
             PROPERTY -> {
-                val properties: Array<Property?> = arrayOfNulls(valuesArray.size)
+                val properties: Array<Property> = Array(valuesArray.size) { Property() }
                 for (i in valuesArray.indices) {
                     properties[i] = Property.fromContentValues(valuesArray[i])
                 }
-                database.propertyDao().saveProperties(properties.toList() as List<Property>).size
+                database.propertyDao().saveProperties(*properties.toList().toTypedArray()).size
             }
             PROPERTY_ID -> {
                 val property: Property = Property.fromContentValues(valuesArray[0])

@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.data
+package com.openclassrooms.realestatemanager.data.source
 
 import com.openclassrooms.realestatemanager.models.Property
 import io.reactivex.Completable
@@ -14,9 +14,17 @@ interface PropertyDataSource {
 
     fun findPropertyById(id: String): Single<Property>
 
+    fun findPropertiesByIds(ids: List<String>): Single<List<Property>>
+
     fun findAllProperties(): Single<List<Property>>
 
     fun updateProperty(property: Property): Completable
+
+    fun updateProperties(properties: List<Property>): Completable
+
+    fun deletePropertiesByIds(ids: List<String>): Completable
+
+    fun deleteProperties(properties: List<Property>): Completable
 
     fun deleteAllProperties(): Completable
 

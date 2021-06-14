@@ -45,7 +45,7 @@ class PropertyDaoTest: TestCase() {
     @Test
     fun given_property_dao_when_save_properties_then_saved_successfully() {
         // Given properties list and When properties list saved
-        propertyDao.saveProperties(fakeProperties)
+        propertyDao.saveProperties(*fakeProperties.toTypedArray())
 
         // Then count of properties in database is equal to given properties list size
         assertThat(propertyDao.count()).isEqualTo(fakeProperties.size)
@@ -58,7 +58,7 @@ class PropertyDaoTest: TestCase() {
         fakeProperties = fakeProperties.sortedBy { it.id }
 
         // When properties list saved
-        propertyDao.saveProperties(fakeProperties)
+        propertyDao.saveProperties(*fakeProperties.toTypedArray())
 
         var actualProperties = propertyDao.findAllProperties().toList { Property(it) }
 
@@ -71,7 +71,7 @@ class PropertyDaoTest: TestCase() {
 
     @Test
     fun given_property_dao_when_find_property_by_id_then_found_successfully() {
-        propertyDao.saveProperties(fakeProperties)
+        propertyDao.saveProperties(*fakeProperties.toTypedArray())
         val property = fakeProperties[fakeProperties.indices.random()]
         val expectedProperty: Property = propertyDao.findPropertyById(property.id).toList { Property(it) }.single()
         assertThat(expectedProperty).isEqualTo(property)
@@ -113,7 +113,7 @@ class PropertyDaoTest: TestCase() {
 
     @Test
     fun given_property_dao_when_delete_property_by_id_then_deleted_successfully() {
-        propertyDao.saveProperties(fakeProperties)
+        propertyDao.saveProperties(*fakeProperties.toTypedArray())
         val property = fakeProperties[fakeProperties.indices.random()]
         propertyDao.deleteById(property.id)
         assertThat(propertyDao.findAllProperties().toList { Property(it) }.contains(property)).isFalse()
@@ -121,7 +121,7 @@ class PropertyDaoTest: TestCase() {
 
     @Test
     fun given_property_dao_when_delete_all_properties_then_deleted_successfully() {
-        propertyDao.saveProperties(fakeProperties)
+        propertyDao.saveProperties(*fakeProperties.toTypedArray())
         assertThat(propertyDao.findAllProperties().toList { Property(it) }.size
         ).isEqualTo(fakeProperties.size)
         propertyDao.deleteAllProperties()

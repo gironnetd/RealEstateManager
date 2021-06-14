@@ -116,7 +116,7 @@ class PropertyRepositoryTest : TestCase() {
         localDataSource = spy(PropertyLocalDataSource(database = database, testApplication.applicationContext))
 
         Completable.fromAction {
-            localDataSource.database.propertyDao().saveProperties(properties = fakeProperties)
+            localDataSource.database.propertyDao().saveProperties(properties = fakeProperties.toTypedArray())
             fakeProperties.forEach { property ->
                 localDataSource.database.photoDao().savePhotos(*property.photos.toTypedArray())
             }
@@ -158,7 +158,7 @@ class PropertyRepositoryTest : TestCase() {
         localDataSource = PropertyLocalDataSource(database = database, testApplication.applicationContext)
 
         Completable.fromAction {
-            localDataSource.database.propertyDao().saveProperties(properties = fakeProperties)
+            localDataSource.database.propertyDao().saveProperties(properties = fakeProperties.toTypedArray())
             fakeProperties.forEach { property ->
                 localDataSource.database.photoDao().savePhotos(*property.photos.toTypedArray())
             }
@@ -205,7 +205,7 @@ class PropertyRepositoryTest : TestCase() {
         localDataSource = spy(PropertyLocalDataSource(database = database, testApplication.applicationContext))
 
         Completable.fromAction {
-            localDataSource.database.propertyDao().saveProperties(properties = fakeProperties)
+            localDataSource.database.propertyDao().saveProperties(properties = fakeProperties.toTypedArray())
             fakeProperties.forEach { property ->
                 localDataSource.database.photoDao().savePhotos(*property.photos.toTypedArray())
             }

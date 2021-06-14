@@ -3,8 +3,8 @@ package com.openclassrooms.realestatemanager.data.local
 import android.content.Context
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import com.openclassrooms.realestatemanager.data.PropertyDataSource
 import com.openclassrooms.realestatemanager.data.local.provider.toList
+import com.openclassrooms.realestatemanager.data.source.PropertyDataSource
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Property
@@ -56,6 +56,12 @@ constructor(val database: AppDatabase, val context: Context) : PropertyDataSourc
         }.subscribeOn(SchedulerProvider.io())
     }
 
+    override fun findPropertiesByIds(ids: List<String>): Single<List<Property>> {
+        return Single.fromCallable { database.propertyDao().findPropertiesByIds(ids) }.subscribeOn(SchedulerProvider.io()).flatMap {
+            Single.just(it)
+        }
+    }
+    
     override fun findAllProperties(): Single<List<Property>> {
         return Single.fromCallable {
             val properties: List<Property> = database.propertyDao().findAllProperties().toList { Property(it) }
@@ -74,6 +80,20 @@ constructor(val database: AppDatabase, val context: Context) : PropertyDataSourc
             .subscribeOn(SchedulerProvider.io())
     }
 
+    override fun updateProperties(properties: List<Property>): Completable {
+        return Completable.fromAction { database.propertyDao().updateProperties(*properties.toTypedArray()) }
+            .subscribeOn(SchedulerProvider.io())
+    }
+
+    override fun deletePropertiesByIds(ids: List<String>): Completable {
+        return Completable.fromAction { database.propertyDao().deletePropertiesByIds(ids) }
+            .subscribeOn(SchedulerProvider.io())
+    }
+
+    override fun deleteProperties(properties: List<Property>): Completable {
+        return Completable.fromAction { database.propertyDao().deleteProperties(*properties.toTypedArray()) }
+            .subscribeOn(SchedulerProvider.io())
+    }
     override fun deleteAllProperties(): Completable {
         return Completable.fromAction { database.propertyDao().deleteAllProperties() }
             .subscribeOn(SchedulerProvider.io())
