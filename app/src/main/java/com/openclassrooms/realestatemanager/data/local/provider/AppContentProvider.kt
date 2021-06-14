@@ -182,11 +182,11 @@ class AppContentProvider : ContentProvider() {
                 database.propertyDao().saveProperty(property).toInt()
             }
             PHOTO -> {
-                val photos: Array<Photo?> = arrayOfNulls(valuesArray.size)
+                val photos: Array<Photo> = Array(valuesArray.size) { Photo() }
                 for (i in valuesArray.indices) {
                     photos[i] = Photo.fromContentValues(valuesArray[i])
                 }
-                database.photoDao().savePhotos(photos.toList() as List<Photo>).size
+                database.photoDao().savePhotos(*photos.toList().toTypedArray()).size
             }
             PHOTO_ID -> {
                 val photo: Photo = Photo.fromContentValues(valuesArray[0])

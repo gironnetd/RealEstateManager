@@ -6,7 +6,6 @@ import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_ID
 import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_PHOTO_PROPERTY_ID
 import com.openclassrooms.realestatemanager.models.Photo.Companion.TABLE_NAME
-import io.reactivex.Single
 
 @Dao
 interface PhotoDao {
@@ -18,7 +17,7 @@ interface PhotoDao {
     fun savePhoto(photo: Photo): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun savePhotos(photos: List<Photo>): LongArray
+    fun savePhotos(vararg  photos: Photo): LongArray
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $COLUMN_PHOTO_PROPERTY_ID = :propertyId")
     fun findPhotosByPropertyId(propertyId: String): Cursor
@@ -29,11 +28,17 @@ interface PhotoDao {
     @Query("SELECT * FROM $TABLE_NAME WHERE $COLUMN_ID = :id")
     fun findPhotoById(id: String): Cursor
 
+    @Query("SELECT * FROM $TABLE_NAME WHERE $COLUMN_ID IN (:ids)")
+    fun findPhotosByIds(ids: List<String>): List<Photo>
+
     @Query("SELECT * FROM $TABLE_NAME ORDER BY _id ASC")
     fun findAllPhotos(): Cursor
 
     @Delete
-    fun deleteAllPhotos(photos: List<Photo>): Single<Int>
+    fun deletePhotos(vararg photos: Photo): Int
+
+    @Query("DELETE FROM $TABLE_NAME WHERE $COLUMN_ID IN (:ids)")
+    fun deletePhotosByIds(ids: List<String>): Int
 
     @Query("DELETE FROM $TABLE_NAME")
     fun deleteAllPhotos(): Int
@@ -46,4 +51,7 @@ interface PhotoDao {
 
     @Update
     fun updatePhoto(photo: Photo): Int
+
+    @Update
+    fun updatePhotos(vararg photo: Photo): Int
 }

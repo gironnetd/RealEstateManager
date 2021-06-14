@@ -118,7 +118,7 @@ class PropertyRepositoryTest : TestCase() {
         Completable.fromAction {
             localDataSource.database.propertyDao().saveProperties(properties = fakeProperties)
             fakeProperties.forEach { property ->
-                localDataSource.database.photoDao().savePhotos(property.photos)
+                localDataSource.database.photoDao().savePhotos(*property.photos.toTypedArray())
             }
         }.blockingAwait()
 
@@ -160,7 +160,7 @@ class PropertyRepositoryTest : TestCase() {
         Completable.fromAction {
             localDataSource.database.propertyDao().saveProperties(properties = fakeProperties)
             fakeProperties.forEach { property ->
-                localDataSource.database.photoDao().savePhotos(property.photos)
+                localDataSource.database.photoDao().savePhotos(*property.photos.toTypedArray())
             }
         }.blockingAwait()
 
@@ -207,7 +207,7 @@ class PropertyRepositoryTest : TestCase() {
         Completable.fromAction {
             localDataSource.database.propertyDao().saveProperties(properties = fakeProperties)
             fakeProperties.forEach { property ->
-                localDataSource.database.photoDao().savePhotos(property.photos)
+                localDataSource.database.photoDao().savePhotos(*property.photos.toTypedArray())
             }
         }.blockingAwait()
 

@@ -53,7 +53,7 @@ import java.util.*
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class AppContentProviderTest : TestCase() {
 
-    lateinit var jsonUtil: JsonUtil
+    private lateinit var jsonUtil: JsonUtil
     private lateinit var fakeProperties: List<Property>
     private lateinit var fakePhotos: List<Photo>
 
@@ -61,7 +61,6 @@ class AppContentProviderTest : TestCase() {
 
     @Before
     fun initDatabase() {
-
         val context = ApplicationProvider.getApplicationContext<Context>()
         mContentResolver = context.contentResolver
 

@@ -29,7 +29,7 @@ constructor(val database: AppDatabase, val context: Context) : PropertyDataSourc
     override fun saveProperty(property: Property): Completable {
         return Completable.fromAction {
             database.propertyDao().saveProperty(property = property)
-            database.photoDao().savePhotos(property.photos)
+            database.photoDao().savePhotos(*property.photos.toTypedArray())
         }.subscribeOn(SchedulerProvider.io())
     }
 
@@ -37,7 +37,7 @@ constructor(val database: AppDatabase, val context: Context) : PropertyDataSourc
         return Completable.fromAction {
             properties.forEach { property ->
                 database.propertyDao().saveProperty(property)
-                database.photoDao().savePhotos(property.photos)
+                database.photoDao().savePhotos(*property.photos.toTypedArray())
 
                 property.photos.forEach { photo ->
                     val localFile = File(photo.storageLocalDatabase(context, true))

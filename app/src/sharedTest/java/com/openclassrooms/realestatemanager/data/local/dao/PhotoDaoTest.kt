@@ -47,7 +47,7 @@ class PhotoDaoTest: TestCase() {
     fun given_photo_dao_when_save_photos_then_saved_successfully() {
 
         // Given photos list and When photos list saved
-        photoDao.savePhotos(fakePhotos)
+        photoDao.savePhotos(*fakePhotos.toTypedArray())
 
         // Then count of photos in database is equal to given photos list size
         assertThat(photoDao.count()).isEqualTo(fakePhotos.size)
@@ -60,7 +60,7 @@ class PhotoDaoTest: TestCase() {
         fakePhotos = fakePhotos.sortedBy { it.id }
 
         // When photos list saved
-        photoDao.savePhotos(fakePhotos)
+        photoDao.savePhotos(*fakePhotos.toTypedArray())
 
         var actualPhotos = photoDao.findAllPhotos().toList { Photo(it) }
 
@@ -73,7 +73,7 @@ class PhotoDaoTest: TestCase() {
 
     @Test
     fun given_photo_dao_when_find_photo_by_id_then_found_successfully() {
-        photoDao.savePhotos(fakePhotos)
+        photoDao.savePhotos(*fakePhotos.toTypedArray())
         val photo = fakePhotos[fakePhotos.indices.random()]
         val expectedPhoto: Photo = photoDao.findPhotoById(photo.id).toList { Photo(it) }.single()
         assertThat(expectedPhoto).isEqualTo(photo)
@@ -112,7 +112,7 @@ class PhotoDaoTest: TestCase() {
 
     @Test
     fun given_photo_dao_when_delete_photo_by_id_then_deleted_successfully() {
-        photoDao.savePhotos(fakePhotos)
+        photoDao.savePhotos(*fakePhotos.toTypedArray())
         val photo = fakePhotos[fakePhotos.indices.random()]
         photoDao.deleteById(photo.id)
         assertThat(photoDao.findAllPhotos().toList { Photo(it) }.contains(photo)).isFalse()
@@ -120,7 +120,7 @@ class PhotoDaoTest: TestCase() {
 
     @Test
     fun given_photo_dao_when_delete_all_photos_then_deleted_successfully() {
-        photoDao.savePhotos(fakePhotos)
+        photoDao.savePhotos(*fakePhotos.toTypedArray())
         assertThat(photoDao.findAllPhotos().toList { Photo(it) }.size
         ).isEqualTo(fakePhotos.size)
         photoDao.deleteAllPhotos()
