@@ -17,6 +17,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.*
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
@@ -45,12 +46,44 @@ class PhotoLocalDataSourceTest : TestCase() {
     fun clearDatabase() = database.clearAllTables()
 
     @Test
+    fun given_local_data_source_when_save_photos_then_counted_successfully() {
+        // Given photos list and When photos list saved
+        localDataSource.savePhotos(fakePhotos).blockingAwait()
+
+        // Then count of photos in database is equal to given photos list size
+        assertThat(localDataSource.count().blockingGet()).isEqualTo(fakePhotos.size)
+    }
+
+    @Test
+    fun given_local_data_source_when_save_photos_then_counted_by_propertyId_successfully() {
+        // Given photos list and When photos list saved
+        val firstPropertyId = UUID.randomUUID().toString()
+        fakePhotos.subList(0, fakePhotos.indices.count() / 2).forEach { photo ->
+            photo.propertyId = firstPropertyId
+        }
+
+        val secondPropertyId = UUID.randomUUID().toString()
+        fakePhotos.subList(fakePhotos.indices.count() / 2, fakePhotos.indices.count()).forEach { photo ->
+            photo.propertyId = secondPropertyId
+        }
+
+        localDataSource.savePhotos(fakePhotos).blockingAwait()
+
+        // Then count of photos in database is equal to given photos list size
+        assertThat(localDataSource.count(firstPropertyId).blockingGet())
+            .isEqualTo(fakePhotos.subList(0, fakePhotos.indices.count() / 2).size)
+
+        assertThat(localDataSource.count(secondPropertyId).blockingGet())
+            .isEqualTo(fakePhotos.subList(fakePhotos.indices.count() / 2, fakePhotos.indices.count()).size)
+    }
+
+    @Test
     fun given_local_data_source_when_save_a_photo_then_saved_successfully() {
         // Given photos list and When photos list saved
         localDataSource.savePhoto(fakePhotos[0]).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        assertThat(localDataSource.count().blockingGet()).isEqualTo(1)
+        assertThat(localDataSource.findPhotoById(fakePhotos[0].id).blockingGet()).isEqualTo(fakePhotos[0])
     }
 
     @Test
@@ -59,7 +92,7 @@ class PhotoLocalDataSourceTest : TestCase() {
         localDataSource.savePhotos(fakePhotos).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        assertThat(localDataSource.count().blockingGet()).isEqualTo(fakePhotos.size)
+        assertThat(localDataSource.findAllPhotos().blockingGet()).isEqualTo(fakePhotos)
     }
 
     @Test
@@ -100,7 +133,7 @@ class PhotoLocalDataSourceTest : TestCase() {
     fun given_local_data_source_when_update_photo_then_updated_successfully() {
         val initialPhoto = fakePhotos[fakePhotos.indices.random()]
 
-        localDataSource.savePhoto(initialPhoto).blockingAwait()
+        localDataSource.savePhotos(fakePhotos).blockingAwait()
 
         val updatedPhoto = initialPhoto.copy()
         with(updatedPhoto) {
@@ -115,9 +148,9 @@ class PhotoLocalDataSourceTest : TestCase() {
 
     @Test
     fun given_local_data_source_when_update_photos_then_updated_successfully() {
-        var initialPhotos = Array(2) { fakePhotos[fakePhotos.indices.random()] }
+        var initialPhotos = arrayOf(fakePhotos[0], fakePhotos[1])
 
-        localDataSource.savePhotos(initialPhotos.asList()).blockingAwait()
+        localDataSource.savePhotos(fakePhotos).blockingAwait()
 
         var updatedPhotos = initialPhotos.copyOf().toList()
         updatedPhotos.forEachIndexed { index,  updatedPhoto ->
@@ -127,10 +160,12 @@ class PhotoLocalDataSourceTest : TestCase() {
             }
         }
         updatedPhotos = updatedPhotos.sortedBy { it.id }
-
         localDataSource.updatePhotos(updatedPhotos).blockingAwait()
 
-        var finalPhotos = localDataSource.findAllPhotos().blockingGet()
+        val ids = initialPhotos.map { photo -> photo.id }
+        var finalPhotos = localDataSource.findAllPhotos().blockingGet().filter {
+                photo -> ids.contains(photo.id)
+        }
         finalPhotos = finalPhotos.sortedBy { it.id }
 
         assertThat(finalPhotos).isEqualTo(updatedPhotos.toList())
@@ -140,7 +175,7 @@ class PhotoLocalDataSourceTest : TestCase() {
     fun given_local_data_source_when_delete_photo_by_id_then_deleted_successfully() {
         localDataSource.savePhotos(fakePhotos).blockingAwait()
         val photo = fakePhotos[fakePhotos.indices.random()]
-        localDataSource.deleteById(photo.id).blockingAwait()
+        localDataSource.deletePhotoById(photo.id).blockingAwait()
         assertThat(localDataSource.findAllPhotos().blockingGet().contains(photo))
             .isFalse()
     }

@@ -8,6 +8,8 @@ interface PhotoDataSource {
 
     fun count(): Single<Int>
 
+    fun count(propertyId: String): Single<Int>
+
     fun savePhoto(photo: Photo): Completable
 
     fun savePhotos(photos: List<Photo>): Completable
@@ -28,5 +30,5 @@ interface PhotoDataSource {
 
     fun deleteAllPhotos(): Completable
 
-    fun deleteById(id: String): Completable
+    fun deletePhotoById(id: String): Completable
 }

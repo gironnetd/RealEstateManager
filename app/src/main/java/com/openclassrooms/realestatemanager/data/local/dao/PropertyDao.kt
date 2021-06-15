@@ -44,10 +44,10 @@ interface PropertyDao {
     fun deleteAllProperties(): Int
 
     @Query("DELETE FROM $TABLE_NAME WHERE $COLUMN_ID = :id")
-    fun deleteById(id: Long): Int
+    fun deletePropertyById(id: Long): Int
 
     @Query("DELETE FROM $TABLE_NAME WHERE $COLUMN_ID = :id")
-    fun deleteById(id: String): Int
+    fun deletePropertyById(id: String): Int
 
     @Update
     fun updateProperty(property: Property): Int

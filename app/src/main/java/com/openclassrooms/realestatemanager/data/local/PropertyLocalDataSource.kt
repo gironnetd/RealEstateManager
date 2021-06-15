@@ -99,8 +99,8 @@ constructor(val database: AppDatabase, val context: Context) : PropertyDataSourc
             .subscribeOn(SchedulerProvider.io())
     }
 
-    override fun deleteById(id: String): Completable {
-        return Completable.fromAction { database.propertyDao().deleteById(id) }
+    override fun deletePropertyById(id: String): Completable {
+        return Completable.fromAction { database.propertyDao().deletePropertyById(id) }
             .subscribeOn(SchedulerProvider.io())
     }
 }

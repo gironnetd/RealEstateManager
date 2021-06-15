@@ -115,13 +115,13 @@ class AppContentProvider : ContentProvider() {
                 database.propertyDao().deleteAllProperties()
             }
             PROPERTY_ID -> {
-                database.propertyDao().deleteById(ContentUris.parseId(uri))
+                database.propertyDao().deletePropertyById(ContentUris.parseId(uri))
             }
             PHOTO -> {
                 database.photoDao().deleteAllPhotos()
             }
             PHOTO_ID -> {
-                database.photoDao().deleteById(ContentUris.parseId(uri))
+                database.photoDao().deletePhotoById(ContentUris.parseId(uri))
             }
             else -> throw UnsupportedOperationException("Unknown uri: $uri")
         }

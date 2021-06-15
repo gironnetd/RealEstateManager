@@ -13,6 +13,9 @@ interface PhotoDao {
     @Query("SELECT COUNT(*) FROM $TABLE_NAME")
     fun count(): Int
 
+    @Query("SELECT COUNT(*) FROM $TABLE_NAME WHERE $COLUMN_PHOTO_PROPERTY_ID = :propertyId")
+    fun count(propertyId: String): Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun savePhoto(photo: Photo): Long
 
@@ -44,10 +47,10 @@ interface PhotoDao {
     fun deleteAllPhotos(): Int
 
     @Query("DELETE FROM $TABLE_NAME WHERE $COLUMN_ID = :id")
-    fun deleteById(id: Long): Int
+    fun deletePhotoById(id: Long): Int
 
     @Query("DELETE FROM $TABLE_NAME WHERE $COLUMN_ID = :id")
-    fun deleteById(id: String): Int
+    fun deletePhotoById(id: String): Int
 
     @Update
     fun updatePhoto(photo: Photo): Int

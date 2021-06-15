@@ -15,6 +15,11 @@ class PhotoLocalDataSource constructor(private val photoDao: PhotoDao): PhotoDat
             .subscribeOn(SchedulerProvider.io())
     }
 
+    override fun count(propertyId: String): Single<Int> {
+        return Single.fromCallable { photoDao.count(propertyId) }
+            .subscribeOn(SchedulerProvider.io())
+    }
+
     override fun savePhoto(photo: Photo): Completable {
         return Completable.fromAction {
             photoDao.savePhoto(photo = photo)
@@ -72,8 +77,8 @@ class PhotoLocalDataSource constructor(private val photoDao: PhotoDao): PhotoDat
             .subscribeOn(SchedulerProvider.io())
     }
 
-    override fun deleteById(id: String): Completable {
-        return Completable.fromAction { photoDao.deleteById(id) }
+    override fun deletePhotoById(id: String): Completable {
+        return Completable.fromAction { photoDao.deletePhotoById(id) }
             .subscribeOn(SchedulerProvider.io())
     }
 }

@@ -28,5 +28,5 @@ interface PropertyDataSource {
 
     fun deleteAllProperties(): Completable
 
-    fun deleteById(id: String): Completable
+    fun deletePropertyById(id: String): Completable
 }

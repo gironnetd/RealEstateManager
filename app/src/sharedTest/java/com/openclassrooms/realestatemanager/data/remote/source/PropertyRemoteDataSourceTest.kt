@@ -51,12 +51,21 @@ class PropertyRemoteDataSourceTest : TestCase() {
     }
 
     @Test
+    fun given_remote_data_source_when_save_photos_then_counted_successfully() {
+        // Given photos list and When photos list saved
+        remoteDataSource.saveProperties(fakeProperties).blockingAwait()
+
+        // Then count of photos in database is equal to given photos list size
+        assertThat(remoteDataSource.count().blockingGet()).isEqualTo(fakeProperties.size)
+    }
+
+    @Test
     fun given_remote_data_source_when_save_a_property_then_saved_successfully() {
         // Given properties list and When properties list saved
         remoteDataSource.saveProperty(fakeProperties[0]).blockingAwait()
 
         // Then count of properties in database is equal to given properties list size
-        assertThat(remoteDataSource.count().blockingGet()).isEqualTo(1)
+        assertThat(remoteDataSource.findPropertyById(fakeProperties[0].id).blockingGet()).isEqualTo(fakeProperties[0])
     }
 
     @Test
@@ -65,7 +74,7 @@ class PropertyRemoteDataSourceTest : TestCase() {
         remoteDataSource.saveProperties(fakeProperties).blockingAwait()
 
         // Then count of properties in database is equal to given properties list size
-        assertThat(remoteDataSource.count().blockingGet()).isEqualTo(fakeProperties.size)
+        assertThat(remoteDataSource.findAllProperties().blockingGet()).isEqualTo(fakeProperties)
     }
 
     @Test
@@ -105,7 +114,7 @@ class PropertyRemoteDataSourceTest : TestCase() {
     fun given_remote_data_source_when_update_property_then_updated_successfully() {
         val initialProperty = fakeProperties[fakeProperties.indices.random()]
 
-        remoteDataSource.saveProperty(initialProperty).blockingAwait()
+        remoteDataSource.saveProperties(fakeProperties).blockingAwait()
 
         val updatedProperty = initialProperty.copy()
         with(updatedProperty) {
@@ -120,22 +129,24 @@ class PropertyRemoteDataSourceTest : TestCase() {
 
     @Test
     fun given_remote_data_source_when_update_properties_then_updated_successfully() {
-        val initialProperties = Array(2) { fakeProperties[fakeProperties.indices.random()] }
+        var initialProperties = arrayOf(fakeProperties[0], fakeProperties[1])
 
-        remoteDataSource.saveProperties(initialProperties.asList()).blockingAwait()
+        remoteDataSource.saveProperties(fakeProperties).blockingAwait()
 
         var updatedProperties = initialProperties.copyOf().toList()
         updatedProperties.forEachIndexed { index,  updatedProperty ->
             with(updatedProperty) {
                 description = "new description"
-                type = PropertyType.values().first { type -> type != initialProperties[index].type }
+                type = com.openclassrooms.realestatemanager.models.PropertyType.values().first { type -> type != initialProperties[index].type }
             }
         }
         updatedProperties = updatedProperties.sortedBy { it.id }
-
         remoteDataSource.updateProperties(updatedProperties).blockingAwait()
 
-        var finalProperties = remoteDataSource.findAllProperties().blockingGet()
+        val ids = initialProperties.map { photo -> photo.id }
+        var finalProperties = remoteDataSource.findAllProperties().blockingGet().filter {
+                photo -> ids.contains(photo.id)
+        }
         finalProperties = finalProperties.sortedBy { it.id }
 
         assertThat(finalProperties).isEqualTo(updatedProperties.toList())
@@ -147,7 +158,7 @@ class PropertyRemoteDataSourceTest : TestCase() {
 
         assertThat(remoteDataSource.findAllProperties().blockingGet().size).isEqualTo(fakeProperties.size)
         val property = fakeProperties[fakeProperties.indices.random()]
-        remoteDataSource.deleteById(property.id).blockingAwait()
+        remoteDataSource.deletePropertyById(property.id).blockingAwait()
         assertThat(remoteDataSource.findAllProperties().blockingGet().contains(property))
             .isFalse()
     }

@@ -72,8 +72,8 @@ class PropertyLocalDataSource constructor(private val propertyDao: PropertyDao) 
             .subscribeOn(SchedulerProvider.io())
     }
 
-    override fun deleteById(id: String): Completable {
-        return Completable.fromAction { propertyDao.deleteById(id) }
+    override fun deletePropertyById(id: String): Completable {
+        return Completable.fromAction { propertyDao.deletePropertyById(id) }
             .subscribeOn(SchedulerProvider.io())
     }
 }

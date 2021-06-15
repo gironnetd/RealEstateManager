@@ -55,7 +55,7 @@ constructor(val apiService: PropertyApiService): PropertyDataSource {
         TODO("Not yet implemented")
     }
 
-    override fun deleteById(id: String): Completable {
+    override fun deletePropertyById(id: String): Completable {
         TODO("Not yet implemented")
     }
 }
