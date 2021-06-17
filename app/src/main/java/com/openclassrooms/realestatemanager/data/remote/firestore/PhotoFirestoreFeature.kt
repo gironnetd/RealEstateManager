@@ -1,64 +1,64 @@
-package com.openclassrooms.realestatemanager.data.remote.source
+package com.openclassrooms.realestatemanager.data.remote.firestore
 
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.openclassrooms.realestatemanager.data.remote.firestore.PhotoFirestoreFeature
 import com.openclassrooms.realestatemanager.data.source.PhotoDataSource
 import com.openclassrooms.realestatemanager.models.Photo
 import io.reactivex.Completable
 import io.reactivex.Single
 
-class PhotoRemoteDataSource
-constructor(private val photoFirestore: PhotoFirestoreFeature, private val storage: FirebaseStorage?): PhotoDataSource {
-
+class PhotoFirestoreFeature
+constructor(private val firestore: FirebaseFirestore, private val storage: FirebaseStorage?): PhotoDataSource {
     override fun count(): Single<Int> {
-        return photoFirestore.count()
+        TODO("Not yet implemented")
     }
 
     override fun count(propertyId: String): Single<Int> {
-        return photoFirestore.count(propertyId)
+        TODO("Not yet implemented")
     }
 
     override fun savePhoto(photo: Photo): Completable {
-        return photoFirestore.savePhoto(photo)
+        TODO("Not yet implemented")
     }
 
     override fun savePhotos(photos: List<Photo>): Completable {
-       return photoFirestore.savePhotos(photos)
+        TODO("Not yet implemented")
     }
 
     override fun findPhotoById(id: String): Single<Photo> {
-        return photoFirestore.findPhotoById(id)
+        TODO("Not yet implemented")
     }
 
     override fun findPhotosByIds(ids: List<String>): Single<List<Photo>> {
-        return photoFirestore.findPhotosByIds(ids)
+        TODO("Not yet implemented")
     }
 
     override fun findAllPhotos(): Single<List<Photo>> {
-        return photoFirestore.findAllPhotos()
+        TODO("Not yet implemented")
     }
 
     override fun updatePhoto(photo: Photo): Completable {
-        return photoFirestore.updatePhoto(photo)
+        TODO("Not yet implemented")
     }
 
     override fun updatePhotos(photos: List<Photo>): Completable {
-        return photoFirestore.updatePhotos(photos)
+        TODO("Not yet implemented")
     }
 
     override fun deletePhotosByIds(ids: List<String>): Completable {
-        return photoFirestore.deletePhotosByIds(ids)
+        TODO("Not yet implemented")
     }
 
     override fun deletePhotos(photos: List<Photo>): Completable {
-        return photoFirestore.deletePhotos(photos)
+        TODO("Not yet implemented")
     }
 
     override fun deleteAllPhotos(): Completable {
-        return photoFirestore.deleteAllPhotos()
+        TODO("Not yet implemented")
     }
 
     override fun deletePhotoById(id: String): Completable {
-        return photoFirestore.deletePhotoById(id)
+        TODO("Not yet implemented")
     }
+
 }
