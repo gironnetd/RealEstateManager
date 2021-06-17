@@ -1,60 +1,59 @@
-package com.openclassrooms.realestatemanager.data.remote.source
+package com.openclassrooms.realestatemanager.data.remote.firestore
 
-import com.openclassrooms.realestatemanager.data.remote.firestore.PropertyFirestoreFeature
+import com.google.firebase.firestore.FirebaseFirestore
 import com.openclassrooms.realestatemanager.data.source.PropertyDataSource
 import com.openclassrooms.realestatemanager.models.Property
 import io.reactivex.Completable
 import io.reactivex.Single
 
-open class PropertyRemoteDataSource constructor(var propertyFirestore: PropertyFirestoreFeature): PropertyDataSource {
+open class PropertyFirestoreFeature constructor(private var firestore: FirebaseFirestore): PropertyDataSource {
 
     override fun count(): Single<Int> {
-       return propertyFirestore.count()
+        TODO("Not yet implemented")
     }
 
     override fun saveProperty(property: Property): Completable {
-        return propertyFirestore.saveProperty(property)
+        TODO("Not yet implemented")
     }
 
     override fun saveProperties(properties: List<Property>): Completable {
-        return propertyFirestore.saveProperties(properties)
+        TODO("Not yet implemented")
     }
 
     override fun findPropertyById(id: String): Single<Property> {
-       return propertyFirestore.findPropertyById(id)
+        TODO("Not yet implemented")
     }
 
     override fun findPropertiesByIds(ids: List<String>): Single<List<Property>> {
-        return propertyFirestore.findPropertiesByIds(ids)
+        TODO("Not yet implemented")
     }
 
     override fun findAllProperties(): Single<List<Property>> {
-        return propertyFirestore.findAllProperties()
+        TODO("Not yet implemented")
     }
 
     override fun updateProperty(property: Property): Completable {
-        return propertyFirestore.updateProperty(property)
+        TODO("Not yet implemented")
     }
 
     override fun updateProperties(properties: List<Property>): Completable {
-        return propertyFirestore.updateProperties(properties)
+        TODO("Not yet implemented")
     }
 
     override fun deletePropertiesByIds(ids: List<String>): Completable {
-       return propertyFirestore.deletePropertiesByIds(ids)
+        TODO("Not yet implemented")
     }
 
     override fun deleteProperties(properties: List<Property>): Completable {
-        return propertyFirestore.deleteProperties(properties)
+        TODO("Not yet implemented")
     }
 
     override fun deleteAllProperties(): Completable {
-        return propertyFirestore.deleteAllProperties()
+        TODO("Not yet implemented")
     }
 
     override fun deletePropertyById(id: String): Completable {
-        return propertyFirestore.deletePropertyById(id)
+        TODO("Not yet implemented")
     }
-
 
 }

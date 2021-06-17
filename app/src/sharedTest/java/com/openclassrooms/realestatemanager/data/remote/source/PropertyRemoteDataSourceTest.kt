@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.openclassrooms.realestatemanager.data.remote.firestore.PropertyFirestoreFeature
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.models.PropertyType
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
@@ -25,6 +26,7 @@ class PropertyRemoteDataSourceTest : TestCase() {
     private lateinit var fakeProperties: List<Property>
     private lateinit var firestore : FirebaseFirestore
 
+    private lateinit var propertyFirestore: PropertyFirestoreFeature
     private lateinit var remoteDataSource: PropertyRemoteDataSource
 
     @Before
@@ -36,7 +38,8 @@ class PropertyRemoteDataSourceTest : TestCase() {
         firestore.useEmulator("10.0.2.2", 8080)
         firestore.firestoreSettings = settings
 
-        remoteDataSource = PropertyRemoteDataSource(firestore = firestore)
+        propertyFirestore = PropertyFirestoreFeature(firestore)
+        remoteDataSource = PropertyRemoteDataSource(propertyFirestore = propertyFirestore)
 
         jsonUtil = JsonUtil()
         val rawJson = jsonUtil.readJSONFromAsset(PROPERTIES_DATA_FILENAME)

@@ -8,9 +8,12 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.util.Constants
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
+import io.reactivex.Completable
 import junit.framework.TestCase
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,6 +24,7 @@ class PropertyApiServiceTest : TestCase() {
 
     lateinit var jsonUtil: JsonUtil
     private lateinit var fakeProperties: List<Property>
+    private lateinit var firestore : FirebaseFirestore
 
     lateinit var apiService: PropertyApiService
 
@@ -28,7 +32,7 @@ class PropertyApiServiceTest : TestCase() {
     fun initApiService() {
         val settings = FirebaseFirestoreSettings.Builder().setPersistenceEnabled(false).build()
 
-        val firestore : FirebaseFirestore = FirebaseFirestore.getInstance()
+        firestore = FirebaseFirestore.getInstance()
         firestore.useEmulator("10.0.2.2", 8080)
         firestore.firestoreSettings = settings
 
@@ -38,6 +42,27 @@ class PropertyApiServiceTest : TestCase() {
         val rawJson = jsonUtil.readJSONFromAsset(PROPERTIES_DATA_FILENAME)
         fakeProperties = Gson().fromJson(rawJson, object : TypeToken<List<Property>>() {}.type)
         fakeProperties = fakeProperties.sortedBy { it.id }
+    }
+
+    @After
+    fun closeApiService() {
+        Completable.create { emitter ->
+            firestore.collection(Constants.PROPERTIES_COLLECTION).get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    task.result?.let { result ->
+                        result.documents.forEach { document ->
+                            document.reference.delete()
+
+                            if (document.id == result.documents.last().id) {
+                                emitter.onComplete()
+                            }
+                        }
+                    }
+                }
+            }
+        }.blockingAwait()
+
+        firestore.terminate()
     }
 
     @Test
