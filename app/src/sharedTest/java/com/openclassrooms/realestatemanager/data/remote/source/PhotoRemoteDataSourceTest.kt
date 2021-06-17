@@ -43,7 +43,7 @@ class PhotoRemoteDataSourceTest : TestCase() {
         firestore.useEmulator("10.0.2.2", 8080)
         firestore.firestoreSettings = settings
 
-        photoFirestore = PhotoFirestoreFeature(firestore, null)
+        photoFirestore = PhotoFirestoreFeature(firestore)
         remoteDataSource = PhotoRemoteDataSource(photoFirestore = photoFirestore, storage = null)
 
         jsonUtil = JsonUtil()

@@ -40,7 +40,7 @@ class PhotoFirestoreFeatureTest : TestCase() {
         firestore.useEmulator("10.0.2.2", 8080)
         firestore.firestoreSettings = settings
 
-        photoFirestore = PhotoFirestoreFeature(firestore = firestore, storage = null)
+        photoFirestore = PhotoFirestoreFeature(firestore = firestore)
 
         jsonUtil = JsonUtil()
         val rawJson = jsonUtil.readJSONFromAsset(ConstantsTest.PHOTOS_DATA_FILENAME)
