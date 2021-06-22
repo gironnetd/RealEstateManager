@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.data.remote.firestore
+package com.openclassrooms.realestatemanager.data.remote.data
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.WriteBatch
@@ -9,7 +9,7 @@ import com.openclassrooms.realestatemanager.util.Constants
 import io.reactivex.Completable
 import io.reactivex.Single
 
-class PhotoFirestoreFeature
+class PhotoRemoteDataSource
 constructor(private val firestore: FirebaseFirestore): PhotoDataSource {
 
     override fun count(): Single<Int> {

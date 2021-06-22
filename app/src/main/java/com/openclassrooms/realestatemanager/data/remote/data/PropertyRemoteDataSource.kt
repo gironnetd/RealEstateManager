@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.data.remote.firestore
+package com.openclassrooms.realestatemanager.data.remote.data
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -9,7 +9,7 @@ import com.openclassrooms.realestatemanager.util.Constants
 import io.reactivex.Completable
 import io.reactivex.Single
 
-open class PropertyFirestoreFeature constructor(private var firestore: FirebaseFirestore): PropertyDataSource {
+open class PropertyRemoteDataSource constructor(private var firestore: FirebaseFirestore): PropertyDataSource {
 
     override fun count(): Single<Int> {
         return Single.create { emitter ->

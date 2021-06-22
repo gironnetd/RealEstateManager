@@ -18,7 +18,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.ExecutionException
 
-class PhotoStorageFeature constructor(private val storage: FirebaseStorage) {
+class PhotoRemoteStorageSource constructor(private val storage: FirebaseStorage) {
 
     fun count(): Single<Int> { return findAllPhotos().map { photos -> photos.size } }
 

@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.data.remote.firestore
+package com.openclassrooms.realestatemanager.data.remote.data
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
@@ -21,24 +21,22 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-class PropertyFirestoreFeatureTest : TestCase() {
+class PropertyRemoteDataSourceTest : TestCase() {
 
     private lateinit var jsonUtil: JsonUtil
     private lateinit var fakeProperties: List<Property>
     private lateinit var firestore : FirebaseFirestore
 
-    private lateinit var propertyFirestore: PropertyFirestoreFeature
+    private lateinit var propertyRemoteDataSource: PropertyRemoteDataSource
 
     @Before
     fun initApiService() {
-        val settings = FirebaseFirestoreSettings.Builder().setPersistenceEnabled(false)
-            .build()
-
         firestore = FirebaseFirestore.getInstance()
         firestore.useEmulator(FIREBASE_EMULATOR_HOST, FIREBASE_FIRESTORE_PORT)
+        val settings = FirebaseFirestoreSettings.Builder().setPersistenceEnabled(false).build()
         firestore.firestoreSettings = settings
 
-        propertyFirestore = PropertyFirestoreFeature(firestore = firestore)
+        propertyRemoteDataSource = PropertyRemoteDataSource(firestore = firestore)
 
         jsonUtil = JsonUtil()
         val rawJson = jsonUtil.readJSONFromAsset(ConstantsTest.PROPERTIES_DATA_FILENAME)
@@ -48,46 +46,46 @@ class PropertyFirestoreFeatureTest : TestCase() {
 
     @After
     fun closeApiService() {
-        propertyFirestore.deleteAllProperties().blockingAwait()
+        propertyRemoteDataSource.deleteAllProperties().blockingAwait()
         firestore.terminate()
     }
 
     @Test
-    fun given_property_firestore_when_save_photos_then_counted_successfully() {
+    fun given_property_remote_data_source_when_save_photos_then_counted_successfully() {
         // Given photos list and When photos list saved
-        propertyFirestore.saveProperties(fakeProperties).blockingAwait()
+        propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        Truth.assertThat(propertyFirestore.count().blockingGet()).isEqualTo(fakeProperties.size)
+        Truth.assertThat(propertyRemoteDataSource.count().blockingGet()).isEqualTo(fakeProperties.size)
     }
 
     @Test
-    fun given_property_firestore_when_save_a_property_then_saved_successfully() {
+    fun given_property_remote_data_source_when_save_a_property_then_saved_successfully() {
         // Given properties list and When properties list saved
-        propertyFirestore.saveProperty(fakeProperties[0]).blockingAwait()
+        propertyRemoteDataSource.saveProperty(fakeProperties[0]).blockingAwait()
 
         // Then count of properties in database is equal to given properties list size
-        Truth.assertThat(propertyFirestore.findPropertyById(fakeProperties[0].id).blockingGet()).isEqualTo(fakeProperties[0])
+        Truth.assertThat(propertyRemoteDataSource.findPropertyById(fakeProperties[0].id).blockingGet()).isEqualTo(fakeProperties[0])
     }
 
     @Test
-    fun given_property_firestore_when_save_properties_then_saved_successfully() {
+    fun given_property_remote_data_source_when_save_properties_then_saved_successfully() {
         // Given properties list and When properties list saved
-        propertyFirestore.saveProperties(fakeProperties).blockingAwait()
+        propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
 
         // Then count of properties in database is equal to given properties list size
-        Truth.assertThat(propertyFirestore.findAllProperties().blockingGet()).isEqualTo(fakeProperties)
+        Truth.assertThat(propertyRemoteDataSource.findAllProperties().blockingGet()).isEqualTo(fakeProperties)
     }
 
     @Test
-    fun given_property_firestore_when_find_all_properties_then_found_successfully() {
+    fun given_property_remote_data_source_when_find_all_properties_then_found_successfully() {
         // Given properties list
         fakeProperties = fakeProperties.sortedBy { it.id }
 
         // When properties list saved
-        propertyFirestore.saveProperties(fakeProperties).blockingAwait()
+        propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
 
-        var actualProperties = propertyFirestore.findAllProperties().blockingGet()
+        var actualProperties = propertyRemoteDataSource.findAllProperties().blockingGet()
 
         // Then returned properties in database is equal to given properties list
         actualProperties = actualProperties.sortedBy { it.id }
@@ -97,43 +95,43 @@ class PropertyFirestoreFeatureTest : TestCase() {
     }
 
     @Test
-    fun given_property_firestore_when_find_property_by_id_then_found_successfully() {
-        propertyFirestore.saveProperties(fakeProperties).blockingAwait()
+    fun given_property_remote_data_source_when_find_property_by_id_then_found_successfully() {
+        propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
         val property = fakeProperties[fakeProperties.indices.random()]
-        val expectedProperty: Property = propertyFirestore.findPropertyById(property.id).blockingGet()
+        val expectedProperty: Property = propertyRemoteDataSource.findPropertyById(property.id).blockingGet()
         Truth.assertThat(expectedProperty).isEqualTo(property)
     }
 
     @Test
-    fun given_property_firestore_when_find_properties_by_ids_then_found_successfully() {
-        propertyFirestore.saveProperties(fakeProperties).blockingAwait()
+    fun given_property_remote_data_source_when_find_properties_by_ids_then_found_successfully() {
+        propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
         val propertyIds = fakeProperties.subList(0, 2).map { property -> property.id }
-        val expectedProperties: List<Property> = propertyFirestore.findPropertiesByIds(propertyIds).blockingGet()
+        val expectedProperties: List<Property> = propertyRemoteDataSource.findPropertiesByIds(propertyIds).blockingGet()
         Truth.assertThat(expectedProperties).isEqualTo(fakeProperties.subList(0, 2))
     }
 
     @Test
-    fun given_property_firestore_when_update_property_then_updated_successfully() {
+    fun given_property_remote_data_source_when_update_property_then_updated_successfully() {
         val initialProperty = fakeProperties[fakeProperties.indices.random()]
 
-        propertyFirestore.saveProperties(fakeProperties).blockingAwait()
+        propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
 
         val updatedProperty = initialProperty.copy()
         with(updatedProperty) {
             description = "new description"
             type = PropertyType.values().first { type -> type != initialProperty.type }
         }
-        propertyFirestore.updateProperty(updatedProperty).blockingAwait()
+        propertyRemoteDataSource.updateProperty(updatedProperty).blockingAwait()
 
-        val finalProperty = propertyFirestore.findPropertyById(initialProperty.id).blockingGet()
+        val finalProperty = propertyRemoteDataSource.findPropertyById(initialProperty.id).blockingGet()
         Truth.assertThat(finalProperty).isEqualTo(updatedProperty)
     }
 
     @Test
-    fun given_property_firestore_when_update_properties_then_updated_successfully() {
+    fun given_property_remote_data_source_when_update_properties_then_updated_successfully() {
         var initialProperties = arrayOf(fakeProperties[0], fakeProperties[1])
 
-        propertyFirestore.saveProperties(fakeProperties).blockingAwait()
+        propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
 
         var updatedProperties = initialProperties.copyOf().toList()
         updatedProperties.forEachIndexed { index,  updatedProperty ->
@@ -143,10 +141,10 @@ class PropertyFirestoreFeatureTest : TestCase() {
             }
         }
         updatedProperties = updatedProperties.sortedBy { it.id }
-        propertyFirestore.updateProperties(updatedProperties).blockingAwait()
+        propertyRemoteDataSource.updateProperties(updatedProperties).blockingAwait()
 
         val ids = initialProperties.map { photo -> photo.id }
-        var finalProperties = propertyFirestore.findAllProperties().blockingGet().filter {
+        var finalProperties = propertyRemoteDataSource.findAllProperties().blockingGet().filter {
                 photo -> ids.contains(photo.id)
         }
         finalProperties = finalProperties.sortedBy { it.id }
@@ -155,45 +153,45 @@ class PropertyFirestoreFeatureTest : TestCase() {
     }
 
     @Test
-    fun given_property_firestore_when_delete_property_by_id_then_deleted_successfully() {
-        propertyFirestore.saveProperties(fakeProperties).blockingAwait()
+    fun given_property_remote_data_source_when_delete_property_by_id_then_deleted_successfully() {
+        propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
 
-        Truth.assertThat(propertyFirestore.findAllProperties().blockingGet().size).isEqualTo(fakeProperties.size)
+        Truth.assertThat(propertyRemoteDataSource.findAllProperties().blockingGet().size).isEqualTo(fakeProperties.size)
         val property = fakeProperties[fakeProperties.indices.random()]
-        propertyFirestore.deletePropertyById(property.id).blockingAwait()
-        Truth.assertThat(propertyFirestore.findAllProperties().blockingGet().contains(property))
+        propertyRemoteDataSource.deletePropertyById(property.id).blockingAwait()
+        Truth.assertThat(propertyRemoteDataSource.findAllProperties().blockingGet().contains(property))
             .isFalse()
     }
 
     @Test
-    fun given_property_firestore_when_delete_properties_by_ids_then_deleted_successfully() {
-        propertyFirestore.saveProperties(fakeProperties).blockingAwait()
+    fun given_property_remote_data_source_when_delete_properties_by_ids_then_deleted_successfully() {
+        propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
         val propertyIds = fakeProperties.subList(0, 2).map { property -> property.id }
-        propertyFirestore.deletePropertiesByIds(propertyIds).blockingAwait()
+        propertyRemoteDataSource.deletePropertiesByIds(propertyIds).blockingAwait()
 
-        val findAllProperties = propertyFirestore.findAllProperties().blockingGet()
+        val findAllProperties = propertyRemoteDataSource.findAllProperties().blockingGet()
         Truth.assertThat(findAllProperties.size).isEqualTo((fakeProperties.size - 2))
         Truth.assertThat(findAllProperties.containsAll(fakeProperties.subList(0, 2))).isFalse()
     }
 
     @Test
-    fun given_property_firestore_when_delete_properties_then_deleted_successfully() {
-        propertyFirestore.saveProperties(fakeProperties).blockingAwait()
-        Truth.assertThat(propertyFirestore.findAllProperties().blockingGet().size).isEqualTo(fakeProperties.size)
+    fun given_property_remote_data_source_when_delete_properties_then_deleted_successfully() {
+        propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
+        Truth.assertThat(propertyRemoteDataSource.findAllProperties().blockingGet().size).isEqualTo(fakeProperties.size)
 
-        propertyFirestore.deleteProperties(fakeProperties.subList(0, 2)).blockingAwait()
+        propertyRemoteDataSource.deleteProperties(fakeProperties.subList(0, 2)).blockingAwait()
 
-        val findAllProperties = propertyFirestore.findAllProperties().blockingGet()
+        val findAllProperties = propertyRemoteDataSource.findAllProperties().blockingGet()
         Truth.assertThat(findAllProperties.size).isEqualTo((fakeProperties.size - 2))
     }
 
     @Test
-    fun given_property_firestore_when_delete_all_properties_then_deleted_successfully() {
-        propertyFirestore.saveProperties(fakeProperties).blockingAwait()
+    fun given_property_remote_data_source_when_delete_all_properties_then_deleted_successfully() {
+        propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
         Truth.assertThat(
-            propertyFirestore.findAllProperties().blockingGet().size
+            propertyRemoteDataSource.findAllProperties().blockingGet().size
         ).isEqualTo(fakeProperties.size)
-        propertyFirestore.deleteAllProperties().blockingAwait()
-        Truth.assertThat(propertyFirestore.findAllProperties().blockingGet()).isEmpty()
+        propertyRemoteDataSource.deleteAllProperties().blockingAwait()
+        Truth.assertThat(propertyRemoteDataSource.findAllProperties().blockingGet()).isEmpty()
     }
 }
