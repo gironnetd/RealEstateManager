@@ -10,6 +10,8 @@ import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.data.remote.firestore.PropertyFirestoreFeature
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.models.PropertyType
+import com.openclassrooms.realestatemanager.util.ConstantsTest.FIREBASE_EMULATOR_HOST
+import com.openclassrooms.realestatemanager.util.ConstantsTest.FIREBASE_FIRESTORE_PORT
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import junit.framework.TestCase
@@ -35,7 +37,7 @@ class PropertyRemoteDataSourceTest : TestCase() {
             .build()
 
         firestore = FirebaseFirestore.getInstance()
-        firestore.useEmulator("10.0.2.2", 8080)
+        firestore.useEmulator(FIREBASE_EMULATOR_HOST, FIREBASE_FIRESTORE_PORT)
         firestore.firestoreSettings = settings
 
         propertyFirestore = PropertyFirestoreFeature(firestore)

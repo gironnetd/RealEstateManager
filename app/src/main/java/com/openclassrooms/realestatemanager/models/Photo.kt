@@ -3,36 +3,38 @@ package com.openclassrooms.realestatemanager.models
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.graphics.Bitmap
 import android.os.Parcelable
 import android.provider.BaseColumns
 import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import com.google.firebase.firestore.Exclude
 import com.google.gson.annotations.SerializedName
 import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_ID
 import com.openclassrooms.realestatemanager.models.Photo.Companion.TABLE_NAME
-import com.openclassrooms.realestatemanager.util.Constants
-import com.openclassrooms.realestatemanager.util.Constants.GS_REFERENCE
+import com.openclassrooms.realestatemanager.util.Constants.GS_REFERENCE_PREFIX
 import com.openclassrooms.realestatemanager.util.Constants.MAIN_FILE_NAME
 import com.openclassrooms.realestatemanager.util.Constants.PHOTOS_COLLECTION
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTIES_COLLECTION
+import com.openclassrooms.realestatemanager.util.Constants.SLASH
 import com.openclassrooms.realestatemanager.util.Constants.THUMBNAIL_FILE_NAME
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import java.io.File
 
 fun Photo.storageLocalDatabase(context: Context, isThumbnail: Boolean = false): String {
     val destination = StringBuilder()
     destination.append(context.cacheDir.absolutePath)
-        .append(Constants.SLASH)
+        .append(SLASH)
         .append(PROPERTIES_COLLECTION)
-        .append(Constants.SLASH)
+        .append(SLASH)
         .append(propertyId)
-        .append(Constants.SLASH)
+        .append(SLASH)
         .append(PHOTOS_COLLECTION)
-        .append(Constants.SLASH)
+        .append(SLASH)
         .append(id)
-        .append(Constants.SLASH)
+        .append(SLASH)
 
     val root = File(destination.toString())
 
@@ -44,17 +46,19 @@ fun Photo.storageLocalDatabase(context: Context, isThumbnail: Boolean = false): 
     return destination.toString()
 }
 
-fun Photo.storageUrl(isThumbnail: Boolean = false): String {
+fun Photo.storageUrl(storageBucket: String, isThumbnail: Boolean = false): String {
     val url = StringBuilder()
-    url.append(GS_REFERENCE)
+    url.append(GS_REFERENCE_PREFIX)
+        .append(storageBucket)
+        .append(SLASH)
         .append(PROPERTIES_COLLECTION)
-        .append(Constants.SLASH)
+        .append(SLASH)
         .append(propertyId)
-        .append(Constants.SLASH)
+        .append(SLASH)
         .append(PHOTOS_COLLECTION)
-        .append(Constants.SLASH)
+        .append(SLASH)
         .append(id)
-        .append(Constants.SLASH)
+        .append(SLASH)
 
     if (isThumbnail) url.append(THUMBNAIL_FILE_NAME) else url.append(MAIN_FILE_NAME)
     return url.toString()
@@ -76,7 +80,11 @@ data class Photo (
 
     @SerializedName(value = "type")
     @ColumnInfo(name = "type")
-    var type: PhotoType = PhotoType.NONE
+    var type: PhotoType = PhotoType.NONE,
+
+    @Ignore
+    @get:Exclude
+    var bitmap: Bitmap? = null
 
 ) : Parcelable {
     constructor(cursor: Cursor/*, isMainPhoto: Boolean = false*/): this() {

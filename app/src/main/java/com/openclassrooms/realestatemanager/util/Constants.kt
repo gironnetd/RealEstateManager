@@ -1,7 +1,7 @@
 package com.openclassrooms.realestatemanager.util
 
 object Constants {
-    const val GS_REFERENCE = "gs://realestatemanager-3fbde.appspot.com/"
+    const val GS_REFERENCE_PREFIX = "gs://"
     const val PROPERTIES_COLLECTION = "properties"
     const val PHOTOS_COLLECTION = "pictures"
 

@@ -29,6 +29,7 @@ import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.detail.PhotoDetailAdapter
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment
+import com.openclassrooms.realestatemanager.util.BitmapUtil.sameAs
 import com.openclassrooms.realestatemanager.util.Constants.FROM
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTY_ID
 import com.openclassrooms.realestatemanager.util.ConstantsTest

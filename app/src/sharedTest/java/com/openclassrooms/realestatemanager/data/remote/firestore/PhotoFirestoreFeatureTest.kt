@@ -12,6 +12,8 @@ import com.openclassrooms.realestatemanager.models.PhotoType
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.Constants
 import com.openclassrooms.realestatemanager.util.ConstantsTest
+import com.openclassrooms.realestatemanager.util.ConstantsTest.FIREBASE_EMULATOR_HOST
+import com.openclassrooms.realestatemanager.util.ConstantsTest.FIREBASE_FIRESTORE_PORT
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import io.reactivex.Completable
 import junit.framework.TestCase
@@ -37,7 +39,7 @@ class PhotoFirestoreFeatureTest : TestCase() {
         val settings = FirebaseFirestoreSettings.Builder().setPersistenceEnabled(false).build()
 
         firestore = FirebaseFirestore.getInstance()
-        firestore.useEmulator("10.0.2.2", 8080)
+        firestore.useEmulator(FIREBASE_EMULATOR_HOST, FIREBASE_FIRESTORE_PORT)
         firestore.firestoreSettings = settings
 
         photoFirestore = PhotoFirestoreFeature(firestore = firestore)
@@ -95,7 +97,6 @@ class PhotoFirestoreFeatureTest : TestCase() {
 
     @Test
     fun given_photo_firestore_when_save_photos_then_counted_successfully() {
-
         // Given photos list and When photos list saved
         photoFirestore.savePhotos(fakePhotos).blockingAwait()
 

@@ -85,7 +85,8 @@ class ListAdapter(
                     }
                 }else {
                     mainPhoto.setImageURI(null)
-                    val gsReference = Firebase.storage.getReferenceFromUrl(photo.storageUrl(isThumbnail = true))
+                    val gsReference = Firebase.storage.getReferenceFromUrl(photo.storageUrl(
+                        Firebase.storage.reference.bucket, isThumbnail = true))
                     requestManager.setImage(gsReference, mainPhoto, false)
                 }
             }

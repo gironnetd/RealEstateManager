@@ -42,7 +42,7 @@ constructor(val database: AppDatabase, val context: Context) : PropertyDataSourc
                 property.photos.forEach { photo ->
                     val localFile = File(photo.storageLocalDatabase(context, true))
                     if(!localFile.exists()) {
-                        val gsReference = Firebase.storage.getReferenceFromUrl(photo.storageUrl(isThumbnail = true))
+                        val gsReference = Firebase.storage.getReferenceFromUrl(photo.storageUrl(Firebase.storage.reference.bucket, isThumbnail = true))
                         gsReference.getFile(localFile)
                     }
                 }

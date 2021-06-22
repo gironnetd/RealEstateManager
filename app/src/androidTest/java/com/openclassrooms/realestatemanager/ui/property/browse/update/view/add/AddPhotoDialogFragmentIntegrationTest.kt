@@ -39,6 +39,7 @@ import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.detail.PhotoDetailAdapter
 import com.openclassrooms.realestatemanager.ui.property.browse.update.PhotoUpdateAdapter
 import com.openclassrooms.realestatemanager.ui.property.browse.update.UpdateFragment
+import com.openclassrooms.realestatemanager.util.BitmapUtil.sameAs
 import com.openclassrooms.realestatemanager.util.Constants
 import com.openclassrooms.realestatemanager.util.ConstantsTest
 import com.openclassrooms.realestatemanager.util.OrientationChangeAction.Companion.orientationLandscape
