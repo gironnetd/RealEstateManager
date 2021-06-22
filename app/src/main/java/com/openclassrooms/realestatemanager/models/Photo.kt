@@ -1,7 +1,6 @@
 package com.openclassrooms.realestatemanager.models
 
 import android.content.ContentValues
-import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.os.Parcelable
@@ -23,9 +22,9 @@ import com.openclassrooms.realestatemanager.util.Constants.THUMBNAIL_FILE_NAME
 import kotlinx.parcelize.Parcelize
 import java.io.File
 
-fun Photo.storageLocalDatabase(context: Context, isThumbnail: Boolean = false): String {
+fun Photo.storageLocalDatabase(cacheDir: File, isThumbnail: Boolean = false): String {
     val destination = StringBuilder()
-    destination.append(context.cacheDir.absolutePath)
+    destination.append(cacheDir.absolutePath)
         .append(SLASH)
         .append(PROPERTIES_COLLECTION)
         .append(SLASH)

@@ -77,7 +77,7 @@ class ListAdapter(
 
         fun bind(item: Property) = with(itemView) {
             item.photos.singleOrNull { photo -> photo.mainPhoto }?.let { photo ->
-                val localFile = File(photo.storageLocalDatabase(context, true))
+                val localFile = File(photo.storageLocalDatabase(context.cacheDir, true))
                 if(localFile.exists()) {
                     with(mainPhoto) {
                         setImageURI(null)

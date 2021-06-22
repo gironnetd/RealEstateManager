@@ -70,7 +70,7 @@ class PhotoDetailDialogFragmentIntegrationTest : BaseFragmentTests() {
             PROPERTY_ID to fakeProperties[itemPosition].id)
 
         fakeProperties[itemPosition].photos.forEach { photo ->
-            val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext,true))
+            val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext.cacheDir,true))
 
             if(!photoFile.exists()) {
                 val defaultImage = testApplication.resources.getDrawable(R.drawable.default_image, null)
@@ -86,7 +86,7 @@ class PhotoDetailDialogFragmentIntegrationTest : BaseFragmentTests() {
     @After
     public override fun tearDown() {
         fakeProperties[itemPosition].photos.forEach { photo ->
-            val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext,true))
+            val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext.cacheDir,true))
             if(photoFile.exists()) { photoFile.delete() }
         }
         super.tearDown()

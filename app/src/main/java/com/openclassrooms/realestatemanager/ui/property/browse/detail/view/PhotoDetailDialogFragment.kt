@@ -66,7 +66,7 @@ class PhotoDetailDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_de
     private fun displayDetail() {
         photo?.let { photo ->
             if(photo.id.isNotEmpty() && photo.propertyId.isNotEmpty() ) {
-                val localFile = File(photo.storageLocalDatabase(requireContext(), true))
+                val localFile = File(photo.storageLocalDatabase(requireContext().cacheDir, true))
                 if(localFile.exists()) {  binding.photoImageView.setImageURI(localFile.toUri()) }
             }
 

@@ -304,7 +304,7 @@ class MapFragment @Inject constructor(
                 val photo = property.photos.single { photo -> photo.mainPhoto }
                 photo.propertyId = property.id
 
-                val mainPhotoFile = File(photo.storageLocalDatabase(requireContext(), true))
+                val mainPhotoFile = File(photo.storageLocalDatabase(requireContext().cacheDir, true))
 
                 mainPhoto.setImageURI(mainPhotoFile.toUri())
 //                val gsReference = Firebase.storage.getReferenceFromUrl(photo.storageUrl(isThumbnail = true))

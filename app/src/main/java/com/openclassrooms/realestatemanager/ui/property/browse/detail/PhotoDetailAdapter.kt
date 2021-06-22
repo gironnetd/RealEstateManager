@@ -73,7 +73,7 @@ class PhotoDetailAdapter(
         fun bind(item: Photo) = with(itemView) {
             item.let { photo ->
 
-                val localFile = File(photo.storageLocalDatabase(context, true))
+                val localFile = File(photo.storageLocalDatabase(context.cacheDir, true))
                 if(localFile.exists()) {
                     with(this@PhotoViewHolder.photo) {
                         setImageURI(null)

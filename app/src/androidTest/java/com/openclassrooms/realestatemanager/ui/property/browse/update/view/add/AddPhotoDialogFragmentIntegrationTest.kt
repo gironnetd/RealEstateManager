@@ -367,7 +367,7 @@ class AddPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
         onView(withText(R.string.add_photo)).perform(click())
 
         val localFile = File(updateFragment.addPhotoAlertDialog.tmpPhoto
-            .storageLocalDatabase(testApplication.applicationContext, true))
+            .storageLocalDatabase(testApplication.applicationContext.cacheDir, true))
 
         assertThat(localFile).isNotNull()
         assertThat(localFile.exists()).isTrue()

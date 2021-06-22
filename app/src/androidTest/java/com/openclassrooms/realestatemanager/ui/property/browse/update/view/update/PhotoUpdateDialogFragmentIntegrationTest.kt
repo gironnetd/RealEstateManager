@@ -83,7 +83,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         bundle = bundleOf(Constants.FROM to "", Constants.PROPERTY_ID to fakeProperties[itemPosition].id)
 
         fakeProperties[itemPosition].photos.forEach { photo ->
-            val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext,true))
+            val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext.cacheDir,true))
 
             if(!photoFile.exists()) {
                 val defaultImage = testApplication.resources.getDrawable(R.drawable.default_image, null)
@@ -99,7 +99,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
     @After
     public override fun tearDown() {
         fakeProperties[itemPosition].photos.forEach { photo ->
-            val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext,true))
+            val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext.cacheDir,true))
             if(photoFile.exists()) { photoFile.delete() }
         }
         super.tearDown()
@@ -554,7 +554,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         onView(withText(R.string.update_photo_detail)).perform(click())
 
         val localFile = File(updateFragment.updatePhotoAlertDialog.photo!!
-            .storageLocalDatabase(testApplication.applicationContext, true))
+            .storageLocalDatabase(testApplication.applicationContext.cacheDir, true))
 
         assertThat(localFile).isNotNull()
         assertThat(localFile.exists()).isTrue()
