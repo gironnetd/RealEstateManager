@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.data.local.source
+package com.openclassrooms.realestatemanager.data.cache.data
 
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -7,7 +7,7 @@ import androidx.test.filters.MediumTest
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.openclassrooms.realestatemanager.data.local.AppDatabase
+import com.openclassrooms.realestatemanager.data.cache.AppDatabase
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.PhotoType
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PHOTOS_DATA_FILENAME
@@ -21,13 +21,13 @@ import java.util.*
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-class PhotoLocalDataSourceTest : TestCase() {
+class PhotoCacheDataSourceTest : TestCase() {
 
     private lateinit var database: AppDatabase
     private lateinit var jsonUtil: JsonUtil
     private lateinit var fakePhotos: List<Photo>
 
-    private lateinit var localDataSource: PhotoLocalDataSource
+    private lateinit var cacheDataSource: PhotoCacheDataSource
 
     @Before
     fun initDatabase() {
@@ -39,7 +39,7 @@ class PhotoLocalDataSourceTest : TestCase() {
         val rawJson = jsonUtil.readJSONFromAsset(PHOTOS_DATA_FILENAME)
         fakePhotos = Gson().fromJson(rawJson, object : TypeToken<List<Photo>>() {}.type)
 
-        localDataSource = PhotoLocalDataSource(database.photoDao())
+        cacheDataSource = PhotoCacheDataSource(database.photoDao())
     }
 
     @After
@@ -48,10 +48,10 @@ class PhotoLocalDataSourceTest : TestCase() {
     @Test
     fun given_local_data_source_when_save_photos_then_counted_successfully() {
         // Given photos list and When photos list saved
-        localDataSource.savePhotos(fakePhotos).blockingAwait()
+        cacheDataSource.savePhotos(fakePhotos).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        assertThat(localDataSource.count().blockingGet()).isEqualTo(fakePhotos.size)
+        assertThat(cacheDataSource.count().blockingGet()).isEqualTo(fakePhotos.size)
     }
 
     @Test
@@ -67,32 +67,32 @@ class PhotoLocalDataSourceTest : TestCase() {
             photo.propertyId = secondPropertyId
         }
 
-        localDataSource.savePhotos(fakePhotos).blockingAwait()
+        cacheDataSource.savePhotos(fakePhotos).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        assertThat(localDataSource.count(firstPropertyId).blockingGet())
+        assertThat(cacheDataSource.count(firstPropertyId).blockingGet())
             .isEqualTo(fakePhotos.subList(0, fakePhotos.indices.count() / 2).size)
 
-        assertThat(localDataSource.count(secondPropertyId).blockingGet())
+        assertThat(cacheDataSource.count(secondPropertyId).blockingGet())
             .isEqualTo(fakePhotos.subList(fakePhotos.indices.count() / 2, fakePhotos.indices.count()).size)
     }
 
     @Test
     fun given_local_data_source_when_save_a_photo_then_saved_successfully() {
         // Given photos list and When photos list saved
-        localDataSource.savePhoto(fakePhotos[0]).blockingAwait()
+        cacheDataSource.savePhoto(fakePhotos[0]).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        assertThat(localDataSource.findPhotoById(fakePhotos[0].id).blockingGet()).isEqualTo(fakePhotos[0])
+        assertThat(cacheDataSource.findPhotoById(fakePhotos[0].id).blockingGet()).isEqualTo(fakePhotos[0])
     }
 
     @Test
     fun given_local_data_source_when_save_photos_then_saved_successfully() {
         // Given photos list and When photos list saved
-        localDataSource.savePhotos(fakePhotos).blockingAwait()
+        cacheDataSource.savePhotos(fakePhotos).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        assertThat(localDataSource.findAllPhotos().blockingGet()).isEqualTo(fakePhotos)
+        assertThat(cacheDataSource.findAllPhotos().blockingGet()).isEqualTo(fakePhotos)
     }
 
     @Test
@@ -102,9 +102,9 @@ class PhotoLocalDataSourceTest : TestCase() {
         fakePhotos = fakePhotos.sortedBy { it.id }
 
         // When photos list saved
-        localDataSource.savePhotos(fakePhotos).blockingAwait()
+        cacheDataSource.savePhotos(fakePhotos).blockingAwait()
 
-        var actualPhotos = localDataSource.findAllPhotos().blockingGet()
+        var actualPhotos = cacheDataSource.findAllPhotos().blockingGet()
 
         // Then returned photos in database is equal to given photos list
         actualPhotos = actualPhotos.sortedBy { it.id }
@@ -115,17 +115,17 @@ class PhotoLocalDataSourceTest : TestCase() {
 
     @Test
     fun given_local_data_source_when_find_photo_by_id_then_found_successfully() {
-        localDataSource.savePhotos(fakePhotos).blockingAwait()
+        cacheDataSource.savePhotos(fakePhotos).blockingAwait()
         val photo = fakePhotos[fakePhotos.indices.random()]
-        val expectedPhoto: Photo = localDataSource.findPhotoById(photo.id).blockingGet()
+        val expectedPhoto: Photo = cacheDataSource.findPhotoById(photo.id).blockingGet()
         assertThat(expectedPhoto).isEqualTo(photo)
     }
 
     @Test
     fun given_local_data_source_when_find_photos_by_ids_then_found_successfully() {
-        localDataSource.savePhotos(fakePhotos).blockingAwait()
+        cacheDataSource.savePhotos(fakePhotos).blockingAwait()
         val photoIds = fakePhotos.subList(0, 2).map { photo -> photo.id }
-        val expectedPhotos: List<Photo> = localDataSource.findPhotosByIds(photoIds).blockingGet()
+        val expectedPhotos: List<Photo> = cacheDataSource.findPhotosByIds(photoIds).blockingGet()
         assertThat(expectedPhotos).isEqualTo(fakePhotos.subList(0, 2))
     }
 
@@ -133,16 +133,16 @@ class PhotoLocalDataSourceTest : TestCase() {
     fun given_local_data_source_when_update_photo_then_updated_successfully() {
         val initialPhoto = fakePhotos[fakePhotos.indices.random()]
 
-        localDataSource.savePhotos(fakePhotos).blockingAwait()
+        cacheDataSource.savePhotos(fakePhotos).blockingAwait()
 
         val updatedPhoto = initialPhoto.copy()
         with(updatedPhoto) {
             description = "new description"
             type = PhotoType.values().first { type -> type != initialPhoto.type }
         }
-        localDataSource.updatePhoto(updatedPhoto).blockingAwait()
+        cacheDataSource.updatePhoto(updatedPhoto).blockingAwait()
 
-        val finalPhoto = localDataSource.findPhotoById(initialPhoto.id).blockingGet()
+        val finalPhoto = cacheDataSource.findPhotoById(initialPhoto.id).blockingGet()
         assertThat(finalPhoto).isEqualTo(updatedPhoto)
     }
 
@@ -150,7 +150,7 @@ class PhotoLocalDataSourceTest : TestCase() {
     fun given_local_data_source_when_update_photos_then_updated_successfully() {
         var initialPhotos = arrayOf(fakePhotos[0], fakePhotos[1])
 
-        localDataSource.savePhotos(fakePhotos).blockingAwait()
+        cacheDataSource.savePhotos(fakePhotos).blockingAwait()
 
         var updatedPhotos = initialPhotos.copyOf().toList()
         updatedPhotos.forEachIndexed { index,  updatedPhoto ->
@@ -160,10 +160,10 @@ class PhotoLocalDataSourceTest : TestCase() {
             }
         }
         updatedPhotos = updatedPhotos.sortedBy { it.id }
-        localDataSource.updatePhotos(updatedPhotos).blockingAwait()
+        cacheDataSource.updatePhotos(updatedPhotos).blockingAwait()
 
         val ids = initialPhotos.map { photo -> photo.id }
-        var finalPhotos = localDataSource.findAllPhotos().blockingGet().filter {
+        var finalPhotos = cacheDataSource.findAllPhotos().blockingGet().filter {
                 photo -> ids.contains(photo.id)
         }
         finalPhotos = finalPhotos.sortedBy { it.id }
@@ -173,42 +173,42 @@ class PhotoLocalDataSourceTest : TestCase() {
 
     @Test
     fun given_local_data_source_when_delete_photo_by_id_then_deleted_successfully() {
-        localDataSource.savePhotos(fakePhotos).blockingAwait()
+        cacheDataSource.savePhotos(fakePhotos).blockingAwait()
         val photo = fakePhotos[fakePhotos.indices.random()]
-        localDataSource.deletePhotoById(photo.id).blockingAwait()
-        assertThat(localDataSource.findAllPhotos().blockingGet().contains(photo))
+        cacheDataSource.deletePhotoById(photo.id).blockingAwait()
+        assertThat(cacheDataSource.findAllPhotos().blockingGet().contains(photo))
             .isFalse()
     }
 
     @Test
     fun given_local_data_source_when_delete_photos_by_ids_then_deleted_successfully() {
-        localDataSource.savePhotos(fakePhotos).blockingAwait()
+        cacheDataSource.savePhotos(fakePhotos).blockingAwait()
         val photoIds = fakePhotos.subList(0, 2).map { photo -> photo.id }
-        localDataSource.deletePhotosByIds(photoIds).blockingAwait()
+        cacheDataSource.deletePhotosByIds(photoIds).blockingAwait()
 
-        val findAllPhotos = localDataSource.findAllPhotos().blockingGet()
+        val findAllPhotos = cacheDataSource.findAllPhotos().blockingGet()
         assertThat(findAllPhotos.size).isEqualTo((fakePhotos.size - 2))
         assertThat(findAllPhotos.containsAll(fakePhotos.subList(0, 2))).isFalse()
     }
 
     @Test
     fun given_local_data_source_when_delete_photos_then_deleted_successfully() {
-        localDataSource.savePhotos(fakePhotos).blockingAwait()
-        assertThat(localDataSource.findAllPhotos().blockingGet().size).isEqualTo(fakePhotos.size)
+        cacheDataSource.savePhotos(fakePhotos).blockingAwait()
+        assertThat(cacheDataSource.findAllPhotos().blockingGet().size).isEqualTo(fakePhotos.size)
 
-        localDataSource.deletePhotos(fakePhotos.subList(0, 2)).blockingAwait()
+        cacheDataSource.deletePhotos(fakePhotos.subList(0, 2)).blockingAwait()
 
-        val findAllPhotos = localDataSource.findAllPhotos().blockingGet()
+        val findAllPhotos = cacheDataSource.findAllPhotos().blockingGet()
         assertThat(findAllPhotos.size).isEqualTo((fakePhotos.size - 2))
     }
 
     @Test
     fun given_local_data_source_when_delete_all_photos_then_deleted_successfully() {
-        localDataSource.savePhotos(fakePhotos).blockingAwait()
+        cacheDataSource.savePhotos(fakePhotos).blockingAwait()
         assertThat(
-            localDataSource.findAllPhotos().blockingGet().size
+            cacheDataSource.findAllPhotos().blockingGet().size
         ).isEqualTo(fakePhotos.size)
-        localDataSource.deleteAllPhotos().blockingAwait()
-        assertThat(localDataSource.findAllPhotos().blockingGet()).isEmpty()
+        cacheDataSource.deleteAllPhotos().blockingAwait()
+        assertThat(cacheDataSource.findAllPhotos().blockingGet()).isEmpty()
     }
 }

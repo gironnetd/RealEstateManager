@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.data.local.dao
+package com.openclassrooms.realestatemanager.data.cache.dao
 
 import android.database.Cursor
 import androidx.room.*

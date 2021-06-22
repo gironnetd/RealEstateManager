@@ -1,10 +1,10 @@
-package com.openclassrooms.realestatemanager.data.local
+package com.openclassrooms.realestatemanager.data.cache
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.openclassrooms.realestatemanager.data.local.dao.PhotoDao
-import com.openclassrooms.realestatemanager.data.local.dao.PropertyDao
+import com.openclassrooms.realestatemanager.data.cache.dao.PhotoDao
+import com.openclassrooms.realestatemanager.data.cache.dao.PropertyDao
 import com.openclassrooms.realestatemanager.models.*
 
 @Database(entities = [Property::class, Photo::class], version = 1, exportSchema = false)

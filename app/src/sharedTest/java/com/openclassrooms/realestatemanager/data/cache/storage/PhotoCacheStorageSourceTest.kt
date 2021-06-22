@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.data.local.storage
+package com.openclassrooms.realestatemanager.data.cache.storage
 
 import android.content.res.AssetManager
 import android.content.res.Resources
@@ -24,14 +24,14 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-class PhotoLocalStorageSourceTest : TestCase() {
+class PhotoCacheStorageSourceTest : TestCase() {
 
     private lateinit var jsonUtil: JsonUtil
     private lateinit var fakePhotos: List<Photo>
     private lateinit var resources: Resources
     private lateinit var assets: AssetManager
 
-    private lateinit var photoLocalStorage: PhotoLocalStorageSource
+    private lateinit var photoCacheStorage: PhotoCacheStorageSource
 
     @Before
     public override fun setUp() {
@@ -39,7 +39,7 @@ class PhotoLocalStorageSourceTest : TestCase() {
         assets = InstrumentationRegistry.getInstrumentation().targetContext.assets
         resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
-        photoLocalStorage = PhotoLocalStorageSource(cacheDir =
+        photoCacheStorage = PhotoCacheStorageSource(cacheDir =
         InstrumentationRegistry.getInstrumentation().targetContext.cacheDir)
 
         jsonUtil = JsonUtil()
@@ -61,8 +61,8 @@ class PhotoLocalStorageSourceTest : TestCase() {
 
     @After
     public override fun tearDown() {
-        if(photoLocalStorage.count().blockingGet() != 0) {
-            photoLocalStorage.deleteAllPhotos().blockingAwait()
+        if(photoCacheStorage.count().blockingGet() != 0) {
+            photoCacheStorage.deleteAllPhotos().blockingAwait()
         }
         super.tearDown()
     }
@@ -70,41 +70,41 @@ class PhotoLocalStorageSourceTest : TestCase() {
     @Test
     fun given_photo_local_storage_source_when_save_photos_then_counted_successfully() {
         // Given photos list and When photos list saved
-        photoLocalStorage.savePhotos(fakePhotos).blockingAwait()
+        photoCacheStorage.savePhotos(fakePhotos).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        assertThat(photoLocalStorage.count().blockingGet()).isEqualTo(fakePhotos.size)
+        assertThat(photoCacheStorage.count().blockingGet()).isEqualTo(fakePhotos.size)
     }
 
     @Test
     fun given_photo_local_storage_source_when_save_photos_then_counted_by_propertyId_successfully() {
         // Given photos list and When photos list saved
-        photoLocalStorage.savePhotos(fakePhotos).blockingAwait()
+        photoCacheStorage.savePhotos(fakePhotos).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        assertThat(photoLocalStorage.count(firstPropertyId).blockingGet())
+        assertThat(photoCacheStorage.count(firstPropertyId).blockingGet())
             .isEqualTo(fakePhotos.subList(0, fakePhotos.indices.count() / 2).size)
 
-        assertThat(photoLocalStorage.count(secondPropertyId).blockingGet())
+        assertThat(photoCacheStorage.count(secondPropertyId).blockingGet())
             .isEqualTo(fakePhotos.subList(fakePhotos.indices.count() / 2, fakePhotos.indices.count()).size)
     }
 
     @Test
     fun given_photo_local_storage_source_when_save_a_photo_then_saved_successfully() {
         // Given photos list and When photos list saved
-        photoLocalStorage.savePhoto(fakePhotos[0]).blockingAwait()
+        photoCacheStorage.savePhoto(fakePhotos[0]).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        val expectedPhoto = photoLocalStorage.findPhotoById(fakePhotos[0].id).blockingGet()
+        val expectedPhoto = photoCacheStorage.findPhotoById(fakePhotos[0].id).blockingGet()
         assertThat(BitmapUtil.sameAs(fakePhotos[0].bitmap!!, expectedPhoto))
     }
 
     @Test
     fun given_photo_local_storage_source_when_save_photos_then_saved_successfully() {
         // Given photos list and When photos list saved
-        photoLocalStorage.savePhotos(fakePhotos).blockingAwait()
+        photoCacheStorage.savePhotos(fakePhotos).blockingAwait()
 
-        val expectedPhotos = photoLocalStorage.findAllPhotos().blockingGet()
+        val expectedPhotos = photoCacheStorage.findAllPhotos().blockingGet()
 
         fakePhotos.forEachIndexed { index, photo ->
             assertThat(BitmapUtil.sameAs(photo.bitmap!!, expectedPhotos[index]))
@@ -114,9 +114,9 @@ class PhotoLocalStorageSourceTest : TestCase() {
     @Test
     fun given_photo_local_storage_source_when_find_all_photos_then_found_successfully() {
         // Given photos list and When photos list saved
-        photoLocalStorage.savePhotos(fakePhotos).blockingAwait()
+        photoCacheStorage.savePhotos(fakePhotos).blockingAwait()
 
-        val expectedPhotos = photoLocalStorage.findAllPhotos().blockingGet()
+        val expectedPhotos = photoCacheStorage.findAllPhotos().blockingGet()
 
         // Then returned photos in database is equal to given photos list
         fakePhotos.forEachIndexed { index, photo ->
@@ -126,20 +126,20 @@ class PhotoLocalStorageSourceTest : TestCase() {
 
     @Test
     fun given_photo_local_storage_source_when_find_photo_by_id_then_found_successfully() {
-        photoLocalStorage.savePhotos(fakePhotos).blockingAwait()
+        photoCacheStorage.savePhotos(fakePhotos).blockingAwait()
         val photo = fakePhotos[fakePhotos.indices.random()]
-        val expectedPhoto: Bitmap = photoLocalStorage.findPhotoById(photo.id).blockingGet()
+        val expectedPhoto: Bitmap = photoCacheStorage.findPhotoById(photo.id).blockingGet()
         assertThat(BitmapUtil.sameAs(photo.bitmap!!, expectedPhoto))
     }
 
     @Test
     fun given_photo_local_storage_source_when_find_photos_by_ids_then_found_successfully() {
-        photoLocalStorage.savePhotos(fakePhotos).blockingAwait()
+        photoCacheStorage.savePhotos(fakePhotos).blockingAwait()
         val photoIds: MutableList<String> = mutableListOf()
         photoIds.add(fakePhotos.first { photo -> photo.propertyId == firstPropertyId }.id)
         photoIds.add(fakePhotos.first { photo -> photo.propertyId == secondPropertyId }.id)
 
-        val expectedPhotos: List<Bitmap> = photoLocalStorage.findPhotosByIds(photoIds).blockingGet()
+        val expectedPhotos: List<Bitmap> = photoCacheStorage.findPhotosByIds(photoIds).blockingGet()
 
         assertThat(BitmapUtil.sameAs(fakePhotos.single { photo -> photo.id == photoIds[0] }.bitmap!!,
             expectedPhotos[0]))
@@ -151,15 +151,15 @@ class PhotoLocalStorageSourceTest : TestCase() {
     fun given_photo_local_storage_source_when_update_photo_then_updated_successfully() {
         val initialPhoto = fakePhotos[fakePhotos.indices.random()]
 
-        photoLocalStorage.savePhotos(fakePhotos).blockingAwait()
+        photoCacheStorage.savePhotos(fakePhotos).blockingAwait()
 
         val updatedPhoto = initialPhoto.copy()
         with(updatedPhoto) {
             bitmap = BitmapFactory.decodeResource(resources, R.drawable.default_image)
         }
-        photoLocalStorage.updatePhoto(updatedPhoto).blockingAwait()
+        photoCacheStorage.updatePhoto(updatedPhoto).blockingAwait()
 
-        val finalPhoto = photoLocalStorage.findPhotoById(initialPhoto.id).blockingGet()
+        val finalPhoto = photoCacheStorage.findPhotoById(initialPhoto.id).blockingGet()
 
         assertThat(BitmapUtil.sameAs(finalPhoto, updatedPhoto.bitmap!!))
     }
@@ -168,7 +168,7 @@ class PhotoLocalStorageSourceTest : TestCase() {
     fun given_photo_local_storage_source_when_update_photos_then_updated_successfully() {
         val initialPhotos = arrayOf(fakePhotos[0], fakePhotos[fakePhotos.indices.count() / 2])
 
-        photoLocalStorage.savePhotos(fakePhotos).blockingAwait()
+        photoCacheStorage.savePhotos(fakePhotos).blockingAwait()
 
         val updatedPhotos = initialPhotos.copyOf().toList()
         updatedPhotos.forEachIndexed { index,  updatedPhoto ->
@@ -176,10 +176,10 @@ class PhotoLocalStorageSourceTest : TestCase() {
                 bitmap = BitmapFactory.decodeResource(resources, R.drawable.default_image)
             }
         }
-        photoLocalStorage.updatePhotos(updatedPhotos).blockingAwait()
+        photoCacheStorage.updatePhotos(updatedPhotos).blockingAwait()
 
         val ids = initialPhotos.map { photo -> photo.id }
-        val finalPhotos = photoLocalStorage.findPhotosByIds(ids).blockingGet()
+        val finalPhotos = photoCacheStorage.findPhotosByIds(ids).blockingGet()
 
         finalPhotos.forEachIndexed { index, photo ->
             assertThat(BitmapUtil.sameAs(photo, updatedPhotos[index].bitmap!!))
@@ -188,26 +188,26 @@ class PhotoLocalStorageSourceTest : TestCase() {
 
     @Test
     fun given_photo_local_storage_source_when_delete_photo_by_id_then_deleted_successfully() {
-        photoLocalStorage.savePhotos(fakePhotos).blockingAwait()
+        photoCacheStorage.savePhotos(fakePhotos).blockingAwait()
 
-        assertThat(photoLocalStorage.findAllPhotos().blockingGet().size).isEqualTo(fakePhotos.size)
+        assertThat(photoCacheStorage.findAllPhotos().blockingGet().size).isEqualTo(fakePhotos.size)
         val photo = fakePhotos[fakePhotos.indices.random()]
-        photoLocalStorage.deletePhotoById(photo.id).blockingAwait()
-        assertThat(photoLocalStorage.findAllPhotos().blockingGet().contains(photo.bitmap))
+        photoCacheStorage.deletePhotoById(photo.id).blockingAwait()
+        assertThat(photoCacheStorage.findAllPhotos().blockingGet().contains(photo.bitmap))
             .isFalse()
     }
 
     @Test
     fun given_photo_local_storage_source_when_delete_photos_by_ids_then_deleted_successfully() {
-        photoLocalStorage.savePhotos(fakePhotos).blockingAwait()
+        photoCacheStorage.savePhotos(fakePhotos).blockingAwait()
 
         val photoIds: MutableList<String> = mutableListOf()
         photoIds.add(fakePhotos.first { photo -> photo.propertyId == firstPropertyId }.id)
         photoIds.add(fakePhotos.first { photo -> photo.propertyId == secondPropertyId }.id)
 
-        photoLocalStorage.deletePhotosByIds(photoIds).blockingAwait()
+        photoCacheStorage.deletePhotosByIds(photoIds).blockingAwait()
 
-        val findAllPhotos = photoLocalStorage.findAllPhotos().blockingGet()
+        val findAllPhotos = photoCacheStorage.findAllPhotos().blockingGet()
         assertThat(findAllPhotos.size).isEqualTo((fakePhotos.size - 2))
         assertThat(findAllPhotos.contains(fakePhotos.single { photo -> photo.id == photoIds[0] }.bitmap))
             .isFalse()
@@ -217,22 +217,22 @@ class PhotoLocalStorageSourceTest : TestCase() {
 
     @Test
     fun given_photo_local_storage_source_when_delete_photos_then_deleted_successfully() {
-        photoLocalStorage.savePhotos(fakePhotos).blockingAwait()
-        assertThat(photoLocalStorage.findAllPhotos().blockingGet().size).isEqualTo(fakePhotos.size)
+        photoCacheStorage.savePhotos(fakePhotos).blockingAwait()
+        assertThat(photoCacheStorage.findAllPhotos().blockingGet().size).isEqualTo(fakePhotos.size)
 
-        photoLocalStorage.deletePhotos(fakePhotos.subList(0, 2)).blockingAwait()
+        photoCacheStorage.deletePhotos(fakePhotos.subList(0, 2)).blockingAwait()
 
-        val findAllPhotos = photoLocalStorage.findAllPhotos().blockingGet()
+        val findAllPhotos = photoCacheStorage.findAllPhotos().blockingGet()
         assertThat(findAllPhotos.size).isEqualTo((fakePhotos.size - 2))
     }
 
     @Test
     fun given_photo_local_storage_source_when_delete_all_photos_then_deleted_successfully() {
-        photoLocalStorage.savePhotos(fakePhotos).blockingAwait()
-        assertThat(photoLocalStorage.findAllPhotos().blockingGet().size
+        photoCacheStorage.savePhotos(fakePhotos).blockingAwait()
+        assertThat(photoCacheStorage.findAllPhotos().blockingGet().size
         ).isEqualTo(fakePhotos.size)
-        photoLocalStorage.deleteAllPhotos().blockingAwait()
-        assertThat(photoLocalStorage.findAllPhotos().blockingGet()).isEmpty()
+        photoCacheStorage.deleteAllPhotos().blockingAwait()
+        assertThat(photoCacheStorage.findAllPhotos().blockingGet()).isEmpty()
     }
 
     private fun bitmapFromAsset(fileName: String): Bitmap {

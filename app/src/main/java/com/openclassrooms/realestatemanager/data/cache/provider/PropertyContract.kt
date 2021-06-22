@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.data.local.provider
+package com.openclassrooms.realestatemanager.data.cache.provider
 
 import android.content.ContentUris
 import android.net.Uri

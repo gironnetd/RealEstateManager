@@ -1,10 +1,10 @@
-package com.openclassrooms.realestatemanager.data.local.provider
+package com.openclassrooms.realestatemanager.data.cache.provider
 
 import android.content.*
 import android.database.Cursor
 import android.net.Uri
 import com.openclassrooms.realestatemanager.BaseApplication
-import com.openclassrooms.realestatemanager.data.local.AppDatabase
+import com.openclassrooms.realestatemanager.data.cache.AppDatabase
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Property
 import java.util.*

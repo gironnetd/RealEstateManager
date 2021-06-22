@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.data.local.provider
+package com.openclassrooms.realestatemanager.data.cache.provider
 
 import android.content.ContentProviderOperation
 import android.content.ContentResolver
@@ -11,8 +11,8 @@ import androidx.test.filters.SmallTest
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.openclassrooms.realestatemanager.data.local.provider.PropertyContract.Companion.CONTENT_AUTHORITY
-import com.openclassrooms.realestatemanager.data.local.provider.PropertyContract.PropertyEntry.Companion.CONTENT_URI
+import com.openclassrooms.realestatemanager.data.cache.provider.PropertyContract.Companion.CONTENT_AUTHORITY
+import com.openclassrooms.realestatemanager.data.cache.provider.PropertyContract.PropertyEntry.Companion.CONTENT_URI
 import com.openclassrooms.realestatemanager.models.*
 import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_CITY
 import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_COUNTRY

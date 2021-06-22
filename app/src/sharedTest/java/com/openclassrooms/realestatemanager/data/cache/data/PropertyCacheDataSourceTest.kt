@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.data.local.source
+package com.openclassrooms.realestatemanager.data.cache.data
 
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -7,7 +7,7 @@ import androidx.test.filters.MediumTest
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.openclassrooms.realestatemanager.data.local.AppDatabase
+import com.openclassrooms.realestatemanager.data.cache.AppDatabase
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.models.PropertyType
 import com.openclassrooms.realestatemanager.util.ConstantsTest
@@ -20,13 +20,13 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-class PropertyLocalDataSourceTest : TestCase() {
+class PropertyCacheDataSourceTest : TestCase() {
 
     private lateinit var database: AppDatabase
     private lateinit var jsonUtil: JsonUtil
     private lateinit var fakeProperties: List<Property>
 
-    private lateinit var localDataSource: PropertyLocalDataSource
+    private lateinit var cacheDataSource: PropertyCacheDataSource
 
     @Before
     fun initDatabase() {
@@ -38,7 +38,7 @@ class PropertyLocalDataSourceTest : TestCase() {
         val rawJson = jsonUtil.readJSONFromAsset(ConstantsTest.PROPERTIES_DATA_FILENAME)
         fakeProperties = Gson().fromJson(rawJson, object : TypeToken<List<Property>>() {}.type)
 
-        localDataSource = PropertyLocalDataSource(database.propertyDao())
+        cacheDataSource = PropertyCacheDataSource(database.propertyDao())
     }
 
     @After
@@ -47,29 +47,29 @@ class PropertyLocalDataSourceTest : TestCase() {
     @Test
     fun given_local_data_source_when_save_photos_then_counted_successfully() {
         // Given photos list and When photos list saved
-        localDataSource.saveProperties(fakeProperties).blockingAwait()
+        cacheDataSource.saveProperties(fakeProperties).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        assertThat(localDataSource.count().blockingGet()).isEqualTo(fakeProperties.size)
+        assertThat(cacheDataSource.count().blockingGet()).isEqualTo(fakeProperties.size)
     }
 
     @Test
     fun given_local_data_source_when_save_a_property_then_saved_successfully() {
         // Given properties list and When properties list saved
-        localDataSource.saveProperty(fakeProperties[0]).blockingAwait()
+        cacheDataSource.saveProperty(fakeProperties[0]).blockingAwait()
 
         // Then count of properties in database is equal to given properties list size
-        assertThat(localDataSource.findPropertyById(fakeProperties[0].id).blockingGet()).isEqualTo(fakeProperties[0])
+        assertThat(cacheDataSource.findPropertyById(fakeProperties[0].id).blockingGet()).isEqualTo(fakeProperties[0])
     }
 
     @Test
     fun given_local_data_source_when_save_properties_then_saved_successfully() {
         // Given properties list and When properties list saved
         fakeProperties = fakeProperties.sortedBy { it.id }
-        localDataSource.saveProperties(fakeProperties).blockingAwait()
+        cacheDataSource.saveProperties(fakeProperties).blockingAwait()
 
         // Then count of properties in database is equal to given properties list size
-        var actualProperties = localDataSource.findAllProperties().blockingGet()
+        var actualProperties = cacheDataSource.findAllProperties().blockingGet()
 
         actualProperties = actualProperties.sortedBy { it.id }
         assertThat(actualProperties).isEqualTo(fakeProperties)
@@ -82,9 +82,9 @@ class PropertyLocalDataSourceTest : TestCase() {
         fakeProperties = fakeProperties.sortedBy { it.id }
 
         // When properties list saved
-        localDataSource.saveProperties(fakeProperties).blockingAwait()
+        cacheDataSource.saveProperties(fakeProperties).blockingAwait()
 
-        var actualProperties = localDataSource.findAllProperties().blockingGet()
+        var actualProperties = cacheDataSource.findAllProperties().blockingGet()
 
         // Then returned properties in database is equal to given properties list
         actualProperties = actualProperties.sortedBy { it.id }
@@ -95,17 +95,17 @@ class PropertyLocalDataSourceTest : TestCase() {
 
     @Test
     fun given_local_data_source_when_find_property_by_id_then_found_successfully() {
-        localDataSource.saveProperties(fakeProperties).blockingAwait()
+        cacheDataSource.saveProperties(fakeProperties).blockingAwait()
         val property = fakeProperties[fakeProperties.indices.random()]
-        val expectedProperty: Property = localDataSource.findPropertyById(property.id).blockingGet()
+        val expectedProperty: Property = cacheDataSource.findPropertyById(property.id).blockingGet()
         assertThat(expectedProperty).isEqualTo(property)
     }
 
     @Test
     fun given_local_data_source_when_find_properties_by_ids_then_found_successfully() {
-        localDataSource.saveProperties(fakeProperties).blockingAwait()
+        cacheDataSource.saveProperties(fakeProperties).blockingAwait()
         val propertyIds = fakeProperties.subList(0, 2).map { property -> property.id }
-        val expectedProperties: List<Property> = localDataSource.findPropertiesByIds(propertyIds).blockingGet()
+        val expectedProperties: List<Property> = cacheDataSource.findPropertiesByIds(propertyIds).blockingGet()
         assertThat(expectedProperties).isEqualTo(fakeProperties.subList(0, 2))
     }
 
@@ -113,16 +113,16 @@ class PropertyLocalDataSourceTest : TestCase() {
     fun given_local_data_source_when_update_property_then_updated_successfully() {
         val initialProperty = fakeProperties[fakeProperties.indices.random()]
 
-        localDataSource.saveProperties(fakeProperties).blockingAwait()
+        cacheDataSource.saveProperties(fakeProperties).blockingAwait()
 
         val updatedProperty = initialProperty.copy()
         with(updatedProperty) {
             description = "new description"
             type = PropertyType.values().first { type -> type != initialProperty.type }
         }
-        localDataSource.updateProperty(updatedProperty).blockingAwait()
+        cacheDataSource.updateProperty(updatedProperty).blockingAwait()
 
-        val finalProperty = localDataSource.findPropertyById(initialProperty.id).blockingGet()
+        val finalProperty = cacheDataSource.findPropertyById(initialProperty.id).blockingGet()
         assertThat(finalProperty).isEqualTo(updatedProperty)
     }
 
@@ -130,7 +130,7 @@ class PropertyLocalDataSourceTest : TestCase() {
     fun given_local_data_source_when_update_properties_then_updated_successfully() {
         var initialProperties = arrayOf(fakeProperties[0], fakeProperties[1])
 
-        localDataSource.saveProperties(fakeProperties).blockingAwait()
+        cacheDataSource.saveProperties(fakeProperties).blockingAwait()
 
         var updatedProperties = initialProperties.copyOf().toList()
         updatedProperties.forEachIndexed { index,  updatedProperty ->
@@ -140,10 +140,10 @@ class PropertyLocalDataSourceTest : TestCase() {
             }
         }
         updatedProperties = updatedProperties.sortedBy { it.id }
-        localDataSource.updateProperties(updatedProperties).blockingAwait()
+        cacheDataSource.updateProperties(updatedProperties).blockingAwait()
 
         val ids = initialProperties.map { photo -> photo.id }
-        var finalProperties = localDataSource.findAllProperties().blockingGet().filter {
+        var finalProperties = cacheDataSource.findAllProperties().blockingGet().filter {
                 photo -> ids.contains(photo.id)
         }
         finalProperties = finalProperties.sortedBy { it.id }
@@ -153,42 +153,42 @@ class PropertyLocalDataSourceTest : TestCase() {
 
     @Test
     fun given_local_data_source_when_delete_property_by_id_then_deleted_successfully() {
-        localDataSource.saveProperties(fakeProperties).blockingAwait()
+        cacheDataSource.saveProperties(fakeProperties).blockingAwait()
         val property = fakeProperties[fakeProperties.indices.random()]
-        localDataSource.deletePropertyById(property.id).blockingAwait()
-        assertThat(localDataSource.findAllProperties().blockingGet().contains(property))
+        cacheDataSource.deletePropertyById(property.id).blockingAwait()
+        assertThat(cacheDataSource.findAllProperties().blockingGet().contains(property))
             .isFalse()
     }
 
     @Test
     fun given_local_data_source_when_delete_properties_by_ids_then_deleted_successfully() {
-        localDataSource.saveProperties(fakeProperties).blockingAwait()
+        cacheDataSource.saveProperties(fakeProperties).blockingAwait()
         val propertyIds = fakeProperties.subList(0, 2).map { property -> property.id }
-        localDataSource.deletePropertiesByIds(propertyIds).blockingAwait()
+        cacheDataSource.deletePropertiesByIds(propertyIds).blockingAwait()
 
-        val findAllProperties = localDataSource.findAllProperties().blockingGet()
+        val findAllProperties = cacheDataSource.findAllProperties().blockingGet()
         assertThat(findAllProperties.size).isEqualTo((fakeProperties.size - 2))
         assertThat(findAllProperties.containsAll(fakeProperties.subList(0, 2))).isFalse()
     }
 
     @Test
     fun given_local_data_source_when_delete_properties_then_deleted_successfully() {
-        localDataSource.saveProperties(fakeProperties).blockingAwait()
-        assertThat(localDataSource.findAllProperties().blockingGet().size).isEqualTo(fakeProperties.size)
+        cacheDataSource.saveProperties(fakeProperties).blockingAwait()
+        assertThat(cacheDataSource.findAllProperties().blockingGet().size).isEqualTo(fakeProperties.size)
 
-        localDataSource.deleteProperties(fakeProperties.subList(0, 2)).blockingAwait()
+        cacheDataSource.deleteProperties(fakeProperties.subList(0, 2)).blockingAwait()
 
-        val findAllProperties = localDataSource.findAllProperties().blockingGet()
+        val findAllProperties = cacheDataSource.findAllProperties().blockingGet()
         assertThat(findAllProperties.size).isEqualTo((fakeProperties.size - 2))
     }
 
     @Test
     fun given_local_data_source_when_delete_all_properties_then_deleted_successfully() {
-        localDataSource.saveProperties(fakeProperties).blockingAwait()
+        cacheDataSource.saveProperties(fakeProperties).blockingAwait()
         assertThat(
-            localDataSource.findAllProperties().blockingGet().size
+            cacheDataSource.findAllProperties().blockingGet().size
         ).isEqualTo(fakeProperties.size)
-        localDataSource.deleteAllProperties().blockingAwait()
-        assertThat(localDataSource.findAllProperties().blockingGet()).isEmpty()
+        cacheDataSource.deleteAllProperties().blockingAwait()
+        assertThat(cacheDataSource.findAllProperties().blockingGet()).isEmpty()
     }
 }

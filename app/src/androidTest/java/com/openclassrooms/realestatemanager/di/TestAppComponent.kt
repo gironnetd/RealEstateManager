@@ -1,8 +1,8 @@
 package com.openclassrooms.realestatemanager.di
 
 import android.app.Application
-import com.openclassrooms.realestatemanager.data.local.dao.PropertyDaoTest
-import com.openclassrooms.realestatemanager.data.local.provider.AppContentProviderTest
+import com.openclassrooms.realestatemanager.data.cache.dao.PropertyDaoTest
+import com.openclassrooms.realestatemanager.data.cache.provider.AppContentProviderTest
 import com.openclassrooms.realestatemanager.data.remote.PropertyApiServiceTest
 import com.openclassrooms.realestatemanager.data.repository.property.BrowseFragmentTest
 import com.openclassrooms.realestatemanager.data.repository.property.PropertyRepositoryTest

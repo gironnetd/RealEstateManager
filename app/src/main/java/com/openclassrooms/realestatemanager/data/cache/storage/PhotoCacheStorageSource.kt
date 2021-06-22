@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.data.local.storage
+package com.openclassrooms.realestatemanager.data.cache.storage
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -11,7 +11,7 @@ import io.reactivex.Single
 import java.io.File
 import java.io.FileOutputStream
 
-class PhotoLocalStorageSource constructor(private val cacheDir: File) {
+class PhotoCacheStorageSource constructor(private val cacheDir: File) {
 
     fun count(): Single<Int> { return findAllPhotos().map { photos -> photos.size } }
 

@@ -1,14 +1,14 @@
-package com.openclassrooms.realestatemanager.data.local.source
+package com.openclassrooms.realestatemanager.data.cache.data
 
-import com.openclassrooms.realestatemanager.data.local.dao.PhotoDao
-import com.openclassrooms.realestatemanager.data.local.provider.toList
+import com.openclassrooms.realestatemanager.data.cache.dao.PhotoDao
+import com.openclassrooms.realestatemanager.data.cache.provider.toList
 import com.openclassrooms.realestatemanager.data.source.PhotoDataSource
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable
 import io.reactivex.Single
 
-class PhotoLocalDataSource constructor(private val photoDao: PhotoDao): PhotoDataSource {
+class PhotoCacheDataSource constructor(private val photoDao: PhotoDao): PhotoDataSource {
 
     override fun count(): Single<Int> {
         return Single.fromCallable { photoDao.count() }

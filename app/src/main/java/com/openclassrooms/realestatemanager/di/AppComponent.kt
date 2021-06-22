@@ -1,7 +1,7 @@
 package com.openclassrooms.realestatemanager.di
 
 import android.app.Application
-import com.openclassrooms.realestatemanager.data.local.provider.AppContentProvider
+import com.openclassrooms.realestatemanager.data.cache.provider.AppContentProvider
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseComponent
 import com.openclassrooms.realestatemanager.fragments.MainNavHostFragment
 import com.openclassrooms.realestatemanager.ui.MainActivity

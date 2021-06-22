@@ -1,9 +1,9 @@
-package com.openclassrooms.realestatemanager.data.local
+package com.openclassrooms.realestatemanager.data.cache
 
 import android.content.Context
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import com.openclassrooms.realestatemanager.data.local.provider.toList
+import com.openclassrooms.realestatemanager.data.cache.provider.toList
 import com.openclassrooms.realestatemanager.data.source.PropertyDataSource
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Photo

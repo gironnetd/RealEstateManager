@@ -9,8 +9,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
-import com.openclassrooms.realestatemanager.data.local.AppDatabase
-import com.openclassrooms.realestatemanager.data.local.dao.PropertyDao
+import com.openclassrooms.realestatemanager.data.cache.AppDatabase
+import com.openclassrooms.realestatemanager.data.cache.dao.PropertyDao
 import com.openclassrooms.realestatemanager.data.remote.DefaultPropertyApiService
 import com.openclassrooms.realestatemanager.data.remote.PropertyApiService
 import com.openclassrooms.realestatemanager.util.FakeGlideRequestManager

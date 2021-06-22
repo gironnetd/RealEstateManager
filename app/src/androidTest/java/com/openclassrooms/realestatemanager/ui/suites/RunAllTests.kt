@@ -1,8 +1,8 @@
 package com.openclassrooms.realestatemanager.ui.suites
 
-import com.openclassrooms.realestatemanager.data.local.dao.PhotoDaoTest
-import com.openclassrooms.realestatemanager.data.local.dao.PropertyDaoTest
-import com.openclassrooms.realestatemanager.data.local.provider.AppContentProviderTest
+import com.openclassrooms.realestatemanager.data.cache.dao.PhotoDaoTest
+import com.openclassrooms.realestatemanager.data.cache.dao.PropertyDaoTest
+import com.openclassrooms.realestatemanager.data.cache.provider.AppContentProviderTest
 import com.openclassrooms.realestatemanager.data.repository.property.BrowseFragmentTest
 import com.openclassrooms.realestatemanager.data.repository.property.PropertyRepositoryTest
 import com.openclassrooms.realestatemanager.repository.ConnectivityManagerTest

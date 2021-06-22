@@ -1,14 +1,14 @@
-package com.openclassrooms.realestatemanager.data.local.source
+package com.openclassrooms.realestatemanager.data.cache.data
 
-import com.openclassrooms.realestatemanager.data.local.dao.PropertyDao
-import com.openclassrooms.realestatemanager.data.local.provider.toList
+import com.openclassrooms.realestatemanager.data.cache.dao.PropertyDao
+import com.openclassrooms.realestatemanager.data.cache.provider.toList
 import com.openclassrooms.realestatemanager.data.source.PropertyDataSource
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable
 import io.reactivex.Single
 
-class PropertyLocalDataSource constructor(private val propertyDao: PropertyDao) :
+class PropertyCacheDataSource constructor(private val propertyDao: PropertyDao) :
     PropertyDataSource {
 
     override fun count(): Single<Int> {

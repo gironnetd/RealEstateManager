@@ -8,9 +8,9 @@ import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.openclassrooms.realestatemanager.data.local.AppDatabase
-import com.openclassrooms.realestatemanager.data.local.AppDatabase.Companion.DATABASE_NAME
-import com.openclassrooms.realestatemanager.data.local.dao.PropertyDao
+import com.openclassrooms.realestatemanager.data.cache.AppDatabase
+import com.openclassrooms.realestatemanager.data.cache.AppDatabase.Companion.DATABASE_NAME
+import com.openclassrooms.realestatemanager.data.cache.dao.PropertyDao
 import com.openclassrooms.realestatemanager.data.remote.DefaultPropertyApiService
 import com.openclassrooms.realestatemanager.data.remote.PropertyApiService
 import com.openclassrooms.realestatemanager.util.GlideManager

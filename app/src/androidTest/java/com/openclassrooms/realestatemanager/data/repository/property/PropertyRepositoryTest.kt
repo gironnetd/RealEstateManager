@@ -15,8 +15,8 @@ import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.verify
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.api.property.FakePropertyApiService
-import com.openclassrooms.realestatemanager.data.local.AppDatabase
-import com.openclassrooms.realestatemanager.data.local.PropertyLocalDataSource
+import com.openclassrooms.realestatemanager.data.cache.AppDatabase
+import com.openclassrooms.realestatemanager.data.cache.PropertyLocalDataSource
 import com.openclassrooms.realestatemanager.data.remote.PropertyRemoteDataSource
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.models.Photo

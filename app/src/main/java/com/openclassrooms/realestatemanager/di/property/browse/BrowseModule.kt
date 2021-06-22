@@ -1,8 +1,8 @@
 package com.openclassrooms.realestatemanager.di.property.browse
 
 import android.content.Context
-import com.openclassrooms.realestatemanager.data.local.AppDatabase
-import com.openclassrooms.realestatemanager.data.local.PropertyLocalDataSource
+import com.openclassrooms.realestatemanager.data.cache.AppDatabase
+import com.openclassrooms.realestatemanager.data.cache.PropertyLocalDataSource
 import com.openclassrooms.realestatemanager.data.remote.DefaultPropertyApiService
 import com.openclassrooms.realestatemanager.data.remote.PropertyRemoteDataSource
 import com.openclassrooms.realestatemanager.data.repository.property.DefaultPropertyRepository

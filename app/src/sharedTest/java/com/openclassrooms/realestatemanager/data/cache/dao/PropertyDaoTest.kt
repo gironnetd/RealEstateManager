@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.data.local.dao
+package com.openclassrooms.realestatemanager.data.cache.dao
 
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -7,8 +7,8 @@ import androidx.test.filters.SmallTest
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.openclassrooms.realestatemanager.data.local.AppDatabase
-import com.openclassrooms.realestatemanager.data.local.provider.toList
+import com.openclassrooms.realestatemanager.data.cache.AppDatabase
+import com.openclassrooms.realestatemanager.data.cache.provider.toList
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
