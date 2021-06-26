@@ -5,62 +5,93 @@ import com.openclassrooms.realestatemanager.data.cache.storage.PhotoCacheStorage
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoDataSource
 import com.openclassrooms.realestatemanager.models.Photo
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.functions.BiFunction
 
 class PhotoCacheSource
 constructor(private val cacheData: PhotoCacheDataSource,
             private val cacheStorage: PhotoCacheStorageSource): PhotoDataSource {
 
     override fun count(): Single<Int> {
-        TODO("Not yet implemented")
+        return Single.zip(cacheData.count(), cacheStorage.count(),
+            BiFunction { dataCount, storageCount ->
+                if(dataCount == storageCount) {
+                    return@BiFunction dataCount
+                } else {
+                    return@BiFunction -1
+                }
+            })
     }
 
     override fun count(propertyId: String): Single<Int> {
-        TODO("Not yet implemented")
+        return Single.zip(cacheData.count(propertyId), cacheStorage.count(propertyId),
+            BiFunction { dataCount, storageCount ->
+                if(dataCount == storageCount) {
+                    return@BiFunction dataCount
+                } else {
+                    return@BiFunction -1
+                }
+            })
     }
 
     override fun savePhoto(photo: Photo): Completable {
-        TODO("Not yet implemented")
+        return cacheData.savePhoto(photo).andThen(cacheStorage.savePhoto(photo))
     }
 
     override fun savePhotos(photos: List<Photo>): Completable {
-        TODO("Not yet implemented")
+        return Observable.fromIterable(photos).flatMapCompletable { photo ->
+            photo.bitmap?.let { savePhoto(photo) } ?: Completable.complete()
+        }
     }
 
     override fun findPhotoById(id: String): Single<Photo> {
-        TODO("Not yet implemented")
+        return cacheData.findPhotoById(id).flatMap { photo ->
+            cacheStorage.findPhotoById(id).flatMap { bitmap ->
+                photo.bitmap = bitmap
+                Single.just(photo)
+            }
+        }
     }
 
     override fun findPhotosByIds(ids: List<String>): Single<List<Photo>> {
-        TODO("Not yet implemented")
+        return Observable.fromIterable(ids).flatMapSingle { id ->
+            findPhotoById(id)
+        }.toList().flatMap { photos -> Single.just(photos) }
     }
 
     override fun findAllPhotos(): Single<List<Photo>> {
-        TODO("Not yet implemented")
+        return cacheData.findAllPhotos().flatMap { photos ->
+            Observable.fromIterable(photos).flatMapSingle { photo ->
+                cacheStorage.findPhotoById(photo.id).flatMap { bitmap ->
+                    photo.bitmap = bitmap
+                    Single.just(photo)
+                }
+            }.toList().flatMap { Single.just(it) }
+        }
     }
 
     override fun updatePhoto(photo: Photo): Completable {
-        TODO("Not yet implemented")
+        return cacheData.updatePhoto(photo).andThen(cacheStorage.updatePhoto(photo))
     }
 
     override fun updatePhotos(photos: List<Photo>): Completable {
-        TODO("Not yet implemented")
+        return cacheData.updatePhotos(photos).andThen(cacheStorage.updatePhotos(photos))
     }
 
     override fun deletePhotosByIds(ids: List<String>): Completable {
-        TODO("Not yet implemented")
+        return cacheData.deletePhotosByIds(ids).andThen(cacheStorage.deletePhotosByIds(ids))
     }
 
     override fun deletePhotos(photos: List<Photo>): Completable {
-        TODO("Not yet implemented")
+        return cacheData.deletePhotos(photos).andThen(cacheStorage.deletePhotos(photos))
     }
 
     override fun deleteAllPhotos(): Completable {
-        TODO("Not yet implemented")
+        return cacheData.deleteAllPhotos().andThen(cacheStorage.deleteAllPhotos())
     }
 
     override fun deletePhotoById(id: String): Completable {
-        TODO("Not yet implemented")
+        return cacheData.deletePhotoById(id).andThen(cacheStorage.deletePhotoById(id))
     }
-
 }
