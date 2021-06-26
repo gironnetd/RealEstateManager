@@ -4,7 +4,7 @@ import android.content.Context
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.openclassrooms.realestatemanager.data.cache.provider.toList
-import com.openclassrooms.realestatemanager.data.source.PropertyDataSource
+import com.openclassrooms.realestatemanager.data.source.property.PropertyDataSource
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Property

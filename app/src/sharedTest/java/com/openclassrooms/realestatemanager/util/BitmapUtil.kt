@@ -1,8 +1,17 @@
 package com.openclassrooms.realestatemanager.util
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 
 object BitmapUtil {
+
+    fun bitmapFromAsset(context: Context, fileName: String): Bitmap {
+        val inputStream = context.assets.open(fileName + Constants.SLASH + Constants.THUMBNAIL_FILE_NAME)
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+        inputStream.close()
+        return bitmap
+    }
 
     fun sameAs(A: Bitmap, B: Bitmap): Boolean {
         // Different types of image

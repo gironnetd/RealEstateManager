@@ -39,7 +39,6 @@ class PhotoCacheStorageSource constructor(private val cacheDir: File) {
 
     fun findPhotoById(id: String): Single<Bitmap> {
         return Single.create { emitter ->
-            val bitmaps: MutableList<Bitmap> = mutableListOf()
             val propertiesDir = File(cacheDir.absolutePath, Constants.PROPERTIES_COLLECTION)
             propertiesDir.listFiles()?.let { propertiesDirListFiles ->
                 propertiesDirListFiles.forEach { propertyDir ->
@@ -96,11 +95,6 @@ class PhotoCacheStorageSource constructor(private val cacheDir: File) {
                             photoDir.listFiles()?.let { photoFile ->
                                 val bitmap = BitmapFactory.decodeFile(photoFile[0].toString())
                                 bitmaps.add(bitmap)
-
-//                                if(propertyDir.name == propertiesDirListFiles.last().name &&
-//                                    photoDir.name == photosDirListFiles.last().name  ) {
-//                                    emitter.onSuccess(bitmaps)
-//                                }
                             }
                         }
                     } ?: emitter.onError(NullPointerException("Photos cacheDir for Property: ${propertyDir.name} is null"))
@@ -136,6 +130,7 @@ class PhotoCacheStorageSource constructor(private val cacheDir: File) {
     fun updatePhoto(photo: Photo): Completable {
         return Completable.create { emitter ->
             photo.bitmap?.let { bitmap ->
+                File(photo.storageLocalDatabase(cacheDir, true)).delete()
                 val outputStream = FileOutputStream(
                     File(photo.storageLocalDatabase(cacheDir, true)), true)
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
@@ -242,7 +237,7 @@ class PhotoCacheStorageSource constructor(private val cacheDir: File) {
                                 emitter.onComplete()
                             }
                         }
-                    } ?: emitter.onError(NullPointerException("Photos cacheDir for Property: ${propertyDir.name} is null"))
+                    } ?: emitter.onError(NullPointerException("Photos cacheDir for Directory: ${propertyDir.name} is null"))
                 }
             } ?: emitter.onError(NullPointerException("Properties cacheDir is null"))
         }

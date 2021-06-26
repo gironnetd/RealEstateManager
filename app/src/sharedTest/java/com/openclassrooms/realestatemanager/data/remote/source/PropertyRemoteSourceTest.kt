@@ -28,20 +28,19 @@ class PropertyRemoteSourceTest : TestCase() {
     private lateinit var fakeProperties: List<Property>
     private lateinit var firestore : FirebaseFirestore
 
-    private lateinit var propertyRemoteDataSource: PropertyRemoteDataSource
+    private lateinit var remoteData: PropertyRemoteDataSource
     private lateinit var remoteSource: PropertyRemoteSource
 
     @Before
-    fun initApiService() {
-        val settings = FirebaseFirestoreSettings.Builder().setPersistenceEnabled(false)
-            .build()
-
+    public override fun setUp() {
+        super.setUp()
         firestore = FirebaseFirestore.getInstance()
         firestore.useEmulator(FIREBASE_EMULATOR_HOST, FIREBASE_FIRESTORE_PORT)
+        val settings = FirebaseFirestoreSettings.Builder().setPersistenceEnabled(false).build()
         firestore.firestoreSettings = settings
 
-        propertyRemoteDataSource = PropertyRemoteDataSource(firestore)
-        remoteSource = PropertyRemoteSource(propertyRemoteDataSource = propertyRemoteDataSource)
+        remoteData = PropertyRemoteDataSource(firestore)
+        remoteSource = PropertyRemoteSource(remoteData = remoteData)
 
         jsonUtil = JsonUtil()
         val rawJson = jsonUtil.readJSONFromAsset(PROPERTIES_DATA_FILENAME)
@@ -50,9 +49,10 @@ class PropertyRemoteSourceTest : TestCase() {
     }
 
     @After
-    fun closeApiService() {
+    public override fun tearDown() {
         remoteSource.deleteAllProperties().blockingAwait()
         firestore.terminate()
+        super.tearDown()
     }
 
     @Test
@@ -161,7 +161,7 @@ class PropertyRemoteSourceTest : TestCase() {
     fun given_remote_source_when_delete_property_by_id_then_deleted_successfully() {
         remoteSource.saveProperties(fakeProperties).blockingAwait()
 
-        assertThat(remoteSource.findAllProperties().blockingGet().size).isEqualTo(fakeProperties.size)
+        assertThat(remoteSource.count().blockingGet()).isEqualTo(fakeProperties.size)
         val property = fakeProperties[fakeProperties.indices.random()]
         remoteSource.deletePropertyById(property.id).blockingAwait()
         assertThat(remoteSource.findAllProperties().blockingGet().contains(property))
@@ -182,7 +182,7 @@ class PropertyRemoteSourceTest : TestCase() {
     @Test
     fun given_remote_source_when_delete_properties_then_deleted_successfully() {
         remoteSource.saveProperties(fakeProperties).blockingAwait()
-        assertThat(remoteSource.findAllProperties().blockingGet().size).isEqualTo(fakeProperties.size)
+        assertThat(remoteSource.count().blockingGet()).isEqualTo(fakeProperties.size)
 
         remoteSource.deleteProperties(fakeProperties.subList(0, 2)).blockingAwait()
 
@@ -193,9 +193,7 @@ class PropertyRemoteSourceTest : TestCase() {
     @Test
     fun given_remote_source_when_delete_all_properties_then_deleted_successfully() {
         remoteSource.saveProperties(fakeProperties).blockingAwait()
-        assertThat(
-            remoteSource.findAllProperties().blockingGet().size
-        ).isEqualTo(fakeProperties.size)
+        assertThat(remoteSource.count().blockingGet()).isEqualTo(fakeProperties.size)
         remoteSource.deleteAllProperties().blockingAwait()
         assertThat(remoteSource.findAllProperties().blockingGet()).isEmpty()
     }

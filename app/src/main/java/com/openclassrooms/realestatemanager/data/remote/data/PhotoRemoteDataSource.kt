@@ -2,11 +2,12 @@ package com.openclassrooms.realestatemanager.data.remote.data
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.WriteBatch
-import com.openclassrooms.realestatemanager.data.source.PhotoDataSource
+import com.openclassrooms.realestatemanager.data.source.photo.PhotoDataSource
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.Constants
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 
 class PhotoRemoteDataSource
@@ -33,7 +34,7 @@ constructor(private val firestore: FirebaseFirestore): PhotoDataSource {
                     } else {
                         emitter.onSuccess(0)
                     }
-                }
+                } ?: emitter.onError(NullPointerException("No Properties Found"))
             }
         }
     }
@@ -82,7 +83,9 @@ constructor(private val firestore: FirebaseFirestore): PhotoDataSource {
     }
 
     override fun findPhotoById(id: String): Single<Photo> {
-        return findAllPhotos().map { photos -> photos.single { photo -> photo.id == id } }
+        return findAllPhotos().map { photos -> photos.single { photo ->
+            photo.id == id
+        } }
     }
 
     override fun findPhotosByIds(ids: List<String>): Single<List<Photo>> {
@@ -106,7 +109,7 @@ constructor(private val firestore: FirebaseFirestore): PhotoDataSource {
                                             photo.propertyId = document.id
                                             photos.add(photo)
                                         }
-                                    }
+                                    } ?: emitter.onError(NullPointerException("No Photos for Property: ${document.id}"))
                                 }
                                 if(document.id == result.documents.last().id) {
                                     emitter.onSuccess(photos.sortedBy { it.id })
@@ -134,22 +137,8 @@ constructor(private val firestore: FirebaseFirestore): PhotoDataSource {
     }
 
     override fun updatePhotos(photos: List<Photo>): Completable {
-        return Completable.create { emitter ->
-            val batch: WriteBatch = firestore.batch()
-            photos.forEach { photo ->
-                val documentRef = firestore
-                    .collection(Constants.PROPERTIES_COLLECTION)
-                    .document(photo.propertyId)
-                    .collection(Constants.PHOTOS_COLLECTION)
-                    .document(photo.id)
-                batch.set(documentRef, photo)
-            }
-
-            batch.commit().addOnCompleteListener { task ->
-                if (task.isComplete && task.isSuccessful) {
-                    emitter.onComplete()
-                }
-            }.addOnFailureListener { exception -> emitter.onError(exception) }
+        return Observable.fromIterable(photos).flatMapCompletable { photo ->
+            updatePhoto(photo)
         }
     }
 
@@ -204,14 +193,14 @@ constructor(private val firestore: FirebaseFirestore): PhotoDataSource {
                                                 document.reference.delete()
                                             }
                                         }
-                                    }
+                                    } ?: emitter.onError(NullPointerException("No Photos for Property: ${document.id}"))
                                 }
                                 if(document.id == result.documents.last().id) {
                                     emitter.onComplete()
                                 }
                             }
                         }
-                    }
+                    } else { emitter.onComplete() }
                 }
             }.addOnFailureListener { emitter.onError(it) }
         }

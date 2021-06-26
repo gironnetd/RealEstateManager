@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.data.source
+package com.openclassrooms.realestatemanager.data.source.photo
 
 import com.openclassrooms.realestatemanager.models.Photo
 import io.reactivex.Completable

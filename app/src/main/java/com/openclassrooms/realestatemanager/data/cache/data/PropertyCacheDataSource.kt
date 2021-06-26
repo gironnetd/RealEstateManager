@@ -2,7 +2,7 @@ package com.openclassrooms.realestatemanager.data.cache.data
 
 import com.openclassrooms.realestatemanager.data.cache.dao.PropertyDao
 import com.openclassrooms.realestatemanager.data.cache.provider.toList
-import com.openclassrooms.realestatemanager.data.source.PropertyDataSource
+import com.openclassrooms.realestatemanager.data.source.property.PropertyDataSource
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable
@@ -35,9 +35,8 @@ class PropertyCacheDataSource constructor(private val propertyDao: PropertyDao) 
     }
 
     override fun findPropertiesByIds(ids: List<String>): Single<List<Property>> {
-        return Single.fromCallable { propertyDao.findPropertiesByIds(ids) }.subscribeOn(SchedulerProvider.io()).flatMap {
-            Single.just(it)
-        }
+        return Single.fromCallable { propertyDao.findPropertiesByIds(ids) }.subscribeOn(SchedulerProvider.io())
+            .flatMap { Single.just(it) }
     }
     
     override fun findAllProperties(): Single<List<Property>> {

@@ -3,13 +3,15 @@ package com.openclassrooms.realestatemanager.data.remote.data
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
-import com.openclassrooms.realestatemanager.data.source.PropertyDataSource
+import com.openclassrooms.realestatemanager.data.source.property.PropertyDataSource
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.Constants
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 
-open class PropertyRemoteDataSource constructor(private var firestore: FirebaseFirestore): PropertyDataSource {
+open class PropertyRemoteDataSource constructor(private var firestore: FirebaseFirestore):
+    PropertyDataSource {
 
     override fun count(): Single<Int> {
         return Single.create { emitter ->
@@ -125,30 +127,28 @@ open class PropertyRemoteDataSource constructor(private var firestore: FirebaseF
     }
 
     override fun deleteProperties(properties: List<Property>): Completable {
-        return Completable.create { emitter ->
-            properties.forEach { property ->
-                firestore.collection(Constants.PROPERTIES_COLLECTION).document(property.id).delete()
-                if(property.id == properties.last().id) { emitter.onComplete() }
-            }
+        return Observable.fromIterable(properties).flatMapCompletable { property ->
+            deletePropertyById(property.id)
         }
     }
 
     override fun deleteAllProperties(): Completable {
-        return Completable.create { emitter ->
-            firestore.collection(Constants.PROPERTIES_COLLECTION).get().addOnSuccessListener { result ->
-                result.documents.forEach { document ->
-                    document.reference.delete()
-                }
-                emitter.onComplete()
-            }.addOnFailureListener {
-                emitter.onError(it)
+        return findAllProperties().flatMapCompletable { properties ->
+            Observable.fromIterable(properties).flatMapCompletable { property ->
+                deletePropertyById(property.id)
             }
         }
     }
 
     override fun deletePropertyById(id: String): Completable {
-        return Completable.fromAction {
-            firestore.collection(Constants.PROPERTIES_COLLECTION).document(id).delete()
+        return Completable.create { emitter ->
+            firestore.collection(Constants.PROPERTIES_COLLECTION).document(id).delete().addOnCompleteListener { task ->
+                if(task.isComplete && task.isSuccessful) {
+                    emitter.onComplete()
+                }
+            }.addOnFailureListener {
+                emitter.onError(it)
+            }
         }
     }
 }

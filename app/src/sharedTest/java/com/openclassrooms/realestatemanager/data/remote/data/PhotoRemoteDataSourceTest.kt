@@ -36,6 +36,7 @@ class PhotoRemoteDataSourceTest : TestCase() {
 
     @Before
     public override fun setUp() {
+        super.setUp()
         firestore = FirebaseFirestore.getInstance()
         firestore.useEmulator(FIREBASE_EMULATOR_HOST, FIREBASE_FIRESTORE_PORT)
         val settings = FirebaseFirestoreSettings.Builder().setPersistenceEnabled(false).build()
@@ -67,8 +68,6 @@ class PhotoRemoteDataSourceTest : TestCase() {
         }
 
         fakePhotos = fakePhotos.sortedBy { it.id }
-
-        super.setUp()
     }
 
     @After

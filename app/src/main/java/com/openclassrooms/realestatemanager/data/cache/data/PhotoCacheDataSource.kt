@@ -2,7 +2,7 @@ package com.openclassrooms.realestatemanager.data.cache.data
 
 import com.openclassrooms.realestatemanager.data.cache.dao.PhotoDao
 import com.openclassrooms.realestatemanager.data.cache.provider.toList
-import com.openclassrooms.realestatemanager.data.source.PhotoDataSource
+import com.openclassrooms.realestatemanager.data.source.photo.PhotoDataSource
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable

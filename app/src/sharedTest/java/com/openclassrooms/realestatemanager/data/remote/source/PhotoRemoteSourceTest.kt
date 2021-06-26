@@ -1,18 +1,23 @@
 package com.openclassrooms.realestatemanager.data.remote.source
 
+import android.content.res.Resources
+import android.graphics.BitmapFactory
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
+import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.data.remote.data.PhotoRemoteDataSource
 import com.openclassrooms.realestatemanager.data.remote.storage.PhotoRemoteStorageSource
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.PhotoType
 import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_PROPERTY_ID
+import com.openclassrooms.realestatemanager.util.BitmapUtil
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTIES_COLLECTION
 import com.openclassrooms.realestatemanager.util.ConstantsTest
 import com.openclassrooms.realestatemanager.util.ConstantsTest.FIREBASE_EMULATOR_HOST
@@ -38,26 +43,30 @@ class PhotoRemoteSourceTest : TestCase() {
 
     lateinit var firestore : FirebaseFirestore
     private lateinit var storage: FirebaseStorage
+    private lateinit var resources: Resources
 
-    private lateinit var photoRemoteDataSource: PhotoRemoteDataSource
+    private lateinit var photoRemoteData: PhotoRemoteDataSource
     private lateinit var photoRemoteStorage: PhotoRemoteStorageSource
     private lateinit var remoteSource: PhotoRemoteSource
 
     @Before
     public override fun setUp() {
+        super.setUp()
         firestore = FirebaseFirestore.getInstance()
         firestore.useEmulator(FIREBASE_EMULATOR_HOST, FIREBASE_FIRESTORE_PORT)
         val settings = FirebaseFirestoreSettings.Builder().setPersistenceEnabled(false).build()
         firestore.firestoreSettings = settings
 
-        photoRemoteDataSource = PhotoRemoteDataSource(firestore)
+        photoRemoteData = PhotoRemoteDataSource(firestore)
 
         storage = FirebaseStorage.getInstance(FIREBASE_STORAGE_DEFAULT_BUCKET)
         storage.useEmulator(FIREBASE_EMULATOR_HOST, FIREBASE_STORAGE_PORT)
 
         photoRemoteStorage = PhotoRemoteStorageSource(storage = storage)
 
-        remoteSource = PhotoRemoteSource(remoteData = photoRemoteDataSource, remoteStorage = photoRemoteStorage)
+        remoteSource = PhotoRemoteSource(remoteData = photoRemoteData, remoteStorage = photoRemoteStorage)
+
+        resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
         jsonUtil = JsonUtil()
         val rawJson = jsonUtil.readJSONFromAsset(ConstantsTest.PHOTOS_DATA_FILENAME)
@@ -83,13 +92,18 @@ class PhotoRemoteSourceTest : TestCase() {
         }
 
         fakePhotos = fakePhotos.sortedBy { it.id }
-
-        super.setUp()
+        fakePhotos.forEach { photo -> photo.bitmap = BitmapUtil.bitmapFromAsset(
+            InstrumentationRegistry.getInstrumentation().targetContext,
+            photo.id)
+        }
     }
 
     @After
     public override fun tearDown() {
-        remoteSource.deleteAllPhotos().blockingAwait()
+        if(remoteSource.count().blockingGet() != 0) {
+            remoteSource.deleteAllPhotos().blockingAwait()
+        }
+
         Completable.create { emitter ->
             firestore.collection(PROPERTIES_COLLECTION).get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -138,7 +152,7 @@ class PhotoRemoteSourceTest : TestCase() {
         remoteSource.savePhoto(fakePhotos[0]).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        assertThat(remoteSource.findPhotoById(fakePhotos[0].id).blockingGet()).isEqualTo(fakePhotos[0])
+        assertSameAs(actual = fakePhotos[0],expected = remoteSource.findPhotoById(fakePhotos[0].id).blockingGet())
     }
 
     @Test
@@ -148,7 +162,10 @@ class PhotoRemoteSourceTest : TestCase() {
         remoteSource.savePhotos(fakePhotos).blockingAwait()
 
         // Then returned photos in database is equal to given photos list
-        assertThat(remoteSource.findAllPhotos().blockingGet()).isEqualTo(fakePhotos)
+        val expectedPhotos = remoteSource.findAllPhotos().blockingGet().sortedBy { it.id }
+        fakePhotos.forEachIndexed { index, photo ->
+            assertSameAs(actual = photo, expected = expectedPhotos[index])
+        }
     }
 
     @Test
@@ -157,7 +174,11 @@ class PhotoRemoteSourceTest : TestCase() {
         remoteSource.savePhotos(fakePhotos).blockingAwait()
 
         // Then returned photos in database is equal to given photos list
-        assertThat(remoteSource.findAllPhotos().blockingGet()).isEqualTo(fakePhotos)
+        val expectedPhotos = remoteSource.findAllPhotos().blockingGet().sortedBy { it.id }
+
+        fakePhotos.forEachIndexed { index, photo ->
+            assertSameAs(actual = photo, expected = expectedPhotos[index])
+        }
     }
 
     @Test
@@ -165,20 +186,21 @@ class PhotoRemoteSourceTest : TestCase() {
         remoteSource.savePhotos(fakePhotos).blockingAwait()
         val photo = fakePhotos[fakePhotos.indices.random()]
         val expectedPhoto: Photo = remoteSource.findPhotoById(photo.id).blockingGet()
-        assertThat(expectedPhoto).isEqualTo(photo)
+        assertSameAs(actual = photo,expected = expectedPhoto)
     }
 
     @Test
     fun given_remote_source_when_find_photos_by_ids_then_found_successfully() {
         remoteSource.savePhotos(fakePhotos).blockingAwait()
-        var photoIds: MutableList<String> = mutableListOf()
+        val photoIds: MutableList<String> = mutableListOf()
         photoIds.add(fakePhotos.first { photo -> photo.propertyId == firstPropertyId }.id)
         photoIds.add(fakePhotos.first { photo -> photo.propertyId == secondPropertyId }.id)
 
         var expectedPhotos: List<Photo> = remoteSource.findPhotosByIds(photoIds).blockingGet()
 
-        assertThat(expectedPhotos[0]).isEqualTo(fakePhotos.single { photo -> photo.id == photoIds[0] })
-        assertThat(expectedPhotos[1]).isEqualTo(fakePhotos.single { photo -> photo.id == photoIds[1] })
+        expectedPhotos = expectedPhotos.sortedBy { it.id }
+        assertSameAs(actual = fakePhotos.single { photo -> photo.id == photoIds[0] },expected = expectedPhotos[0])
+        assertSameAs(actual = fakePhotos.single { photo -> photo.id == photoIds[1] },expected = expectedPhotos[1])
     }
 
     @Test
@@ -191,11 +213,12 @@ class PhotoRemoteSourceTest : TestCase() {
         with(updatedPhoto) {
             description = "new description"
             type = PhotoType.values().first { type -> type != initialPhoto.type }
+            bitmap = BitmapFactory.decodeResource(resources, R.drawable.default_image)
         }
         remoteSource.updatePhoto(updatedPhoto).blockingAwait()
 
         val finalPhoto = remoteSource.findPhotoById(initialPhoto.id).blockingGet()
-        assertThat(finalPhoto).isEqualTo(updatedPhoto)
+        assertSameAs(actual = updatedPhoto,expected = finalPhoto)
     }
 
     @Test
@@ -209,6 +232,7 @@ class PhotoRemoteSourceTest : TestCase() {
             with(updatedPhoto) {
                 description = "new description"
                 type = PhotoType.values().first { type -> type != initialPhotos[index].type }
+                bitmap = BitmapFactory.decodeResource(resources, R.drawable.default_image)
             }
         }
         remoteSource.updatePhotos(updatedPhotos).blockingAwait()
@@ -218,14 +242,16 @@ class PhotoRemoteSourceTest : TestCase() {
                 photo -> ids.contains(photo.id)
         }
 
-        assertThat(finalPhotos).isEqualTo(updatedPhotos.toList())
+        updatedPhotos.forEachIndexed { index, photo ->
+            assertSameAs(actual = photo, expected = finalPhotos[index])
+        }
     }
 
     @Test
     fun given_remote_source_when_delete_photo_by_id_then_deleted_successfully() {
         remoteSource.savePhotos(fakePhotos).blockingAwait()
 
-        assertThat(remoteSource.findAllPhotos().blockingGet().size).isEqualTo(fakePhotos.size)
+        assertThat(remoteSource.count().blockingGet()).isEqualTo(fakePhotos.size)
         val photo = fakePhotos[fakePhotos.indices.random()]
         remoteSource.deletePhotoById(photo.id).blockingAwait()
         assertThat(remoteSource.findAllPhotos().blockingGet().contains(photo))
@@ -262,9 +288,17 @@ class PhotoRemoteSourceTest : TestCase() {
     @Test
     fun given_remote_source_when_delete_all_photos_then_deleted_successfully() {
         remoteSource.savePhotos(fakePhotos).blockingAwait()
-        assertThat(remoteSource.findAllPhotos().blockingGet().size
-        ).isEqualTo(fakePhotos.size)
+        assertThat(remoteSource.count().blockingGet()).isEqualTo(fakePhotos.size)
         remoteSource.deleteAllPhotos().blockingAwait()
         assertThat(remoteSource.findAllPhotos().blockingGet()).isEmpty()
+    }
+
+    private fun assertSameAs(actual: Photo, expected: Photo) {
+        assertThat(actual.id).isEqualTo(expected.id)
+        assertThat(actual.propertyId).isEqualTo(expected.propertyId)
+        assertThat(actual.mainPhoto).isEqualTo(expected.mainPhoto)
+        assertThat(actual.description).isEqualTo(expected.description)
+        assertThat(actual.type).isEqualTo(expected.type)
+        assertThat(BitmapUtil.sameAs(actual.bitmap!!, expected.bitmap!!))
     }
 }

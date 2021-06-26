@@ -1,61 +1,59 @@
-package com.openclassrooms.realestatemanager.data.remote.source
+package com.openclassrooms.realestatemanager.data.cache.source
 
-import com.openclassrooms.realestatemanager.data.remote.data.PropertyRemoteDataSource
+import com.openclassrooms.realestatemanager.data.cache.data.PropertyCacheDataSource
 import com.openclassrooms.realestatemanager.data.source.property.PropertyDataSource
 import com.openclassrooms.realestatemanager.models.Property
 import io.reactivex.Completable
 import io.reactivex.Single
 
-open class PropertyRemoteSource constructor(var remoteData: PropertyRemoteDataSource):
-    PropertyDataSource {
+class PropertyCacheSource constructor(var cacheData: PropertyCacheDataSource): PropertyDataSource {
 
     override fun count(): Single<Int> {
-       return remoteData.count()
+        TODO("Not yet implemented")
     }
 
     override fun saveProperty(property: Property): Completable {
-        return remoteData.saveProperty(property)
+        TODO("Not yet implemented")
     }
 
     override fun saveProperties(properties: List<Property>): Completable {
-        return remoteData.saveProperties(properties)
+        TODO("Not yet implemented")
     }
 
     override fun findPropertyById(id: String): Single<Property> {
-       return remoteData.findPropertyById(id)
+        TODO("Not yet implemented")
     }
 
     override fun findPropertiesByIds(ids: List<String>): Single<List<Property>> {
-        return remoteData.findPropertiesByIds(ids)
+        TODO("Not yet implemented")
     }
 
     override fun findAllProperties(): Single<List<Property>> {
-        return remoteData.findAllProperties()
+        TODO("Not yet implemented")
     }
 
     override fun updateProperty(property: Property): Completable {
-        return remoteData.updateProperty(property)
+        TODO("Not yet implemented")
     }
 
     override fun updateProperties(properties: List<Property>): Completable {
-        return remoteData.updateProperties(properties)
+        TODO("Not yet implemented")
     }
 
     override fun deletePropertiesByIds(ids: List<String>): Completable {
-       return remoteData.deletePropertiesByIds(ids)
+        TODO("Not yet implemented")
     }
 
     override fun deleteProperties(properties: List<Property>): Completable {
-        return remoteData.deleteProperties(properties)
+        TODO("Not yet implemented")
     }
 
     override fun deleteAllProperties(): Completable {
-        return remoteData.deleteAllProperties()
+        TODO("Not yet implemented")
     }
 
     override fun deletePropertyById(id: String): Completable {
-        return remoteData.deletePropertyById(id)
+        TODO("Not yet implemented")
     }
-
 
 }

@@ -3,7 +3,6 @@ package com.openclassrooms.realestatemanager.data.remote.storage
 import android.content.res.AssetManager
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.BitmapFactory.decodeResource
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
@@ -15,8 +14,7 @@ import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.util.BitmapUtil
-import com.openclassrooms.realestatemanager.util.Constants.SLASH
-import com.openclassrooms.realestatemanager.util.Constants.THUMBNAIL_FILE_NAME
+import com.openclassrooms.realestatemanager.util.BitmapUtil.bitmapFromAsset
 import com.openclassrooms.realestatemanager.util.ConstantsTest
 import com.openclassrooms.realestatemanager.util.ConstantsTest.FIREBASE_EMULATOR_HOST
 import com.openclassrooms.realestatemanager.util.ConstantsTest.FIREBASE_STORAGE_DEFAULT_BUCKET
@@ -66,12 +64,16 @@ class PhotoRemoteStorageSourceTest : TestCase() {
         }
 
         fakePhotos = fakePhotos.sortedBy { it.id }
-        fakePhotos.forEach { photo -> photo.bitmap = bitmapFromAsset(photo.id) }
+        fakePhotos.forEach { photo -> photo.bitmap = bitmapFromAsset(
+            InstrumentationRegistry.getInstrumentation().targetContext,
+            photo.id) }
     }
 
     @After
     public override fun tearDown() {
-        photoRemoteStorage.deleteAllPhotos().blockingAwait()
+        if(photoRemoteStorage.count().blockingGet() != 0) {
+            photoRemoteStorage.deleteAllPhotos().blockingAwait()
+        }
         super.tearDown()
     }
 
@@ -104,7 +106,7 @@ class PhotoRemoteStorageSourceTest : TestCase() {
 
         // Then count of photos in database is equal to given photos list size
         val expectedPhoto = photoRemoteStorage.findPhotoById(fakePhotos[0].id).blockingGet()
-        assertThat(BitmapUtil.sameAs(fakePhotos[0].bitmap!!, expectedPhoto))
+        assertThat(BitmapUtil.sameAs(fakePhotos[0].bitmap!!, expectedPhoto)).isTrue()
     }
 
     @Test
@@ -115,7 +117,7 @@ class PhotoRemoteStorageSourceTest : TestCase() {
         val expectedPhotos = photoRemoteStorage.findAllPhotos().blockingGet()
 
         fakePhotos.forEachIndexed { index, photo ->
-            assertThat(BitmapUtil.sameAs(photo.bitmap!!, expectedPhotos[index]))
+            assertThat(BitmapUtil.sameAs(photo.bitmap!!, expectedPhotos[index])).isTrue()
         }
     }
 
@@ -128,7 +130,7 @@ class PhotoRemoteStorageSourceTest : TestCase() {
 
         // Then returned photos in database is equal to given photos list
         fakePhotos.forEachIndexed { index, photo ->
-            assertThat(BitmapUtil.sameAs(photo.bitmap!!, expectedPhotos[index]))
+            assertThat(BitmapUtil.sameAs(photo.bitmap!!, expectedPhotos[index])).isTrue()
         }
     }
 
@@ -137,7 +139,7 @@ class PhotoRemoteStorageSourceTest : TestCase() {
         photoRemoteStorage.savePhotos(fakePhotos).blockingAwait()
         val photo = fakePhotos[fakePhotos.indices.random()]
         val expectedPhoto: Bitmap = photoRemoteStorage.findPhotoById(photo.id).blockingGet()
-        assertThat(BitmapUtil.sameAs(photo.bitmap!!, expectedPhoto))
+        assertThat(BitmapUtil.sameAs(photo.bitmap!!, expectedPhoto)).isTrue()
     }
 
     @Test
@@ -149,8 +151,14 @@ class PhotoRemoteStorageSourceTest : TestCase() {
 
         val expectedPhotos: List<Bitmap> = photoRemoteStorage.findPhotosByIds(photoIds).blockingGet()
 
-        assertThat(BitmapUtil.sameAs(fakePhotos.single { photo -> photo.id == photoIds[0] }.bitmap!!, expectedPhotos[0]))
-        assertThat(BitmapUtil.sameAs(fakePhotos.single { photo -> photo.id == photoIds[1] }.bitmap!!, expectedPhotos[1]))
+        assertThat(BitmapUtil.sameAs(
+            fakePhotos.single { photo -> photo.id == photoIds[0] }.bitmap!!,
+            expectedPhotos[0])
+        ).isTrue()
+        assertThat(BitmapUtil.sameAs(
+            fakePhotos.single { photo -> photo.id == photoIds[1] }.bitmap!!,
+            expectedPhotos[1])
+        ).isTrue()
     }
 
     @Test
@@ -167,7 +175,7 @@ class PhotoRemoteStorageSourceTest : TestCase() {
 
         val finalPhoto = photoRemoteStorage.findPhotoById(initialPhoto.id).blockingGet()
 
-        assertThat(BitmapUtil.sameAs(finalPhoto, updatedPhoto.bitmap!!))
+        assertThat(BitmapUtil.sameAs(finalPhoto, updatedPhoto.bitmap!!)).isTrue()
     }
 
     @Test
@@ -188,7 +196,7 @@ class PhotoRemoteStorageSourceTest : TestCase() {
         val finalPhotos = photoRemoteStorage.findPhotosByIds(ids).blockingGet()
 
         finalPhotos.forEachIndexed { index, photo ->
-            assertThat(BitmapUtil.sameAs(photo, updatedPhotos[index].bitmap!!))
+            assertThat(BitmapUtil.sameAs(photo, updatedPhotos[index].bitmap!!)).isTrue()
         }
     }
 
@@ -199,8 +207,9 @@ class PhotoRemoteStorageSourceTest : TestCase() {
         assertThat(photoRemoteStorage.findAllPhotos().blockingGet().size).isEqualTo(fakePhotos.size)
         val photo = fakePhotos[fakePhotos.indices.random()]
         photoRemoteStorage.deletePhotoById(photo.id).blockingAwait()
-        assertThat(photoRemoteStorage.findAllPhotos().blockingGet().contains(photo.bitmap))
-            .isFalse()
+        val findAllPhotos = photoRemoteStorage.findAllPhotos().blockingGet()
+        assertThat(findAllPhotos.size).isEqualTo((fakePhotos.size - 1))
+        assertThat(findAllPhotos.contains(photo.bitmap)).isFalse()
     }
 
     @Test
@@ -241,12 +250,6 @@ class PhotoRemoteStorageSourceTest : TestCase() {
         assertThat(photoRemoteStorage.findAllPhotos().blockingGet()).isEmpty()
     }
 
-    private fun bitmapFromAsset(fileName: String): Bitmap {
-        val inputStream = assets.open(fileName + SLASH + THUMBNAIL_FILE_NAME)
-        val bitmap = BitmapFactory.decodeStream(inputStream)
-        inputStream.close()
-        return bitmap
-    }
 
     companion object {
         const val firstPropertyId: String = "2orYJD9m1aAPbTKcrkBj"

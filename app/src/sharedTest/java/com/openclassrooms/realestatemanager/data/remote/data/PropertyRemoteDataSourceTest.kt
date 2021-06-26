@@ -2,7 +2,7 @@ package com.openclassrooms.realestatemanager.data.remote.data
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import com.google.common.truth.Truth
+import com.google.common.truth.Truth.assertThat
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.gson.Gson
@@ -30,7 +30,8 @@ class PropertyRemoteDataSourceTest : TestCase() {
     private lateinit var propertyRemoteDataSource: PropertyRemoteDataSource
 
     @Before
-    fun initApiService() {
+    public override fun setUp() {
+        super.setUp()
         firestore = FirebaseFirestore.getInstance()
         firestore.useEmulator(FIREBASE_EMULATOR_HOST, FIREBASE_FIRESTORE_PORT)
         val settings = FirebaseFirestoreSettings.Builder().setPersistenceEnabled(false).build()
@@ -45,9 +46,10 @@ class PropertyRemoteDataSourceTest : TestCase() {
     }
 
     @After
-    fun closeApiService() {
+    public override fun tearDown() {
         propertyRemoteDataSource.deleteAllProperties().blockingAwait()
         firestore.terminate()
+        super.tearDown()
     }
 
     @Test
@@ -56,7 +58,7 @@ class PropertyRemoteDataSourceTest : TestCase() {
         propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        Truth.assertThat(propertyRemoteDataSource.count().blockingGet()).isEqualTo(fakeProperties.size)
+        assertThat(propertyRemoteDataSource.count().blockingGet()).isEqualTo(fakeProperties.size)
     }
 
     @Test
@@ -65,7 +67,7 @@ class PropertyRemoteDataSourceTest : TestCase() {
         propertyRemoteDataSource.saveProperty(fakeProperties[0]).blockingAwait()
 
         // Then count of properties in database is equal to given properties list size
-        Truth.assertThat(propertyRemoteDataSource.findPropertyById(fakeProperties[0].id).blockingGet()).isEqualTo(fakeProperties[0])
+        assertThat(propertyRemoteDataSource.findPropertyById(fakeProperties[0].id).blockingGet()).isEqualTo(fakeProperties[0])
     }
 
     @Test
@@ -74,7 +76,7 @@ class PropertyRemoteDataSourceTest : TestCase() {
         propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
 
         // Then count of properties in database is equal to given properties list size
-        Truth.assertThat(propertyRemoteDataSource.findAllProperties().blockingGet()).isEqualTo(fakeProperties)
+        assertThat(propertyRemoteDataSource.findAllProperties().blockingGet()).isEqualTo(fakeProperties)
     }
 
     @Test
@@ -90,7 +92,7 @@ class PropertyRemoteDataSourceTest : TestCase() {
         // Then returned properties in database is equal to given properties list
         actualProperties = actualProperties.sortedBy { it.id }
         actualProperties.forEachIndexed { index, property ->
-            Truth.assertThat(property).isEqualTo(fakeProperties[index])
+            assertThat(property).isEqualTo(fakeProperties[index])
         }
     }
 
@@ -99,7 +101,7 @@ class PropertyRemoteDataSourceTest : TestCase() {
         propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
         val property = fakeProperties[fakeProperties.indices.random()]
         val expectedProperty: Property = propertyRemoteDataSource.findPropertyById(property.id).blockingGet()
-        Truth.assertThat(expectedProperty).isEqualTo(property)
+        assertThat(expectedProperty).isEqualTo(property)
     }
 
     @Test
@@ -107,7 +109,7 @@ class PropertyRemoteDataSourceTest : TestCase() {
         propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
         val propertyIds = fakeProperties.subList(0, 2).map { property -> property.id }
         val expectedProperties: List<Property> = propertyRemoteDataSource.findPropertiesByIds(propertyIds).blockingGet()
-        Truth.assertThat(expectedProperties).isEqualTo(fakeProperties.subList(0, 2))
+        assertThat(expectedProperties).isEqualTo(fakeProperties.subList(0, 2))
     }
 
     @Test
@@ -124,7 +126,7 @@ class PropertyRemoteDataSourceTest : TestCase() {
         propertyRemoteDataSource.updateProperty(updatedProperty).blockingAwait()
 
         val finalProperty = propertyRemoteDataSource.findPropertyById(initialProperty.id).blockingGet()
-        Truth.assertThat(finalProperty).isEqualTo(updatedProperty)
+        assertThat(finalProperty).isEqualTo(updatedProperty)
     }
 
     @Test
@@ -149,17 +151,17 @@ class PropertyRemoteDataSourceTest : TestCase() {
         }
         finalProperties = finalProperties.sortedBy { it.id }
 
-        Truth.assertThat(finalProperties).isEqualTo(updatedProperties.toList())
+        assertThat(finalProperties).isEqualTo(updatedProperties.toList())
     }
 
     @Test
     fun given_property_remote_data_source_when_delete_property_by_id_then_deleted_successfully() {
         propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
 
-        Truth.assertThat(propertyRemoteDataSource.findAllProperties().blockingGet().size).isEqualTo(fakeProperties.size)
+        assertThat(propertyRemoteDataSource.count().blockingGet()).isEqualTo(fakeProperties.size)
         val property = fakeProperties[fakeProperties.indices.random()]
         propertyRemoteDataSource.deletePropertyById(property.id).blockingAwait()
-        Truth.assertThat(propertyRemoteDataSource.findAllProperties().blockingGet().contains(property))
+        assertThat(propertyRemoteDataSource.findAllProperties().blockingGet().contains(property))
             .isFalse()
     }
 
@@ -170,28 +172,26 @@ class PropertyRemoteDataSourceTest : TestCase() {
         propertyRemoteDataSource.deletePropertiesByIds(propertyIds).blockingAwait()
 
         val findAllProperties = propertyRemoteDataSource.findAllProperties().blockingGet()
-        Truth.assertThat(findAllProperties.size).isEqualTo((fakeProperties.size - 2))
-        Truth.assertThat(findAllProperties.containsAll(fakeProperties.subList(0, 2))).isFalse()
+        assertThat(findAllProperties.size).isEqualTo((fakeProperties.size - 2))
+        assertThat(findAllProperties.containsAll(fakeProperties.subList(0, 2))).isFalse()
     }
 
     @Test
     fun given_property_remote_data_source_when_delete_properties_then_deleted_successfully() {
         propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
-        Truth.assertThat(propertyRemoteDataSource.findAllProperties().blockingGet().size).isEqualTo(fakeProperties.size)
+        assertThat(propertyRemoteDataSource.count().blockingGet()).isEqualTo(fakeProperties.size)
 
         propertyRemoteDataSource.deleteProperties(fakeProperties.subList(0, 2)).blockingAwait()
 
         val findAllProperties = propertyRemoteDataSource.findAllProperties().blockingGet()
-        Truth.assertThat(findAllProperties.size).isEqualTo((fakeProperties.size - 2))
+        assertThat(findAllProperties.size).isEqualTo((fakeProperties.size - 2))
     }
 
     @Test
     fun given_property_remote_data_source_when_delete_all_properties_then_deleted_successfully() {
         propertyRemoteDataSource.saveProperties(fakeProperties).blockingAwait()
-        Truth.assertThat(
-            propertyRemoteDataSource.findAllProperties().blockingGet().size
-        ).isEqualTo(fakeProperties.size)
+        assertThat(propertyRemoteDataSource.count().blockingGet()).isEqualTo(fakeProperties.size)
         propertyRemoteDataSource.deleteAllProperties().blockingAwait()
-        Truth.assertThat(propertyRemoteDataSource.findAllProperties().blockingGet()).isEmpty()
+        assertThat(propertyRemoteDataSource.findAllProperties().blockingGet()).isEmpty()
     }
 }

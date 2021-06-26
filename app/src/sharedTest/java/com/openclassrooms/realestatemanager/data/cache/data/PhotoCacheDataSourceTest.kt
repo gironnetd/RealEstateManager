@@ -46,7 +46,7 @@ class PhotoCacheDataSourceTest : TestCase() {
     fun clearDatabase() = database.clearAllTables()
 
     @Test
-    fun given_local_data_source_when_save_photos_then_counted_successfully() {
+    fun given_cache_data_source_when_save_photos_then_counted_successfully() {
         // Given photos list and When photos list saved
         cacheDataSource.savePhotos(fakePhotos).blockingAwait()
 
@@ -55,7 +55,7 @@ class PhotoCacheDataSourceTest : TestCase() {
     }
 
     @Test
-    fun given_local_data_source_when_save_photos_then_counted_by_propertyId_successfully() {
+    fun given_cache_data_source_when_save_photos_then_counted_by_propertyId_successfully() {
         // Given photos list and When photos list saved
         val firstPropertyId = UUID.randomUUID().toString()
         fakePhotos.subList(0, fakePhotos.indices.count() / 2).forEach { photo ->
@@ -78,7 +78,7 @@ class PhotoCacheDataSourceTest : TestCase() {
     }
 
     @Test
-    fun given_local_data_source_when_save_a_photo_then_saved_successfully() {
+    fun given_cache_data_source_when_save_a_photo_then_saved_successfully() {
         // Given photos list and When photos list saved
         cacheDataSource.savePhoto(fakePhotos[0]).blockingAwait()
 
@@ -87,7 +87,7 @@ class PhotoCacheDataSourceTest : TestCase() {
     }
 
     @Test
-    fun given_local_data_source_when_save_photos_then_saved_successfully() {
+    fun given_cache_data_source_when_save_photos_then_saved_successfully() {
         // Given photos list and When photos list saved
         cacheDataSource.savePhotos(fakePhotos).blockingAwait()
 
@@ -96,7 +96,7 @@ class PhotoCacheDataSourceTest : TestCase() {
     }
 
     @Test
-    fun given_local_data_source_when_find_all_photos_then_found_successfully() {
+    fun given_cache_data_source_when_find_all_photos_then_found_successfully() {
 
         // Given photos list
         fakePhotos = fakePhotos.sortedBy { it.id }
@@ -114,7 +114,7 @@ class PhotoCacheDataSourceTest : TestCase() {
     }
 
     @Test
-    fun given_local_data_source_when_find_photo_by_id_then_found_successfully() {
+    fun given_cache_data_source_when_find_photo_by_id_then_found_successfully() {
         cacheDataSource.savePhotos(fakePhotos).blockingAwait()
         val photo = fakePhotos[fakePhotos.indices.random()]
         val expectedPhoto: Photo = cacheDataSource.findPhotoById(photo.id).blockingGet()
@@ -122,7 +122,7 @@ class PhotoCacheDataSourceTest : TestCase() {
     }
 
     @Test
-    fun given_local_data_source_when_find_photos_by_ids_then_found_successfully() {
+    fun given_cache_data_source_when_find_photos_by_ids_then_found_successfully() {
         cacheDataSource.savePhotos(fakePhotos).blockingAwait()
         val photoIds = fakePhotos.subList(0, 2).map { photo -> photo.id }
         val expectedPhotos: List<Photo> = cacheDataSource.findPhotosByIds(photoIds).blockingGet()
@@ -130,7 +130,7 @@ class PhotoCacheDataSourceTest : TestCase() {
     }
 
     @Test
-    fun given_local_data_source_when_update_photo_then_updated_successfully() {
+    fun given_cache_data_source_when_update_photo_then_updated_successfully() {
         val initialPhoto = fakePhotos[fakePhotos.indices.random()]
 
         cacheDataSource.savePhotos(fakePhotos).blockingAwait()
@@ -147,7 +147,7 @@ class PhotoCacheDataSourceTest : TestCase() {
     }
 
     @Test
-    fun given_local_data_source_when_update_photos_then_updated_successfully() {
+    fun given_cache_data_source_when_update_photos_then_updated_successfully() {
         var initialPhotos = arrayOf(fakePhotos[0], fakePhotos[1])
 
         cacheDataSource.savePhotos(fakePhotos).blockingAwait()
@@ -172,7 +172,7 @@ class PhotoCacheDataSourceTest : TestCase() {
     }
 
     @Test
-    fun given_local_data_source_when_delete_photo_by_id_then_deleted_successfully() {
+    fun given_cache_data_source_when_delete_photo_by_id_then_deleted_successfully() {
         cacheDataSource.savePhotos(fakePhotos).blockingAwait()
         val photo = fakePhotos[fakePhotos.indices.random()]
         cacheDataSource.deletePhotoById(photo.id).blockingAwait()
@@ -181,7 +181,7 @@ class PhotoCacheDataSourceTest : TestCase() {
     }
 
     @Test
-    fun given_local_data_source_when_delete_photos_by_ids_then_deleted_successfully() {
+    fun given_cache_data_source_when_delete_photos_by_ids_then_deleted_successfully() {
         cacheDataSource.savePhotos(fakePhotos).blockingAwait()
         val photoIds = fakePhotos.subList(0, 2).map { photo -> photo.id }
         cacheDataSource.deletePhotosByIds(photoIds).blockingAwait()
@@ -192,7 +192,7 @@ class PhotoCacheDataSourceTest : TestCase() {
     }
 
     @Test
-    fun given_local_data_source_when_delete_photos_then_deleted_successfully() {
+    fun given_cache_data_source_when_delete_photos_then_deleted_successfully() {
         cacheDataSource.savePhotos(fakePhotos).blockingAwait()
         assertThat(cacheDataSource.findAllPhotos().blockingGet().size).isEqualTo(fakePhotos.size)
 
@@ -203,7 +203,7 @@ class PhotoCacheDataSourceTest : TestCase() {
     }
 
     @Test
-    fun given_local_data_source_when_delete_all_photos_then_deleted_successfully() {
+    fun given_cache_data_source_when_delete_all_photos_then_deleted_successfully() {
         cacheDataSource.savePhotos(fakePhotos).blockingAwait()
         assertThat(
             cacheDataSource.findAllPhotos().blockingGet().size
