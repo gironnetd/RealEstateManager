@@ -9,51 +9,50 @@ import io.reactivex.Single
 class PropertyCacheSource constructor(var cacheData: PropertyCacheDataSource): PropertyDataSource {
 
     override fun count(): Single<Int> {
-        TODO("Not yet implemented")
+        return cacheData.count()
     }
 
     override fun saveProperty(property: Property): Completable {
-        TODO("Not yet implemented")
+        return cacheData.saveProperty(property)
     }
 
     override fun saveProperties(properties: List<Property>): Completable {
-        TODO("Not yet implemented")
+        return cacheData.saveProperties(properties)
     }
 
     override fun findPropertyById(id: String): Single<Property> {
-        TODO("Not yet implemented")
+        return cacheData.findPropertyById(id)
     }
 
     override fun findPropertiesByIds(ids: List<String>): Single<List<Property>> {
-        TODO("Not yet implemented")
+        return cacheData.findPropertiesByIds(ids)
     }
 
     override fun findAllProperties(): Single<List<Property>> {
-        TODO("Not yet implemented")
+        return cacheData.findAllProperties()
     }
 
     override fun updateProperty(property: Property): Completable {
-        TODO("Not yet implemented")
+        return cacheData.updateProperty(property)
     }
 
     override fun updateProperties(properties: List<Property>): Completable {
-        TODO("Not yet implemented")
+        return cacheData.updateProperties(properties)
     }
 
     override fun deletePropertiesByIds(ids: List<String>): Completable {
-        TODO("Not yet implemented")
+        return cacheData.deletePropertiesByIds(ids)
     }
 
     override fun deleteProperties(properties: List<Property>): Completable {
-        TODO("Not yet implemented")
+        return cacheData.deleteProperties(properties)
     }
 
     override fun deleteAllProperties(): Completable {
-        TODO("Not yet implemented")
+        return cacheData.deleteAllProperties()
     }
 
     override fun deletePropertyById(id: String): Completable {
-        TODO("Not yet implemented")
+        return cacheData.deletePropertyById(id)
     }
-
 }
