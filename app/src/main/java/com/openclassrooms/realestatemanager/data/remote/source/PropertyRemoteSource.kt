@@ -1,13 +1,17 @@
 package com.openclassrooms.realestatemanager.data.remote.source
 
-import com.openclassrooms.realestatemanager.data.remote.data.PropertyRemoteDataSource
 import com.openclassrooms.realestatemanager.data.source.property.PropertyDataSource
+import com.openclassrooms.realestatemanager.data.source.property.PropertySource
+import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Property
 import io.reactivex.Completable
 import io.reactivex.Single
+import javax.inject.Inject
 
-open class PropertyRemoteSource constructor(var remoteData: PropertyRemoteDataSource):
-    PropertyDataSource {
+@BrowseScope
+open class PropertyRemoteSource
+@Inject
+constructor(var remoteData: PropertyDataSource): PropertySource {
 
     override fun count(): Single<Int> {
        return remoteData.count()
@@ -31,6 +35,10 @@ open class PropertyRemoteSource constructor(var remoteData: PropertyRemoteDataSo
 
     override fun findAllProperties(): Single<List<Property>> {
         return remoteData.findAllProperties()
+    }
+
+    override fun findAllUpdatedProperties(): Single<List<Property>> {
+        TODO("Not yet implemented")
     }
 
     override fun updateProperty(property: Property): Completable {

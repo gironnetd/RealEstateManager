@@ -152,7 +152,7 @@ class PhotoRemoteSourceTest : TestCase() {
         remoteSource.savePhoto(fakePhotos[0]).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        assertSameAs(actual = fakePhotos[0],expected = remoteSource.findPhotoById(fakePhotos[0].id).blockingGet())
+        assertSameAs(actual = fakePhotos[0],expected = remoteSource.findPhotoById(fakePhotos[0].propertyId, fakePhotos[0].id).blockingGet())
     }
 
     @Test
@@ -185,7 +185,7 @@ class PhotoRemoteSourceTest : TestCase() {
     fun given_remote_source_when_find_photo_by_id_then_found_successfully() {
         remoteSource.savePhotos(fakePhotos).blockingAwait()
         val photo = fakePhotos[fakePhotos.indices.random()]
-        val expectedPhoto: Photo = remoteSource.findPhotoById(photo.id).blockingGet()
+        val expectedPhoto: Photo = remoteSource.findPhotoById(photo.propertyId, photo.id).blockingGet()
         assertSameAs(actual = photo,expected = expectedPhoto)
     }
 
@@ -217,7 +217,7 @@ class PhotoRemoteSourceTest : TestCase() {
         }
         remoteSource.updatePhoto(updatedPhoto).blockingAwait()
 
-        val finalPhoto = remoteSource.findPhotoById(initialPhoto.id).blockingGet()
+        val finalPhoto = remoteSource.findPhotoById(initialPhoto.propertyId, initialPhoto.id).blockingGet()
         assertSameAs(actual = updatedPhoto,expected = finalPhoto)
     }
 

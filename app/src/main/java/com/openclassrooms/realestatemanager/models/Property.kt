@@ -5,6 +5,7 @@ import android.database.Cursor
 import android.provider.BaseColumns
 import androidx.annotation.NonNull
 import androidx.room.*
+import com.google.firebase.firestore.Exclude
 import com.google.gson.annotations.SerializedName
 import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_CITY
 import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_COUNTRY
@@ -57,11 +58,6 @@ data class Property(
         @ColumnInfo(name = "agent_id")
         var agentId: String? = null,
 
-//        @get:PropertyName("mainPicture")
-//        @set:PropertyName("mainPicture")
-//        @Embedded(prefix = PREFIX_MAIN_PHOTO)
-//        var mainPhoto: Photo? = null,
-
         @ColumnInfo(name = "main_photo_id")
         var mainPhotoId: String? = null,
 
@@ -72,7 +68,11 @@ data class Property(
         var soldDate: Date? = null,
 
         @Ignore
-        var photos: MutableList<Photo> = mutableListOf()
+        var photos: MutableList<Photo> = mutableListOf(),
+
+        @ColumnInfo(name = "updated")
+        @get:Exclude
+        var updated: Boolean = false
 ) {
 
         constructor(cursor: Cursor) : this() {
@@ -97,7 +97,6 @@ data class Property(
                         cursor.getString(cursor.getColumnIndex(COLUMN_PROPERTY_STATUS)))
                 agentId = cursor.getString(cursor.getColumnIndex(COLUMN_AGENT_ID))
                 mainPhotoId = cursor.getString(cursor.getColumnIndex(COLUMN_MAIN_PHOTO_ID))
-                //mainPhoto = Photo(cursor = cursor, isMainPhoto = true)
                 if(!cursor.isNull(cursor.getColumnIndex(COLUMN_ENTRY_DATE))) {
                         entryDate = DateConverter()
                                 .fromTimestamp(cursor.getLong(cursor.getColumnIndex(COLUMN_ENTRY_DATE)))!!
@@ -107,6 +106,8 @@ data class Property(
                                 .fromTimestamp(cursor.getLong(cursor.getColumnIndex(COLUMN_SOLD_DATE)))!!
                 }
         }
+
+
 
         companion object {
                 /** The name of the Property table.  */
@@ -156,6 +157,9 @@ data class Property(
 
                 /** The name of the sold date column.  */
                 const val COLUMN_SOLD_DATE = "sold_date"
+
+                /** The name of the updated column.  */
+                const val COLUMN_UPDATED = "updated"
 
                 @NonNull
                 fun fromContentValues(values: ContentValues?): Property {
@@ -230,31 +234,9 @@ data class Property(
                                         property.agentId = it.getAsString(COLUMN_AGENT_ID)
                                 }
 
-//                                if(property.mainPhoto == null) {
-//                                        property.mainPhoto = Photo()
-//                                }
-
                                 if (it.containsKey(COLUMN_MAIN_PHOTO_ID)) {
                                         property.mainPhotoId = it.getAsString(COLUMN_MAIN_PHOTO_ID)
                                 }
-
-//                                if (it.containsKey(PREFIX_MAIN_PHOTO + Photo.COLUMN_ID)) {
-//                                          property.mainPhoto!!.id = it.getAsString(PREFIX_MAIN_PHOTO + Photo.COLUMN_ID)
-//                                }
-//
-//                                if (it.containsKey(PREFIX_MAIN_PHOTO + COLUMN_PHOTO_PROPERTY_ID)) {
-//                                        property.mainPhoto!!.propertyId = it.getAsString(PREFIX_MAIN_PHOTO + COLUMN_PHOTO_PROPERTY_ID)
-//
-//                                }
-//
-//                                if (it.containsKey(PREFIX_MAIN_PHOTO + COLUMN_PHOTO_DESCRIPTION)) {
-//                                        property.mainPhoto!!.description = it.getAsString(PREFIX_MAIN_PHOTO + COLUMN_PHOTO_DESCRIPTION)
-//                                }
-//
-//                                if (it.containsKey(PREFIX_MAIN_PHOTO + COLUMN_PHOTO_TYPE)) {
-//                                        property.mainPhoto!!.type = PhotoTypeConverter()
-//                                                .toPhotoType(it.getAsString(PREFIX_MAIN_PHOTO + COLUMN_PHOTO_TYPE))
-//                                }
 
                                 if (it.containsKey(COLUMN_ENTRY_DATE)) {
                                          property.entryDate = DateConverter()
@@ -267,6 +249,10 @@ data class Property(
                                                         .fromTimestamp(soldDate)!!
                                         }
                                 }
+
+                                if(it.containsKey(Photo.COLUMN_UPDATED)) {
+                                        property.updated = it.getAsBoolean(Photo.COLUMN_UPDATED)
+                                }
                         }
                         return property
                 }
@@ -275,6 +261,52 @@ data class Property(
         fun titleInToolbar(): String {
                 return address!!.street + ", " +
                         address!!.postalCode + " " + address!!.city
+        }
+
+        override fun equals(other: Any?): Boolean {
+                if (this === other) return true
+                if (javaClass != other?.javaClass) return false
+
+                other as Property
+
+                if (id != other.id) return false
+                if (type != other.type) return false
+                if (price != other.price) return false
+                if (surface != other.surface) return false
+                if (rooms != other.rooms) return false
+                if (bedRooms != other.bedRooms) return false
+                if (bathRooms != other.bathRooms) return false
+                if (description != other.description) return false
+                if (address != other.address) return false
+                if (interestPoints != other.interestPoints) return false
+                if (status != other.status) return false
+                if (agentId != other.agentId) return false
+                if (mainPhotoId != other.mainPhotoId) return false
+                if (entryDate != other.entryDate) return false
+                if (soldDate != other.soldDate) return false
+                if (photos != other.photos) return false
+
+                return true
+        }
+
+        override fun hashCode(): Int {
+                var result = id.hashCode()
+                result = 31 * result + type.hashCode()
+                result = 31 * result + price
+                result = 31 * result + surface
+                result = 31 * result + rooms
+                result = 31 * result + bedRooms
+                result = 31 * result + bathRooms
+                result = 31 * result + description.hashCode()
+                result = 31 * result + (address?.hashCode() ?: 0)
+                result = 31 * result + interestPoints.hashCode()
+                result = 31 * result + status.hashCode()
+                result = 31 * result + (agentId?.hashCode() ?: 0)
+                result = 31 * result + (mainPhotoId?.hashCode() ?: 0)
+                result = 31 * result + entryDate.hashCode()
+                result = 31 * result + (soldDate?.hashCode() ?: 0)
+                result = 31 * result + photos.hashCode()
+                return result
         }
 }
 

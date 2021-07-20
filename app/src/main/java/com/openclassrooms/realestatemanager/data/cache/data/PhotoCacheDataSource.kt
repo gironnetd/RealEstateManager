@@ -7,8 +7,10 @@ import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable
 import io.reactivex.Single
+import javax.inject.Inject
 
-class PhotoCacheDataSource constructor(private val photoDao: PhotoDao): PhotoDataSource {
+class PhotoCacheDataSource
+@Inject constructor(private val photoDao: PhotoDao): PhotoDataSource {
 
     override fun count(): Single<Int> {
         return Single.fromCallable { photoDao.count() }
@@ -44,9 +46,21 @@ class PhotoCacheDataSource constructor(private val photoDao: PhotoDao): PhotoDat
         }
     }
 
+    override fun findPhotosByPropertyId(propertyId: String): Single<List<Photo>> {
+        TODO("Not yet implemented")
+    }
+
     override fun findAllPhotos(): Single<List<Photo>> {
         return Single.fromCallable {
             photoDao.findAllPhotos().toList { Photo(it) }
+        }.subscribeOn(SchedulerProvider.io()).flatMap {
+            Single.just(it)
+        }
+    }
+
+    override fun findAllUpdatedPhotos(): Single<List<Photo>> {
+        return Single.fromCallable {
+            photoDao.findAllUpdatedPhotos().toList { Photo(it) }
         }.subscribeOn(SchedulerProvider.io()).flatMap {
             Single.just(it)
         }

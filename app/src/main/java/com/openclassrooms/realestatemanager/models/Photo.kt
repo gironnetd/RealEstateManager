@@ -13,6 +13,7 @@ import com.google.firebase.firestore.Exclude
 import com.google.gson.annotations.SerializedName
 import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_ID
 import com.openclassrooms.realestatemanager.models.Photo.Companion.TABLE_NAME
+import com.openclassrooms.realestatemanager.util.BitmapUtil.sameAs
 import com.openclassrooms.realestatemanager.util.Constants.GS_REFERENCE_PREFIX
 import com.openclassrooms.realestatemanager.util.Constants.MAIN_FILE_NAME
 import com.openclassrooms.realestatemanager.util.Constants.PHOTOS_COLLECTION
@@ -83,7 +84,11 @@ data class Photo (
 
     @Ignore
     @get:Exclude
-    var bitmap: Bitmap? = null
+    var bitmap: Bitmap? = null,
+
+    @ColumnInfo(name = "updated")
+    @get:Exclude
+    var updated: Boolean = false
 
 ) : Parcelable {
     constructor(cursor: Cursor/*, isMainPhoto: Boolean = false*/): this() {
@@ -107,13 +112,13 @@ data class Photo (
 //                    )))
 //            mainPhoto = isMainPhoto
 //        } else {
-            id = cursor.getString(cursor.getColumnIndex(COLUMN_ID))
-            propertyId = cursor.getString(cursor.getColumnIndex(COLUMN_PHOTO_PROPERTY_ID))
-            description = cursor.getString(cursor.getColumnIndex(COLUMN_PHOTO_DESCRIPTION))
-            type = PhotoType.valueOf(cursor.getString(cursor.getColumnIndex(COLUMN_PHOTO_TYPE)))
+        id = cursor.getString(cursor.getColumnIndex(COLUMN_ID))
+        propertyId = cursor.getString(cursor.getColumnIndex(COLUMN_PHOTO_PROPERTY_ID))
+        description = cursor.getString(cursor.getColumnIndex(COLUMN_PHOTO_DESCRIPTION))
+        type = PhotoType.valueOf(cursor.getString(cursor.getColumnIndex(COLUMN_PHOTO_TYPE)))
 
-            mainPhoto = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_MAIN_PHOTO)) == 1
-    //    }
+        mainPhoto = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_MAIN_PHOTO)) == 1
+        //    }
     }
 
     override fun toString(): String {
@@ -128,14 +133,34 @@ data class Photo (
             .toString()
     }
 
-//    constructor(string: String): this() {
-//        val split = string.split(SEPARATOR)
-//        id = split[0]
-//        propertyId = split[1]
-//        description = split[2]
-//        type = PhotoType.valueOf(split[3])
-//        //mainPhoto = split[4].toBoolean()
-//    }
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Photo
+
+        if (id != other.id) return false
+        if (propertyId != other.propertyId) return false
+        if (description != other.description) return false
+        if (mainPhoto != other.mainPhoto) return false
+        if (type != other.type) return false
+        if(bitmap != null && other.bitmap != null) {
+            if (!sameAs(bitmap!!, other.bitmap!!) ) return false
+        }
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + propertyId.hashCode()
+        result = 31 * result + description.hashCode()
+        result = 31 * result + mainPhoto.hashCode()
+        result = 31 * result + type.hashCode()
+        result = 31 * result + (bitmap?.hashCode() ?: 0)
+        return result
+    }
+
 
     companion object {
 
@@ -155,10 +180,11 @@ data class Photo (
         /** The name of the type column.  */
         const val COLUMN_PHOTO_TYPE = "type"
 
+        /** The name of the main photo column.  */
         const val COLUMN_IS_MAIN_PHOTO = "main_photo"
 
-        /** The name of the prefix main photo in database.  */
-        const val PREFIX_MAIN_PHOTO = "main_photo_"
+        /** The name of the updated column.  */
+        const val COLUMN_UPDATED = "updated"
 
         @NonNull
         fun fromContentValues(values: ContentValues?): Photo {
@@ -182,6 +208,10 @@ data class Photo (
 
                 if(it.containsKey(COLUMN_IS_MAIN_PHOTO)) {
                     photo.mainPhoto = it.getAsBoolean(COLUMN_IS_MAIN_PHOTO)
+                }
+
+                if(it.containsKey(COLUMN_UPDATED)) {
+                    photo.updated = it.getAsBoolean(COLUMN_UPDATED)
                 }
             }
             return photo

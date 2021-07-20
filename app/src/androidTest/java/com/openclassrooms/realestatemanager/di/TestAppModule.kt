@@ -9,14 +9,12 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.storage.FirebaseStorage
 import com.openclassrooms.realestatemanager.data.cache.AppDatabase
 import com.openclassrooms.realestatemanager.data.cache.dao.PropertyDao
 import com.openclassrooms.realestatemanager.data.remote.DefaultPropertyApiService
 import com.openclassrooms.realestatemanager.data.remote.PropertyApiService
-import com.openclassrooms.realestatemanager.util.FakeGlideRequestManager
-import com.openclassrooms.realestatemanager.util.GlideManager
-import com.openclassrooms.realestatemanager.util.JsonUtil
-import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
+import com.openclassrooms.realestatemanager.util.*
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -42,6 +40,16 @@ object TestAppModule {
         firestore.useEmulator("10.0.2.2", 8080)
         firestore.firestoreSettings = settings
         return firestore
+    }
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideStorage(): FirebaseStorage {
+        val storage = FirebaseStorage.getInstance(ConstantsTest.FIREBASE_STORAGE_DEFAULT_BUCKET)
+        storage.useEmulator(ConstantsTest.FIREBASE_EMULATOR_HOST,
+            ConstantsTest.FIREBASE_STORAGE_PORT)
+        return storage
     }
 
     @JvmStatic

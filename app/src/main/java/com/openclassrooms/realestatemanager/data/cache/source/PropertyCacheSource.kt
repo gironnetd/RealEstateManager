@@ -1,12 +1,17 @@
 package com.openclassrooms.realestatemanager.data.cache.source
 
-import com.openclassrooms.realestatemanager.data.cache.data.PropertyCacheDataSource
 import com.openclassrooms.realestatemanager.data.source.property.PropertyDataSource
+import com.openclassrooms.realestatemanager.data.source.property.PropertySource
+import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Property
 import io.reactivex.Completable
 import io.reactivex.Single
+import javax.inject.Inject
 
-class PropertyCacheSource constructor(var cacheData: PropertyCacheDataSource): PropertyDataSource {
+@BrowseScope
+open class PropertyCacheSource
+@Inject
+constructor(var cacheData: PropertyDataSource): PropertySource {
 
     override fun count(): Single<Int> {
         return cacheData.count()
@@ -30,6 +35,10 @@ class PropertyCacheSource constructor(var cacheData: PropertyCacheDataSource): P
 
     override fun findAllProperties(): Single<List<Property>> {
         return cacheData.findAllProperties()
+    }
+
+    override fun findAllUpdatedProperties(): Single<List<Property>> {
+        return cacheData.findAllUpdatedProperties()
     }
 
     override fun updateProperty(property: Property): Completable {

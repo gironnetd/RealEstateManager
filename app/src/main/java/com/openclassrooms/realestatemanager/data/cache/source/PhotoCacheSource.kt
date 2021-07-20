@@ -1,17 +1,21 @@
 package com.openclassrooms.realestatemanager.data.cache.source
 
-import com.openclassrooms.realestatemanager.data.cache.data.PhotoCacheDataSource
-import com.openclassrooms.realestatemanager.data.cache.storage.PhotoCacheStorageSource
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoDataSource
+import com.openclassrooms.realestatemanager.data.source.photo.PhotoSource
+import com.openclassrooms.realestatemanager.data.source.photo.PhotoStorageSource
+import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Photo
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
+import javax.inject.Inject
 
-class PhotoCacheSource
-constructor(private val cacheData: PhotoCacheDataSource,
-            private val cacheStorage: PhotoCacheStorageSource): PhotoDataSource {
+@BrowseScope
+open class PhotoCacheSource
+@Inject
+constructor(var cacheData: PhotoDataSource,
+            var cacheStorage: PhotoStorageSource): PhotoSource {
 
     override fun count(): Single<Int> {
         return Single.zip(cacheData.count(), cacheStorage.count(),
@@ -45,9 +49,9 @@ constructor(private val cacheData: PhotoCacheDataSource,
         }
     }
 
-    override fun findPhotoById(id: String): Single<Photo> {
+    override fun findPhotoById(propertyId: String, id: String): Single<Photo> {
         return cacheData.findPhotoById(id).flatMap { photo ->
-            cacheStorage.findPhotoById(id).flatMap { bitmap ->
+            cacheStorage.findPhotoById(propertyId, id).flatMap { bitmap ->
                 photo.bitmap = bitmap
                 Single.just(photo)
             }
@@ -56,14 +60,38 @@ constructor(private val cacheData: PhotoCacheDataSource,
 
     override fun findPhotosByIds(ids: List<String>): Single<List<Photo>> {
         return Observable.fromIterable(ids).flatMapSingle { id ->
-            findPhotoById(id)
+            findPhotoById("", id)
         }.toList().flatMap { photos -> Single.just(photos) }
+    }
+
+    override fun findPhotosByPropertyId(propertyId: String): Single<List<Photo>> {
+        return cacheData.findPhotosByPropertyId(propertyId).flatMap { photos ->
+            Observable.fromIterable(photos).flatMapSingle { photo ->
+                cacheStorage.findPhotoById(photo.propertyId, photo.id).flatMap { bitmap ->
+                    photo.bitmap = bitmap
+                    Single.just(photo)
+                }
+            }.toList().flatMap {
+                Single.just(it)
+            }
+        }
     }
 
     override fun findAllPhotos(): Single<List<Photo>> {
         return cacheData.findAllPhotos().flatMap { photos ->
             Observable.fromIterable(photos).flatMapSingle { photo ->
-                cacheStorage.findPhotoById(photo.id).flatMap { bitmap ->
+                cacheStorage.findPhotoById(photo.propertyId, photo.id).flatMap { bitmap ->
+                    photo.bitmap = bitmap
+                    Single.just(photo)
+                }
+            }.toList().flatMap { Single.just(it) }
+        }
+    }
+
+    override fun findAllUpdatedPhotos(): Single<List<Photo>> {
+        return cacheData.findAllUpdatedPhotos().flatMap { photos ->
+            Observable.fromIterable(photos).flatMapSingle { photo ->
+                cacheStorage.findPhotoById(photo.propertyId, photo.id).flatMap { bitmap ->
                     photo.bitmap = bitmap
                     Single.just(photo)
                 }

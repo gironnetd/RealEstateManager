@@ -4,14 +4,18 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import com.openclassrooms.realestatemanager.data.source.property.PropertyDataSource
+import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.Constants
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import javax.inject.Inject
 
-open class PropertyRemoteDataSource constructor(private var firestore: FirebaseFirestore):
-    PropertyDataSource {
+@BrowseScope
+open class PropertyRemoteDataSource
+@Inject
+constructor(private var firestore: FirebaseFirestore): PropertyDataSource {
 
     override fun count(): Single<Int> {
         return Single.create { emitter ->
@@ -98,6 +102,10 @@ open class PropertyRemoteDataSource constructor(private var firestore: FirebaseF
                     emitter.onSuccess(result.toObjects(Property::class.java))
                 }
         }
+    }
+
+    override fun findAllUpdatedProperties(): Single<List<Property>> {
+        TODO("Not yet implemented")
     }
 
     override fun updateProperty(property: Property): Completable {

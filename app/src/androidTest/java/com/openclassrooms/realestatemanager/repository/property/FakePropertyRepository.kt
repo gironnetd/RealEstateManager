@@ -27,4 +27,8 @@ constructor() : PropertyRepository {
         throwExceptionIfApiServiceNotInitialized()
         return apiService.findAllProperties().toObservable()
     }
+
+    override fun updateProperty(property: Property): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
 }

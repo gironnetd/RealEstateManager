@@ -35,6 +35,10 @@ constructor(val apiService: PropertyApiService): PropertyDataSource {
        return apiService.findAllProperties()
     }
 
+    override fun findAllUpdatedProperties(): Single<List<Property>> {
+        TODO("Not yet implemented")
+    }
+
     override fun updateProperty(property: Property): Completable {
         TODO("Not yet implemented")
     }

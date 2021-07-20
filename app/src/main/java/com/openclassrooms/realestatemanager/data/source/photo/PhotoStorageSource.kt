@@ -1,10 +1,11 @@
 package com.openclassrooms.realestatemanager.data.source.photo
 
+import android.graphics.Bitmap
 import com.openclassrooms.realestatemanager.models.Photo
 import io.reactivex.Completable
 import io.reactivex.Single
 
-interface PhotoDataSource {
+interface PhotoStorageSource {
 
     fun count(): Single<Int>
 
@@ -14,15 +15,13 @@ interface PhotoDataSource {
 
     fun savePhotos(photos: List<Photo>): Completable
 
-    fun findPhotoById(id: String): Single<Photo>
+    fun findPhotoById(propertyId: String, id: String): Single<Bitmap>
 
-    fun findPhotosByIds(ids: List<String>): Single<List<Photo>>
+    fun findPhotosByIds(ids: List<String>): Single<List<Bitmap>>
 
-    fun findPhotosByPropertyId(propertyId: String): Single<List<Photo>>
+    fun findPhotosByPropertyId(propertyId: String): Single<List<Bitmap>>
 
-    fun findAllPhotos(): Single<List<Photo>>
-
-    fun findAllUpdatedPhotos(): Single<List<Photo>>
+    fun findAllPhotos(): Single<List<Bitmap>>
 
     fun updatePhoto(photo: Photo): Completable
 

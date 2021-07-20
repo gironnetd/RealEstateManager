@@ -97,7 +97,7 @@ class PhotoCacheStorageSourceTest : TestCase() {
         photoCacheStorage.savePhoto(fakePhotos[0]).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        val expectedPhoto = photoCacheStorage.findPhotoById(fakePhotos[0].id).blockingGet()
+        val expectedPhoto = photoCacheStorage.findPhotoById(fakePhotos[0].propertyId, fakePhotos[0].id).blockingGet()
         assertThat(BitmapUtil.sameAs(fakePhotos[0].bitmap!!, expectedPhoto)).isTrue()
     }
 
@@ -130,7 +130,7 @@ class PhotoCacheStorageSourceTest : TestCase() {
     fun given_cache_storage_source_when_find_photo_by_id_then_found_successfully() {
         photoCacheStorage.savePhotos(fakePhotos).blockingAwait()
         val photo = fakePhotos[fakePhotos.indices.random()]
-        val expectedPhoto: Bitmap = photoCacheStorage.findPhotoById(photo.id).blockingGet()
+        val expectedPhoto: Bitmap = photoCacheStorage.findPhotoById(photo.propertyId,photo.id).blockingGet()
         assertThat(BitmapUtil.sameAs(photo.bitmap!!, expectedPhoto)).isTrue()
     }
 
@@ -165,7 +165,7 @@ class PhotoCacheStorageSourceTest : TestCase() {
         }
         photoCacheStorage.updatePhoto(updatedPhoto).blockingAwait()
 
-        val finalPhoto = photoCacheStorage.findPhotoById(initialPhoto.id).blockingGet()
+        val finalPhoto = photoCacheStorage.findPhotoById(initialPhoto.propertyId, initialPhoto.id).blockingGet()
 
         assertThat(BitmapUtil.sameAs(finalPhoto, updatedPhoto.bitmap!!)).isTrue()
     }

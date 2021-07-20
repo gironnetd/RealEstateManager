@@ -2,6 +2,8 @@ package com.openclassrooms.realestatemanager.data.cache.storage
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import com.openclassrooms.realestatemanager.data.source.photo.PhotoStorageSource
+import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.storageLocalDatabase
 import com.openclassrooms.realestatemanager.util.Constants
@@ -10,16 +12,19 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import java.io.File
 import java.io.FileOutputStream
+import javax.inject.Inject
 
-class PhotoCacheStorageSource constructor(private val cacheDir: File) {
+@BrowseScope
+class PhotoCacheStorageSource
+@Inject constructor(private val cacheDir: File): PhotoStorageSource {
 
-    fun count(): Single<Int> { return findAllPhotos().map { photos -> photos.size } }
+    override fun count(): Single<Int> { return findAllPhotos().map { photos -> photos.size } }
 
-    fun count(propertyId: String): Single<Int> {
+    override fun count(propertyId: String): Single<Int> {
         return findPhotosByPropertyId(propertyId).map { photos -> photos.size }
     }
 
-    fun savePhoto(photo: Photo): Completable {
+    override fun savePhoto(photo: Photo): Completable {
         return Completable.create { emitter ->
             photo.bitmap?.let { bitmap ->
                 val outputStream = FileOutputStream(
@@ -31,13 +36,13 @@ class PhotoCacheStorageSource constructor(private val cacheDir: File) {
         }
     }
 
-    fun savePhotos(photos: List<Photo>): Completable {
+    override fun savePhotos(photos: List<Photo>): Completable {
         return Observable.fromIterable(photos).flatMapCompletable { photo ->
             photo.bitmap?.let { savePhoto(photo) } ?: Completable.complete()
         }
     }
 
-    fun findPhotoById(id: String): Single<Bitmap> {
+    override fun findPhotoById(propertyId: String, id: String): Single<Bitmap> {
         return Single.create { emitter ->
             val propertiesDir = File(cacheDir.absolutePath, Constants.PROPERTIES_COLLECTION)
             propertiesDir.listFiles()?.let { propertiesDirListFiles ->
@@ -49,18 +54,16 @@ class PhotoCacheStorageSource constructor(private val cacheDir: File) {
                                 photoDir.listFiles()?.let { photoFile ->
                                     val bitmap = BitmapFactory.decodeFile(photoFile[0].toString())
                                     emitter.onSuccess(bitmap)
-                                    //bitmaps.add(bitmap)
                                 }
                             }
                         }
                     } ?: emitter.onError(NullPointerException("Photos cacheDir for Property: ${propertyDir.name} is null"))
                 }
-                //emitter.onSuccess(bitmaps)
             } ?: emitter.onError(NullPointerException("Properties cacheDir is null"))
         }
     }
 
-    fun findPhotosByIds(ids: List<String>): Single<List<Bitmap>> {
+    override fun findPhotosByIds(ids: List<String>): Single<List<Bitmap>> {
         return Single.create { emitter ->
             val bitmaps: MutableList<Bitmap> = mutableListOf()
             val propertiesDir = File(cacheDir.absolutePath, Constants.PROPERTIES_COLLECTION)
@@ -83,7 +86,7 @@ class PhotoCacheStorageSource constructor(private val cacheDir: File) {
         }
     }
 
-    fun findAllPhotos(): Single<List<Bitmap>> {
+    override fun findAllPhotos(): Single<List<Bitmap>> {
         return Single.create { emitter ->
             val bitmaps: MutableList<Bitmap> = mutableListOf()
             val propertiesDir = File(cacheDir.absolutePath, Constants.PROPERTIES_COLLECTION)
@@ -104,7 +107,7 @@ class PhotoCacheStorageSource constructor(private val cacheDir: File) {
         }
     }
 
-    fun findPhotosByPropertyId(propertyId: String): Single<List<Bitmap>> {
+    override fun findPhotosByPropertyId(propertyId: String): Single<List<Bitmap>> {
         return Single.create { emitter ->
             val bitmaps: MutableList<Bitmap> = mutableListOf()
             val propertiesDir = File(cacheDir.absolutePath, Constants.PROPERTIES_COLLECTION)
@@ -127,7 +130,7 @@ class PhotoCacheStorageSource constructor(private val cacheDir: File) {
         }
     }
 
-    fun updatePhoto(photo: Photo): Completable {
+    override fun updatePhoto(photo: Photo): Completable {
         return Completable.create { emitter ->
             photo.bitmap?.let { bitmap ->
                 File(photo.storageLocalDatabase(cacheDir, true)).delete()
@@ -140,13 +143,13 @@ class PhotoCacheStorageSource constructor(private val cacheDir: File) {
         }
     }
 
-    fun updatePhotos(photos: List<Photo>): Completable {
+    override fun updatePhotos(photos: List<Photo>): Completable {
         return Observable.fromIterable(photos).flatMapCompletable { photo ->
             photo.bitmap?.let { updatePhoto(photo) } ?: Completable.complete()
         }
     }
 
-    fun deletePhotosByIds(ids: List<String>): Completable {
+    override fun deletePhotosByIds(ids: List<String>): Completable {
         return Completable.create { emitter ->
             val propertiesDir = File(cacheDir.absolutePath, Constants.PROPERTIES_COLLECTION)
             propertiesDir.listFiles()?.let { propertiesDirListFiles ->
@@ -170,7 +173,7 @@ class PhotoCacheStorageSource constructor(private val cacheDir: File) {
         }
     }
 
-    fun deletePhotos(photos: List<Photo>): Completable {
+    override fun deletePhotos(photos: List<Photo>): Completable {
         return Completable.create { emitter ->
             val propertiesDir = File(cacheDir.absolutePath, Constants.PROPERTIES_COLLECTION)
             propertiesDir.listFiles()?.let { propertiesDirListFiles ->
@@ -194,7 +197,7 @@ class PhotoCacheStorageSource constructor(private val cacheDir: File) {
         }
     }
 
-    fun deleteAllPhotos(): Completable {
+    override fun deleteAllPhotos(): Completable {
         return Completable.create { emitter ->
             val propertiesDir = File(cacheDir.absolutePath, Constants.PROPERTIES_COLLECTION)
             propertiesDir.listFiles()?.let { propertiesDirListFiles ->
@@ -219,7 +222,7 @@ class PhotoCacheStorageSource constructor(private val cacheDir: File) {
         }
     }
 
-    fun deletePhotoById(id: String): Completable {
+    override fun deletePhotoById(id: String): Completable {
         return Completable.create { emitter ->
             val propertiesDir = File(cacheDir.absolutePath, Constants.PROPERTIES_COLLECTION)
             propertiesDir.listFiles()?.let { propertiesDirListFiles ->

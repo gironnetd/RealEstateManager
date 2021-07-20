@@ -4,7 +4,7 @@ import com.openclassrooms.realestatemanager.models.Property
 import io.reactivex.Completable
 import io.reactivex.Single
 
-interface PropertyDataSource {
+interface PropertySource {
 
     fun count(): Single<Int>
 

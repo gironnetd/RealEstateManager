@@ -144,7 +144,7 @@ class MainActivityTest : BaseMainActivityTests() {
             }
             override fun matchesSafely(item: BottomNavigationItemView): Boolean {
                 triedMatching = true
-                return item.itemData.isChecked == isChecked
+                return item.itemData!!.isChecked == isChecked
             }
         }
     }

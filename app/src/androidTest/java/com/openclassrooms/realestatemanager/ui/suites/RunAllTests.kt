@@ -4,7 +4,8 @@ import com.openclassrooms.realestatemanager.data.cache.dao.PhotoDaoTest
 import com.openclassrooms.realestatemanager.data.cache.dao.PropertyDaoTest
 import com.openclassrooms.realestatemanager.data.cache.provider.AppContentProviderTest
 import com.openclassrooms.realestatemanager.data.repository.property.BrowseFragmentTest
-import com.openclassrooms.realestatemanager.data.repository.property.PropertyRepositoryTest
+import com.openclassrooms.realestatemanager.data.repository.property.FindAllPropertyRepositoryTest
+import com.openclassrooms.realestatemanager.data.repository.property.UpdatePropertyRepositoryTest
 import com.openclassrooms.realestatemanager.repository.ConnectivityManagerTest
 import com.openclassrooms.realestatemanager.ui.MainActivityTest
 import com.openclassrooms.realestatemanager.ui.MainNavigationTest
@@ -36,6 +37,7 @@ import org.junit.runners.Suite
         PhotoDaoTest::class,
         AppContentProviderTest::class,
         ConnectivityManagerTest::class,
-        PropertyRepositoryTest::class
+        FindAllPropertyRepositoryTest::class,
+        UpdatePropertyRepositoryTest::class
 )
 class RunAllTests

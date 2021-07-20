@@ -105,7 +105,7 @@ class PhotoRemoteStorageSourceTest : TestCase() {
         photoRemoteStorage.savePhoto(fakePhotos[0]).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        val expectedPhoto = photoRemoteStorage.findPhotoById(fakePhotos[0].id).blockingGet()
+        val expectedPhoto = photoRemoteStorage.findPhotoById(fakePhotos[0].propertyId, fakePhotos[0].id).blockingGet()
         assertThat(BitmapUtil.sameAs(fakePhotos[0].bitmap!!, expectedPhoto)).isTrue()
     }
 
@@ -138,7 +138,7 @@ class PhotoRemoteStorageSourceTest : TestCase() {
     fun given_photo_remote_storage_source_when_find_photo_by_id_then_found_successfully() {
         photoRemoteStorage.savePhotos(fakePhotos).blockingAwait()
         val photo = fakePhotos[fakePhotos.indices.random()]
-        val expectedPhoto: Bitmap = photoRemoteStorage.findPhotoById(photo.id).blockingGet()
+        val expectedPhoto: Bitmap = photoRemoteStorage.findPhotoById(photo.propertyId, photo.id).blockingGet()
         assertThat(BitmapUtil.sameAs(photo.bitmap!!, expectedPhoto)).isTrue()
     }
 
@@ -173,7 +173,7 @@ class PhotoRemoteStorageSourceTest : TestCase() {
         }
         photoRemoteStorage.updatePhoto(updatedPhoto).blockingAwait()
 
-        val finalPhoto = photoRemoteStorage.findPhotoById(initialPhoto.id).blockingGet()
+        val finalPhoto = photoRemoteStorage.findPhotoById(initialPhoto.propertyId, initialPhoto.id).blockingGet()
 
         assertThat(BitmapUtil.sameAs(finalPhoto, updatedPhoto.bitmap!!)).isTrue()
     }

@@ -4,6 +4,7 @@ import android.database.Cursor
 import androidx.room.*
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_ID
+import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_UPDATED
 import com.openclassrooms.realestatemanager.models.Property.Companion.TABLE_NAME
 import io.reactivex.Single
 
@@ -30,6 +31,9 @@ interface PropertyDao {
 
     @Query("SELECT * FROM $TABLE_NAME ORDER BY _id ASC")
     fun findAllProperties(): Cursor
+
+    @Query("SELECT * FROM $TABLE_NAME WHERE $COLUMN_UPDATED = 1")
+    fun findAllUpdatedProperties(): Cursor
 
     @Delete
     fun deleteProperties(vararg properties: Property): Int

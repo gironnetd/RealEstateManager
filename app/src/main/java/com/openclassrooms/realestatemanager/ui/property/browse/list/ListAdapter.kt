@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -13,11 +12,9 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.models.storageLocalDatabase
 import com.openclassrooms.realestatemanager.models.storageUrl
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListAdapter.PropertyViewHolder
 import com.openclassrooms.realestatemanager.util.GlideManager
-import java.io.File
 
 class ListAdapter(
         private val requestManager: GlideManager,
@@ -77,14 +74,21 @@ class ListAdapter(
 
         fun bind(item: Property) = with(itemView) {
             item.photos.singleOrNull { photo -> photo.mainPhoto }?.let { photo ->
-                val localFile = File(photo.storageLocalDatabase(context.cacheDir, true))
-                if(localFile.exists()) {
-                    with(mainPhoto) {
-                        setImageURI(null)
-                        setImageURI(localFile.toUri())
-                    }
-                }else {
-                    mainPhoto.setImageURI(null)
+//                val localFile = File(photo.storageLocalDatabase(context.cacheDir, true))
+//                if(localFile.exists()) {
+//                    with(mainPhoto) {
+//                        setImageURI(null)
+//                        setImageURI(localFile.toUri())
+//                    }
+//                }else {
+//                    mainPhoto.setImageURI(null)
+//                    val gsReference = Firebase.storage.getReferenceFromUrl(photo.storageUrl(
+//                        Firebase.storage.reference.bucket, isThumbnail = true))
+//                    requestManager.setImage(gsReference, mainPhoto, false)
+//                }
+                photo.bitmap?.let {
+                    mainPhoto.setImageBitmap(photo.bitmap)
+                } ?: {
                     val gsReference = Firebase.storage.getReferenceFromUrl(photo.storageUrl(
                         Firebase.storage.reference.bucket, isThumbnail = true))
                     requestManager.setImage(gsReference, mainPhoto, false)

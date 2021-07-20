@@ -5,7 +5,6 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.openclassrooms.realestatemanager.data.cache.provider.toList
 import com.openclassrooms.realestatemanager.data.source.property.PropertyDataSource
-import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.models.storageLocalDatabase
@@ -14,11 +13,8 @@ import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable
 import io.reactivex.Single
 import java.io.File
-import javax.inject.Inject
 
-@BrowseScope
 open class PropertyLocalDataSource
-@Inject
 constructor(val database: AppDatabase, val context: Context) : PropertyDataSource {
 
     override fun count(): Single<Int> {
@@ -73,6 +69,10 @@ constructor(val database: AppDatabase, val context: Context) : PropertyDataSourc
         }.subscribeOn(SchedulerProvider.io()).flatMap {
             Single.just(it)
         }
+    }
+
+    override fun findAllUpdatedProperties(): Single<List<Property>> {
+        TODO("Not yet implemented")
     }
 
     override fun updateProperty(property: Property): Completable {

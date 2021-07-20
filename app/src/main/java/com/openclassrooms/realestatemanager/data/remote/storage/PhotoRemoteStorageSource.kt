@@ -7,6 +7,8 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storageMetadata
+import com.openclassrooms.realestatemanager.data.source.photo.PhotoStorageSource
+import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.storageUrl
 import com.openclassrooms.realestatemanager.util.Constants
@@ -14,22 +16,24 @@ import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
-import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutionException
+import javax.inject.Inject
 
-class PhotoRemoteStorageSource constructor(private val storage: FirebaseStorage) {
+@BrowseScope
+class PhotoRemoteStorageSource
+@Inject constructor(private val storage: FirebaseStorage): PhotoStorageSource {
 
     var cachePhotos: MutableMap<String, Bitmap>? = null
 
-    fun count(): Single<Int> {
+    override fun count(): Single<Int> {
         return cachePhotos?.let { Single.just(it.size) }
             ?: findAllPhotos().map { photos -> photos.size }
     }
 
-    fun count(propertyId: String): Single<Int> {
+    override fun count(propertyId: String): Single<Int> {
         return cachePhotos?.let { cachePhotos ->
             Single.just(cachePhotos.filter { cachePhoto ->
                 cachePhoto.key.contains(propertyId)
@@ -37,7 +41,7 @@ class PhotoRemoteStorageSource constructor(private val storage: FirebaseStorage)
         } ?: findPhotosByPropertyId(propertyId).map { photos -> photos.size }
     }
 
-    fun savePhoto(photo: Photo): Completable {
+    override fun savePhoto(photo: Photo): Completable {
         return Completable.create { emitter ->
             photo.bitmap?.let { bitmap ->
                 val file = File.createTempFile("tmp_file_", ".png").apply {
@@ -65,44 +69,46 @@ class PhotoRemoteStorageSource constructor(private val storage: FirebaseStorage)
         }
     }
 
-    fun savePhotos(photos: List<Photo>): Completable {
+    override fun savePhotos(photos: List<Photo>): Completable {
         return Observable.fromIterable(photos).flatMapCompletable { photo ->
             photo.bitmap?.let { savePhoto(photo) } ?: Completable.complete()
         }
     }
 
-    fun findPhotoById(id: String): Single<Bitmap> {
-        return cachePhotos?.let { cachePhotos ->
-            Single.just(cachePhotos[cachePhotos.keys.single { key -> key.contains(id) }])
-        } ?: findAllPropertiesPrefixes().flatMap { propertiesPrefixes ->
-            Observable.fromIterable(propertiesPrefixes).flatMap { propertyPrefix ->
-                findPhotosPrefixesByProperty(propertyPrefix)
-            }.toList().flatMap {
-                val photosPrefixes = listOf(*it.toTypedArray()).flatten()
-                Observable.fromIterable(photosPrefixes).flatMap { photoPrefix ->
-                    findPhotosByPrefix(photoPrefix)
-                }.toList().flatMap {
-                    val photosItems = listOf(*it.toTypedArray()).flatten()
-                    Observable.fromIterable(photosItems).flatMap { photoItem ->
-                        //Timber.i("photoItem path: " + photoItem.path)
-                        if(photoItem.path.contains(id)) {
-                            Timber.i("photoItem path: " + photoItem.path)
-                            Timber.i("PhotoRemoteStorage: findPhotoByItem: " + id)
-                            findPhotoByItem(photoItem)
-                        } else {
-                            //Timber.tag(PhotoRemoteSource.TAG).i("PhotoRemoteStorage: empty: " + id)
-                            Observable.empty()
+    override fun findPhotoById(propertyId: String, id: String): Single<Bitmap> {
+        if(cachePhotos != null &&
+            cachePhotos!![cachePhotos!!.keys.single { key -> key.contains(id) }] != null) {
+                cachePhotos?.let { cachePhotos ->
+                    return Single.just(cachePhotos[cachePhotos.keys.single { key -> key.contains(id) }])
+                } ?: return Single.error(java.lang.NullPointerException("Photo Not Found for propertyId: $propertyId and photoId: $id"))
+        } else {
+            return Single.create { emitter ->
+                val file = File.createTempFile("tmp_file_", ".png").apply {
+                    createNewFile()
+                }
+
+                val storageReference = storage.getReferenceFromUrl(
+                    Photo(id = id, propertyId = propertyId).storageUrl(
+                        storage.reference.bucket,
+                        true)
+                )
+
+                storageReference.getFile(file.toUri()).addOnCompleteListener { task ->
+                    if (task.isSuccessful && task.isComplete) {
+                        if (cachePhotos == null) {
+                            cachePhotos = ConcurrentHashMap()
                         }
-                    }.toList().flatMap { photos ->
-                        Timber.i("No photos: ${photos[0] == null}")
-                        Single.just(photos[0])
-                    }.subscribeOn(SchedulerProvider.io())
-                }.subscribeOn(SchedulerProvider.io())
-            }.subscribeOn(SchedulerProvider.io())
-        }.subscribeOn(SchedulerProvider.io())
+                        val bitmap = BitmapFactory.decodeFile(file.toString())
+                        cachePhotos!![storageReference.path] = bitmap
+                        file.delete()
+                        emitter.onSuccess(bitmap)
+                    }
+                }.addOnFailureListener { emitter.onError(it) }
+            }
+        }
     }
 
-    fun findPhotosByIds(ids: List<String>): Single<List<Bitmap>> {
+    override fun findPhotosByIds(ids: List<String>): Single<List<Bitmap>> {
         return cachePhotos?.let { cachePhotos ->
             val photos = cachePhotos.toSortedMap().filter { cachePhoto -> ids.any { id -> cachePhoto.key.contains(id) } }
             Single.just(photos.toSortedMap().values.toList())
@@ -211,7 +217,7 @@ class PhotoRemoteStorageSource constructor(private val storage: FirebaseStorage)
         }
     }
 
-    fun findAllPhotos(): Single<List<Bitmap>> {
+    override fun findAllPhotos(): Single<List<Bitmap>> {
         return cachePhotos?.let { cachePhotos ->
             Single.just(cachePhotos.toSortedMap().values.toList())
         } ?:
@@ -224,8 +230,14 @@ class PhotoRemoteStorageSource constructor(private val storage: FirebaseStorage)
                     findPhotosByPrefix(photoPrefix)
                 }.toList().flatMap {
                     val photosItems = listOf(*it.toTypedArray()).flatten()
+                    if(cachePhotos == null) { cachePhotos = ConcurrentHashMap() }
                     Observable.fromIterable(photosItems).flatMap { photoItem ->
-                        findPhotoByItem(photoItem)
+                        findPhotoByItem(photoItem).flatMap { bitmap ->
+                            if(!cachePhotos!!.containsKey(photoItem.path)) {
+                                cachePhotos!![photoItem.path] = bitmap
+                            }
+                            Observable.just(bitmap)
+                        }
                     }.toList().flatMap { bitmaps ->
                         Single.just(bitmaps)
                     }.subscribeOn(SchedulerProvider.io())
@@ -241,7 +253,7 @@ class PhotoRemoteStorageSource constructor(private val storage: FirebaseStorage)
             .singleOrError()
     }
 
-    fun findPhotosByPropertyId(propertyId: String): Single<List<Bitmap>> {
+    override fun findPhotosByPropertyId(propertyId: String): Single<List<Bitmap>> {
         return cachePhotos?.let { cachePhotos ->
             Single.just(cachePhotos.filter { cachePhoto ->
                 cachePhoto.key.contains(propertyId)
@@ -264,7 +276,7 @@ class PhotoRemoteStorageSource constructor(private val storage: FirebaseStorage)
         }.subscribeOn(SchedulerProvider.io())
     }
 
-    fun updatePhoto(photo: Photo): Completable {
+    override fun updatePhoto(photo: Photo): Completable {
         return Completable.create { emitter ->
             photo.bitmap?.let { bitmap ->
                 val file = File.createTempFile("tmp_file_", ".png").apply {
@@ -292,66 +304,25 @@ class PhotoRemoteStorageSource constructor(private val storage: FirebaseStorage)
         }
     }
 
-    fun updatePhotos(photos: List<Photo>): Completable {
+    override fun updatePhotos(photos: List<Photo>): Completable {
         return Observable.fromIterable(photos).flatMapCompletable { photo ->
             photo.bitmap?.let { updatePhoto(photo) } ?: Completable.complete()
         }
     }
 
-    fun deletePhotosByIds(ids: List<String>): Completable {
+    override fun deletePhotosByIds(ids: List<String>): Completable {
         return Observable.fromIterable(ids).flatMapCompletable { id ->
             deletePhotoById(id)
         }
-//        return findAllPropertiesPrefixes().flatMapCompletable { propertiesPrefixes ->
-//            Observable.fromIterable(propertiesPrefixes).flatMap { propertyPrefix ->
-//                findPhotosPrefixesByProperty(propertyPrefix)
-//            }.toList().flatMapCompletable {
-//                val photosPrefixes = listOf(*it.toTypedArray()).flatten()
-//                Observable.fromIterable(photosPrefixes).flatMap { photoPrefix ->
-//                    findPhotosByPrefix(photoPrefix)
-//                }.toList().flatMapCompletable {
-//                    val photosItems = listOf(*it.toTypedArray()).flatten()
-//                    Observable.fromIterable(photosItems).flatMapCompletable { photoItem ->
-//                        val match = ids.filter { it in photoItem.path }
-//                        if(match.isNotEmpty()) {
-//                            cachePhotos!!.remove(match[0])
-//                            deletePhotoByItem(photoItem)
-//                        }
-//                        else { Completable.complete() }
-//                    }.subscribeOn(SchedulerProvider.io())
-//                }.subscribeOn(SchedulerProvider.io())
-//            }.subscribeOn(SchedulerProvider.io())
-//        }.subscribeOn(SchedulerProvider.io())
     }
 
-    fun deletePhotos(photos: List<Photo>): Completable {
+    override fun deletePhotos(photos: List<Photo>): Completable {
         return Observable.fromIterable(photos).flatMapCompletable { photo ->
             deletePhotoById(photo.id)
         }
-
-//        return findAllPropertiesPrefixes().flatMapCompletable { propertiesPrefixes ->
-//            Observable.fromIterable(propertiesPrefixes).flatMap { propertyPrefix ->
-//                findPhotosPrefixesByProperty(propertyPrefix)
-//            }.toList().flatMapCompletable {
-//                val photosPrefixes = listOf(*it.toTypedArray()).flatten()
-//                Observable.fromIterable(photosPrefixes).flatMap { photoPrefix ->
-//                    findPhotosByPrefix(photoPrefix)
-//                }.toList().flatMapCompletable {
-//                    val photosItems = listOf(*it.toTypedArray()).flatten()
-//                    Observable.fromIterable(photosItems).flatMapCompletable { photoItem ->
-//                        val match = photos.map { photo -> photo.id }.filter { it in photoItem.path }
-//                        if(match.isNotEmpty()) {
-//                            cachePhotos!!.remove(match[0])
-//                            deletePhotoByItem(photoItem)
-//                        }
-//                        else { Completable.complete() }
-//                    }.subscribeOn(SchedulerProvider.io())
-//                }.subscribeOn(SchedulerProvider.io())
-//            }.subscribeOn(SchedulerProvider.io())
-//        }.subscribeOn(SchedulerProvider.io())
     }
 
-    fun deleteAllPhotos(): Completable {
+    override fun deleteAllPhotos(): Completable {
         return Observable.fromIterable(cachePhotos!!.keys).flatMap { path ->
             Observable.just(storage.reference.child(path))
         }.toList().flatMapCompletable { photosRef ->
@@ -359,22 +330,6 @@ class PhotoRemoteStorageSource constructor(private val storage: FirebaseStorage)
                 deletePhotoByItem(photoItem)
             }.subscribeOn(SchedulerProvider.io())
         }
-//        return findAllPropertiesPrefixes().flatMapCompletable { propertiesPrefixes ->
-//            Observable.fromIterable(propertiesPrefixes).flatMap { propertyPrefix ->
-//                findPhotosPrefixesByProperty(propertyPrefix)
-//            }.toList().flatMapCompletable {
-//                val photosPrefixes = listOf(*it.toTypedArray()).flatten()
-//                Observable.fromIterable(photosPrefixes).flatMap { photoPrefix ->
-//                    findPhotosByPrefix(photoPrefix)
-//                }.toList().flatMapCompletable {
-//                    val photosItems = listOf(*it.toTypedArray()).flatten()
-//                    cachePhotos!!.clear()
-//                    Observable.fromIterable(photosItems).flatMapCompletable { photoItem ->
-//                        deletePhotoByItem(photoItem)
-//                    }.subscribeOn(SchedulerProvider.io())
-//                }.subscribeOn(SchedulerProvider.io())
-//            }.subscribeOn(SchedulerProvider.io())
-//        }.subscribeOn(SchedulerProvider.io())
     }
 
     private fun deletePhotoByItem(item: StorageReference): Completable {
@@ -394,7 +349,7 @@ class PhotoRemoteStorageSource constructor(private val storage: FirebaseStorage)
         }
     }
 
-    fun deletePhotoById(id: String): Completable {
+    override fun deletePhotoById(id: String): Completable {
         return Observable.just(storage.reference.child(
                 cachePhotos!!.keys.single { key -> key.contains(id) }
             )).toList().flatMapCompletable { photosRef ->
@@ -402,25 +357,5 @@ class PhotoRemoteStorageSource constructor(private val storage: FirebaseStorage)
                 deletePhotoByItem(photoItem)
             }.subscribeOn(SchedulerProvider.io())
         }
-
-//        return findAllPropertiesPrefixes().flatMapCompletable { propertiesPrefixes ->
-//            Observable.fromIterable(propertiesPrefixes).flatMap { propertyPrefix ->
-//                findPhotosPrefixesByProperty(propertyPrefix)
-//            }.toList().flatMapCompletable {
-//                val photosPrefixes = listOf(*it.toTypedArray()).flatten()
-//                Observable.fromIterable(photosPrefixes).flatMap { photoPrefix ->
-//                    findPhotosByPrefix(photoPrefix)
-//                }.toList().flatMapCompletable {
-//                    val photosItems = listOf(*it.toTypedArray()).flatten()
-//                    Observable.fromIterable(photosItems).flatMapCompletable { photoItem ->
-//                        if(photoItem.path.contains(id)) {
-//                            cachePhotos!!.remove(id)
-//                            deletePhotoByItem(photoItem)
-//                        }
-//                        Completable.complete()
-//                    }.subscribeOn(SchedulerProvider.io())
-//                }.subscribeOn(SchedulerProvider.io())
-//            }.subscribeOn(SchedulerProvider.io())
-//        }.subscribeOn(SchedulerProvider.io())
     }
 }

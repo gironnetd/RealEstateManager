@@ -1,7 +1,10 @@
 package com.openclassrooms.realestatemanager.data.repository.property
 
-import com.openclassrooms.realestatemanager.data.cache.PropertyLocalDataSource
-import com.openclassrooms.realestatemanager.data.remote.PropertyRemoteDataSource
+import com.openclassrooms.realestatemanager.data.cache.source.PhotoCacheSource
+import com.openclassrooms.realestatemanager.data.cache.source.PropertyCacheSource
+import com.openclassrooms.realestatemanager.data.remote.source.PhotoRemoteSource
+import com.openclassrooms.realestatemanager.data.remote.source.PropertyRemoteSource
+import com.openclassrooms.realestatemanager.data.source.DataSource
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
@@ -15,9 +18,9 @@ import javax.inject.Inject
 class DefaultPropertyRepository
 @Inject
 constructor(
-        val networkConnectionLiveData: NetworkConnectionLiveData,
-        private val propertyRemoteDataSource: PropertyRemoteDataSource,
-        private val propertyLocalDataSource: PropertyLocalDataSource
+    val networkConnectionLiveData: NetworkConnectionLiveData,
+    var remoteDataSource: DataSource<PropertyRemoteSource, PhotoRemoteSource>,
+    var cacheDataSource: DataSource<PropertyCacheSource, PhotoCacheSource>
 ) : PropertyRepository {
 
     private var cachedProperties: MutableList<Property> =  mutableListOf()
@@ -41,6 +44,10 @@ constructor(
         return isInternetSubject.compose(allProperties())
     }
 
+    override fun updateProperty(property: Property): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
+
     private fun allProperties() = ObservableTransformer<Boolean, List<Property>> { internetAvailable ->
         internetAvailable.flatMap { isInternetAvailable ->
             if (isInternetAvailable) {
@@ -54,8 +61,7 @@ constructor(
                             if(properties != cachedProperties) {
                                 cachedProperties.clear()
                                 cachedProperties.addAll(properties)
-                                propertyLocalDataSource.saveProperties(properties)
-                                        .andThen(Single.just(properties))
+                                cacheDataSource.save(Property::class, properties).andThen(Single.just(properties))
                             } else {
                                 Single.just(cachedProperties)
                             }
@@ -65,13 +71,16 @@ constructor(
     }
 
     private fun findRemoteProperties(): Single<List<Property>> {
-        return propertyRemoteDataSource.findAllProperties()
+        return remoteDataSource.findAll(Property::class)
     }
 
     private fun findLocalProperties(): Single<List<Property>> {
         if(cachedProperties.isEmpty()) {
-            return propertyLocalDataSource.findAllProperties()
-                    .doOnSuccess { localProperties -> cachedProperties.addAll(localProperties) }
+            return cacheDataSource.findAll(Property::class)
+                    .doOnSuccess {
+                            localProperties ->
+                        cachedProperties.addAll(localProperties)
+                    }
         }
         if(networkConnectionLiveData.value!!) {
             return Single.just(cachedProperties)

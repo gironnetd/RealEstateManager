@@ -17,9 +17,7 @@ import javax.inject.Singleton
 @Singleton
 open class FakePropertyApiService
 @Inject
-constructor(
-        var jsonUtil: JsonUtil,
-) : PropertyApiService {
+constructor(var jsonUtil: JsonUtil, ) : PropertyApiService {
     var propertiesJsonFileName: String = PROPERTIES_DATA_FILENAME
     var photosJsonFileName: String = PHOTOS_DATA_FILENAME
     var networkDelay: Long = 0L

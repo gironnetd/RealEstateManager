@@ -115,7 +115,7 @@ class PhotoCacheSourceTest : TestCase() {
         cacheSource.savePhoto(fakePhotos[0]).blockingAwait()
 
         // Then count of photos in database is equal to given photos list size
-        assertSameAs(actual = fakePhotos[0],expected = cacheSource.findPhotoById(fakePhotos[0].id).blockingGet())
+        assertSameAs(actual = fakePhotos[0],expected = cacheSource.findPhotoById(fakePhotos[0].propertyId, fakePhotos[0].id).blockingGet())
     }
 
     @Test
@@ -148,7 +148,7 @@ class PhotoCacheSourceTest : TestCase() {
     fun given_cache_source_when_find_photo_by_id_then_found_successfully() {
         cacheSource.savePhotos(fakePhotos).blockingAwait()
         val photo = fakePhotos[fakePhotos.indices.random()]
-        val expectedPhoto: Photo = cacheSource.findPhotoById(photo.id).blockingGet()
+        val expectedPhoto: Photo = cacheSource.findPhotoById(photo.propertyId, photo.id).blockingGet()
         assertSameAs(actual = photo,expected = expectedPhoto)
     }
 
@@ -180,7 +180,7 @@ class PhotoCacheSourceTest : TestCase() {
         }
         cacheSource.updatePhoto(updatedPhoto).blockingAwait()
 
-        val finalPhoto = cacheSource.findPhotoById(initialPhoto.id).blockingGet()
+        val finalPhoto = cacheSource.findPhotoById(initialPhoto.propertyId, initialPhoto.id).blockingGet()
         assertSameAs(actual = updatedPhoto,expected = finalPhoto)
     }
 

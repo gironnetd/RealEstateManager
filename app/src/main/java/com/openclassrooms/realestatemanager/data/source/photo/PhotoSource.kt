@@ -4,7 +4,7 @@ import com.openclassrooms.realestatemanager.models.Photo
 import io.reactivex.Completable
 import io.reactivex.Single
 
-interface PhotoDataSource {
+interface PhotoSource {
 
     fun count(): Single<Int>
 
@@ -14,7 +14,7 @@ interface PhotoDataSource {
 
     fun savePhotos(photos: List<Photo>): Completable
 
-    fun findPhotoById(id: String): Single<Photo>
+    fun findPhotoById(propertyId: String, id: String): Single<Photo>
 
     fun findPhotosByIds(ids: List<String>): Single<List<Photo>>
 

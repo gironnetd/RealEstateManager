@@ -141,7 +141,7 @@ class PhotoRemoteDataSourceTest : TestCase() {
         photoRemoteDataSource.savePhotos(fakePhotos).blockingAwait()
 
         // Then returned photos in database is equal to given photos list
-        assertThat(photoRemoteDataSource.findAllPhotos().blockingGet()).isEqualTo(fakePhotos)
+        assertThat(photoRemoteDataSource.findAllPhotos().blockingGet().sortedBy { it.id }).isEqualTo(fakePhotos)
     }
 
     @Test
@@ -202,7 +202,7 @@ class PhotoRemoteDataSourceTest : TestCase() {
                 photo -> ids.contains(photo.id)
         }
 
-        assertThat(finalPhotos).isEqualTo(updatedPhotos.toList())
+        assertThat(finalPhotos.sortedBy { it.id }).isEqualTo(updatedPhotos.toList())
     }
 
     @Test

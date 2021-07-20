@@ -456,7 +456,7 @@ class UpdateFragmentIntegrationTest : BaseFragmentTests() {
 
     private fun update_property() {
 
-        val mockNeat = MockNeat.threadLocal();
+        val mockNeat = MockNeat.threadLocal()
 
         onView(allOf(withId(R.id.description), isDisplayed()))
             .perform(replaceText(mockNeat.strings().size(40).type(StringType.LETTERS).get()))
