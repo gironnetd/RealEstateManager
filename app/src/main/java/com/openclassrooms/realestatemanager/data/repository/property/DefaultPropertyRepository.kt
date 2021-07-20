@@ -6,6 +6,7 @@ import com.openclassrooms.realestatemanager.data.remote.source.PhotoRemoteSource
 import com.openclassrooms.realestatemanager.data.remote.source.PropertyRemoteSource
 import com.openclassrooms.realestatemanager.data.source.DataSource
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
+import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
 import io.reactivex.Observable
@@ -45,7 +46,74 @@ constructor(
     }
 
     override fun updateProperty(property: Property): Observable<Boolean> {
-        TODO("Not yet implemented")
+        return isInternetSubject.compose(updateProperties(property))
+    }
+
+    private fun updateProperties(property: Property) = ObservableTransformer<Boolean, Boolean> { internetAvailable ->
+        internetAvailable.flatMap { isInternetAvailable ->
+            val updatedPhotos = property.photos.filter { photo -> photo.updated }
+
+            val propertiesToUpdate: MutableList<Property> = mutableListOf()
+            val photosToUpdate: MutableList<Photo> = mutableListOf()
+
+            if (isInternetAvailable) {
+                property.updated = false
+                updatedPhotos.forEach { photo -> photo.updated = false }
+
+                cacheDataSource.findAllUpdated(Property::class).flatMap { allUpdatedProperties ->
+
+                    propertiesToUpdate.addAll(allUpdatedProperties)
+                    propertiesToUpdate.forEach { property -> property.updated = false }
+                    cacheDataSource.findAllUpdated(Photo::class)
+                }.flatMap { allUpdatedPhotos ->
+
+                    photosToUpdate.addAll(allUpdatedPhotos)
+                    photosToUpdate.forEach { photo -> photo.updated = false }
+                    Single.just(true)
+                }.toObservable().flatMap {
+
+                    if(propertiesToUpdate.isNotEmpty() && photosToUpdate.isNotEmpty()) {
+
+                        remoteDataSource.update(Property::class, propertiesToUpdate)
+                            .andThen(remoteDataSource.update(Photo::class, photosToUpdate))
+                            .andThen(cacheDataSource.update(Property::class, propertiesToUpdate))
+                            .andThen(cacheDataSource.update(Photo::class, photosToUpdate))
+                            .andThen(Observable.just(true))
+                    } else if(propertiesToUpdate.isNotEmpty() && photosToUpdate.isEmpty()) {
+
+                        remoteDataSource.update(Property::class, propertiesToUpdate)
+                            .andThen(cacheDataSource.update(Property::class, propertiesToUpdate))
+                            .andThen(Observable.just(true))
+                    } else if(photosToUpdate.isNotEmpty() && propertiesToUpdate.isEmpty()) {
+
+                        remoteDataSource.update(Photo::class, photosToUpdate)
+                            .andThen(cacheDataSource.update(Photo::class, photosToUpdate))
+                            .andThen(Observable.just(true))
+                    } else if(updatedPhotos.isNotEmpty()) {
+
+                        remoteDataSource.update(Property::class, property)
+                            .andThen(remoteDataSource.update(Photo::class, updatedPhotos))
+                            .andThen(cacheDataSource.update(Property::class, property))
+                            .andThen(cacheDataSource.update(Photo::class, updatedPhotos))
+                            .andThen(Observable.just(true))
+                    } else {
+
+                        remoteDataSource.update(Property::class, property)
+                            .andThen(cacheDataSource.update(Property::class, property))
+                            .andThen(Observable.just(true))
+                    }
+                }
+            } else {
+                if(updatedPhotos.isNotEmpty()) {
+                    cacheDataSource.update(Property::class, property)
+                        .andThen(cacheDataSource.update(Photo::class, updatedPhotos))
+                        .andThen(Observable.just(false))
+                } else {
+                    cacheDataSource.update(Property::class, property)
+                        .andThen(Observable.just(false))
+                }
+            }
+        }
     }
 
     private fun allProperties() = ObservableTransformer<Boolean, List<Property>> { internetAvailable ->
