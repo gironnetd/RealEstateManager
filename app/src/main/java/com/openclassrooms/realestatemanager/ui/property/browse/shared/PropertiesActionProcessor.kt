@@ -28,14 +28,33 @@ class PropertiesActionProcessor @Inject constructor(
             }
         }
 
+    private val updatePropertyProcessor = ObservableTransformer<PropertiesAction.UpdatePropertyAction, PropertiesResult> { actions ->
+        actions.flatMap { action ->
+            propertyRepository.updateProperty(action.property)
+                .map { fullyUpdated -> PropertiesResult.UpdatePropertyResult.Updated(fullyUpdated) }
+                .cast(PropertiesResult.UpdatePropertyResult::class.java)
+                .onErrorReturn(PropertiesResult.UpdatePropertyResult::Failure)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .startWith(PropertiesResult.UpdatePropertyResult.InFlight)
+        }
+    }
+
     var actionProcessor = ObservableTransformer<PropertiesAction, PropertiesResult> { actions ->
-        actions.publish { action ->
-            action.ofType(LoadPropertiesAction::class.java)
-                .compose(loadPropertiesProcessor)
-                .mergeWith(action.filter { it !is LoadPropertiesAction }
-                    .flatMap {
-                        Observable.error(IllegalArgumentException("Unknown Action type"))
-                    })
+        actions.publish { shared ->
+            Observable.merge(
+                shared.ofType(LoadPropertiesAction::class.java).compose(loadPropertiesProcessor),
+                shared.ofType(PropertiesAction.UpdatePropertyAction::class.java).compose(updatePropertyProcessor)
+            ).mergeWith(
+                // Error for not implemented actions
+                shared.filter { v ->
+                    v !is PropertiesAction.LoadPropertiesAction
+                            && v !is PropertiesAction.UpdatePropertyAction
+                }.flatMap { w ->
+                    Observable.error<PropertiesResult>(
+                        IllegalArgumentException("Unknown Action type: $w"))
+                }
+            )
         }
     }
 }

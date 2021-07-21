@@ -54,6 +54,7 @@ class PropertiesViewModel
         return when (intent) {
             is PropertiesIntent.InitialIntent -> PropertiesAction.LoadPropertiesAction
             is PropertiesIntent.LoadPropertiesIntent -> PropertiesAction.LoadPropertiesAction
+            is PropertiesIntent.UpdatePropertyIntent -> PropertiesAction.UpdatePropertyAction(intent.property)
             else -> throw UnsupportedOperationException("Oops, that looks like an unknown intent: " + intent)
         }
     }
@@ -84,7 +85,24 @@ class PropertiesViewModel
                         )
                     }
                 }
-                else -> { previousState }
+                is PropertiesResult.UpdatePropertyResult -> when(result) {
+                    is PropertiesResult.UpdatePropertyResult.Updated -> {
+                        when(result.fullyUpdated) {
+                            true -> previousState.copy(uiNotification = PropertiesViewState.UiNotification.PROPERTIES_FULLY_UPDATED)
+                            false -> previousState.copy(uiNotification = PropertiesViewState.UiNotification.PROPERTY_PARTIALLY_UPDATED)
+                        }
+                    }
+                    is PropertiesResult.UpdatePropertyResult.Failure -> {
+                        previousState.copy(inProgress = false, error = result.error)
+                    }
+                    is PropertiesResult.UpdatePropertyResult.InFlight -> {
+                        previousState.copy(
+                            inProgress = true,
+                            properties = null,
+                            uiNotification = null,
+                        )
+                    }
+                }
             }
         }
     }
