@@ -3,7 +3,7 @@ package com.openclassrooms.realestatemanager.ui.property.browse.shared
 import androidx.lifecycle.ViewModel
 import com.openclassrooms.realestatemanager.base.BaseIntent
 import com.openclassrooms.realestatemanager.base.BaseViewModel
-import com.openclassrooms.realestatemanager.base.model.TaskStatus
+import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesResult.LoadPropertiesResult
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.disposables.CompositeDisposable
@@ -11,12 +11,12 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
-class PropertiesViewModel @Inject internal constructor(
-        private val propertiesProcessor: PropertiesActionProcessor,
-) : ViewModel(), BaseViewModel<PropertiesIntent, PropertiesUiModel> {
+class PropertiesViewModel
+@Inject internal constructor(private val propertiesProcessor: PropertiesActionProcessor)
+    : ViewModel(), BaseViewModel<PropertiesIntent, PropertiesViewState> {
 
     private var intentsSubject: PublishSubject<PropertiesIntent> = PublishSubject.create()
-    private val statesSubject: Observable<PropertiesUiModel> = compose()
+    private val statesSubject: Observable<PropertiesViewState> = compose()
     private val disposables = CompositeDisposable()
 
     /**
@@ -27,8 +27,8 @@ class PropertiesViewModel @Inject internal constructor(
         get() = ObservableTransformer { intents ->
             intents.publish { shared ->
                 Observable.merge(
-                        shared.ofType(PropertiesIntent.InitialIntent::class.java).take(1),
-                        shared.filter { intent -> intent !is PropertiesIntent.InitialIntent }
+                    shared.ofType(PropertiesIntent.InitialIntent::class.java).take(1),
+                    shared.filter { intent -> intent !is PropertiesIntent.InitialIntent }
                 )
             }
         }
@@ -37,25 +37,24 @@ class PropertiesViewModel @Inject internal constructor(
         disposables.add(intents.subscribe(intentsSubject::onNext))
     }
 
-    override fun states(): Observable<PropertiesUiModel> = statesSubject
+    override fun states(): Observable<PropertiesViewState> = statesSubject
 
-    private fun compose(): Observable<PropertiesUiModel> {
+    private fun compose(): Observable<PropertiesViewState> {
         return intentsSubject
-                .compose(intentFilter)
-                .map(this::actionFromIntent)
-                .compose(propertiesProcessor.actionProcessor)
-                .scan(PropertiesUiModel.Idle(), reducer)
-                .distinctUntilChanged()
-                .replay(1)
-                .autoConnect(0)
+            .compose(intentFilter)
+            .map(this::actionFromIntent)
+            .compose(propertiesProcessor.actionProcessor)
+            .scan(PropertiesViewState.idle(), reducer)
+            .distinctUntilChanged()
+            .replay(1)
+            .autoConnect(0)
     }
 
     private fun actionFromIntent(intent: BaseIntent): PropertiesAction {
         return when (intent) {
-            is PropertiesIntent.InitialIntent -> PropertiesAction.LoadProperties
-            is PropertiesIntent.LoadPropertiesIntent -> PropertiesAction.LoadProperties
-            else -> throw UnsupportedOperationException(
-                    "Oops, that looks like an unknown intent: " + intent)
+            is PropertiesIntent.InitialIntent -> PropertiesAction.LoadPropertiesAction
+            is PropertiesIntent.LoadPropertiesIntent -> PropertiesAction.LoadPropertiesAction
+            else -> throw UnsupportedOperationException("Oops, that looks like an unknown intent: " + intent)
         }
     }
 
@@ -64,18 +63,30 @@ class PropertiesViewModel @Inject internal constructor(
     }
 
     companion object {
-        private val reducer: BiFunction<PropertiesUiModel, PropertiesResult, PropertiesUiModel> =
-                BiFunction<PropertiesUiModel, PropertiesResult, PropertiesUiModel> { _, result ->
-                    when (result) {
-                        is PropertiesResult.LoadPropertiesTask -> {
-                            when (result.status) {
-                                TaskStatus.SUCCESS -> PropertiesUiModel.Success(result.properties)
-                                TaskStatus.FAILURE -> PropertiesUiModel.Failed
-                                TaskStatus.IN_FLIGHT -> PropertiesUiModel.InProgress
-                            }
-                        }
+        private val reducer = BiFunction { previousState: PropertiesViewState, result: PropertiesResult ->
+            when (result) {
+                is LoadPropertiesResult -> when(result) {
+                    is LoadPropertiesResult.Success -> {
+                        previousState.copy(
+                            inProgress = false,
+                            properties = result.properties,
+                            uiNotification = null,
+                        )
+                    }
+                    is LoadPropertiesResult.Failure -> {
+                        previousState.copy(inProgress = false, error = result.error)
+                    }
+                    is LoadPropertiesResult.InFlight -> {
+                        previousState.copy(
+                            inProgress = true,
+                            properties = null,
+                            uiNotification = null,
+                        )
                     }
                 }
+                else -> { previousState }
+            }
+        }
     }
 }
 

@@ -32,8 +32,8 @@ import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesIntent
-import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesUiModel
 import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesViewModel
+import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesViewState
 import com.openclassrooms.realestatemanager.util.Constants.FROM
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTY_ID
 import com.openclassrooms.realestatemanager.util.GlideManager
@@ -51,7 +51,7 @@ class MapFragment @Inject constructor(
         val requestManager: GlideManager,
 ) : BaseFragment(R.layout.fragment_map, viewModelFactory),
         OnMapReadyCallback, OnMapLoadedCallback,
-        BaseView<PropertiesIntent, PropertiesUiModel> {
+        BaseView<PropertiesIntent, PropertiesViewState> {
 
     private val propertiesViewModel: PropertiesViewModel by viewModels {
         viewModelFactory
@@ -96,20 +96,17 @@ class MapFragment @Inject constructor(
         return loadConversationsIntentPublisher
     }
 
-    override fun render(state: PropertiesUiModel) {
-        when (state) {
-            is PropertiesUiModel.Success -> {
-                if (properties.isEmpty() && state.properties!!.isNotEmpty()) {
-                    properties.addAll(state.properties)
-                }
-
-                if (properties != state.properties) {
-                    properties.clear()
-                    properties.addAll(state.properties!!)
-                }
-                initializeMap()
+    override fun render(state: PropertiesViewState) {
+        state.properties?.let {
+            if(properties.isEmpty()) {
+                properties.addAll(state.properties)
             }
-            else -> { }
+
+            if(properties != state.properties) {
+                properties.clear()
+                properties.addAll(state.properties)
+            }
+            initializeMap()
         }
     }
 

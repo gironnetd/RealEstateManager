@@ -1,30 +1,19 @@
 package com.openclassrooms.realestatemanager.ui.property.browse.shared
 
 import com.openclassrooms.realestatemanager.base.BaseResult
-import com.openclassrooms.realestatemanager.base.model.TaskStatus
 import com.openclassrooms.realestatemanager.models.Property
 
 sealed class PropertiesResult : BaseResult {
 
-    class LoadPropertiesTask(
-            val status: TaskStatus,
-            val properties: List<Property>? = null,
-    )
-        : PropertiesResult() {
+    sealed class LoadPropertiesResult : PropertiesResult() {
+        data class Success(val properties: List<Property>) : LoadPropertiesResult()
+        data class Failure(val error: Throwable) : LoadPropertiesResult()
+        object InFlight : LoadPropertiesResult()
+    }
 
-        companion object {
-
-            internal fun success(properties: List<Property>?): LoadPropertiesTask {
-                return LoadPropertiesTask(TaskStatus.SUCCESS, properties)
-            }
-
-            internal fun failure(): LoadPropertiesTask {
-                return LoadPropertiesTask(TaskStatus.FAILURE, null)
-            }
-
-            internal fun inFlight(): LoadPropertiesTask {
-                return LoadPropertiesTask(TaskStatus.IN_FLIGHT)
-            }
-        }
+    sealed class UpdatePropertyResult: PropertiesResult() {
+        data class Updated(val fullyUpdated: Boolean): UpdatePropertyResult()
+        data class Failure(val error: Throwable) : UpdatePropertyResult()
+        object InFlight : UpdatePropertyResult()
     }
 }

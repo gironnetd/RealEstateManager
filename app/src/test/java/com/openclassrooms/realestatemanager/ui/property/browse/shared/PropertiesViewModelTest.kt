@@ -5,6 +5,8 @@ import com.google.gson.reflect.TypeToken
 import com.nhaarman.mockito_kotlin.mock
 import com.openclassrooms.realestatemanager.data.repository.property.PropertyRepository
 import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesViewState.UiNotification.PROPERTIES_FULLY_UPDATED
+import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesViewState.UiNotification.PROPERTY_PARTIALLY_UPDATED
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import com.openclassrooms.realestatemanager.util.schedulers.BaseSchedulerProvider
@@ -23,7 +25,7 @@ class PropertiesViewModelTest {
     private lateinit var propertiesViewModel: PropertiesViewModel
     private lateinit var propertyRepository: PropertyRepository
     private lateinit var propertiesProcessor: PropertiesActionProcessor
-    private lateinit var testObserver: TestObserver<PropertiesUiModel>
+    private lateinit var testObserver: TestObserver<PropertiesViewState>
     private lateinit var fakeProperties: List<Property>
     private lateinit var jsonUtil: JsonUtil
     private lateinit var schedulerProvider: BaseSchedulerProvider
@@ -60,7 +62,7 @@ class PropertiesViewModelTest {
         propertiesViewModel.processIntents(Observable.just(PropertiesIntent.LoadPropertiesIntent))
 
         // Then state is in Success status
-        testObserver.assertValueAt(2) { state -> state is PropertiesUiModel.Success }
+        testObserver.assertValueAt(2) { state -> state.properties == fakeProperties }
     }
 
     @Test
@@ -72,7 +74,7 @@ class PropertiesViewModelTest {
         propertiesViewModel.processIntents(Observable.just(PropertiesIntent.LoadPropertiesIntent))
 
         // Then progress indicator state is emitted
-        testObserver.assertValueAt(1, PropertiesUiModel::inProgress)
+        testObserver.assertValueAt(1, PropertiesViewState::inProgress)
     }
 
     @Test
@@ -108,7 +110,7 @@ class PropertiesViewModelTest {
         propertiesViewModel.processIntents(Observable.just(PropertiesIntent.LoadPropertiesIntent))
 
         // Then state is in Failed status
-        testObserver.assertValueAt(2)  { state -> state is PropertiesUiModel.Failed }
+        testObserver.assertValueAt(2)  { state -> state.error != null }
     }
 
     @Test
@@ -144,6 +146,61 @@ class PropertiesViewModelTest {
         propertiesViewModel.processIntents(Observable.just(PropertiesIntent.LoadPropertiesIntent))
 
         // Then state properties are null
-        testObserver.assertValueAt(0) { state -> state is PropertiesUiModel.Idle }
+        testObserver.assertValueAt(0) { state -> state == PropertiesViewState.idle() }
     }
+
+    @Test
+    fun given_properties_when_update_a_property_and_has_no_internet_then_return_updated_partially() {
+        val property = fakeProperties.random()
+        `when`(propertyRepository.updateProperty(property)).thenReturn(Observable.just(false))
+
+        propertiesViewModel.processIntents(Observable.just(
+            PropertiesIntent.UpdatePropertyIntent(property = property))
+        )
+
+        testObserver.assertValueAt(2) { state -> state.uiNotification == PROPERTY_PARTIALLY_UPDATED }
+    }
+
+    @Test
+    fun given_properties_when_update_a_property_and_has_internet_then_return_updated_totally() {
+        val property = fakeProperties.random()
+        `when`(propertyRepository.updateProperty(property)).thenReturn(Observable.just(true))
+
+        propertiesViewModel.processIntents(Observable.just(
+            PropertiesIntent.UpdatePropertyIntent(property = property))
+        )
+
+        testObserver.assertValueAt(2) { state -> state.uiNotification == PROPERTIES_FULLY_UPDATED  }
+    }
+
+    @Test
+    fun given_properties_when_update_a_property_and_error_occurs_then_returns_error() {
+        // Given error on update a property
+        val property = fakeProperties.random()
+        `when`(propertyRepository.updateProperty(property)).thenReturn(Observable.error(Exception()))
+
+        // When properties are updated
+        propertiesViewModel.processIntents(Observable.just(
+            PropertiesIntent.UpdatePropertyIntent(property = property))
+        )
+
+        // Then state is in Failed status
+        testObserver.assertValueAt(2)  { state -> state.error != null }
+    }
+
+    @Test
+    fun given_properties_when_update_a_property_and_error_occurs_then_is_not_in_progress() {
+        // Given error on update a property
+        val property = fakeProperties.random()
+        `when`(propertyRepository.updateProperty(property)).thenReturn(Observable.error(Exception()))
+
+        // When properties are updated
+        propertiesViewModel.processIntents(Observable.just(
+            PropertiesIntent.UpdatePropertyIntent(property = property))
+        )
+
+        // Then state is not in Progress status
+        testObserver.assertValueAt(2) { state -> !state.inProgress }
+    }
+
 }

@@ -30,8 +30,7 @@ constructor(
     var registry: ActivityResultRegistry?
 ) : BaseFragment(R.layout.fragment_update, viewModelFactory),
     DetailFragment.OnItemClickListener,
-    PhotoUpdateAdapter.OnItemClickListener
-{
+    PhotoUpdateAdapter.OnItemClickListener {
 
     private var _binding: FragmentUpdateBinding? = null
     val binding get() = _binding!!
