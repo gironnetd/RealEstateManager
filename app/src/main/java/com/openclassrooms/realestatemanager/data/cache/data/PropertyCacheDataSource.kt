@@ -8,10 +8,11 @@ import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable
 import io.reactivex.Single
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class PropertyCacheDataSource
-@Inject
-constructor(private val propertyDao: PropertyDao) : PropertyDataSource {
+@Inject constructor(private val propertyDao: PropertyDao) : PropertyDataSource {
 
     override fun count(): Single<Int> {
         return Single.fromCallable { propertyDao.count() }
@@ -33,7 +34,9 @@ constructor(private val propertyDao: PropertyDao) : PropertyDataSource {
     override fun findPropertyById(id: String): Single<Property> {
         return Single.fromCallable {
             propertyDao.findPropertyById(id).toList { Property(it) }.single()
-        }.subscribeOn(SchedulerProvider.io())
+        }.subscribeOn(SchedulerProvider.io()).flatMap { property ->
+           Single.just(property)
+        }
     }
 
     override fun findPropertiesByIds(ids: List<String>): Single<List<Property>> {

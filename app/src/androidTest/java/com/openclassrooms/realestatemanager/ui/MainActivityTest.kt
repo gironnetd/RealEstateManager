@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.ui
 
 import android.view.View
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -15,11 +16,11 @@ import com.google.android.material.internal.NavigationMenuItemView
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.di.TestAppComponent
-import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf.allOf
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -27,16 +28,15 @@ import org.junit.runner.RunWith
 @LargeTest
 class MainActivityTest : BaseMainActivityTests() {
 
+    @get:Rule val instantTaskExecutorRule = InstantTaskExecutorRule()
+
     private lateinit var activityScenario: ActivityScenario<MainActivity>
 
     @Before
     public override fun setUp() {
         super.setUp()
 
-        configure_fake_repository(apiService = configure_fake_api_service(
-            propertiesDataSource = EMPTY_LIST, // empty list of data
-            networkDelay = 0L)
-        )
+        configure_fake_repository()
         injectTest(testApplication)
 
         activityScenario = ActivityScenario.launch(MainActivity::class.java)

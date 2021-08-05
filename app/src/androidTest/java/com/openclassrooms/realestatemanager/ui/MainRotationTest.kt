@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.ui
 
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
 import androidx.test.core.app.ActivityScenario
@@ -17,11 +18,11 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.di.TestAppComponent
-import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
 import com.openclassrooms.realestatemanager.util.OrientationChangeAction
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.anyOf
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.lang.Thread.sleep
@@ -30,17 +31,15 @@ import java.lang.Thread.sleep
 @LargeTest
 class MainRotationTest : BaseMainActivityTests() {
 
+    @get:Rule val instantTaskExecutorRule = InstantTaskExecutorRule()
+
     private lateinit var activityScenario: ActivityScenario<MainActivity>
     private lateinit var navController: NavController
 
     @Before
     public override fun setUp() {
         super.setUp()
-
-        configure_fake_repository(apiService = configure_fake_api_service(
-            propertiesDataSource = EMPTY_LIST, // empty list of data
-            networkDelay = 0L)
-        )
+        configure_fake_repository()
         injectTest(testApplication)
     }
 

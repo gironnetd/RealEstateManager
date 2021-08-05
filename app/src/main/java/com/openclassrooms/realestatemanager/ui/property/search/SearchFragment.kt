@@ -14,7 +14,7 @@ import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 /**
  * Fragment to Search one or several real estates.
  */
-class SearchFragment : BaseFragment(R.layout.fragment_search, null) {
+class SearchFragment : BaseFragment(R.layout.fragment_search) {
 
     lateinit var mainActivity: MainActivity
 

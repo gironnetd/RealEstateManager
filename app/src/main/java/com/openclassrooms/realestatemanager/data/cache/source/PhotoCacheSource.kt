@@ -3,18 +3,17 @@ package com.openclassrooms.realestatemanager.data.cache.source
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoDataSource
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoSource
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoStorageSource
-import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Photo
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@BrowseScope
+@Singleton
 open class PhotoCacheSource
-@Inject
-constructor(var cacheData: PhotoDataSource,
+@Inject constructor(var cacheData: PhotoDataSource,
             var cacheStorage: PhotoStorageSource): PhotoSource {
 
     override fun count(): Single<Int> {
@@ -70,7 +69,7 @@ constructor(var cacheData: PhotoDataSource,
                 cacheStorage.findPhotoById(photo.propertyId, photo.id).flatMap { bitmap ->
                     photo.bitmap = bitmap
                     Single.just(photo)
-                }
+                }.onErrorReturn { photo }
             }.toList().flatMap {
                 Single.just(it)
             }

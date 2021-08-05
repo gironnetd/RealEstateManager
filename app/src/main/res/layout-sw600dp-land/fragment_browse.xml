@@ -30,7 +30,7 @@
 
                 <fragment
                     android:id="@+id/detail_nav_fragment"
-                    android:name="com.openclassrooms.realestatemanager.fragments.property.browse.detail.BrowseDetailNavHostFragment"
+                    android:name="com.openclassrooms.realestatemanager.ui.fragments.property.browse.detail.BrowseDetailNavHostFragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:defaultNavHost="false" />

@@ -2,11 +2,11 @@ package com.openclassrooms.realestatemanager.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import javax.inject.Inject
 import javax.inject.Provider
+import javax.inject.Singleton
 
-@BrowseScope
+@Singleton
 class PropertiesViewModelFactory
 @Inject
 constructor(

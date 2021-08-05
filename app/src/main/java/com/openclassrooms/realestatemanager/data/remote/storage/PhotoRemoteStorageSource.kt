@@ -8,7 +8,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storageMetadata
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoStorageSource
-import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.storageUrl
 import com.openclassrooms.realestatemanager.util.Constants
@@ -21,8 +20,9 @@ import java.io.FileOutputStream
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutionException
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@BrowseScope
+@Singleton
 class PhotoRemoteStorageSource
 @Inject constructor(private val storage: FirebaseStorage): PhotoStorageSource {
 
@@ -77,7 +77,7 @@ class PhotoRemoteStorageSource
 
     override fun findPhotoById(propertyId: String, id: String): Single<Bitmap> {
         if(cachePhotos != null &&
-            cachePhotos!![cachePhotos!!.keys.single { key -> key.contains(id) }] != null) {
+            cachePhotos!!.keys.singleOrNull { key -> key.contains(id) } != null) {
                 cachePhotos?.let { cachePhotos ->
                     return Single.just(cachePhotos[cachePhotos.keys.single { key -> key.contains(id) }])
                 } ?: return Single.error(java.lang.NullPointerException("Photo Not Found for propertyId: $propertyId and photoId: $id"))
@@ -133,7 +133,7 @@ class PhotoRemoteStorageSource
         }.subscribeOn(SchedulerProvider.io())
     }
 
-    fun findAllPropertiesPrefixes(): Single<List<StorageReference>> {
+    private fun findAllPropertiesPrefixes(): Single<List<StorageReference>> {
         return Single.create { emitter ->
             val propertiesRef = storage.reference.child(Constants.PROPERTIES_COLLECTION)
             try {
@@ -246,7 +246,7 @@ class PhotoRemoteStorageSource
         }.subscribeOn(SchedulerProvider.io())
     }
 
-    fun findPropertyPrefixById(propertyId: String): Single<StorageReference> {
+    private fun findPropertyPrefixById(propertyId: String): Single<StorageReference> {
         return findAllPropertiesPrefixes().toObservable()
             .flatMapIterable { it }
             .filter { propertyPrefix -> propertyPrefix.name.contains(propertyId) }

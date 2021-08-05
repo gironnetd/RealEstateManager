@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.ui.property.browse.map
 
 import android.graphics.Point
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.Lifecycle.State.RESUMED
 import androidx.test.core.app.ActivityScenario.launch
@@ -28,20 +29,19 @@ import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.C
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.INFO_WINDOW_SHOWN
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.INITIAL_ZOOM_LEVEL
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.defaultLocation
-import com.openclassrooms.realestatemanager.util.ConstantsTest
 import org.junit.Before
-import org.junit.FixMethodOrder
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.runners.MethodSorters
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class MapFragmentIntegrationTest : BaseFragmentTests() {
+
+    @get:Rule val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var mapFragment: MapFragment
 
@@ -50,13 +50,13 @@ class MapFragmentIntegrationTest : BaseFragmentTests() {
     @Before
     public override fun setUp() {
         super.setUp()
-        configure_fake_repository(apiService = configure_fake_api_service(
-            propertiesDataSource = ConstantsTest.PROPERTIES_DATA_FILENAME,
-            networkDelay = 0L)
-        )
+        configure_fake_repository()
         injectTest(testApplication)
 
-        fakeProperties = propertiesRepository.apiService.findAllProperties().blockingGet()
+        fakeProperties = propertiesRepository.findAllProperties().blockingFirst().right!!
+        fakeProperties.forEach { property ->
+            property.photos = property.photos.toSet().toMutableList()
+        }
         itemPosition = (fakeProperties.indices).random()
 
         BrowseFragment.WHEN_NORMAL_MODE_IS_DETAIL_FRAGMENT_SELECTED = true
@@ -178,7 +178,7 @@ class MapFragmentIntegrationTest : BaseFragmentTests() {
             INITIAL_ZOOM_LEVEL = 17f
             DEFAULT_ZOOM = 17f
             defaultLocation = leChesnay
-            MapFragment(propertiesViewModelFactory, requestManager)
+            MapFragment(requestManager)
         }.onFragment {
             mapFragment = it
         }
@@ -204,7 +204,7 @@ class MapFragmentIntegrationTest : BaseFragmentTests() {
             INITIAL_ZOOM_LEVEL = 17f
             DEFAULT_ZOOM = 15f
             defaultLocation = leChesnay
-            MapFragment(propertiesViewModelFactory, requestManager)
+            MapFragment(requestManager)
         }.onFragment {
             mapFragment = it
         }
@@ -242,7 +242,7 @@ class MapFragmentIntegrationTest : BaseFragmentTests() {
             INITIAL_ZOOM_LEVEL = 16.5f
             DEFAULT_ZOOM = 17f
             defaultLocation = leChesnay
-            MapFragment(propertiesViewModelFactory, requestManager)
+            MapFragment(requestManager)
         }.onFragment{
             mapFragment = it
         }

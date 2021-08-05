@@ -1,7 +1,7 @@
 package com.openclassrooms.realestatemanager.di
 
 import androidx.fragment.app.FragmentFactory
-import com.openclassrooms.realestatemanager.fragments.MainFragmentFactory
+import com.openclassrooms.realestatemanager.ui.fragments.MainFragmentFactory
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -13,5 +13,4 @@ object AppFragmentModule {
     @Singleton
     @Provides
     fun provideMainFragmentFactory(): FragmentFactory = MainFragmentFactory()
-
 }

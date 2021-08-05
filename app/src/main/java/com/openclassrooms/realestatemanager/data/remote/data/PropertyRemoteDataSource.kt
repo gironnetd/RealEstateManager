@@ -4,18 +4,18 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import com.openclassrooms.realestatemanager.data.source.property.PropertyDataSource
-import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.Constants
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@BrowseScope
+@Singleton
 open class PropertyRemoteDataSource
-@Inject
-constructor(private var firestore: FirebaseFirestore): PropertyDataSource {
+@Inject constructor(private var firestore: FirebaseFirestore): PropertyDataSource {
 
     override fun count(): Single<Int> {
         return Single.create { emitter ->
@@ -97,10 +97,20 @@ constructor(private var firestore: FirebaseFirestore): PropertyDataSource {
         return Single.create { emitter ->
             firestore.collection(Constants.PROPERTIES_COLLECTION)
                 .orderBy(Property.COLUMN_PROPERTY_ID, Query.Direction.ASCENDING)
-                .get()
-                .addOnSuccessListener { result ->
-                    emitter.onSuccess(result.toObjects(Property::class.java))
-                }
+                .get().addOnCompleteListener { task ->
+                    if(task.isComplete &&  task.isSuccessful) {
+                        Timber.i("Find All Properties Successfully")
+                        task.result?.let { result ->
+                            if(result.documents.isNotEmpty()) {
+                                emitter.onSuccess(result.toObjects(Property::class.java))
+                            } else {
+                                emitter.onSuccess(emptyList())
+                            }
+                        } ?: emitter.onSuccess(emptyList())
+                    } else {
+                        emitter.onError(FirebaseFirestoreException("Find All Properties Aborted", FirebaseFirestoreException.Code.ABORTED))
+                    }
+                }.addOnFailureListener { exception -> emitter.onError(exception) }
         }
     }
 
@@ -110,9 +120,18 @@ constructor(private var firestore: FirebaseFirestore): PropertyDataSource {
 
     override fun updateProperty(property: Property): Completable {
         return Completable.create { emitter ->
-            val documentRef = firestore.collection(Constants.PROPERTIES_COLLECTION).document(property.id)
-            documentRef.set(property)
-            emitter.onComplete()
+            firestore.runTransaction { transaction ->
+                val documentRef = firestore.collection(Constants.PROPERTIES_COLLECTION).document(property.id)
+                transaction.set(documentRef, property)
+                null
+            }.addOnCompleteListener { task ->
+                if(task.isComplete &&  task.isSuccessful) {
+                    Timber.i("Update Property: ${property.id}  Successfully")
+                    emitter.onComplete()
+                } else {
+                    emitter.onError(FirebaseFirestoreException("Property: ${property.id} Update Aborted", FirebaseFirestoreException.Code.ABORTED))
+                }
+            }.addOnFailureListener { exception -> emitter.onError(exception) }
         }
     }
 

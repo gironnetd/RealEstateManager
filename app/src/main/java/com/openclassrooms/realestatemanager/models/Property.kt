@@ -68,12 +68,15 @@ data class Property(
         var soldDate: Date? = null,
 
         @Ignore
+        @get:Exclude
         var photos: MutableList<Photo> = mutableListOf(),
 
         @ColumnInfo(name = "updated")
         @get:Exclude
         var updated: Boolean = false
 ) {
+
+
 
         constructor(cursor: Cursor) : this() {
                 id = cursor.getString(cursor.getColumnIndex(COLUMN_ID))
@@ -107,7 +110,29 @@ data class Property(
                 }
         }
 
+        constructor( property: Property) : this() {
+                id = property.id
+                type = property.type
+                price = property.price
+                surface = property.surface
+                rooms = property.rooms
+                bedRooms = property.bedRooms
+                bathRooms = property.bathRooms
+                description = property.description
+                address = property.address
 
+                property.interestPoints.forEach { interestPoint ->
+                        interestPoints.add(interestPoint)
+                }
+
+                status = property.status
+                agentId = property.agentId
+                mainPhotoId = property.mainPhotoId
+                entryDate = property.entryDate
+                soldDate = property.soldDate
+                photos = property.photos
+                updated = property.updated
+        }
 
         companion object {
                 /** The name of the Property table.  */
@@ -284,7 +309,7 @@ data class Property(
                 if (mainPhotoId != other.mainPhotoId) return false
                 if (entryDate != other.entryDate) return false
                 if (soldDate != other.soldDate) return false
-                if (photos != other.photos) return false
+                // if (photos != other.photos) return false
 
                 return true
         }
@@ -305,7 +330,7 @@ data class Property(
                 result = 31 * result + (mainPhotoId?.hashCode() ?: 0)
                 result = 31 * result + entryDate.hashCode()
                 result = 31 * result + (soldDate?.hashCode() ?: 0)
-                result = 31 * result + photos.hashCode()
+                // result = 31 * result + photos.hashCode()
                 return result
         }
 }

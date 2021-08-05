@@ -3,15 +3,18 @@ package com.openclassrooms.realestatemanager.data.fake.property
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.data.source.property.PropertyDataSource
+import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.ConstantsTest
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import javax.inject.Inject
 
+@BrowseScope
 class FakePropertyDataSource
-constructor(var jsonUtil: JsonUtil?): PropertyDataSource {
+@Inject constructor(var jsonUtil: JsonUtil?): PropertyDataSource {
 
     var propertiesJsonFileName: String = ConstantsTest.PROPERTIES_DATA_FILENAME
     var properties: ArrayList<Property> = arrayListOf()
@@ -51,13 +54,15 @@ constructor(var jsonUtil: JsonUtil?): PropertyDataSource {
     }
 
     override fun findAllUpdatedProperties(): Single<List<Property>> {
-        return Single.just(properties.filter { property -> property.updated })
+        val updatedProperties = properties.filter { property -> property.updated }
+        return Single.just(updatedProperties)
     }
 
     override fun updateProperty(property: Property): Completable {
         return Completable.fromAction {
             val actualProperty = properties.single { it.id == property.id }
-            properties.toMutableList()[properties.indexOf(actualProperty)] = property
+            properties.remove(actualProperty)
+            properties.add(property)
         }
     }
 
@@ -72,7 +77,7 @@ constructor(var jsonUtil: JsonUtil?): PropertyDataSource {
     }
 
     override fun deleteProperties(properties: List<Property>): Completable {
-        return Completable.fromAction { properties.forEach { property -> this.properties.toMutableList().remove(property) } }
+        return Completable.fromAction { properties.forEach { property -> this.properties.remove(property) } }
     }
 
     override fun deleteAllProperties(): Completable {
@@ -83,6 +88,6 @@ constructor(var jsonUtil: JsonUtil?): PropertyDataSource {
     }
 
     override fun deletePropertyById(id: String): Completable {
-        return Completable.fromAction { properties.toMutableList().remove(properties.single { property -> property.id == id }) }
+        return Completable.fromAction { properties.remove(properties.single { property -> property.id == id }) }
     }
 }

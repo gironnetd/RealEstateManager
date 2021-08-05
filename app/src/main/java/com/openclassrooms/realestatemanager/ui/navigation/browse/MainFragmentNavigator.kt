@@ -2,13 +2,13 @@ package com.openclassrooms.realestatemanager.ui.navigation.browse
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.annotation.IdRes
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.FragmentNavigator
+import timber.log.Timber
 import java.util.*
 
 @Navigator.Name("main_fragment")
@@ -24,7 +24,7 @@ class MainFragmentNavigator(
 
     override fun navigate(destination: Destination, args: Bundle?, navOptions: NavOptions?, navigatorExtras: Navigator.Extras?): NavDestination? {
         if (mFragmentManager.isStateSaved) {
-            Log.i(TAG, "Ignoring navigate() call: FragmentManager has already"
+            Timber.tag("BrowseMasterFragmentNav").i("Ignoring navigate() call: FragmentManager has already"
                     + " saved its state")
             return null
         }

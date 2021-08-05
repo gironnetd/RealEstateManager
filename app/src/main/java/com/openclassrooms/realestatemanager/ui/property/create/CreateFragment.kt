@@ -14,7 +14,7 @@ import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 /**
  * Fragment to Create a real estate.
  */
-class CreateFragment : BaseFragment(R.layout.fragment_create, null) {
+class CreateFragment : BaseFragment(R.layout.fragment_create) {
 
     lateinit var mainActivity: MainActivity
 

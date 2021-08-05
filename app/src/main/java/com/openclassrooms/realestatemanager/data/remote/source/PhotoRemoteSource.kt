@@ -3,20 +3,18 @@ package com.openclassrooms.realestatemanager.data.remote.source
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoDataSource
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoSource
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoStorageSource
-import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Photo
+import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@BrowseScope
+@Singleton
 open class PhotoRemoteSource
-@Inject
-constructor(var remoteData: PhotoDataSource,
-            var remoteStorage: PhotoStorageSource
-): PhotoSource {
+@Inject constructor(var remoteData: PhotoDataSource, var remoteStorage: PhotoStorageSource): PhotoSource {
 
     override fun count(): Single<Int> {
         return Single.zip(remoteData.count(), remoteStorage.count(),
@@ -73,27 +71,17 @@ constructor(var remoteData: PhotoDataSource,
                     Observable.just(photo)
                 }
             }.toList().flatMap { Single.just(it) }
-        }
+        }.subscribeOn(SchedulerProvider.io())
     }
 
     override fun findAllPhotos(): Single<List<Photo>> {
         return remoteData.findAllPhotos().flatMap { photos ->
-            remoteStorage.findAllPhotos().flatMap {
-//                for((key, bitmap) in remoteStorage.cachePhotos!!) {
-//                    photos.single { photo -> key.contains(photo.id) }.bitmap = bitmap
-//                }
-               Single.just(photos)
-            }
-//            Observable.fromIterable(photos).flatMapSingle { photo ->
-//                synchronized(this) {
-//                    remoteStorage.findPhotoById(photo.id).flatMap { bitmap ->
-//                        photo.bitmap = bitmap
-//                        Single.just(photo)
-//                    }
-//                }
-//            }.toList().flatMap {
-//                Single.just(it)
-//            }
+            Observable.fromIterable(photos).flatMap { photo ->
+                remoteStorage.findPhotoById(photo.propertyId, photo.id).flatMapObservable { bitmap ->
+                    photo.bitmap = bitmap
+                    Observable.just(photo)
+                }
+            }.toList().flatMap { Single.just(it) }
         }
     }
 

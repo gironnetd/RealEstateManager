@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"
     android:id="@+id/detail_fragment"
-    tools:context=".ui.property.browse.detail.DetailFragment">
+    tools:context=".ui.property.propertydetail.PropertyDetailFragment">
     <LinearLayout
         android:id="@+id/container"
         android:layout_width="match_parent"

@@ -3,7 +3,6 @@ package com.openclassrooms.realestatemanager.data.cache.storage
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoStorageSource
-import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.storageLocalDatabase
 import com.openclassrooms.realestatemanager.util.Constants
@@ -13,8 +12,9 @@ import io.reactivex.Single
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@BrowseScope
+@Singleton
 class PhotoCacheStorageSource
 @Inject constructor(private val cacheDir: File): PhotoStorageSource {
 
@@ -59,7 +59,7 @@ class PhotoCacheStorageSource
                         }
                     } ?: emitter.onError(NullPointerException("Photos cacheDir for Property: ${propertyDir.name} is null"))
                 }
-            } ?: emitter.onError(NullPointerException("Properties cacheDir is null"))
+            } ?: emitter.onError(Throwable("Properties cacheDir is null"))
         }
     }
 

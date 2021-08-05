@@ -15,18 +15,18 @@ import com.openclassrooms.realestatemanager.databinding.FragmentBrowseBinding
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.navigation.browse.detail.BrowseDetailFragmentNavigator
 import com.openclassrooms.realestatemanager.ui.property.BaseFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListAdapter
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.update.UpdateFragment
+import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragment
+import com.openclassrooms.realestatemanager.ui.property.update.PropertyUpdateFragment
 import com.openclassrooms.realestatemanager.util.Constants.FROM
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTY_ID
 
 /**
  * Fragment to handle the display of real estate for tablet.
  */
-class BrowseFragment : BaseFragment(R.layout.fragment_browse, null),
+class BrowseFragment : BaseFragment(R.layout.fragment_browse),
     ListAdapter.OnItemClickListener {
 
     private var _binding: FragmentBrowseBinding? = null
@@ -168,8 +168,9 @@ class BrowseFragment : BaseFragment(R.layout.fragment_browse, null),
                 requestLayout()
             }
 
-            if(detail.childFragmentManager.primaryNavigationFragment is DetailFragment ||
-                detail.childFragmentManager.primaryNavigationFragment is UpdateFragment ) {
+            if(detail.childFragmentManager.primaryNavigationFragment is PropertyDetailFragment ||
+                detail.childFragmentManager.primaryNavigationFragment is PropertyUpdateFragment
+            ) {
                 binding.buttonContainer.visibility = GONE
 
                 master.requireView().visibility = INVISIBLE
@@ -218,7 +219,7 @@ class BrowseFragment : BaseFragment(R.layout.fragment_browse, null),
                     .zoomOnMarkerPosition(propertyId = propertyId)
             }
 
-            if(detail.childFragmentManager.primaryNavigationFragment is DetailFragment){
+            if(detail.childFragmentManager.primaryNavigationFragment is PropertyDetailFragment){
                 callBack?.onItemClick(propertyId = propertyId)
             }
         } else {

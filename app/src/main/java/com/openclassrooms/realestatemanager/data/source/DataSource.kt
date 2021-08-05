@@ -1,5 +1,9 @@
 package com.openclassrooms.realestatemanager.data.source
 
+import com.openclassrooms.realestatemanager.data.cache.source.PhotoCacheSource
+import com.openclassrooms.realestatemanager.data.cache.source.PropertyCacheSource
+import com.openclassrooms.realestatemanager.data.remote.source.PhotoRemoteSource
+import com.openclassrooms.realestatemanager.data.remote.source.PropertyRemoteSource
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoSource
 import com.openclassrooms.realestatemanager.data.source.property.PropertySource
 import com.openclassrooms.realestatemanager.models.Photo
@@ -51,7 +55,12 @@ constructor(var propertySource: T, var photoSource: U) {
 
     open fun <T: Any> findById(type: KClass<T>, id: String): Single<T> {
         return when (type) {
-            Property::class -> { propertySource.findPropertyById(id) as Single<T> }
+            Property::class -> { propertySource.findPropertyById(id).flatMap { property ->
+                photoSource.findPhotosByPropertyId(property.id).flatMap { photos ->
+                   property.photos.addAll(photos)
+                   Single.just(property)
+                }
+            } as Single<T> }
             Photo::class -> { photoSource.findPhotoById("", id) as Single<T> }
             else -> { Single.error(Throwable()) }
         }
@@ -60,16 +69,25 @@ constructor(var propertySource: T, var photoSource: U) {
     open fun <T: Any> findAll(type: KClass<T>): Single<List<T>> {
         return when (type) {
             Property::class -> {
-                propertySource.findAllProperties().flatMap { properties ->
-                Observable.fromIterable(properties).flatMapSingle { property ->
-                    photoSource.findPhotoById(property.id, property.mainPhotoId!!).flatMap { photo ->
-                        property.photos.add(photo)
-                        Single.just(property)
-                    }
-                }.toList().flatMap {
-                    Single.just(properties.sortedBy { it.id })
-                }
-                } as Single<List<T>>
+                if(propertySource is PropertyRemoteSource && photoSource is PhotoRemoteSource) {
+                    propertySource.findAllProperties().flatMap { properties ->
+                        Observable.fromIterable(properties).flatMapSingle { property ->
+                            photoSource.findPhotoById(property.id, property.mainPhotoId!!).flatMap { photo ->
+                                property.photos.add(photo)
+                                Single.just(property)
+                            }
+                        }.toList().flatMap { Single.just(properties.sortedBy { it.id }) }
+                    } as Single<List<T>>
+                } else if (propertySource is PropertyCacheSource && photoSource is PhotoCacheSource) {
+                    propertySource.findAllProperties().flatMap { properties ->
+                        Observable.fromIterable(properties).flatMapSingle { property ->
+                            photoSource.findPhotosByPropertyId(property.id).flatMap { photos ->
+                                property.photos.addAll(photos)
+                                Single.just(property)
+                            }
+                        }.toList().flatMap { Single.just(properties.sortedBy { it.id }) }
+                    } as Single<List<T>>
+                } else { Single.error(Throwable()) }
             }
             Photo::class -> { photoSource.findAllPhotos() as Single<List<T>> }
             else -> { Single.error(Throwable()) }
@@ -106,7 +124,6 @@ constructor(var propertySource: T, var photoSource: U) {
                 value.filterIsInstance(Photo::class.java).let { photos ->
                     photoSource.updatePhotos(photos)
                 }
-                // photoSource.updatePhotos(value as List<Photo>)
             }
             else -> { Completable.error(Throwable(ClassNotFoundException())) }
         }

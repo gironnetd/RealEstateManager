@@ -5,6 +5,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoStorageSource
+import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.storageUrl
 import com.openclassrooms.realestatemanager.util.BitmapUtil
@@ -15,9 +16,11 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
 
+@BrowseScope
 class FakePhotoStorageSource
-constructor(var jsonUtil: JsonUtil?, private val cacheDir: File): PhotoStorageSource {
+@Inject constructor(var jsonUtil: JsonUtil?, private val cacheDir: File): PhotoStorageSource {
 
     var photosJsonFileName: String = ConstantsTest.PHOTOS_DATA_FILENAME
     var photos: MutableMap<String, Bitmap> = ConcurrentHashMap()

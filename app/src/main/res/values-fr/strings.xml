@@ -75,6 +75,7 @@
     <string name="enter_a_description">Entrez une description</string>
     <string name="change_property_type">CHANGER TYPE</string>
     <string name="cancel">ANNULER</string>
+    <string name="no">NON</string>
     <string name="change_property_status">CHANGER STATUT</string>
     <string name="add_photo">AJOUTER PHOTO</string>
     <string name="change_photo">Changer photo</string>

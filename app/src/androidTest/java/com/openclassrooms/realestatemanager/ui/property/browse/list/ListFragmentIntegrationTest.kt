@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.ui.property.browse.list
 
 import android.graphics.Point
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ActivityScenario.launch
@@ -31,8 +32,6 @@ import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.INFO_WINDOW_SHOWN
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.INITIAL_ZOOM_LEVEL
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.defaultLocation
-import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
-import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.EspressoIdlingResourceRule
 import org.junit.Before
 import org.junit.Rule
@@ -43,18 +42,16 @@ import org.junit.runner.RunWith
 @MediumTest
 class ListFragmentIntegrationTest : BaseFragmentTests() {
 
+    @get:Rule val instantTaskExecutorRule = InstantTaskExecutorRule()
     @get: Rule val espressoIdlingResourceRule = EspressoIdlingResourceRule()
 
     @Before
     public override fun setUp() {
         super.setUp()
-        configure_fake_repository(apiService = configure_fake_api_service(
-            propertiesDataSource = PROPERTIES_DATA_FILENAME,
-            networkDelay = 0L)
-        )
+        configure_fake_repository()
         injectTest(testApplication)
 
-        fakeProperties = propertiesRepository.apiService.findAllProperties().blockingGet()
+        fakeProperties = propertiesRepository.findAllProperties().blockingFirst().right!!
         itemPosition = (fakeProperties.indices).random()
 
         BrowseFragment.WHEN_NORMAL_MODE_IS_DETAIL_FRAGMENT_SELECTED = false
@@ -63,11 +60,9 @@ class ListFragmentIntegrationTest : BaseFragmentTests() {
     @Test
     fun given_list_when_properties_are_empty_then_property_list_empty() {
 
-        // Given List fragment
-        BaseFragment.properties.clear()
+        // Given List fragment and When properties list is empty
 
-        // When properties list is empty
-        apiService.propertiesJsonFileName = EMPTY_LIST
+        BaseFragment.properties.value!!.clear()
 
         launchFragmentInContainer(null, AppTheme) {
             ListFragment()

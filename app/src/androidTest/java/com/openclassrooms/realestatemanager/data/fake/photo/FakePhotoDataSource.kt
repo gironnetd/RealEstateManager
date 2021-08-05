@@ -3,15 +3,18 @@ package com.openclassrooms.realestatemanager.data.fake.photo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoDataSource
+import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.util.ConstantsTest
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import javax.inject.Inject
 
+@BrowseScope
 class FakePhotoDataSource
-constructor(var jsonUtil: JsonUtil?): PhotoDataSource {
+@Inject constructor(var jsonUtil: JsonUtil?): PhotoDataSource {
 
     var photosJsonFileName: String = ConstantsTest.PHOTOS_DATA_FILENAME
     var photos: ArrayList<Photo> = arrayListOf()
@@ -51,7 +54,9 @@ constructor(var jsonUtil: JsonUtil?): PhotoDataSource {
     }
 
     override fun findPhotosByPropertyId(propertyId: String): Single<List<Photo>> {
-        return Single.just(photos.filter { photo -> photo.propertyId == propertyId })
+        return Single.just(photos.map { photo -> photo.propertyId = propertyId
+            photo
+        })
     }
 
     override fun findAllPhotos(): Single<List<Photo>> {

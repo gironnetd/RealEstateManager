@@ -9,13 +9,12 @@ import android.view.WindowInsets
 import androidx.annotation.LayoutRes
 import androidx.annotation.NonNull
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.MutableLiveData
 import com.openclassrooms.realestatemanager.models.Property
 import kotlin.properties.Delegates
 
 abstract class BaseFragment
-constructor(@LayoutRes private val layoutRes: Int,
-            private val viewModelFactory: ViewModelProvider.Factory?): Fragment(layoutRes) {
+constructor(@LayoutRes private val layoutRes: Int): Fragment(layoutRes) {
 
         var screenWidth by Delegates.notNull<Int>()
 
@@ -43,7 +42,8 @@ constructor(@LayoutRes private val layoutRes: Int,
         }
 
         companion object {
-                var properties: MutableList<Property> = mutableListOf()
+                val properties: MutableLiveData<MutableList<Property>> = MutableLiveData<MutableList<Property>>()
+
         }
 
 }

@@ -14,8 +14,6 @@ import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.*
@@ -24,38 +22,24 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.clustering.ClusterManager
 import com.openclassrooms.realestatemanager.R
-import com.openclassrooms.realestatemanager.base.BaseView
 import com.openclassrooms.realestatemanager.databinding.FragmentMapBinding
 import com.openclassrooms.realestatemanager.models.storageLocalDatabase
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesIntent
-import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesViewModel
-import com.openclassrooms.realestatemanager.ui.property.browse.shared.PropertiesViewState
+import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragment
 import com.openclassrooms.realestatemanager.util.Constants.FROM
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTY_ID
 import com.openclassrooms.realestatemanager.util.GlideManager
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.subjects.PublishSubject
 import java.io.File
 import javax.inject.Inject
 
 /**
  * Fragment to display real estates on map.
  */
-class MapFragment @Inject constructor(
-        viewModelFactory: ViewModelProvider.Factory,
-        val requestManager: GlideManager,
-) : BaseFragment(R.layout.fragment_map, viewModelFactory),
-        OnMapReadyCallback, OnMapLoadedCallback,
-        BaseView<PropertiesIntent, PropertiesViewState> {
-
-    private val propertiesViewModel: PropertiesViewModel by viewModels {
-        viewModelFactory
-    }
+class MapFragment
+@Inject constructor(val requestManager: GlideManager) : BaseFragment(R.layout.fragment_map),
+    OnMapReadyCallback, OnMapLoadedCallback {
 
     lateinit var mMap: GoogleMap
     lateinit var clusterManager: ClusterManager<CustomClusterItem>
@@ -67,47 +51,16 @@ class MapFragment @Inject constructor(
     private var _binding: FragmentMapBinding? = null
     val binding get() = _binding!!
 
-    private val loadConversationsIntentPublisher =
-        PublishSubject.create<PropertiesIntent.LoadPropertiesIntent>()
-    private val compositeDisposable = CompositeDisposable()
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         applyDisposition()
-        if(properties.isNotEmpty() && !::mMap.isInitialized) {
-            initializeMap()
-        } else if(properties.isEmpty() || !::mMap.isInitialized) {
-            compositeDisposable.add(propertiesViewModel.states().subscribe(this::render))
-            propertiesViewModel.processIntents(intents())
+
+        properties.observe(viewLifecycleOwner) { properties ->
+            if(properties.isNotEmpty() && !::mMap.isInitialized) {
+                initializeMap()
+            }
         }
         return binding.root
-    }
-
-    override fun intents(): Observable<PropertiesIntent> {
-        return Observable.merge(initialIntent(), loadPropertiesIntentPublisher()
-        )
-    }
-
-    private fun initialIntent(): Observable<PropertiesIntent.InitialIntent> {
-        return Observable.just(PropertiesIntent.InitialIntent)
-    }
-
-    private fun loadPropertiesIntentPublisher(): Observable<PropertiesIntent.LoadPropertiesIntent> {
-        return loadConversationsIntentPublisher
-    }
-
-    override fun render(state: PropertiesViewState) {
-        state.properties?.let {
-            if(properties.isEmpty()) {
-                properties.addAll(state.properties)
-            }
-
-            if(properties != state.properties) {
-                properties.clear()
-                properties.addAll(state.properties)
-            }
-            initializeMap()
-        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -199,7 +152,7 @@ class MapFragment @Inject constructor(
 
         items = linkedMapOf()
 
-        properties.forEach { property ->
+        properties.value!!.forEach { property ->
             val item = CustomClusterItem(property.address!!.latitude, property.address!!.longitude,
                 property.address!!.street, "", property.id)
             items[item] = false
@@ -262,8 +215,8 @@ class MapFragment @Inject constructor(
                 if(masterDetailFragment.detail.childFragmentManager
                         .findFragmentByTag(R.id.navigation_detail.toString()) != null) {
 
-                    val detailFragment: DetailFragment = masterDetailFragment.detail.childFragmentManager
-                        .findFragmentByTag(R.id.navigation_detail.toString()) as DetailFragment
+                    val detailFragment: PropertyDetailFragment = masterDetailFragment.detail.childFragmentManager
+                        .findFragmentByTag(R.id.navigation_detail.toString()) as PropertyDetailFragment
 
                     detailFragment.showDetails(item.getTag())
                     val bundle = bundleOf(FROM to MapFragment::class.java.name,)
@@ -296,19 +249,13 @@ class MapFragment @Inject constructor(
 
                 val mainPhoto = markerView.findViewById<ImageView>(R.id.main_photo)
 
-                val property = properties.single { property -> property.id == selectedItem.getTag() }
+                val property = properties.value!!.single { property -> property.id == selectedItem.getTag() }
 
                 val photo = property.photos.single { photo -> photo.mainPhoto }
                 photo.propertyId = property.id
 
                 val mainPhotoFile = File(photo.storageLocalDatabase(requireContext().cacheDir, true))
-
                 mainPhoto.setImageURI(mainPhotoFile.toUri())
-//                val gsReference = Firebase.storage.getReferenceFromUrl(photo.storageUrl(isThumbnail = true))
-//
-//                Completable.fromAction {
-//                    requestManager.setImage(gsReference, mainPhoto, true)
-//                }.subscribeOn(SchedulerProvider.io()).blockingAwait()
 
                 return markerView
             }
@@ -317,7 +264,7 @@ class MapFragment @Inject constructor(
     }
 
     fun zoomOnMarkerPosition(propertyId: String) {
-        val property = properties.single { property -> property.id == propertyId }
+        val property = properties.value!!.single { property -> property.id == propertyId }
         selectedItem  = items.keys.single { item -> item.getTag() == property.id }
 
         if(mMap.cameraPosition.zoom == 10f) {
@@ -414,11 +361,6 @@ class MapFragment @Inject constructor(
                 }
             }
         }
-    }
-
-    override fun onDestroy() {
-        compositeDisposable.dispose()
-        super.onDestroy()
     }
 
     companion object {

@@ -14,11 +14,11 @@ import com.google.common.truth.Truth.assertThat
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragment.Companion.DETAIL_MAP_FINISH_LOADING
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListAdapter
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.INFO_WINDOW_SHOWN
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.MAP_FINISH_LOADING
+import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragment.Companion.DETAIL_MAP_FINISH_LOADING
 import org.hamcrest.core.AllOf.allOf
 
 object NavigationHelper {
@@ -80,7 +80,7 @@ object NavigationHelper {
 
         if(!isMapFinishLoading) {
             isMapFinishLoading = uiDevice.wait(Until.hasObject(By.desc(MAP_FINISH_LOADING)),
-                30000)
+                50000)
             assertThat(isMapFinishLoading).isTrue()
         }
     }
@@ -90,7 +90,7 @@ object NavigationHelper {
             onView(withId(R.id.map_constraint_layout)).perform(scrollTo()/*, click()*/)
 
             val isDetailMapFinishLoading = uiDevice.wait(Until.hasObject(By.desc(
-                DETAIL_MAP_FINISH_LOADING)), 30000)
+                DETAIL_MAP_FINISH_LOADING)), 50000)
             assertThat(isDetailMapFinishLoading).isTrue()
         }
     }

@@ -9,8 +9,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.detail.DetailFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.update.UpdateFragment
+import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragment
+import com.openclassrooms.realestatemanager.ui.property.update.PropertyUpdateFragment
 import com.openclassrooms.realestatemanager.util.GlideManager
 import com.openclassrooms.realestatemanager.util.NavigationHelper
 import com.openclassrooms.realestatemanager.viewmodels.FakePropertiesViewModelFactory
@@ -50,12 +50,12 @@ open class BaseFragmentTests: BaseMainActivityTests() {
         NavigationHelper.navigate_to_update_fragment(uiDevice, mainActivity)
     }
 
-    open fun obtainDetailFragment(): DetailFragment {
-        return browseFragment.detail.childFragmentManager.primaryNavigationFragment as DetailFragment
+    open fun obtainDetailFragment(): PropertyDetailFragment {
+        return browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyDetailFragment
     }
 
-    open fun obtainUpdateFragment(): UpdateFragment {
-        return browseFragment.detail.childFragmentManager.primaryNavigationFragment as UpdateFragment
+    open fun obtainUpdateFragment(): PropertyUpdateFragment {
+        return browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
     }
 
     open fun wait_until_map_is_finished_loading() {

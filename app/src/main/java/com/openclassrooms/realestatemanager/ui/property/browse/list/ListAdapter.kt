@@ -16,9 +16,7 @@ import com.openclassrooms.realestatemanager.models.storageUrl
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListAdapter.PropertyViewHolder
 import com.openclassrooms.realestatemanager.util.GlideManager
 
-class ListAdapter(
-        private val requestManager: GlideManager,
-) : RecyclerView.Adapter<PropertyViewHolder>() {
+class ListAdapter(private val requestManager: GlideManager, ) : RecyclerView.Adapter<PropertyViewHolder>() {
 
     interface OnItemClickListener {
         fun onItemClick(propertyId: String)
@@ -62,9 +60,9 @@ class ListAdapter(
 
     class PropertyViewHolder
     constructor(
-            itemView: View,
-            var callBack: OnItemClickListener?,
-            private val requestManager: GlideManager,
+        itemView: View,
+        var callBack: OnItemClickListener?,
+        private val requestManager: GlideManager,
     ) : RecyclerView.ViewHolder(itemView) {
 
         var mainPhoto: ImageView = itemView.findViewById(R.id.property_main_photo)
@@ -74,18 +72,6 @@ class ListAdapter(
 
         fun bind(item: Property) = with(itemView) {
             item.photos.singleOrNull { photo -> photo.mainPhoto }?.let { photo ->
-//                val localFile = File(photo.storageLocalDatabase(context.cacheDir, true))
-//                if(localFile.exists()) {
-//                    with(mainPhoto) {
-//                        setImageURI(null)
-//                        setImageURI(localFile.toUri())
-//                    }
-//                }else {
-//                    mainPhoto.setImageURI(null)
-//                    val gsReference = Firebase.storage.getReferenceFromUrl(photo.storageUrl(
-//                        Firebase.storage.reference.bucket, isThumbnail = true))
-//                    requestManager.setImage(gsReference, mainPhoto, false)
-//                }
                 photo.bitmap?.let {
                     mainPhoto.setImageBitmap(photo.bitmap)
                 } ?: {

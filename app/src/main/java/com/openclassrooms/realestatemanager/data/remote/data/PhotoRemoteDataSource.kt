@@ -5,7 +5,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.WriteBatch
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoDataSource
-import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.Constants
@@ -16,11 +15,11 @@ import io.reactivex.Single
 import io.reactivex.SingleOnSubscribe
 import java.util.concurrent.ExecutionException
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@BrowseScope
+@Singleton
 class PhotoRemoteDataSource
-@Inject
-constructor(private val firestore: FirebaseFirestore): PhotoDataSource {
+@Inject constructor(private val firestore: FirebaseFirestore): PhotoDataSource {
 
     override fun count(): Single<Int> {
         return Single.create { emitter ->
