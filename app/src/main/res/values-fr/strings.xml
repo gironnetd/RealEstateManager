@@ -2,10 +2,10 @@
 <resources>
     <!--Navigation View and Bottom Navigation View Strings-->
     <string name="real_estate">Biens immobiliers</string>
-    <string name="simulation">Simulation</string>
     <string name="add_real_estate">Ajouter un bien immobilier</string>
-    <string name="create">Créer un bien immobilier</string>
-    <string name="update">&#160;&#160;&#160;Modifier</string>
+    <string name="create_property">Créer un bien immobilier</string>
+    <string name="create">&#160;&#160;CRÉER</string>
+    <string name="update">&#160;&#160;&#160;MODIFIER</string>
     <string name="map">Carte des biens immobiliers</string>
     <string name="list">Liste des biens immobiliers</string>
     <string name="detail">Detail de bien immobilier</string>
@@ -85,6 +85,16 @@
     <string name="confirm_save_changes_dialog_message">Vous avez fait des modifications.
         Souhaitez-vous les sauvegarder ?</string>
     <string name="confirm_save_changes">CONFIRMER MODIFICATIONS</string>
+
+    <string name="confirm_create_changes_dialog_title">CREER UN BIEN</string>
+    <string name="confirm_create_changes_dialog_message">You begin create a property.Would you like to save it?</string>
+    <string name="confirm_create_changes">CONFIRMER CREATION</string>
+
     <string name="is_main_photo_question">is the main photo?</string>
     <string name="cannot_delete_photo">Vous ne pouvez pas supprimer cette photo parce que c\'est la principale</string>
+    <string name="no_photos_for_this_property">No Photos For this Property</string>
+    <string name="no_changes">Aucuns changements n\'a été effectués</string>
+    <string name="property_create_locally">La propriété a été crée localement et sera crée à distance une fois la connexion rétablie</string>
+    <string name="property_create_totally">Les propriétés ont été créées entièrement</string>
+    <string name="notification_title">Property Created</string>
 </resources>

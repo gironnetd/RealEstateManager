@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-open class PropertyRemoteSource
+class PropertyRemoteSource
 @Inject constructor(var remoteData: PropertyDataSource): PropertySource {
 
     override fun count(): Single<Int> {

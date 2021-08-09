@@ -32,9 +32,7 @@ class PropertyDetailActionProcessor
                 shared.ofType(PopulatePropertyAction::class.java).compose(populatePropertyProcessor)
                     .cast(PropertyDetailResult::class.java)
                     .mergeWith(
-                        shared.filter { v ->
-                            v !is PopulatePropertyAction
-                        }.flatMap { w ->
+                        shared.filter { v -> v !is PopulatePropertyAction }.flatMap { w ->
                             Observable.error(IllegalArgumentException("Unknown Action type: $w"))
                         }
                     )

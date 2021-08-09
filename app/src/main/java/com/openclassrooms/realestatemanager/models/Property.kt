@@ -62,7 +62,7 @@ data class Property(
         var mainPhotoId: String? = null,
 
         @ColumnInfo(name = "entry_date")
-        var entryDate: Date = Date(),
+        var entryDate: Date? = null,
 
         @ColumnInfo(name = "sold_date")
         var soldDate: Date? = null,
@@ -75,8 +75,6 @@ data class Property(
         @get:Exclude
         var updated: Boolean = false
 ) {
-
-
 
         constructor(cursor: Cursor) : this() {
                 id = cursor.getString(cursor.getColumnIndex(COLUMN_ID))

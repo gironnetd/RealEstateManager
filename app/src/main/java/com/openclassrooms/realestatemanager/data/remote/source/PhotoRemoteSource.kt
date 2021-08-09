@@ -13,7 +13,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-open class PhotoRemoteSource
+class PhotoRemoteSource
 @Inject constructor(var remoteData: PhotoDataSource, var remoteStorage: PhotoStorageSource): PhotoSource {
 
     override fun count(): Single<Int> {

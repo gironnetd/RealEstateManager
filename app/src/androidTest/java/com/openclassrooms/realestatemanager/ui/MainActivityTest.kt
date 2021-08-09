@@ -125,12 +125,12 @@ class MainActivityTest : BaseMainActivityTests() {
         // Given Main activity is launched
 
         // When click on Create Real estate Bottom Navigation view
-        onView(allOf(withText(R.string.create), isDisplayed())).perform(click())
+        onView(allOf(withId(R.id.navigation_create), isAssignableFrom(BottomNavigationItemView::class.java))).perform(click())
 
         // Then Create Real estate Bottom Navigation button is checked
         onView(allOf(withId(R.id.navigation_real_estate), isDisplayed()))
                 .check(matches(withBottomNavItemCheckedStatus(false)))
-        onView(allOf(withId(R.id.navigation_create), isDisplayed()))
+        onView(allOf(withId(R.id.navigation_create), isAssignableFrom(BottomNavigationItemView::class.java)))
             .check(matches(withBottomNavItemCheckedStatus(true)))
     }
 

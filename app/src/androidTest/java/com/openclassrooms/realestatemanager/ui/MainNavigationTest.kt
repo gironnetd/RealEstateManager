@@ -72,7 +72,7 @@ class MainNavigationTest : BaseMainActivityTests() {
                 .perform(click())
 
         // Then Create fragment is shown
-        onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
+        onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -117,7 +117,7 @@ class MainNavigationTest : BaseMainActivityTests() {
                 .perform(NavigationViewActions.navigateTo(R.id.navigation_create))
 
         // Then Create fragment is shown
-        onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
+        onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()))
     }
 
     @Test

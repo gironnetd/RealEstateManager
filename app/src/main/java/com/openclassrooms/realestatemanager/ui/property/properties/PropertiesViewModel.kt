@@ -10,7 +10,6 @@ import io.reactivex.ObservableTransformer
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
-import timber.log.Timber
 import javax.inject.Inject
 
 class PropertiesViewModel
@@ -78,7 +77,6 @@ class PropertiesViewModel
                         )
                     }
                     is LoadPropertiesResult.Failure -> {
-                        Timber.i(result.error)
                         previousState.copy(inProgress = false, error = result.error)
                     }
                     is LoadPropertiesResult.InFlight -> {

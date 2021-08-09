@@ -57,9 +57,9 @@ class PhotoCacheStorageSource
                                 }
                             }
                         }
-                    } ?: emitter.onError(NullPointerException("Photos cacheDir for Property: ${propertyDir.name} is null"))
+                    } // ?: emitter.onError(NullPointerException("Photos cacheDir for Property: ${propertyDir.name} is null"))
                 }
-            } ?: emitter.onError(Throwable("Properties cacheDir is null"))
+            } // ?: emitter.onError(Throwable("Properties cacheDir is null"))
         }
     }
 

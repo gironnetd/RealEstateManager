@@ -2,10 +2,10 @@
 <resources>
     <!--Navigation View and Bottom Navigation View Strings-->
     <string name="real_estate">Bienes raíces</string>
-    <string name="simulation">Simulación</string>
     <string name="add_real_estate">Agregar bienes raíces</string>
-    <string name="create">Crear bienes raíces</string>
-    <string name="update">&#160;&#160;&#160;Modificación de bienes inmuebles</string>
+    <string name="create_property">Crear Propiedad</string>
+    <string name="create">&#160;&#160;CREAR</string>
+    <string name="update">&#160;&#160;&#160;MODIFIAR</string>
     <string name="map">Mapa inmobiliario</string>
     <string name="list">Lista de inmuebles</string>
     <string name="detail">Detalle de bienes raíces</string>
@@ -84,7 +84,16 @@
     <string name="confirm_save_changes_dialog_title">ACTUALIZACION DE LA PROPRIEDAD</string>
     <string name="confirm_save_changes_dialog_message">Hiciste cambios.¿Te gustaría salvarlos?</string>
     <string name="confirm_save_changes">CONFIRMAR CAMBIOS</string>
+
+    <string name="confirm_create_changes_dialog_title">CREAR PROPIEDAD</string>
+    <string name="confirm_create_changes_dialog_message">Ha comenzado a crear una propiedad. ¿Le gustaría guardarlo?</string>
+    <string name="confirm_create_changes">CONFIRMAR CREACIÓN</string>
+
     <string name="is_main_photo_question">is the main photo?</string>
     <string name="cannot_delete_photo">No puedes borrar esta foto porque es la principal</string>
-
+    <string name="no_photos_for_this_property">No Photos For this Property</string>
+    <string name="no_changes">No se han hecho cambios</string>
+    <string name="property_create_locally">La propiedad se ha registrado localmente y se registrará de forma remota una vez que se restablezca la conexión</string>
+    <string name="property_create_totally">Las propiedades han sido creadas íntegramente</string>
+    <string name="notification_title">Property Created</string>
 </resources>

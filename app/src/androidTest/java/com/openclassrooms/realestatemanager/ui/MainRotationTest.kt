@@ -54,24 +54,24 @@ class MainRotationTest : BaseMainActivityTests() {
 
         onView(allOf(withId(R.id.navigation_create), isDisplayed()))
                 .perform(click())
-        onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
+        onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()))
 
         // When a rotation occurs
         // Then Create fragment is displayed
         val orientation = mainActivity.applicationContext.resources.configuration.orientation
         if(orientation == ORIENTATION_PORTRAIT) {
             onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity))
-            onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
+            onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()))
 
             onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity))
-            onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
+            onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()))
         }
         if(orientation == ORIENTATION_LANDSCAPE) {
             onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity))
-            onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
+            onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()))
 
             onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity))
-            onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
+            onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()))
         }
     }
 

@@ -9,8 +9,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
+import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragment
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragment
-import com.openclassrooms.realestatemanager.ui.property.update.PropertyUpdateFragment
 import com.openclassrooms.realestatemanager.util.GlideManager
 import com.openclassrooms.realestatemanager.util.NavigationHelper
 import com.openclassrooms.realestatemanager.viewmodels.FakePropertiesViewModelFactory

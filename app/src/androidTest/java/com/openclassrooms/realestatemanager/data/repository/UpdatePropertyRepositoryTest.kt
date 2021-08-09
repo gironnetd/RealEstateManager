@@ -46,8 +46,7 @@ class UpdatePropertyRepositoryTest : TestCase() {
     @get:Rule val instantTaskExecutorRule = InstantTaskExecutorRule()
     @get:Rule val rxImmediateSchedulerRule = RxImmediateSchedulerRule()
 
-    @Inject
-    lateinit var jsonUtil: JsonUtil
+    @Inject lateinit var jsonUtil: JsonUtil
 
     private lateinit var fakeProperties: List<Property>
 
@@ -377,9 +376,4 @@ class UpdatePropertyRepositoryTest : TestCase() {
         (application.appComponent as TestAppComponent)
             .inject(this)
     }
-
-    companion object {
-        private val TAG = UpdatePropertyRepositoryTest::class.simpleName
-    }
-
 }

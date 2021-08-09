@@ -3,12 +3,14 @@ package com.openclassrooms.realestatemanager.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
+import com.openclassrooms.realestatemanager.ui.property.edit.create.PropertyCreateActionProcessor
+import com.openclassrooms.realestatemanager.ui.property.edit.create.PropertyCreateViewModel
+import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateActionProcessor
+import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateViewModel
 import com.openclassrooms.realestatemanager.ui.property.properties.PropertiesActionProcessor
 import com.openclassrooms.realestatemanager.ui.property.properties.PropertiesViewModel
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailActionProcessor
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailViewModel
-import com.openclassrooms.realestatemanager.ui.property.update.PropertyUpdateActionProcessor
-import com.openclassrooms.realestatemanager.ui.property.update.PropertyUpdateViewModel
 import com.openclassrooms.realestatemanager.util.schedulers.ImmediateSchedulerProvider
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -34,6 +36,12 @@ class FakePropertiesViewModelFactory
             val propertiesActionProcessor = PropertyUpdateActionProcessor(propertiesRepository,
                 ImmediateSchedulerProvider())
             return PropertyUpdateViewModel(propertiesActionProcessor) as T
+        }
+
+        if (modelClass.isAssignableFrom(PropertyCreateViewModel::class.java)) {
+            val propertiesActionProcessor = PropertyCreateActionProcessor(propertiesRepository,
+                ImmediateSchedulerProvider())
+            return PropertyCreateViewModel(propertiesActionProcessor) as T
         }
 
         throw IllegalArgumentException("Unknown ViewModel class")

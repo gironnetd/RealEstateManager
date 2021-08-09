@@ -6,16 +6,25 @@
         android:title="@string/edit"
         android:visible="false"
         android:icon="@drawable/ic_baseline_edit_24"
+        android:contentDescription="@string/edit"
         app:showAsAction="always|withText"/>
 
     <item android:id="@+id/navigation_update"
         android:title="@string/update"
         android:visible="false"
         android:icon="@drawable/ic_baseline_update_24"
+        android:contentDescription="@string/update"
+        app:showAsAction="always|withText"/>
+
+    <item android:id="@+id/navigation_create"
+        android:title="@string/create"
+        android:visible="false"
+        android:contentDescription="@string/create"
         app:showAsAction="always|withText"/>
 
     <item android:id="@+id/navigation_search"
         android:title="@string/search"
         android:icon="@drawable/ic_search_24"
+        android:contentDescription="@string/search"
         app:showAsAction="always"/>
 </menu>

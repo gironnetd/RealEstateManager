@@ -2,10 +2,10 @@
 <resources>
     <!--Navigation View and Bottom Navigation View Strings-->
     <string name="real_estate">Real estate</string>
-    <string name="simulation">Simulation</string>
     <string name="add_real_estate">Add real estate</string>
-    <string name="create">Create real estate</string>
-    <string name="update">&#160;&#160;update</string>
+    <string name="create_property">Create Property</string>
+    <string name="create">&#160;&#160;CREATE</string>
+    <string name="update">&#160;&#160;UPDATE</string>
     <string name="map">Real estate Map</string>
     <string name="list">Real estate List</string>
     <string name="detail">Real estate Detail</string>
@@ -84,6 +84,14 @@
     <string name="confirm_save_changes_dialog_title">UPDATE PROPERTY</string>
     <string name="confirm_save_changes_dialog_message">You made changes.Would you like to save them?</string>
     <string name="confirm_save_changes">CONFIRM CHANGES</string>
+    <string name="confirm_create_changes_dialog_title">CREATE PROPERTY</string>
+    <string name="confirm_create_changes_dialog_message">You have started to create a property. Would you like to save it?</string>
+    <string name="confirm_create_changes">CONFIRM CREATION</string>
     <string name="is_main_photo_question">is the main photo?</string>
     <string name="cannot_delete_photo">You cannot delete this photo because it is the main one</string>
+    <string name="no_photos_for_this_property">No Photos For this Property</string>
+    <string name="no_changes">No changes have been made</string>
+    <string name="property_create_locally">The property have been created on phone and will be saved remotely once the connection wil be reestablished</string>
+    <string name="property_create_totally">The properties have been created fully</string>
+    <string name="notification_title">Property Created</string>
 </resources>

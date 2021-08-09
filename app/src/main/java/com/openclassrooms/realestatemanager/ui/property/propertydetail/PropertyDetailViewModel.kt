@@ -49,10 +49,8 @@ class PropertyDetailViewModel
 
     private fun actionFromIntent(intent: MviIntent): PropertyDetailAction {
         return when (intent) {
-            is PropertyDetailIntent.InitialIntent -> PropertyDetailAction.PopulatePropertyAction(
-                intent.propertyId)
-            is PropertyDetailIntent.PopulatePropertyIntent -> PropertyDetailAction.PopulatePropertyAction(
-                intent.propertyId)
+            // is PropertyDetailIntent.InitialIntent -> PropertyDetailAction.PopulatePropertyAction(intent.propertyId)
+            is PropertyDetailIntent.PopulatePropertyIntent -> PropertyDetailAction.PopulatePropertyAction(intent.propertyId)
             else -> throw UnsupportedOperationException("Oops, that looks like an unknown intent: " + intent)
         }
     }

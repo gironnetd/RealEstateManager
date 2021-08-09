@@ -12,11 +12,12 @@ import com.openclassrooms.realestatemanager.ui.MainRotationTest
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragmentTest
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.edit.create.PropertyCreateFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.edit.view.add.AddPhotoDialogFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.edit.view.update.PhotoUpdateDialogFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.view.PhotoDetailDialogFragmentIntegrationTest
-import com.openclassrooms.realestatemanager.ui.property.update.PropertyUpdateFragmentIntegrationTest
-import com.openclassrooms.realestatemanager.ui.property.update.view.add.AddPhotoDialogFragmentIntegrationTest
-import com.openclassrooms.realestatemanager.ui.property.update.view.update.PhotoUpdateDialogFragmentIntegrationTest
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 
@@ -31,6 +32,7 @@ import org.junit.runners.Suite
         PropertyDetailFragmentIntegrationTest::class,
         PhotoDetailDialogFragmentIntegrationTest::class,
         PropertyUpdateFragmentIntegrationTest::class,
+        PropertyCreateFragmentIntegrationTest::class,
         AddPhotoDialogFragmentIntegrationTest::class,
         PhotoUpdateDialogFragmentIntegrationTest::class,
         PropertyDaoTest::class,

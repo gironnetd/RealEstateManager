@@ -33,8 +33,8 @@ import com.openclassrooms.realestatemanager.ui.property.browse.list.ListAdapter
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.DEFAULT_ZOOM
+import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragment
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.view.PhotoDetailDialogFragment
-import com.openclassrooms.realestatemanager.ui.property.update.PropertyUpdateFragment
 import com.openclassrooms.realestatemanager.util.Constants.FROM
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTY_ID
 import com.openclassrooms.realestatemanager.util.Utils
@@ -101,7 +101,7 @@ class PropertyDetailFragment
         return Observable.merge(initialIntent(), populatePropertyIntentPublisher())
     }
 
-    private fun initialIntent(): Observable<PropertyDetailIntent.InitialIntent> {
+    private fun initialIntent(): Observable<PropertyDetailIntent> {
         return Observable.just(PropertyDetailIntent.InitialIntent(propertyId))
     }
 
@@ -128,8 +128,7 @@ class PropertyDetailFragment
         }
 
         with(binding) {
-            val descriptionText = "\n${property.description}"
-            description.setText(descriptionText)
+            description.setText(property.description)
 
             interestPointsChipGroup.removeAllViewsInLayout()
             property.interestPoints.forEach { interestPoint ->

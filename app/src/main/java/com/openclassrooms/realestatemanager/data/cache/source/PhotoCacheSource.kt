@@ -12,7 +12,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-open class PhotoCacheSource
+class PhotoCacheSource
 @Inject constructor(var cacheData: PhotoDataSource,
             var cacheStorage: PhotoStorageSource): PhotoSource {
 

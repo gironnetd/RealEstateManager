@@ -33,9 +33,7 @@ class PropertiesActionProcessor
         actions.publish { shared ->
             shared.ofType(LoadPropertiesAction::class.java).compose(loadPropertiesProcessor).mergeWith(
                 // Error for not implemented actions
-                shared.filter { v ->
-                    v !is LoadPropertiesAction
-                }.flatMap { w ->
+                shared.filter { v -> v !is LoadPropertiesAction }.flatMap { w ->
                     Observable.error(
                         IllegalArgumentException("Unknown Action type: $w"))
                 }
