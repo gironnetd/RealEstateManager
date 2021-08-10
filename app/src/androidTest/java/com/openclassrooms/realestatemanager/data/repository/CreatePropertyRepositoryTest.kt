@@ -29,7 +29,7 @@ import junit.framework.TestCase
 import org.junit.*
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
-import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyList
 import org.mockito.Mockito.*
 import java.util.concurrent.TimeUnit
@@ -38,7 +38,7 @@ import javax.inject.Inject
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-class UpdatePropertyRepositoryTest : TestCase() {
+class CreatePropertyRepositoryTest : TestCase() {
 
     @get:Rule val instantTaskExecutorRule = InstantTaskExecutorRule()
     @get:Rule val rxImmediateSchedulerRule = RxImmediateSchedulerRule()
@@ -97,8 +97,9 @@ class UpdatePropertyRepositoryTest : TestCase() {
 
     @Test
     @Suppress("UnstableApiUsage")
-    fun given_property_repository_when_has_internet_and_update_properties_then_inspect_behavior_and_data_result() {
+    fun given_property_repository_when_has_internet_and_create_properties_then_inspect_behavior_and_data_result() {
         // Given PropertyRepository and When has internet
+
         remoteSource = spy(DataSource(
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
@@ -133,30 +134,30 @@ class UpdatePropertyRepositoryTest : TestCase() {
                     val firstUpdatedPhotos = firstProperty.photos.filter { photo -> photo.updated }
 
                     // Then inspect repository behavior with Mockito
-                    propertyRepository.updateProperty(firstProperty).map { isTotallyUpdated ->
+                    propertyRepository.createProperty(firstProperty).map { isTotallyCreated ->
                         firstProperty.updated = false
                         firstUpdatedPhotos.forEach { photo -> photo.updated = false }
 
-                        verify(remoteSource).update(Property::class, firstProperty)
-                        verify(remoteSource).update(Photo::class, firstUpdatedPhotos)
-                        verify(cacheSource).update(Property::class, firstProperty)
+                        verify(remoteSource).save(Property::class, firstProperty)
+                        verify(remoteSource).save(Photo::class, firstUpdatedPhotos)
+                        verify(cacheSource).save(Property::class, firstProperty)
                         verify(cacheSource).update(Photo::class, firstUpdatedPhotos)
-                        assertThat(isTotallyUpdated).isTrue()
+                        assertThat(isTotallyCreated).isTrue()
                         true
                     }.blockingFirst()
 
                     val secondProperty = createProperty(fakeProperties)
                     val secondUpdatedPhotos = secondProperty.photos.filter { photo -> photo.updated }
 
-                    propertyRepository.updateProperty(secondProperty).map { isTotallyUpdated ->
+                    propertyRepository.createProperty(secondProperty).map { isTotallyCreated ->
                         secondProperty.updated = false
                         secondUpdatedPhotos.forEach { photo -> photo.updated = false }
 
-                        verify(remoteSource, atLeast(1)).update(Property::class, secondProperty)
-                        verify(remoteSource, atLeast(1)).update(Photo::class, secondUpdatedPhotos)
-                        verify(cacheSource, atLeast(1)).update(Property::class, secondProperty)
-                        verify(cacheSource, atLeast(1)).update(Photo::class, secondUpdatedPhotos)
-                        assertThat(isTotallyUpdated).isTrue()
+                        verify(remoteSource, atLeast(1)).save(Property::class, secondProperty)
+                        verify(remoteSource, atLeast(1)).save(Photo::class, secondUpdatedPhotos)
+                        verify(cacheSource, atLeast(1)).save(Property::class, secondProperty)
+                        verify(cacheSource, atLeast(1)).save(Photo::class, secondUpdatedPhotos)
+                        assertThat(isTotallyCreated).isTrue()
                         true
                     }.blockingFirst()
 
@@ -167,7 +168,7 @@ class UpdatePropertyRepositoryTest : TestCase() {
 
     @Test
     @Suppress("UnstableApiUsage")
-    fun given_property_repository_when_has_internet_and_update_properties_without_photos_then_inspect_behavior_and_data_result() {
+    fun given_property_repository_when_has_internet_and_create_property_without_photos_then_inspect_behavior_and_data_result() {
         // Given PropertyRepository and When has internet
 
         remoteSource = spy(DataSource(
@@ -204,14 +205,14 @@ class UpdatePropertyRepositoryTest : TestCase() {
                     property.photos.forEach { photo -> photo.updated = false }
 
                     // Then inspect repository behavior with Mockito
-                    propertyRepository.updateProperty(property).map { isTotallyUpdated ->
+                    propertyRepository.createProperty(property).map { isTotallyCreated ->
                         property.updated = false
 
-                        verify(remoteSource).update(Property::class, property)
-                        verify(remoteSource, never()).update(any(Photo::class), anyList())
-                        verify(cacheSource).update(Property::class, property)
-                        verify(cacheSource, never()).update(any(Photo::class), anyList())
-                        assertThat(isTotallyUpdated).isTrue()
+                        verify(remoteSource).save(Property::class, property)
+                        verify(remoteSource, never()).save(any(Photo::class), anyList())
+                        verify(cacheSource).save(Property::class, property)
+                        verify(cacheSource, never()).save(any(Photo::class), anyList())
+                        assertThat(isTotallyCreated).isTrue()
                         true
                     }.blockingFirst()
                 }.delaySubscription((TIMEOUT_INTERNET_CONNECTION.toLong() * 3), TimeUnit.MILLISECONDS)
@@ -219,10 +220,9 @@ class UpdatePropertyRepositoryTest : TestCase() {
             }
     }
 
-
     @Test
     @Suppress("UnstableApiUsage")
-    fun given_property_repository_when_has_no_internet_and_update_properties_then_inspect_behavior_and_data_result() {
+    fun given_property_repository_when_has_no_internet_and_create_properties_then_inspect_behavior_and_data_result() {
         // Given PropertyRepository and When has no internet
 
         remoteSource = spy(DataSource(
@@ -259,20 +259,20 @@ class UpdatePropertyRepositoryTest : TestCase() {
                     val firstUpdatedPhotos = firstProperty.photos.filter { photo -> photo.updated }
 
                     // Then inspect repository behavior with Mockito
-                    propertyRepository.updateProperty(firstProperty).map { isTotallyUpdated ->
-                        verify(cacheSource).update(Property::class, firstProperty)
-                        verify(cacheSource).update(Photo::class, firstUpdatedPhotos)
-                        assertThat(isTotallyUpdated).isFalse()
+                    propertyRepository.createProperty(firstProperty).map { isTotallyCreated ->
+                        verify(cacheSource).save(Property::class, firstProperty)
+                        verify(cacheSource).save(Photo::class, firstUpdatedPhotos)
+                        assertThat(isTotallyCreated).isFalse()
                         true
                     }.blockingFirst()
 
                     val secondProperty = createProperty(fakeProperties)
                     val secondUpdatedPhotos = secondProperty.photos.filter { photo -> photo.updated }
 
-                    propertyRepository.updateProperty(secondProperty).map { isTotallyUpdated ->
-                        verify(cacheSource).update(Property::class, secondProperty)
-                        verify(cacheSource, atLeast(1)).update(Photo::class, secondUpdatedPhotos)
-                        assertThat(isTotallyUpdated).isFalse()
+                    propertyRepository.createProperty(secondProperty).map { isTotallyCreated ->
+                        verify(cacheSource).save(Property::class, secondProperty)
+                        verify(cacheSource, atLeast(1)).save(Photo::class, secondUpdatedPhotos)
+                        assertThat(isTotallyCreated).isFalse()
                         true
                     }.blockingFirst()
 
@@ -283,7 +283,7 @@ class UpdatePropertyRepositoryTest : TestCase() {
 
     @Test
     @Suppress("UnstableApiUsage")
-    fun given_property_repository_when_has_no_internet_and_update_properties_without_photos_then_inspect_behavior_and_data_result() {
+    fun given_property_repository_when_has_no_internet_and_create_properties_without_photos_then_inspect_behavior_and_data_result() {
         // Given PropertyRepository and When has no internet
 
         remoteSource = spy(DataSource(
@@ -320,10 +320,10 @@ class UpdatePropertyRepositoryTest : TestCase() {
                     property.photos.forEach { photo -> photo.updated = false }
 
                     // Then inspect repository behavior with Mockito
-                    propertyRepository.updateProperty(property).map { isTotallyUpdated ->
-                        verify(cacheSource).update(Property::class, property)
-                        verify(cacheSource, never()).update(any(Photo::class), anyList())
-                        assertThat(isTotallyUpdated).isFalse()
+                    propertyRepository.createProperty(property).map { isTotallyCreated ->
+                        verify(cacheSource).save(Property::class, property)
+                        verify(cacheSource, never()).save(any(Photo::class), anyList())
+                        assertThat(isTotallyCreated).isFalse()
                         true
                     }.blockingFirst()
                 }.delaySubscription((TIMEOUT_INTERNET_CONNECTION.toLong() * 3), TimeUnit.MILLISECONDS)
@@ -332,7 +332,7 @@ class UpdatePropertyRepositoryTest : TestCase() {
     }
 
     private fun <T> any(type: T): T {
-        any<T>()
+        ArgumentMatchers.any<T>()
         return uninitialized()
     }
 

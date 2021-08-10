@@ -14,4 +14,6 @@ interface PropertyRepository {
 
     fun updateProperty(propertyToUpdate: Property): Observable<Boolean>
 
+    fun createProperty(property: Property): Observable<Boolean>
+
 }

@@ -18,14 +18,11 @@ class MainFragmentNavigator(
         private val mContainerId: Int,
 ) : FragmentNavigator(mContext, mFragmentManager, mContainerId) {
 
-    private val TAG = "BrowseMasterFragmentNavigator"
-
     private val mBackStack = ArrayDeque<Int>()
 
     override fun navigate(destination: Destination, args: Bundle?, navOptions: NavOptions?, navigatorExtras: Navigator.Extras?): NavDestination? {
         if (mFragmentManager.isStateSaved) {
-            Timber.tag("BrowseMasterFragmentNav").i("Ignoring navigate() call: FragmentManager has already"
-                    + " saved its state")
+            Timber.tag(TAG).i("Ignoring navigate() call: FragmentManager has already saved its state")
             return null
         }
         var className = destination.className
@@ -39,7 +36,6 @@ class MainFragmentNavigator(
         val currentFragment = mFragmentManager.primaryNavigationFragment
         if (currentFragment != null) {
             ft.hide(currentFragment)
-            //ft.detach(currentFragment)
         }
 
         var fragment = mFragmentManager.findFragmentByTag(tag)
@@ -51,7 +47,6 @@ class MainFragmentNavigator(
         } else {
             fragment.arguments = args
             ft.show(fragment)
-            //ft.attach(fragment)
         }
 
         ft.setPrimaryNavigationFragment(fragment)
@@ -100,5 +95,9 @@ class MainFragmentNavigator(
 
     private fun generateBackStackName(backStackIndex: Int, destId: Int): String {
         return "$backStackIndex-$destId"
+    }
+
+    companion object {
+        private const val TAG = "MainFragmentNav"
     }
 }

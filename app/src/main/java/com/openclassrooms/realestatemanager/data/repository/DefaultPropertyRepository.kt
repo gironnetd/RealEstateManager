@@ -208,7 +208,9 @@ class DefaultPropertyRepository
         }
     }
 
-
+    override fun createProperty(property: Property): Observable<Boolean> {
+        TODO("Not yet implemented")
+    }
 
     override fun updatePropertiesFromCache(): Observable<MutablePair<Boolean?, MutableList<Property>?>> {
         return isInternetSubject.compose(updateProperties())
