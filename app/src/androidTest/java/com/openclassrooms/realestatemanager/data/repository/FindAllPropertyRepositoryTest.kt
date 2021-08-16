@@ -1,7 +1,6 @@
 package com.openclassrooms.realestatemanager.data.repository
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -30,7 +29,6 @@ import io.reactivex.Completable
 import io.reactivex.Completable.concatArray
 import io.reactivex.observers.TestObserver
 import junit.framework.TestCase
-import org.apache.commons.lang3.tuple.MutablePair
 import org.junit.*
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
@@ -62,7 +60,7 @@ class FindAllPropertyRepositoryTest : TestCase() {
         .targetContext
         .applicationContext as TestBaseApplication
 
-    lateinit var testObserver: TestObserver<MutablePair<Boolean?, MutableList<Property>?>>
+    lateinit var testObserver: TestObserver<List<Property>>
 
     @Before
     public override fun setUp() {
@@ -103,19 +101,18 @@ class FindAllPropertyRepositoryTest : TestCase() {
     @Suppress("UnstableApiUsage")
     fun given_property_repository_when_has_internet_and_local_storage_is_not_empty_then_inspect_behavior() {
         // Given PropertyRepository and When has internet and local storage is not empty
-
         remoteSource = spy(DataSource(
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         cacheSource = spy(DataSource(
             propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoCacheSource(
                 cacheData = FakePhotoDataSource(jsonUtil),
-                cacheStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                cacheStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         concatArray(switchAllNetworks(true), waitInternetStateChange(true))
@@ -135,12 +132,6 @@ class FindAllPropertyRepositoryTest : TestCase() {
 
                     testObserver.assertValueAt(0) {
                         verify(cacheSource).findAll(Property::class)
-                        true
-                    }
-
-                    // Then inspect repository behavior with Mockito
-                    testObserver.assertValueAt(1) {
-                        tag(TAG).i("/** behavior_when_has_internet_and_local_storage_is_not_empty **/")
                         verify(remoteSource).findAll(Property::class)
                         true
                     }
@@ -158,13 +149,13 @@ class FindAllPropertyRepositoryTest : TestCase() {
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
 
 
         cacheSource = DataSource(
             propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoCacheSource(cacheData = FakePhotoDataSource(jsonUtil),
-                cacheStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                cacheStorage = FakePhotoStorageSource(jsonUtil)))
 
         concatArray(switchAllNetworks(true), waitInternetStateChange(true))
             .delay(TIMEOUT_INTERNET_CONNECTION.toLong(), TimeUnit.MILLISECONDS)
@@ -184,9 +175,9 @@ class FindAllPropertyRepositoryTest : TestCase() {
                         tag(TAG).i("/** data_result_when_has_internet_and_local_storage_is_not_empty **/")
                         assertThat(returnedProperties).isNotNull()
                         tag(TAG).i("returned properties is not null")
-                        assertThat(returnedProperties.right).isNotEmpty()
+                        assertThat(returnedProperties).isNotEmpty()
                         tag(TAG).i("returned properties is not empty")
-                        assertThat(fakeProperties).isEqualTo(returnedProperties.right)
+                        assertThat(fakeProperties).isEqualTo(returnedProperties)
                         tag(TAG).d("returned properties is equal to fakeProperties")
                         returnedProperties
                     }.blockingFirst()
@@ -204,13 +195,13 @@ class FindAllPropertyRepositoryTest : TestCase() {
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         cacheSource = spy(DataSource(
             propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoCacheSource(cacheData = FakePhotoDataSource(jsonUtil),
-                cacheStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                cacheStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         concatArray(switchAllNetworks(false), waitInternetStateChange(false))
@@ -247,13 +238,13 @@ class FindAllPropertyRepositoryTest : TestCase() {
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
 
 
         cacheSource = DataSource(
             propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoCacheSource(cacheData = FakePhotoDataSource(jsonUtil),
-                cacheStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                cacheStorage = FakePhotoStorageSource(jsonUtil)))
 
         concatArray(switchAllNetworks(false), waitInternetStateChange(false))
             .delay(TIMEOUT_INTERNET_CONNECTION.toLong(), TimeUnit.MILLISECONDS)
@@ -273,9 +264,9 @@ class FindAllPropertyRepositoryTest : TestCase() {
                         tag(TAG).i("/** data_result_when_has_no_internet_and_local_storage_is_not_empty **/")
                         assertThat(returnedProperties).isNotNull()
                         tag(TAG).i("returned properties is not null")
-                        assertThat(returnedProperties.right).isNotEmpty()
+                        assertThat(returnedProperties).isNotEmpty()
                         tag(TAG).i("returned properties is not empty")
-                        assertThat(fakeProperties).isEqualTo(returnedProperties.right)
+                        assertThat(fakeProperties).isEqualTo(returnedProperties)
                         tag(TAG).i("returned properties is equal to fakeProperties")
                         returnedProperties
                     }.blockingFirst()
@@ -293,13 +284,13 @@ class FindAllPropertyRepositoryTest : TestCase() {
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         cacheSource = spy(DataSource(
             propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoCacheSource(cacheData = FakePhotoDataSource(jsonUtil),
-                cacheStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                cacheStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         cacheSource.deleteAll(Property::class).blockingAwait()
@@ -347,12 +338,12 @@ class FindAllPropertyRepositoryTest : TestCase() {
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
 
         cacheSource = DataSource(
             propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoCacheSource(cacheData = FakePhotoDataSource(jsonUtil),
-                cacheStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                cacheStorage = FakePhotoStorageSource(jsonUtil)))
 
         cacheSource.deleteAll(Property::class).blockingAwait()
 
@@ -376,9 +367,9 @@ class FindAllPropertyRepositoryTest : TestCase() {
                         tag(TAG).i("/** data_result_when_has_internet_and_local_storage_is_empty **/")
                         assertThat(returnedProperties).isNotNull()
                         tag(TAG).i("returned properties is not null")
-                        assertThat(returnedProperties.right).isNotEmpty()
+                        assertThat(returnedProperties).isNotEmpty()
                         tag(TAG).i("returned properties is not empty")
-                        assertThat(fakeProperties).isEqualTo(returnedProperties.right)
+                        assertThat(fakeProperties).isEqualTo(returnedProperties)
                         tag(TAG).i("returned properties is equal to fakeProperties")
                         true
                     }
@@ -396,13 +387,13 @@ class FindAllPropertyRepositoryTest : TestCase() {
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         cacheSource = spy(DataSource(
             propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoCacheSource(cacheData = FakePhotoDataSource(jsonUtil),
-                cacheStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                cacheStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         cacheSource.deleteAll(Property::class).blockingAwait()
@@ -441,12 +432,12 @@ class FindAllPropertyRepositoryTest : TestCase() {
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
 
         cacheSource = DataSource(
             propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoCacheSource(cacheData = FakePhotoDataSource(jsonUtil),
-                cacheStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                cacheStorage = FakePhotoStorageSource(jsonUtil)))
 
         cacheSource.deleteAll(Property::class).blockingAwait()
 
@@ -471,7 +462,7 @@ class FindAllPropertyRepositoryTest : TestCase() {
                         tag(TAG).i("/** data_result_when_has_no_internet_and_local_storage_is_empty **/")
                         assertThat(returnedProperties).isNotNull()
                         tag(TAG).i("returned properties is not null")
-                        assertThat(returnedProperties.right).isEmpty()
+                        assertThat(returnedProperties).isEmpty()
                         tag(TAG).i("returned properties is empty")
                         returnedProperties
                     }.blockingFirst()

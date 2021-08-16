@@ -70,7 +70,7 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
         configure_fake_repository()
         injectTest(testApplication)
 
-        fakeProperties = propertiesRepository.findAllProperties().blockingFirst().right!!
+        fakeProperties = propertiesRepository.findAllProperties().blockingFirst()
         itemPosition = (fakeProperties.indices).random()
 
         BrowseFragment.WHEN_NORMAL_MODE_IS_DETAIL_FRAGMENT_SELECTED = false

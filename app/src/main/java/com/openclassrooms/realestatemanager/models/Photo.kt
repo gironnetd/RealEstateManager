@@ -86,39 +86,24 @@ data class Photo (
     @get:Exclude
     var bitmap: Bitmap? = null,
 
-    @ColumnInfo(name = "updated")
+    @ColumnInfo(name = "locally_updated")
     @get:Exclude
-    var updated: Boolean = false
+    var locallyUpdated: Boolean = false,
 
-) : Parcelable {
-    constructor(cursor: Cursor/*, isMainPhoto: Boolean = false*/): this() {
-        //mainPhoto = isMainPhoto
-//        if(isMainPhoto) {
-//            id = cursor.getString(
-//                cursor.getColumnIndex(
-//                    PREFIX_MAIN_PHOTO + COLUMN_ID))
-//            propertyId = cursor.getString(
-//                cursor.getColumnIndex(
-//                    PREFIX_MAIN_PHOTO + COLUMN_PHOTO_PROPERTY_ID
-//                ))
-//            description = cursor.getString(
-//                cursor.getColumnIndex(
-//                    PREFIX_MAIN_PHOTO + COLUMN_PHOTO_DESCRIPTION
-//                ))
-//            type = PhotoType.valueOf(
-//                cursor.getString(
-//                    cursor.getColumnIndex(
-//                        PREFIX_MAIN_PHOTO + COLUMN_PHOTO_TYPE
-//                    )))
-//            mainPhoto = isMainPhoto
-//        } else {
+    @ColumnInfo(name = "locally_created")
+    @get:Exclude
+    var locallyCreated: Boolean = false) : Parcelable {
+
+    constructor(cursor: Cursor): this() {
         id = cursor.getString(cursor.getColumnIndex(COLUMN_ID))
         propertyId = cursor.getString(cursor.getColumnIndex(COLUMN_PHOTO_PROPERTY_ID))
         description = cursor.getString(cursor.getColumnIndex(COLUMN_PHOTO_DESCRIPTION))
         type = PhotoType.valueOf(cursor.getString(cursor.getColumnIndex(COLUMN_PHOTO_TYPE)))
 
         mainPhoto = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_MAIN_PHOTO)) == 1
-        //    }
+
+        locallyUpdated = cursor.getInt(cursor.getColumnIndex(COLUMN_LOCALLY_UPDATED)) == 1
+        locallyCreated = cursor.getInt(cursor.getColumnIndex(COLUMN_LOCALLY_CREATED)) == 1
     }
 
     override fun toString(): String {
@@ -183,8 +168,11 @@ data class Photo (
         /** The name of the main photo column.  */
         const val COLUMN_IS_MAIN_PHOTO = "main_photo"
 
-        /** The name of the updated column.  */
-        const val COLUMN_UPDATED = "updated"
+        /** The name of the locally updated column.  */
+        const val COLUMN_LOCALLY_UPDATED = "locally_updated"
+
+        /** The name of the locally created column.  */
+        const val COLUMN_LOCALLY_CREATED = "locally_created"
 
         @NonNull
         fun fromContentValues(values: ContentValues?): Photo {
@@ -210,8 +198,12 @@ data class Photo (
                     photo.mainPhoto = it.getAsBoolean(COLUMN_IS_MAIN_PHOTO)
                 }
 
-                if(it.containsKey(COLUMN_UPDATED)) {
-                    photo.updated = it.getAsBoolean(COLUMN_UPDATED)
+                if(it.containsKey(COLUMN_LOCALLY_UPDATED)) {
+                    photo.locallyUpdated = it.getAsBoolean(COLUMN_LOCALLY_UPDATED)
+                }
+
+                if(it.containsKey(COLUMN_LOCALLY_CREATED)) {
+                    photo.locallyCreated = it.getAsBoolean(COLUMN_LOCALLY_CREATED)
                 }
             }
             return photo

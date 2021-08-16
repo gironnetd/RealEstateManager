@@ -18,7 +18,7 @@ import com.openclassrooms.realestatemanager.BaseApplication
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.ui.mvibase.MviView
-import com.openclassrooms.realestatemanager.ui.navigation.browse.MainFragmentNavigator
+import com.openclassrooms.realestatemanager.ui.navigation.MainFragmentNavigator
 import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.properties.PropertiesIntent
 import com.openclassrooms.realestatemanager.ui.property.properties.PropertiesViewModel

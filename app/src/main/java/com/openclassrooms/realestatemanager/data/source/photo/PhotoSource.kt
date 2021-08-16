@@ -22,8 +22,6 @@ interface PhotoSource {
 
     fun findAllPhotos(): Single<List<Photo>>
 
-    fun findAllUpdatedPhotos(): Single<List<Photo>>
-
     fun updatePhoto(photo: Photo): Completable
 
     fun updatePhotos(photos: List<Photo>): Completable

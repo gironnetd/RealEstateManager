@@ -127,7 +127,7 @@ object TestAppModule {
     @Singleton
     @Provides
     fun providePhotoCacheStorageSource(jsonUtil: JsonUtil, context: Context): PhotoStorageSource {
-        return FakePhotoStorageSource(jsonUtil = jsonUtil, cacheDir = context.cacheDir)
+        return FakePhotoStorageSource(jsonUtil = jsonUtil)
     }
 
     @JvmStatic

@@ -13,7 +13,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentBrowseBinding
 import com.openclassrooms.realestatemanager.ui.MainActivity
-import com.openclassrooms.realestatemanager.ui.navigation.browse.detail.BrowseDetailFragmentNavigator
+import com.openclassrooms.realestatemanager.ui.navigation.browsedetail.BrowseDetailFragmentNavigator
 import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListAdapter
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragment

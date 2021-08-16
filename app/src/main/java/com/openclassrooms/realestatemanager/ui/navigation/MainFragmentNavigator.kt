@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.ui.navigation.browse.detail
+package com.openclassrooms.realestatemanager.ui.navigation
 
 import android.content.Context
 import android.os.Bundle
@@ -11,17 +11,16 @@ import androidx.navigation.fragment.FragmentNavigator
 import timber.log.Timber
 import java.util.*
 
-@Navigator.Name("browse_detail_fragment")
-class BrowseDetailFragmentNavigator(
+@Navigator.Name("main_fragment")
+class MainFragmentNavigator(
         private val mContext: Context,
-        private val mFragmentManager: FragmentManager,
+        private val mFragmentManager: FragmentManager, // Should pass childFragmentManager.
         private val mContainerId: Int,
 ) : FragmentNavigator(mContext, mFragmentManager, mContainerId) {
 
     private val mBackStack = ArrayDeque<Int>()
 
     override fun navigate(destination: Destination, args: Bundle?, navOptions: NavOptions?, navigatorExtras: Navigator.Extras?): NavDestination? {
-
         if (mFragmentManager.isStateSaved) {
             Timber.tag(TAG).i("Ignoring navigate() call: FragmentManager has already saved its state")
             return null
@@ -35,7 +34,6 @@ class BrowseDetailFragmentNavigator(
         val tag = destination.id.toString()
 
         val currentFragment = mFragmentManager.primaryNavigationFragment
-
         if (currentFragment != null) {
             ft.hide(currentFragment)
         }
@@ -70,7 +68,7 @@ class BrowseDetailFragmentNavigator(
                 // remove it from the back stack and put our replacement
                 // on the back stack in its place
                 mFragmentManager.popBackStack(
-                        generateBackStackName(mBackStack.size, mBackStack.peekLast()!!),
+                        generateBackStackName(mBackStack.size, mBackStack.peekLast()),
                         FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 ft.addToBackStack(generateBackStackName(mBackStack.size, destId))
             }
@@ -100,6 +98,6 @@ class BrowseDetailFragmentNavigator(
     }
 
     companion object {
-        private const val TAG = "BrowseMasterFragmentNav"
+        private const val TAG = "MainFragmentNav"
     }
 }

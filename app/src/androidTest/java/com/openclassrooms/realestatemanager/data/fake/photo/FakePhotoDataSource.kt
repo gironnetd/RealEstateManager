@@ -63,10 +63,6 @@ class FakePhotoDataSource
         return Single.just(photos)
     }
 
-    override fun findAllUpdatedPhotos(): Single<List<Photo>> {
-        return Single.just(photos.filter { photo -> photo.updated })
-    }
-
     override fun updatePhoto(photo: Photo): Completable {
         return Completable.fromAction {
             val actualPhoto = photos.single { it.id == photo.id }

@@ -1,4 +1,4 @@
-package com.openclassrooms.realestatemanager.ui.fragments.property.browse.detail
+package com.openclassrooms.realestatemanager.ui.fragments.browsedetail
 
 import androidx.activity.result.ActivityResultRegistry
 import androidx.fragment.app.FragmentFactory

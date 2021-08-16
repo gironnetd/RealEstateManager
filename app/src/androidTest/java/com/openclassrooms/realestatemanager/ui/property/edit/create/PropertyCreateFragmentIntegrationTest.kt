@@ -67,7 +67,7 @@ class PropertyCreateFragmentIntegrationTest : BaseFragmentTests() {
         configure_fake_repository()
         injectTest(testApplication)
 
-        fakeProperties = propertiesRepository.findAllProperties().blockingFirst().right!!
+        fakeProperties = propertiesRepository.findAllProperties().blockingFirst()
 
         BaseFragment.properties.value = fakeProperties.toMutableList()
 

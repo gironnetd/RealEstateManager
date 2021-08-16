@@ -8,11 +8,12 @@ import com.openclassrooms.realestatemanager.data.source.DataSource
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
+import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.ObservableTransformer
+import io.reactivex.ObservableSource
 import io.reactivex.Single
 import io.reactivex.subjects.ReplaySubject
-import org.apache.commons.lang3.tuple.MutablePair
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,82 +24,47 @@ class DefaultPropertyRepository
     var remoteDataSource: DataSource<PropertyRemoteSource, PhotoRemoteSource>,
     var cacheDataSource: DataSource<PropertyCacheSource, PhotoCacheSource>) : PropertyRepository {
 
-    private var cachedProperties: MutablePair<Boolean?, MutableList<Property>> = MutablePair(null, mutableListOf())
+    var cachedProperties: MutableList<Property> = mutableListOf()
     private var isInternetSubject: ReplaySubject<Boolean> = ReplaySubject.create()
-
-    private var isInternetAvailable: Boolean? = null
 
     init {
         networkConnectionLiveData.observeForever { isInternetAvailable ->
-            if (isInternetAvailable != this.isInternetAvailable) {
-                this.isInternetAvailable = isInternetAvailable
-                isInternetSubject.onNext(isInternetAvailable)
+            isInternetSubject.onNext(isInternetAvailable)
+        }
+    }
+
+    override fun findAllProperties(): Observable<List<Property>> {
+        return isInternetSubject.filter { isInternetAvailable -> isInternetAvailable }
+            .flatMap {
+                Observable
+                    .interval(1, TimeUnit.SECONDS)
+                    .filter { cachedProperties.all { property -> !property.locallyUpdated } }
+                    .map { it }
+                    .take(1)
             }
-        }
+            .flatMap { allProperties() }.startWith(findLocalProperties())
     }
 
-    override fun findAllProperties(): Observable<MutablePair<Boolean?, MutableList<Property>?>> {
-        if (networkConnectionLiveData.value != null && cachedProperties.right.isNotEmpty()) {
-            return Observable.just(MutablePair(cachedProperties.left, cachedProperties.right))
-        }
-        return isInternetSubject.compose(allProperties()).startWith(findLocalProperties().toObservable())
-    }
-
-    private fun allProperties() =
-        ObservableTransformer<Boolean, MutablePair<Boolean?, MutableList<Property>?>> { internetAvailable ->
-            internetAvailable.flatMap { isInternetAvailable ->
-                if (isInternetAvailable) {
-                    findRemoteProperties().toObservable().flatMap { remoteProperties ->
-                        if (cachedProperties.right.isEmpty()) {
-                            cachedProperties.right.addAll(remoteProperties)
-                            cacheDataSource.save(Property::class, remoteProperties)
-                                .andThen(Observable.just(MutablePair(cachedProperties.left, cachedProperties.right)))
-                        } else {
-                            remoteProperties.forEachIndexed { propertiesIndex, remoteProperty ->
-
-                                if (remoteProperty != cachedProperties.right[propertiesIndex] && remoteProperty.photos == cachedProperties.right[propertiesIndex].photos) {
-                                    cachedProperties.right[propertiesIndex] = remoteProperty
-                                    cacheDataSource.update(Property::class, remoteProperty)
-                                }
-
-                                if (remoteProperty != cachedProperties.right[propertiesIndex] && remoteProperty.photos != cachedProperties.right[propertiesIndex].photos) {
-                                    if (remoteProperty.photos.size == cachedProperties.right[propertiesIndex].photos.size) {
-                                        remoteProperty.photos.forEachIndexed { photoIndex, remotePhoto ->
-                                            if (remotePhoto != cachedProperties.right[propertiesIndex].photos[photoIndex]) {
-                                                cacheDataSource.save(Photo::class, remotePhoto)
-                                            }
-                                        }
-                                    }
-
-                                    if (remoteProperty.photos.size != cachedProperties.right[propertiesIndex].photos.size) {
-                                        if (remoteProperty.photos.size < cachedProperties.right[propertiesIndex].photos.size) {
-                                            if (!cachedProperties.right[propertiesIndex].photos.containsAll(remoteProperty.photos)) {
-                                                remoteProperty.photos.forEach { remotePhoto ->
-                                                    if (!cachedProperties.right[propertiesIndex].photos.contains(remotePhoto)) {
-                                                        cachedProperties.right[propertiesIndex].photos.add(remotePhoto)
-                                                        cacheDataSource.save(Photo::class, remotePhoto)
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        if (remoteProperty.photos.size > cachedProperties.right[propertiesIndex].photos.size) {
-                                            remoteProperty.photos.forEach { remotePhoto ->
-                                                if (!cachedProperties.right[propertiesIndex].photos.contains(remotePhoto)) {
-                                                    cachedProperties.right[propertiesIndex].photos.add(remotePhoto)
-                                                    cacheDataSource.save(Photo::class, remotePhoto)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            Observable.just(MutablePair(false, cachedProperties.right))
-                        }
+    private fun allProperties(): Observable<List<Property>> {
+        return findRemoteProperties().toObservable().flatMap { remoteProperties ->
+                if (cachedProperties.isEmpty()) {
+                    cachedProperties.addAll(remoteProperties)
+                    cacheDataSource.save(Property::class, remoteProperties).andThen(Observable.just(remoteProperties))
+                } else {
+                    if(remoteProperties.zip(cachedProperties).all { (remoteProperty, localProperty) -> remoteProperty == localProperty }) {
+                        Observable.empty()
+                    } else {
+                        Observable.fromIterable(remoteProperties).flatMapCompletable { remoteProperty ->
+                            val cachedProperty = cachedProperties.find { property -> property.id == remoteProperty.id  }
+                            if(remoteProperty != cachedProperty) {
+                                cachedProperties[cachedProperties.indexOf(cachedProperty)].update(remoteProperty)
+                                cacheDataSource.update(Property::class, remoteProperty)
+                            } else { Completable.complete() }
+                        }.andThen(Observable.just(remoteProperties))
                     }
-                } else Observable.just(MutablePair(null, null))
+                }
             }
-        }
+    }
 
     override fun findProperty(propertyId: String): Observable<Property> {
         return findCompleteProperty(propertyId).startWith(cacheDataSource.findById(Property::class,
@@ -112,7 +78,7 @@ class DefaultPropertyRepository
                 { remoteProperty, localProperty ->
                     {
                         if (remoteProperty != localProperty || remoteProperty.photos != localProperty.photos) {
-                            cachedProperties.right[cachedProperties.right.indexOf(localProperty)] = remoteProperty
+                            cachedProperties[cachedProperties.indexOf(localProperty)] = remoteProperty
                             cacheDataSource.save(Property::class, remoteProperty)
                                 .startWith(Observable.just(remoteProperty))
                         } else {
@@ -123,163 +89,139 @@ class DefaultPropertyRepository
         } else cacheDataSource.findById(Property::class, propertyId).toObservable()
     }
 
-    override fun updateProperty(propertyToUpdate: Property): Observable<Boolean> {
-        val updatedPhotos = propertyToUpdate.photos.filter { photo -> photo.updated }
+    override fun updateProperty(updatedProperty: Property): Observable<Boolean> {
+        return Observable.just(networkConnectionLiveData.value).flatMapCompletable { isInternetAvailable ->
+            if(isInternetAvailable) { updateRemotelyProperty(updatedProperty = updatedProperty) }
+            else { updateLocallyProperty(updatedProperty = updatedProperty) }
+        }.andThen( ObservableSource {
+            cachedProperties.single { property -> property.id == updatedProperty.id }
+                .let { property -> cachedProperties[cachedProperties.indexOf(property)] = updatedProperty }
+            it.onNext(!updatedProperty.locallyUpdated)
+        })
+    }
 
-        val propertiesToUpdate: MutableList<Property> = mutableListOf()
-        val photosToUpdate: MutableList<Photo> = mutableListOf()
+    private fun updateRemotelyProperty(updatedProperty: Property): Completable {
+        return remoteDataSource
+            .update(Property::class, updatedProperty.apply { locallyUpdated = false })
+            .andThen(
+                if(updatedProperty.photos.any { photo -> photo.locallyUpdated }) {
+                    remoteDataSource.update(Photo::class, updatedProperty.photos
+                        .filter { photo -> photo.locallyUpdated })
+                } else { Completable.complete() }
+            ).andThen(
+                if(updatedProperty.photos.any { photo -> photo.locallyCreated }) {
+                    remoteDataSource.save(Photo::class, updatedProperty.photos.filter { photo -> photo.locallyCreated } )
+                } else { Completable.complete() }
+            ).andThen(cacheDataSource.update(Property::class, updatedProperty))
+            .andThen(
+                if(updatedProperty.photos.any { photo -> photo.locallyUpdated }) {
+                    cacheDataSource.update(Photo::class, updatedProperty.photos
+                        .filter { photo -> photo.locallyUpdated }
+                        .onEach { photo -> photo.locallyUpdated = false })
+                } else { Completable.complete() }
+            ).andThen(
+                if(updatedProperty.photos.any { photo -> photo.locallyCreated }) {
+                    cacheDataSource.update(Photo::class, updatedProperty.photos
+                        .filter { photo -> photo.locallyCreated }
+                        .onEach { photo -> photo.locallyCreated = false })
+                } else { Completable.complete() } )
+    }
 
-        if (networkConnectionLiveData.value == true) {
-            propertyToUpdate.updated = false
-            updatedPhotos.forEach { photo -> photo.updated = false }
+    private fun updateLocallyProperty(updatedProperty: Property): Completable {
+        return cacheDataSource
+            .update(Property::class, updatedProperty.apply { locallyUpdated = true })
+            .andThen(
+                if(updatedProperty.photos.any { photo -> photo.locallyUpdated }) {
+                    cacheDataSource.update(Photo::class, updatedProperty.photos.filter { photo -> photo.locallyUpdated })
+                } else { Completable.complete() }
+            ).andThen(
+                if(updatedProperty.photos.any { photo -> photo.locallyCreated }) {
+                    cacheDataSource.save(Photo::class, updatedProperty.photos.filter { photo -> photo.locallyCreated })
+                } else { Completable.complete() })
+    }
 
-            cachedProperties.right.find { property -> property.id == propertyToUpdate.id }?.let {
-                cachedProperties.right.remove(it)
-                cachedProperties.right.add(propertyToUpdate)
-            } ?: cachedProperties.right.add(propertyToUpdate)
+    override fun createProperty(createdProperty: Property): Observable<Boolean> {
+        return Observable.just(networkConnectionLiveData.value).flatMapCompletable { isInternetAvailable ->
+            if(isInternetAvailable) { createRemotelyProperty(createdProperty = createdProperty) }
+            else { createLocallyProperty(createdProperty = createdProperty) }
+        }.andThen( ObservableSource { observer ->
+            cachedProperties.add(createdProperty)
+            observer.onNext(!createdProperty.locallyCreated)
+        })
+    }
 
-            return cacheDataSource.findAllUpdated(Property::class).flatMap { allUpdatedProperties ->
+    private fun createRemotelyProperty(createdProperty: Property): Completable {
+        return remoteDataSource.save(Property::class, createdProperty)
+            .andThen(
+                if(createdProperty.photos.isNotEmpty()) {
+                    remoteDataSource.save(Photo::class, createdProperty.photos)
+                } else { Completable.complete() }
+            )
+            .andThen(cacheDataSource.save(Property::class, createdProperty.apply { locallyCreated = false }))
+            .andThen(
+                if(createdProperty.photos.isNotEmpty()) {
+                    cacheDataSource.save(Photo::class, createdProperty.photos.onEach { photo -> photo.locallyCreated = false })
+                } else { Completable.complete() }
+            )
+    }
 
-                propertiesToUpdate.addAll(allUpdatedProperties)
-                propertiesToUpdate.forEach { property -> property.updated = false }
-                cacheDataSource.findAllUpdated(Photo::class)
-            }.flatMap { allUpdatedPhotos ->
+    private fun createLocallyProperty(createdProperty: Property): Completable {
+        return cacheDataSource.save(Property::class, createdProperty.apply { locallyCreated = true })
+            .andThen(
+                if(createdProperty.photos.isNotEmpty()) {
+                    cacheDataSource.save(Photo::class, createdProperty.photos.onEach { photo -> photo.locallyCreated = true })
+                } else { Completable.complete() }
+            )
+    }
 
-                photosToUpdate.addAll(allUpdatedPhotos)
-                photosToUpdate.forEach { photo -> photo.updated = false }
-                Single.just(true)
-            }.toObservable().flatMap {
+    override fun saveRemotelyLocalChanges(updates: Boolean, creations: Boolean): Observable<List<Property>> {
+        return isInternetSubject.filter { isInternetAvailable -> isInternetAvailable }.flatMap {
+            when {
+                updates -> { updateProperties() }
+                creations -> { createProperties() }
+                else -> { Observable.empty() }
+            }
+        }
+    }
 
-                if (propertiesToUpdate.isNotEmpty()) {
+    fun updateProperties(): Observable<List<Property>> {
+        return Observable.just(cachedProperties
+            .filter { property -> property.locallyUpdated && !property.locallyCreated }
+            ).flatMap { properties ->
+            if(properties.isNotEmpty()) { remoteDataSource.update(Property::class, properties)
+                .andThen(cacheDataSource.update(Property::class, properties.onEach { property -> property.locallyUpdated = false }))
+                .andThen( ObservableSource { observer -> observer.onNext(properties) })
+            } else { Observable.empty() }
+        }
+    }
 
-                    if (!propertiesToUpdate.contains(propertyToUpdate)) {
-                        propertiesToUpdate.singleOrNull { property -> property.id == propertyToUpdate.id }
-                            ?.let {
-                                propertiesToUpdate.remove(it)
-                                propertiesToUpdate.add(propertyToUpdate)
-                            }
-                    }
-
-                    if (photosToUpdate.isNotEmpty()) {
-                        remoteDataSource.update(Property::class, propertiesToUpdate)
-                            .andThen(remoteDataSource.update(Photo::class, photosToUpdate))
-                            .andThen(cacheDataSource.update(Property::class, propertiesToUpdate))
-                            .andThen(cacheDataSource.update(Photo::class, photosToUpdate))
-                            .andThen(Observable.just(true))
-                    } else {
-                        remoteDataSource.update(Property::class, propertiesToUpdate)
-                            .andThen(cacheDataSource.update(Property::class, propertiesToUpdate))
-                            .andThen(Observable.just(true))
-                    }
-                } else if (propertiesToUpdate.isEmpty() && photosToUpdate.isNotEmpty()) {
-
-                    remoteDataSource.update(Photo::class, photosToUpdate)
-                        .andThen(cacheDataSource.update(Photo::class, photosToUpdate))
-                        .andThen(Observable.just(true))
-                } else if (updatedPhotos.isNotEmpty()) {
-
-                    remoteDataSource.update(Property::class, propertyToUpdate)
-                        .andThen(remoteDataSource.update(Photo::class, updatedPhotos))
-                        .andThen(cacheDataSource.update(Property::class, propertyToUpdate))
-                        .andThen(cacheDataSource.update(Photo::class, updatedPhotos))
-                        .andThen(Observable.just(true))
-                } else {
-                    remoteDataSource.update(Property::class, propertyToUpdate)
-                        .andThen(cacheDataSource.update(Property::class, propertyToUpdate))
-                        .andThen(Observable.just(true))
+    private fun createProperties(): Observable<List<Property>> {
+        return Observable.just(cachedProperties.filter { property -> property.locallyCreated }
+            .map { property -> property.locallyCreated = false
+                if(property.locallyUpdated) { property.locallyUpdated = false }
+                property.photos.forEach { photo -> photo.locallyCreated = false
+                    if(photo.locallyUpdated) { photo.locallyUpdated = false }
                 }
-            }
-        } else {
-            if (!propertyToUpdate.updated) { propertyToUpdate.updated = true }
-
-            cachedProperties.right.find { property -> property.id == propertyToUpdate.id }?.let {
-                cachedProperties.right.remove(it)
-                cachedProperties.right.add(propertyToUpdate)
-            } ?: cachedProperties.right.add(propertyToUpdate)
-
-            return if (updatedPhotos.isNotEmpty()) {
-                cacheDataSource.update(Property::class, propertyToUpdate)
-                    .andThen(cacheDataSource.update(Photo::class, updatedPhotos))
-                    .andThen(Observable.just(false))
-            } else {
-                cacheDataSource.update(Property::class, propertyToUpdate)
-                    .andThen(Observable.just(false))
-            }
+                property
+            }).flatMap { properties ->
+            if(properties.isNotEmpty()) { remoteDataSource.save(Property::class, properties)
+                .andThen(cacheDataSource.update(Property::class, properties))
+                .andThen(Observable.just(properties))
+            } else { Observable.empty() }
         }
     }
-
-    override fun createProperty(property: Property): Observable<Boolean> {
-        TODO("Not yet implemented")
-    }
-
-    override fun updatePropertiesFromCache(): Observable<MutablePair<Boolean?, MutableList<Property>?>> {
-        return isInternetSubject.compose(updateProperties())
-    }
-
-    private fun updateProperties() =
-        ObservableTransformer<Boolean, MutablePair<Boolean?, MutableList<Property>?>> { internetAvailable ->
-            internetAvailable.flatMap { isInternetAvailable ->
-                if (isInternetAvailable) {
-                    val propertiesToUpdate: MutableList<Property> = mutableListOf()
-                    val photosToUpdate: MutableList<Photo> = mutableListOf()
-
-                    cachedProperties.left = false
-
-                    cacheDataSource.findAllUpdated(Property::class)
-                        .flatMap { allUpdatedProperties ->
-
-                            propertiesToUpdate.addAll(allUpdatedProperties)
-                            propertiesToUpdate.forEach { property -> property.updated = false }
-                            cacheDataSource.findAllUpdated(Photo::class)
-                        }.flatMap { allUpdatedPhotos ->
-
-                            photosToUpdate.addAll(allUpdatedPhotos)
-                            photosToUpdate.forEach { photo -> photo.updated = false }
-                            Single.just(true)
-                        }.flatMapObservable {
-
-                            if (propertiesToUpdate.isNotEmpty()) {
-                                cachedProperties.left = true
-
-                                if (photosToUpdate.isNotEmpty()) {
-                                    remoteDataSource.update(Property::class, propertiesToUpdate)
-                                        .andThen(remoteDataSource.update(Photo::class,
-                                            photosToUpdate))
-                                        .andThen(cacheDataSource.update(Property::class,
-                                            propertiesToUpdate))
-                                        .andThen(cacheDataSource.update(Photo::class, photosToUpdate))
-                                        .andThen(Observable.just(MutablePair(true, null)))
-                                } else {
-                                    remoteDataSource.update(Property::class, propertiesToUpdate)
-                                        .andThen(cacheDataSource.update(Property::class, propertiesToUpdate))
-                                        .andThen(Observable.just(MutablePair(true, null)))
-                                }
-                            } else if (propertiesToUpdate.isEmpty() && photosToUpdate.isNotEmpty()) {
-                                cachedProperties.left = true
-                                remoteDataSource.update(Photo::class, photosToUpdate)
-                                    .andThen(cacheDataSource.update(Photo::class, photosToUpdate))
-                                    .andThen(Observable.just(MutablePair(true, null)))
-                            } else {
-                                Observable.just(MutablePair(null, null))
-                            }
-                        }
-                } else Observable.just(MutablePair(null, null))
-            }
-        }
 
     private fun findRemoteProperties(): Single<List<Property>> {
         return remoteDataSource.findAll(Property::class)
     }
 
-    private fun findLocalProperties(): Single<MutablePair<Boolean?, MutableList<Property>?>> {
-        if (cachedProperties.right.isEmpty()) {
-            return cacheDataSource.findAll(Property::class)//.toObservable()
-                .doOnSuccess { localProperties -> cachedProperties.right.addAll(localProperties) }.flatMap {
-                    Single.just(MutablePair(cachedProperties.left, cachedProperties.right))
+    private fun findLocalProperties(): Observable<List<Property>> {
+        return if (cachedProperties.isEmpty()) {
+            cacheDataSource.findAll(Property::class)
+                .doOnSuccess { localProperties -> cachedProperties.addAll(localProperties) }.flatMapObservable {
+                    Observable.just(cachedProperties)
                 }
-        }
-
-        return Single.just(MutablePair(null, null))
+        } else { Observable.empty() }
     }
 }
 

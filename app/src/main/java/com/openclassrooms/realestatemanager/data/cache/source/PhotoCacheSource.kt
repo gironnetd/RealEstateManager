@@ -87,17 +87,6 @@ class PhotoCacheSource
         }
     }
 
-    override fun findAllUpdatedPhotos(): Single<List<Photo>> {
-        return cacheData.findAllUpdatedPhotos().flatMap { photos ->
-            Observable.fromIterable(photos).flatMapSingle { photo ->
-                cacheStorage.findPhotoById(photo.propertyId, photo.id).flatMap { bitmap ->
-                    photo.bitmap = bitmap
-                    Single.just(photo)
-                }
-            }.toList().flatMap { Single.just(it) }
-        }
-    }
-
     override fun updatePhoto(photo: Photo): Completable {
         return cacheData.updatePhoto(photo).andThen(cacheStorage.updatePhoto(photo))
     }

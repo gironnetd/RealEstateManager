@@ -94,7 +94,7 @@ class PropertyUpdateFragment
             properties.value?.let { properties ->
                 if(properties.indexOf(property) != -1) {
                     properties[properties.indexOf(property)] = newProperty
-                    properties[properties.indexOf(newProperty)].updated = false
+                    // properties[properties.indexOf(newProperty)].locallyUpdated = false
                 }
             }
             onBackPressed()
@@ -231,7 +231,7 @@ class PropertyUpdateFragment
             setTitle(getString(R.string.confirm_save_changes_dialog_title))
             setMessage(getString(R.string.confirm_save_changes_dialog_message))
             setPositiveButton(getString(R.string.confirm_save_changes))  { _, _ ->
-                newProperty.updated = true
+                //newProperty.locallyUpdated = true
                 updatePropertyIntentPublisher.onNext(UpdatePropertyIntent(
                     newProperty))
             }

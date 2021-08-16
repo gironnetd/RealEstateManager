@@ -112,10 +112,6 @@ class PropertyRemoteDataSource
         }
     }
 
-    override fun findAllUpdatedProperties(): Single<List<Property>> {
-        TODO("Not yet implemented")
-    }
-
     override fun updateProperty(property: Property): Completable {
         return Completable.create { emitter ->
             firestore.runTransaction { transaction ->

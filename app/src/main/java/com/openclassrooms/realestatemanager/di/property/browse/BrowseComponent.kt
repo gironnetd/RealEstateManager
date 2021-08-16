@@ -1,6 +1,6 @@
 package com.openclassrooms.realestatemanager.di.property.browse
 
-import com.openclassrooms.realestatemanager.ui.fragments.property.browse.detail.BrowseDetailNavHostFragment
+import com.openclassrooms.realestatemanager.ui.fragments.browsedetail.BrowseDetailNavHostFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragment
 import dagger.Subcomponent
 

@@ -4,6 +4,7 @@ import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.ui.mvibase.MviResult
 
 sealed class PropertyEditResult : MviResult {
+
     sealed class PopulatePropertyResult : PropertyEditResult() {
         data class Success(val property: Property) : PopulatePropertyResult()
         data class Failure(val error: Throwable) : PopulatePropertyResult()

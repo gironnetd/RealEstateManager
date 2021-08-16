@@ -52,14 +52,6 @@ class PropertyCacheDataSource
         }
     }
 
-    override fun findAllUpdatedProperties(): Single<List<Property>> {
-        return Single.fromCallable {
-            propertyDao.findAllUpdatedProperties().toList { Property(it) }
-        }.subscribeOn(SchedulerProvider.io()).flatMap {
-            Single.just(it)
-        }
-    }
-
     override fun updateProperty(property: Property): Completable {
         return Completable.fromAction { propertyDao.updateProperty(property) }
             .subscribeOn(SchedulerProvider.io())

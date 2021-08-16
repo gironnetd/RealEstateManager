@@ -40,13 +40,17 @@ constructor(var propertySource: T, var photoSource: U) {
                 value.filterIsInstance(Property::class.java).let { properties ->
                     Observable.fromIterable(properties).flatMapCompletable { property ->
                         propertySource.saveProperty(property)
-                            .andThen(photoSource.savePhotos(property.photos))
+                            .andThen(
+                                if(property.photos.isNotEmpty()) { photoSource.savePhotos(property.photos) }
+                                else { Completable.complete() }
+                            )
                     }
                 }
             }
             Photo::class -> {
                 value.filterIsInstance(Photo::class.java).let { photos ->
-                    photoSource.savePhotos(photos)
+                    if(photos.isNotEmpty()) { photoSource.savePhotos(photos) }
+                    else { Completable.complete() }
                 }
             }
             else -> { Completable.error(Throwable(ClassNotFoundException())) }
@@ -57,8 +61,8 @@ constructor(var propertySource: T, var photoSource: U) {
         return when (type) {
             Property::class -> { propertySource.findPropertyById(id).flatMap { property ->
                 photoSource.findPhotosByPropertyId(property.id).flatMap { photos ->
-                   property.photos.addAll(photos)
-                   Single.just(property)
+                    property.photos.addAll(photos)
+                    Single.just(property)
                 }
             } as Single<T> }
             Photo::class -> { photoSource.findPhotoById("", id) as Single<T> }
@@ -94,14 +98,6 @@ constructor(var propertySource: T, var photoSource: U) {
         }
     }
 
-    open fun <T: Any> findAllUpdated(type: KClass<T>): Single<List<T>> {
-        return when (type) {
-            Property::class -> { propertySource.findAllUpdatedProperties() as Single<List<T>> }
-            Photo::class -> { photoSource.findAllUpdatedPhotos() as Single<List<T>> }
-            else -> { Single.error(Throwable()) }
-        }
-    }
-
     open fun <T: Any> update(type: KClass<T>, value: T): Completable {
         return when (type) {
             Property::class -> { propertySource.updateProperty(value as Property) }
@@ -119,10 +115,11 @@ constructor(var propertySource: T, var photoSource: U) {
                             //.andThen(photoSource.savePhotos(property.photos))
                     }
                 }
-                 }
+            }
             Photo::class -> {
                 value.filterIsInstance(Photo::class.java).let { photos ->
-                    photoSource.updatePhotos(photos)
+                    if (photos.isNotEmpty()) { photoSource.updatePhotos(photos) }
+                    else { Completable.complete() }
                 }
             }
             else -> { Completable.error(Throwable(ClassNotFoundException())) }

@@ -4,8 +4,9 @@ import android.database.Cursor
 import androidx.room.*
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_ID
+import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_LOCALLY_CREATED
+import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_LOCALLY_UPDATED
 import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_PHOTO_PROPERTY_ID
-import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_UPDATED
 import com.openclassrooms.realestatemanager.models.Photo.Companion.TABLE_NAME
 
 @Dao
@@ -38,8 +39,11 @@ interface PhotoDao {
     @Query("SELECT * FROM $TABLE_NAME ORDER BY _id ASC")
     fun findAllPhotos(): Cursor
 
-    @Query("SELECT * FROM $TABLE_NAME WHERE $COLUMN_UPDATED = 1")
+    @Query("SELECT * FROM $TABLE_NAME WHERE $COLUMN_LOCALLY_UPDATED = 1")
     fun findAllUpdatedPhotos(): Cursor
+
+    @Query("SELECT * FROM $TABLE_NAME WHERE $COLUMN_LOCALLY_CREATED = 1")
+    fun findAllCreatedPhotos(): Cursor
 
     @Delete
     fun deletePhotos(vararg photos: Photo): Int

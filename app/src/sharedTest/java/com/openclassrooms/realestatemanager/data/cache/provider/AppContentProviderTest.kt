@@ -31,6 +31,8 @@ import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_DES
 import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_ENTRY_DATE
 import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_ID
 import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_INTEREST_POINTS
+import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_LOCALLY_CREATED
+import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_LOCALLY_UPDATED
 import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_PRICE
 import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_PROPERTY_TYPE
 import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_ROOMS
@@ -221,13 +223,10 @@ class AppContentProviderTest : TestCase() {
         values.put(COLUMN_ADDRESS_LATITUDE, fakeProperty.address!!.latitude)
         values.put(COLUMN_ADDRESS_LONGITUDE, fakeProperty.address!!.longitude)
         values.put(COLUMN_AGENT_ID, fakeProperty.agentId)
-//        values.put(PREFIX_MAIN_PHOTO + Photo.COLUMN_ID, fakeProperty.mainPhoto!!.id)
-//        values.put(PREFIX_MAIN_PHOTO + COLUMN_PHOTO_PROPERTY_ID, fakeProperty.mainPhoto!!.propertyId)
-//        values.put(PREFIX_MAIN_PHOTO + COLUMN_PHOTO_DESCRIPTION, fakeProperty.mainPhoto!!.description)
-//        values.put(PREFIX_MAIN_PHOTO + COLUMN_PHOTO_TYPE, fakeProperty.mainPhoto!!.type.name)
         values.put(COLUMN_ENTRY_DATE, DateConverter().dateToTimestamp(fakeProperty.entryDate))
         values.put(COLUMN_SOLD_DATE, DateConverter().dateToTimestamp(fakeProperty.soldDate))
-
+        values.put(COLUMN_LOCALLY_UPDATED, fakeProperty.locallyUpdated)
+        values.put(COLUMN_LOCALLY_CREATED, fakeProperty.locallyCreated)
         return values
     }
 

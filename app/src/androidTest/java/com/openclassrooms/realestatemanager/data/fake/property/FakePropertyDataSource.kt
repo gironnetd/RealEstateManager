@@ -53,11 +53,6 @@ class FakePropertyDataSource
         return Single.just(properties)
     }
 
-    override fun findAllUpdatedProperties(): Single<List<Property>> {
-        val updatedProperties = properties.filter { property -> property.updated }
-        return Single.just(updatedProperties)
-    }
-
     override fun updateProperty(property: Property): Completable {
         return Completable.fromAction {
             val actualProperty = properties.single { it.id == property.id }

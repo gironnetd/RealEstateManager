@@ -53,7 +53,7 @@ class MapFragmentIntegrationTest : BaseFragmentTests() {
         configure_fake_repository()
         injectTest(testApplication)
 
-        fakeProperties = propertiesRepository.findAllProperties().blockingFirst().right!!
+        fakeProperties = propertiesRepository.findAllProperties().blockingFirst()
         fakeProperties.forEach { property ->
             property.photos = property.photos.toSet().toMutableList()
         }

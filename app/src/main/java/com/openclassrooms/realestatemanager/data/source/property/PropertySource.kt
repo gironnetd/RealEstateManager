@@ -18,8 +18,6 @@ interface PropertySource {
 
     fun findAllProperties(): Single<List<Property>>
 
-    fun findAllUpdatedProperties(): Single<List<Property>>
-
     fun updateProperty(property: Property): Completable
 
     fun updateProperties(properties: List<Property>): Completable

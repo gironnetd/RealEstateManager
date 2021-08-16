@@ -141,10 +141,6 @@ class PhotoRemoteDataSource
         }
     }
 
-    override fun findAllUpdatedPhotos(): Single<List<Photo>> {
-        TODO("Not yet implemented")
-    }
-
     override fun updatePhoto(photo: Photo): Completable {
         return Completable.create { emitter ->
             val documentRef = firestore

@@ -61,14 +61,6 @@ class PhotoCacheDataSource
         }
     }
 
-    override fun findAllUpdatedPhotos(): Single<List<Photo>> {
-        return Single.fromCallable {
-            photoDao.findAllUpdatedPhotos().toList { Photo(it) }
-        }.subscribeOn(SchedulerProvider.io()).flatMap {
-            Single.just(it)
-        }
-    }
-
     override fun updatePhoto(photo: Photo): Completable {
         return Completable.fromAction { photoDao.updatePhoto(photo) }
             .subscribeOn(SchedulerProvider.io())

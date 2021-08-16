@@ -5,8 +5,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.data.PropertyFactory.Factory.createProperty
 import com.openclassrooms.realestatemanager.data.cache.source.PhotoCacheSource
@@ -20,17 +18,19 @@ import com.openclassrooms.realestatemanager.data.source.DataSource
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.util.*
+import com.openclassrooms.realestatemanager.util.ConnectivityUtil
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil.switchAllNetworks
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil.waitInternetStateChange
 import com.openclassrooms.realestatemanager.util.Constants.TIMEOUT_INTERNET_CONNECTION
+import com.openclassrooms.realestatemanager.util.JsonUtil
+import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
+import com.openclassrooms.realestatemanager.util.RxImmediateSchedulerRule
 import io.reactivex.Completable
 import junit.framework.TestCase
 import org.junit.*
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
 import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.anyList
 import org.mockito.Mockito.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -60,25 +60,7 @@ class CreatePropertyRepositoryTest : TestCase() {
     @Before
     public override fun setUp() {
         super.setUp()
-
         injectTest(testApplication)
-
-        var rawJson = jsonUtil.readJSONFromAsset(ConstantsTest.PROPERTIES_DATA_FILENAME)
-        fakeProperties = Gson().fromJson(rawJson,
-            object : TypeToken<List<Property>>() {}.type)
-        rawJson = jsonUtil.readJSONFromAsset(ConstantsTest.PHOTOS_DATA_FILENAME)
-
-        fakeProperties.forEach { property ->
-            val photos: List<Photo> = Gson().fromJson(rawJson, object : TypeToken<List<Photo>>() {}.type)
-
-            photos.forEach { photo -> photo.bitmap = BitmapUtil.bitmapFromAsset(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                photo.id)
-            }
-
-            property.photos.addAll(photos)
-        }
-        fakeProperties = fakeProperties.sortedBy { it.id }
         ConnectivityUtil.context = testApplication.applicationContext
     }
 
@@ -99,21 +81,18 @@ class CreatePropertyRepositoryTest : TestCase() {
     @Suppress("UnstableApiUsage")
     fun given_property_repository_when_has_internet_and_create_properties_then_inspect_behavior_and_data_result() {
         // Given PropertyRepository and When has internet
-
         remoteSource = spy(DataSource(
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil,
-                    cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         cacheSource = spy(DataSource(
             propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoCacheSource(
                 cacheData = FakePhotoDataSource(jsonUtil),
-                cacheStorage = FakePhotoStorageSource(jsonUtil,
-                    cacheDir = testApplication.cacheDir)))
+                cacheStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         Completable.concatArray(switchAllNetworks(true),
@@ -130,33 +109,27 @@ class CreatePropertyRepositoryTest : TestCase() {
                         cacheDataSource = cacheSource
                     )
 
-                    val firstProperty = createProperty(fakeProperties)
-                    val firstUpdatedPhotos = firstProperty.photos.filter { photo -> photo.updated }
+                    fakeProperties = propertyRepository.findAllProperties().blockingFirst()
+
+                    val firstProperty = createProperty(fakeProperties.random(), creations = true)
 
                     // Then inspect repository behavior with Mockito
                     propertyRepository.createProperty(firstProperty).map { isTotallyCreated ->
-                        firstProperty.updated = false
-                        firstUpdatedPhotos.forEach { photo -> photo.updated = false }
-
                         verify(remoteSource).save(Property::class, firstProperty)
-                        verify(remoteSource).save(Photo::class, firstUpdatedPhotos)
-                        verify(cacheSource).save(Property::class, firstProperty)
-                        verify(cacheSource).update(Photo::class, firstUpdatedPhotos)
+                        verify(remoteSource).save(Photo::class, firstProperty.photos)
+                        verify(cacheSource).save(Property::class, firstProperty.apply { locallyCreated = false })
+                        verify(cacheSource).save(Photo::class, firstProperty.photos.onEach { photo -> photo.locallyCreated = false })
                         assertThat(isTotallyCreated).isTrue()
                         true
                     }.blockingFirst()
 
-                    val secondProperty = createProperty(fakeProperties)
-                    val secondUpdatedPhotos = secondProperty.photos.filter { photo -> photo.updated }
+                    val secondProperty = createProperty(fakeProperties.random(), creations = true)
 
                     propertyRepository.createProperty(secondProperty).map { isTotallyCreated ->
-                        secondProperty.updated = false
-                        secondUpdatedPhotos.forEach { photo -> photo.updated = false }
-
-                        verify(remoteSource, atLeast(1)).save(Property::class, secondProperty)
-                        verify(remoteSource, atLeast(1)).save(Photo::class, secondUpdatedPhotos)
-                        verify(cacheSource, atLeast(1)).save(Property::class, secondProperty)
-                        verify(cacheSource, atLeast(1)).save(Photo::class, secondUpdatedPhotos)
+                        verify(remoteSource, atLeastOnce()).save(Property::class, secondProperty)
+                        verify(remoteSource, atLeastOnce()).save(Photo::class, secondProperty.photos)
+                        verify(cacheSource, atLeastOnce()).save(Property::class, secondProperty.apply { locallyCreated = false })
+                        verify(cacheSource, atLeastOnce()).save(Photo::class, secondProperty.photos.onEach { photo -> photo.locallyCreated = false })
                         assertThat(isTotallyCreated).isTrue()
                         true
                     }.blockingFirst()
@@ -170,21 +143,18 @@ class CreatePropertyRepositoryTest : TestCase() {
     @Suppress("UnstableApiUsage")
     fun given_property_repository_when_has_internet_and_create_property_without_photos_then_inspect_behavior_and_data_result() {
         // Given PropertyRepository and When has internet
-
         remoteSource = spy(DataSource(
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil,
-                    cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         cacheSource = spy(DataSource(
             propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoCacheSource(
                 cacheData = FakePhotoDataSource(jsonUtil),
-                cacheStorage = FakePhotoStorageSource(jsonUtil,
-                    cacheDir = testApplication.cacheDir)))
+                cacheStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         Completable.concatArray(switchAllNetworks(true),
@@ -201,17 +171,16 @@ class CreatePropertyRepositoryTest : TestCase() {
                         cacheDataSource = cacheSource
                     )
 
-                    val property = createProperty(fakeProperties)
-                    property.photos.forEach { photo -> photo.updated = false }
+                    fakeProperties = propertyRepository.findAllProperties().blockingFirst()
+                    val property = createProperty(fakeProperties.random(), creations = true)
+                    property.photos = mutableListOf()
 
                     // Then inspect repository behavior with Mockito
                     propertyRepository.createProperty(property).map { isTotallyCreated ->
-                        property.updated = false
-
                         verify(remoteSource).save(Property::class, property)
-                        verify(remoteSource, never()).save(any(Photo::class), anyList())
-                        verify(cacheSource).save(Property::class, property)
-                        verify(cacheSource, never()).save(any(Photo::class), anyList())
+                        verify(remoteSource, never()).save(Photo::class, property.photos)
+                        verify(cacheSource).save(Property::class, property.apply { locallyCreated = false })
+                        verify(remoteSource, never()).save(Photo::class, property.photos.onEach { photo -> photo.locallyCreated = false })
                         assertThat(isTotallyCreated).isTrue()
                         true
                     }.blockingFirst()
@@ -224,21 +193,18 @@ class CreatePropertyRepositoryTest : TestCase() {
     @Suppress("UnstableApiUsage")
     fun given_property_repository_when_has_no_internet_and_create_properties_then_inspect_behavior_and_data_result() {
         // Given PropertyRepository and When has no internet
-
         remoteSource = spy(DataSource(
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil,
-                    cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         cacheSource = spy(DataSource(
             propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoCacheSource(
                 cacheData = FakePhotoDataSource(jsonUtil),
-                cacheStorage = FakePhotoStorageSource(jsonUtil,
-                    cacheDir = testApplication.cacheDir)))
+                cacheStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         Completable.concatArray(switchAllNetworks(false),
@@ -255,27 +221,26 @@ class CreatePropertyRepositoryTest : TestCase() {
                         cacheDataSource = cacheSource
                     )
 
-                    val firstProperty = createProperty(fakeProperties)
-                    val firstUpdatedPhotos = firstProperty.photos.filter { photo -> photo.updated }
+                    fakeProperties = propertyRepository.findAllProperties().blockingFirst()
+
+                    val firstProperty = createProperty(fakeProperties.random(), creations = true)
 
                     // Then inspect repository behavior with Mockito
                     propertyRepository.createProperty(firstProperty).map { isTotallyCreated ->
                         verify(cacheSource).save(Property::class, firstProperty)
-                        verify(cacheSource).save(Photo::class, firstUpdatedPhotos)
+                        verify(cacheSource).save(Photo::class, firstProperty.photos)
                         assertThat(isTotallyCreated).isFalse()
                         true
                     }.blockingFirst()
 
-                    val secondProperty = createProperty(fakeProperties)
-                    val secondUpdatedPhotos = secondProperty.photos.filter { photo -> photo.updated }
+                    val secondProperty = createProperty(fakeProperties.random(), creations = true)
 
                     propertyRepository.createProperty(secondProperty).map { isTotallyCreated ->
-                        verify(cacheSource).save(Property::class, secondProperty)
-                        verify(cacheSource, atLeast(1)).save(Photo::class, secondUpdatedPhotos)
+                        verify(cacheSource, atLeastOnce()).save(Property::class, secondProperty)
+                        verify(cacheSource, atLeastOnce()).save(Photo::class, secondProperty.photos)
                         assertThat(isTotallyCreated).isFalse()
                         true
                     }.blockingFirst()
-
                 }.delaySubscription((TIMEOUT_INTERNET_CONNECTION.toLong() * 3), TimeUnit.MILLISECONDS)
                     .blockingAwait()
             }
@@ -285,21 +250,18 @@ class CreatePropertyRepositoryTest : TestCase() {
     @Suppress("UnstableApiUsage")
     fun given_property_repository_when_has_no_internet_and_create_properties_without_photos_then_inspect_behavior_and_data_result() {
         // Given PropertyRepository and When has no internet
-
         remoteSource = spy(DataSource(
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil,
-                    cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         cacheSource = spy(DataSource(
             propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoCacheSource(
                 cacheData = FakePhotoDataSource(jsonUtil),
-                cacheStorage = FakePhotoStorageSource(jsonUtil,
-                    cacheDir = testApplication.cacheDir)))
+                cacheStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         Completable.concatArray(switchAllNetworks(false),
@@ -316,13 +278,14 @@ class CreatePropertyRepositoryTest : TestCase() {
                         cacheDataSource = cacheSource
                     )
 
-                    val property = createProperty(fakeProperties)
-                    property.photos.forEach { photo -> photo.updated = false }
+                    fakeProperties = propertyRepository.findAllProperties().blockingFirst()
+                    val property = createProperty(fakeProperties.random(), creations = true)
+                    property.photos = mutableListOf()
 
                     // Then inspect repository behavior with Mockito
                     propertyRepository.createProperty(property).map { isTotallyCreated ->
                         verify(cacheSource).save(Property::class, property)
-                        verify(cacheSource, never()).save(any(Photo::class), anyList())
+                        verify(cacheSource, never()).save(Photo::class, property.photos.onEach { photo -> photo.locallyCreated = true })
                         assertThat(isTotallyCreated).isFalse()
                         true
                     }.blockingFirst()

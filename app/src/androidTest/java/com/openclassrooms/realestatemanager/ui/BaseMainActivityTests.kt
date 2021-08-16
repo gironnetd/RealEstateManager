@@ -52,13 +52,13 @@ abstract class BaseMainActivityTests: TestCase() {
                 propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
                 photoSource = PhotoCacheSource(
                     cacheData = FakePhotoDataSource(jsonUtil),
-                    cacheStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                    cacheStorage = FakePhotoStorageSource(jsonUtil)))
 
         ((testApplication.appComponent as TestAppComponent).propertyRepository as DefaultPropertyRepository).remoteDataSource = DataSource(
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil, cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
 
         propertiesRepository = (testApplication.appComponent as TestAppComponent).propertyRepository
     }

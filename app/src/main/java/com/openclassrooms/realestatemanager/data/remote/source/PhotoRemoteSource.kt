@@ -85,10 +85,6 @@ class PhotoRemoteSource
         }
     }
 
-    override fun findAllUpdatedPhotos(): Single<List<Photo>> {
-        TODO("Not yet implemented")
-    }
-
     override fun updatePhoto(photo: Photo): Completable {
         return remoteData.updatePhoto(photo).andThen(remoteStorage.updatePhoto(photo))
     }

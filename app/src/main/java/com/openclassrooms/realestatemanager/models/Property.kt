@@ -6,6 +6,7 @@ import android.provider.BaseColumns
 import androidx.annotation.NonNull
 import androidx.room.*
 import com.google.firebase.firestore.Exclude
+import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_CITY
 import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_COUNTRY
@@ -71,9 +72,13 @@ data class Property(
         @get:Exclude
         var photos: MutableList<Photo> = mutableListOf(),
 
-        @ColumnInfo(name = "updated")
+        @ColumnInfo(name = "locally_updated")
         @get:Exclude
-        var updated: Boolean = false
+        var locallyUpdated: Boolean = false,
+
+        @ColumnInfo(name = "locally_created")
+        @get:Exclude
+        var locallyCreated: Boolean = false
 ) {
 
         constructor(cursor: Cursor) : this() {
@@ -129,7 +134,8 @@ data class Property(
                 entryDate = property.entryDate
                 soldDate = property.soldDate
                 photos = property.photos
-                updated = property.updated
+                locallyUpdated = property.locallyUpdated
+                locallyCreated = property.locallyCreated
         }
 
         companion object {
@@ -181,8 +187,11 @@ data class Property(
                 /** The name of the sold date column.  */
                 const val COLUMN_SOLD_DATE = "sold_date"
 
-                /** The name of the updated column.  */
-                const val COLUMN_UPDATED = "updated"
+                /** The name of the locally updated column.  */
+                const val COLUMN_LOCALLY_UPDATED = "locally_updated"
+
+                /** The name of the locally created column.  */
+                const val COLUMN_LOCALLY_CREATED = "locally_created"
 
                 @NonNull
                 fun fromContentValues(values: ContentValues?): Property {
@@ -273,8 +282,12 @@ data class Property(
                                         }
                                 }
 
-                                if(it.containsKey(Photo.COLUMN_UPDATED)) {
-                                        property.updated = it.getAsBoolean(Photo.COLUMN_UPDATED)
+                                if(it.containsKey(COLUMN_LOCALLY_UPDATED)) {
+                                        property.locallyUpdated = it.getAsBoolean(COLUMN_LOCALLY_UPDATED)
+                                }
+
+                                if(it.containsKey(COLUMN_LOCALLY_CREATED)) {
+                                        property.locallyCreated = it.getAsBoolean(COLUMN_LOCALLY_CREATED)
                                 }
                         }
                         return property
@@ -284,6 +297,29 @@ data class Property(
         fun titleInToolbar(): String {
                 return address!!.street + ", " +
                         address!!.postalCode + " " + address!!.city
+        }
+
+        fun copy(): Property  {
+                val property: String = Gson().toJson(this, Property::class.java)
+                return Gson().fromJson(property, Property::class.java)
+        }
+
+        fun update(other: Property) {
+                if (id != other.id) { id = other.id }
+                if (type != other.type) { type = other.type }
+                if (price != other.price) { price = other.price }
+                if (surface != other.surface) { surface = other.surface }
+                if (rooms != other.rooms) { rooms = other.rooms }
+                if (bedRooms != other.bedRooms) { bedRooms = other.bedRooms }
+                if (bathRooms != other.bathRooms) { bathRooms = other.bathRooms }
+                if (description != other.description){ description = other.description }
+                if (address != other.address) { address = other.address }
+                if (interestPoints != other.interestPoints) { interestPoints = other.interestPoints }
+                if (status != other.status) { status = other.status }
+                if (agentId != other.agentId) { agentId = other.agentId }
+                if (mainPhotoId != other.mainPhotoId) { mainPhotoId = other.mainPhotoId }
+                if (entryDate != other.entryDate) { entryDate = other.entryDate }
+                if (soldDate != other.soldDate) { soldDate = other.soldDate }
         }
 
         override fun equals(other: Any?): Boolean {
@@ -331,6 +367,7 @@ data class Property(
                 // result = 31 * result + photos.hashCode()
                 return result
         }
+
 }
 
 class DateConverter {

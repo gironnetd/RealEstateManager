@@ -2,18 +2,16 @@ package com.openclassrooms.realestatemanager.data.repository
 
 import com.openclassrooms.realestatemanager.models.Property
 import io.reactivex.Observable
-import org.apache.commons.lang3.tuple.MutablePair
 
 interface PropertyRepository {
 
-    fun findAllProperties(): Observable<MutablePair<Boolean?, MutableList<Property>?>>
+    fun findAllProperties(): Observable<List<Property>>
 
     fun findProperty(propertyId: String): Observable<Property>
 
-    fun updatePropertiesFromCache(): Observable<MutablePair<Boolean?, MutableList<Property>?>>
+    fun updateProperty(updatedProperty: Property): Observable<Boolean>
 
-    fun updateProperty(propertyToUpdate: Property): Observable<Boolean>
+    fun createProperty(createdProperty: Property): Observable<Boolean>
 
-    fun createProperty(property: Property): Observable<Boolean>
-
+    fun saveRemotelyLocalChanges(updates: Boolean = false, creations: Boolean = false): Observable<List<Property>>
 }

@@ -14,19 +14,18 @@ import com.openclassrooms.realestatemanager.util.JsonUtil
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
-import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 @BrowseScope
 class FakePhotoStorageSource
-@Inject constructor(var jsonUtil: JsonUtil?, private val cacheDir: File): PhotoStorageSource {
+@Inject constructor(var jsonUtil: JsonUtil): PhotoStorageSource {
 
     var photosJsonFileName: String = ConstantsTest.PHOTOS_DATA_FILENAME
     var photos: MutableMap<String, Bitmap> = ConcurrentHashMap()
 
     init {
-        val rawJson = jsonUtil!!.readJSONFromAsset(photosJsonFileName)
+        val rawJson = jsonUtil.readJSONFromAsset(photosJsonFileName)
         val jsonPhotos: List<Photo> = Gson().fromJson(rawJson, object : TypeToken<List<Photo>>() {}.type)
 
         jsonPhotos.forEach { photo ->

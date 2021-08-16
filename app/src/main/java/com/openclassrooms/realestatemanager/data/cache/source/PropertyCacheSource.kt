@@ -36,10 +36,6 @@ class PropertyCacheSource
         return cacheData.findAllProperties()
     }
 
-    override fun findAllUpdatedProperties(): Single<List<Property>> {
-        return cacheData.findAllUpdatedProperties()
-    }
-
     override fun updateProperty(property: Property): Completable {
         return cacheData.updateProperty(property)
     }

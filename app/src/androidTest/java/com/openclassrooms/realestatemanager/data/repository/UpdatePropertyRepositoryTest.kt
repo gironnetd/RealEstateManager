@@ -5,8 +5,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.data.PropertyFactory.Factory.createProperty
 import com.openclassrooms.realestatemanager.data.cache.source.PhotoCacheSource
@@ -20,10 +18,13 @@ import com.openclassrooms.realestatemanager.data.source.DataSource
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.util.*
+import com.openclassrooms.realestatemanager.util.ConnectivityUtil
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil.switchAllNetworks
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil.waitInternetStateChange
 import com.openclassrooms.realestatemanager.util.Constants.TIMEOUT_INTERNET_CONNECTION
+import com.openclassrooms.realestatemanager.util.JsonUtil
+import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
+import com.openclassrooms.realestatemanager.util.RxImmediateSchedulerRule
 import io.reactivex.Completable
 import junit.framework.TestCase
 import org.junit.*
@@ -60,25 +61,7 @@ class UpdatePropertyRepositoryTest : TestCase() {
     @Before
     public override fun setUp() {
         super.setUp()
-
         injectTest(testApplication)
-
-        var rawJson = jsonUtil.readJSONFromAsset(ConstantsTest.PROPERTIES_DATA_FILENAME)
-        fakeProperties = Gson().fromJson(rawJson,
-            object : TypeToken<List<Property>>() {}.type)
-        rawJson = jsonUtil.readJSONFromAsset(ConstantsTest.PHOTOS_DATA_FILENAME)
-
-        fakeProperties.forEach { property ->
-            val photos: List<Photo> = Gson().fromJson(rawJson, object : TypeToken<List<Photo>>() {}.type)
-
-            photos.forEach { photo -> photo.bitmap = BitmapUtil.bitmapFromAsset(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                photo.id)
-            }
-
-            property.photos.addAll(photos)
-        }
-        fakeProperties = fakeProperties.sortedBy { it.id }
         ConnectivityUtil.context = testApplication.applicationContext
     }
 
@@ -103,16 +86,14 @@ class UpdatePropertyRepositoryTest : TestCase() {
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil,
-                    cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         cacheSource = spy(DataSource(
             propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoCacheSource(
                 cacheData = FakePhotoDataSource(jsonUtil),
-                cacheStorage = FakePhotoStorageSource(jsonUtil,
-                    cacheDir = testApplication.cacheDir)))
+                cacheStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         Completable.concatArray(switchAllNetworks(true),
@@ -129,13 +110,15 @@ class UpdatePropertyRepositoryTest : TestCase() {
                         cacheDataSource = cacheSource
                     )
 
-                    val firstProperty = createProperty(fakeProperties)
-                    val firstUpdatedPhotos = firstProperty.photos.filter { photo -> photo.updated }
+                    fakeProperties = propertyRepository.findAllProperties().blockingFirst()
+
+                    val firstProperty = createProperty(fakeProperties.random(), updates = true)
+                    val firstUpdatedPhotos = firstProperty.photos.filter { photo -> photo.locallyUpdated }
 
                     // Then inspect repository behavior with Mockito
                     propertyRepository.updateProperty(firstProperty).map { isTotallyUpdated ->
-                        firstProperty.updated = false
-                        firstUpdatedPhotos.forEach { photo -> photo.updated = false }
+                        firstProperty.locallyUpdated = false
+                        firstUpdatedPhotos.forEach { photo -> photo.locallyUpdated = false }
 
                         verify(remoteSource).update(Property::class, firstProperty)
                         verify(remoteSource).update(Photo::class, firstUpdatedPhotos)
@@ -145,12 +128,12 @@ class UpdatePropertyRepositoryTest : TestCase() {
                         true
                     }.blockingFirst()
 
-                    val secondProperty = createProperty(fakeProperties)
-                    val secondUpdatedPhotos = secondProperty.photos.filter { photo -> photo.updated }
+                    val secondProperty = createProperty(fakeProperties.random(), updates = true)
+                    val secondUpdatedPhotos = secondProperty.photos.filter { photo -> photo.locallyUpdated }
 
                     propertyRepository.updateProperty(secondProperty).map { isTotallyUpdated ->
-                        secondProperty.updated = false
-                        secondUpdatedPhotos.forEach { photo -> photo.updated = false }
+                        secondProperty.locallyUpdated = false
+                        secondUpdatedPhotos.forEach { photo -> photo.locallyUpdated = false }
 
                         verify(remoteSource, atLeast(1)).update(Property::class, secondProperty)
                         verify(remoteSource, atLeast(1)).update(Photo::class, secondUpdatedPhotos)
@@ -174,16 +157,14 @@ class UpdatePropertyRepositoryTest : TestCase() {
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil,
-                    cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         cacheSource = spy(DataSource(
             propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoCacheSource(
                 cacheData = FakePhotoDataSource(jsonUtil),
-                cacheStorage = FakePhotoStorageSource(jsonUtil,
-                    cacheDir = testApplication.cacheDir)))
+                cacheStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         Completable.concatArray(switchAllNetworks(true),
@@ -200,12 +181,14 @@ class UpdatePropertyRepositoryTest : TestCase() {
                         cacheDataSource = cacheSource
                     )
 
-                    val property = createProperty(fakeProperties)
-                    property.photos.forEach { photo -> photo.updated = false }
+                    fakeProperties = propertyRepository.findAllProperties().blockingFirst()
+
+                    val property = createProperty(fakeProperties.random(), updates = true)
+                    property.photos.forEach { photo -> photo.locallyUpdated = false }
 
                     // Then inspect repository behavior with Mockito
                     propertyRepository.updateProperty(property).map { isTotallyUpdated ->
-                        property.updated = false
+                        property.locallyUpdated = false
 
                         verify(remoteSource).update(Property::class, property)
                         verify(remoteSource, never()).update(any(Photo::class), anyList())
@@ -229,16 +212,14 @@ class UpdatePropertyRepositoryTest : TestCase() {
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil,
-                    cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         cacheSource = spy(DataSource(
             propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoCacheSource(
                 cacheData = FakePhotoDataSource(jsonUtil),
-                cacheStorage = FakePhotoStorageSource(jsonUtil,
-                    cacheDir = testApplication.cacheDir)))
+                cacheStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         Completable.concatArray(switchAllNetworks(false),
@@ -255,8 +236,10 @@ class UpdatePropertyRepositoryTest : TestCase() {
                         cacheDataSource = cacheSource
                     )
 
-                    val firstProperty = createProperty(fakeProperties)
-                    val firstUpdatedPhotos = firstProperty.photos.filter { photo -> photo.updated }
+                    fakeProperties = propertyRepository.findAllProperties().blockingFirst()
+
+                    val firstProperty = createProperty(fakeProperties.random(), updates = true)
+                    val firstUpdatedPhotos = firstProperty.photos.filter { photo -> photo.locallyUpdated }
 
                     // Then inspect repository behavior with Mockito
                     propertyRepository.updateProperty(firstProperty).map { isTotallyUpdated ->
@@ -266,8 +249,8 @@ class UpdatePropertyRepositoryTest : TestCase() {
                         true
                     }.blockingFirst()
 
-                    val secondProperty = createProperty(fakeProperties)
-                    val secondUpdatedPhotos = secondProperty.photos.filter { photo -> photo.updated }
+                    val secondProperty = createProperty(fakeProperties.random(), updates = true)
+                    val secondUpdatedPhotos = secondProperty.photos.filter { photo -> photo.locallyUpdated }
 
                     propertyRepository.updateProperty(secondProperty).map { isTotallyUpdated ->
                         verify(cacheSource).update(Property::class, secondProperty)
@@ -290,16 +273,14 @@ class UpdatePropertyRepositoryTest : TestCase() {
             propertySource = PropertyRemoteSource(remoteData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoRemoteSource(
                 remoteData = FakePhotoDataSource(jsonUtil),
-                remoteStorage = FakePhotoStorageSource(jsonUtil,
-                    cacheDir = testApplication.cacheDir)))
+                remoteStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         cacheSource = spy(DataSource(
             propertySource = PropertyCacheSource(cacheData = FakePropertyDataSource(jsonUtil)),
             photoSource = PhotoCacheSource(
                 cacheData = FakePhotoDataSource(jsonUtil),
-                cacheStorage = FakePhotoStorageSource(jsonUtil,
-                    cacheDir = testApplication.cacheDir)))
+                cacheStorage = FakePhotoStorageSource(jsonUtil)))
         )
 
         Completable.concatArray(switchAllNetworks(false),
@@ -316,8 +297,10 @@ class UpdatePropertyRepositoryTest : TestCase() {
                         cacheDataSource = cacheSource
                     )
 
-                    val property = createProperty(fakeProperties)
-                    property.photos.forEach { photo -> photo.updated = false }
+                    fakeProperties = propertyRepository.findAllProperties().blockingFirst()
+
+                    val property = createProperty(fakeProperties.random(), updates = true)
+                    property.photos.forEach { photo -> photo.locallyUpdated = false }
 
                     // Then inspect repository behavior with Mockito
                     propertyRepository.updateProperty(property).map { isTotallyUpdated ->
