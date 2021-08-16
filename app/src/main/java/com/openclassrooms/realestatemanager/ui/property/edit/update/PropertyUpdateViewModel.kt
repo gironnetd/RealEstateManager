@@ -66,34 +66,6 @@ class PropertyUpdateViewModel
     companion object {
         private val reducer = BiFunction { previousState: PropertyEditViewState, result: UpdatePropertyResult ->
             when (result) {
-//                is PopulatePropertyResult -> when(result) {
-//                    is PopulatePropertyResult.Success -> {
-//                        previousState.copy(
-//                            inProgress = false,
-//                            isSaved = false,
-//                            error = null,
-//                            uiNotification = null
-//                        )
-//                    }
-//                    is PopulatePropertyResult.Failure -> {
-//                        Timber.i(result.error)
-//                        previousState.copy(
-//                            inProgress = false,
-//                            isSaved = false,
-//                            error = result.error,
-//                            uiNotification = null
-//                        )
-//                    }
-//                    is PopulatePropertyResult.InFlight -> {
-//                        previousState.copy(
-//                            inProgress = true,
-//                            isSaved = false,
-//                            error = null,
-//                            uiNotification = null
-//                        )
-//                    }
-//                }
-//                is UpdatePropertyResult -> when(result) {
                     is UpdatePropertyResult.Updated -> {
                         if(result.fullyUpdated) {
                             previousState.copy(
@@ -120,8 +92,6 @@ class PropertyUpdateViewModel
                         )
                     }
                 }
-//                else -> { previousState }
-//            }
         }
     }
 }

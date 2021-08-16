@@ -11,7 +11,6 @@ import com.openclassrooms.realestatemanager.util.schedulers.BaseSchedulerProvide
 import com.openclassrooms.realestatemanager.util.schedulers.ImmediateSchedulerProvider
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
-import org.apache.commons.lang3.tuple.MutablePair
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -55,8 +54,8 @@ class PropertiesViewModelTest {
     @Test
     fun given_properties_when_load_all_properties_then_intent_return_success() {
         // Given that properties are available in the repository
-        `when`(propertyRepository.updatePropertiesFromCache()).thenReturn(Observable.just(MutablePair(null as Boolean?, null)))
-        `when`(propertyRepository.findAllProperties()).thenReturn(Observable.just(MutablePair(null as Boolean?, fakeProperties.toMutableList())))
+        `when`(propertyRepository.saveRemotelyLocalChanges(updates = true)).thenReturn(Observable.just(fakeProperties))
+        `when`(propertyRepository.findAllProperties()).thenReturn(Observable.just(fakeProperties))
 
         // When properties are loaded
         propertiesViewModel.processIntents(Observable.just(PropertiesIntent.LoadPropertiesIntent))
@@ -68,8 +67,8 @@ class PropertiesViewModelTest {
     @Test
     fun given_properties_when_load_all_properties_then_returns_loading() {
         // Given that properties are available in the repository
-        `when`(propertyRepository.updatePropertiesFromCache()).thenReturn(Observable.just(MutablePair(null as Boolean?, null)))
-        `when`(propertyRepository.findAllProperties()).thenReturn(Observable.just(MutablePair(null as Boolean?, fakeProperties.toMutableList())))
+        `when`(propertyRepository.saveRemotelyLocalChanges(updates = true)).thenReturn(Observable.just(fakeProperties))
+        `when`(propertyRepository.findAllProperties()).thenReturn(Observable.just(fakeProperties))
 
         // When properties are loaded
         propertiesViewModel.processIntents(Observable.just(PropertiesIntent.LoadPropertiesIntent))
@@ -81,8 +80,8 @@ class PropertiesViewModelTest {
     @Test
     fun given_properties_when_load_all_properties_then_intent_when_success_is_not_in_progress() {
         // Given that properties are available in the repository
-        `when`(propertyRepository.updatePropertiesFromCache()).thenReturn(Observable.just(MutablePair(null as Boolean?, null)))
-        `when`(propertyRepository.findAllProperties()).thenReturn(Observable.just(MutablePair(null as Boolean?, fakeProperties.toMutableList())))
+        `when`(propertyRepository.saveRemotelyLocalChanges(updates = true)).thenReturn(Observable.just(fakeProperties))
+        `when`(propertyRepository.findAllProperties()).thenReturn(Observable.just(fakeProperties))
 
         // When properties are loaded
         propertiesViewModel.processIntents(Observable.just(PropertiesIntent.LoadPropertiesIntent))
@@ -94,8 +93,8 @@ class PropertiesViewModelTest {
     @Test
     fun given_properties_when_load_all_properties_then_intent_return_data() {
         // Given that properties are available in the repository
-        `when`(propertyRepository.updatePropertiesFromCache()).thenReturn(Observable.just(MutablePair(null as Boolean?, null)))
-        `when`(propertyRepository.findAllProperties()).thenReturn(Observable.just(MutablePair(null as Boolean?, fakeProperties.toMutableList())))
+        `when`(propertyRepository.saveRemotelyLocalChanges(updates = true)).thenReturn(Observable.just(fakeProperties))
+        `when`(propertyRepository.findAllProperties()).thenReturn(Observable.just(fakeProperties))
 
         // When properties are loaded
         propertiesViewModel.processIntents(Observable.just(PropertiesIntent.LoadPropertiesIntent))
@@ -107,7 +106,7 @@ class PropertiesViewModelTest {
     @Test
     fun given_properties_when_load_all_properties_then_returns_error() {
         // Given that no properties are available in the repository
-        `when`(propertyRepository.updatePropertiesFromCache()).thenReturn(Observable.just(MutablePair(null as Boolean?, null)))
+        `when`(propertyRepository.saveRemotelyLocalChanges(updates = true)).thenReturn(Observable.just(fakeProperties))
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.error(Exception()))
 
         // When properties are loaded
@@ -120,7 +119,7 @@ class PropertiesViewModelTest {
     @Test
     fun given_properties_when_error_then_is_not_in_progress() {
         // Given that no properties are available in the repository
-        `when`(propertyRepository.updatePropertiesFromCache()).thenReturn(Observable.just(MutablePair(null as Boolean?, null)))
+        `when`(propertyRepository.saveRemotelyLocalChanges(updates = true)).thenReturn(Observable.just(fakeProperties))
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.error(Exception()))
 
         // When properties are loaded
@@ -133,7 +132,7 @@ class PropertiesViewModelTest {
     @Test
     fun given_properties_when_error_then_is_not_contains_data() {
         // Given that no properties are available in the repository
-        `when`(propertyRepository.updatePropertiesFromCache()).thenReturn(Observable.just(MutablePair(null as Boolean?, null)))
+        `when`(propertyRepository.saveRemotelyLocalChanges(updates = true)).thenReturn(Observable.just(fakeProperties))
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.error(Exception()))
 
         // When properties are loaded
@@ -146,7 +145,7 @@ class PropertiesViewModelTest {
     @Test
     fun given_properties_when_load_all_properties_then_intent_begin_as_idle() {
         // Given that no properties are available in the repository
-        `when`(propertyRepository.updatePropertiesFromCache()).thenReturn(Observable.just(MutablePair(null as Boolean?, null)))
+        `when`(propertyRepository.saveRemotelyLocalChanges(updates = true)).thenReturn(Observable.just(fakeProperties))
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.error(Exception()))
 
         // When properties are loaded

@@ -11,6 +11,8 @@ data class PropertyEditViewState(
     enum class UiNotification {
         PROPERTY_LOCALLY_UPDATED,
         PROPERTIES_FULLY_UPDATED,
+        PROPERTY_LOCALLY_CREATED,
+        PROPERTIES_FULLY_CREATED,
     }
 
     companion object {
