@@ -21,6 +21,7 @@ import com.google.common.truth.Truth.assertThat
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.R.style.AppTheme
 import com.openclassrooms.realestatemanager.TestBaseApplication
+import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.ui.BaseFragmentTests
@@ -54,7 +55,9 @@ class PropertyDetailFragmentIntegrationTest : BaseFragmentTests() {
         configure_fake_repository()
         injectTest(testApplication)
 
+        (propertiesRepository as DefaultPropertyRepository).cachedProperties.clear()
         fakeProperties = propertiesRepository.findAllProperties().blockingFirst()
+        BaseFragment.properties.value = fakeProperties.toMutableList()
         itemPosition = (fakeProperties.indices).random()
 
         BrowseFragment.WHEN_NORMAL_MODE_IS_DETAIL_FRAGMENT_SELECTED = false
@@ -62,7 +65,8 @@ class PropertyDetailFragmentIntegrationTest : BaseFragmentTests() {
 
     @After
     public override fun tearDown() {
-        BaseFragment.properties.value!!.clear()
+        if(BaseFragment.properties.value != null) { BaseFragment.properties.value!!.clear() }
+        (propertiesRepository as DefaultPropertyRepository).cachedProperties.clear()
         super.tearDown()
     }
 
@@ -342,7 +346,7 @@ class PropertyDetailFragmentIntegrationTest : BaseFragmentTests() {
             click_on_navigate_up_button()
 
             uiDevice.wait(Until.hasObject(By.res(mainActivity.packageName,
-                testApplication.resources.getResourceEntryName(R.id.detail_fragment))), 10000)
+                testApplication.resources.getResourceEntryName(R.id.detail_fragment))), 30000)
 
             // Then return on Detail fragment and fragment is shown
             onView(withId(R.id.detail_fragment)).check(matches(isDisplayed()))

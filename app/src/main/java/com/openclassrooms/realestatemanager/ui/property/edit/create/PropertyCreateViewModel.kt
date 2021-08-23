@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.openclassrooms.realestatemanager.ui.mvibase.MviIntent
 import com.openclassrooms.realestatemanager.ui.mvibase.MviViewModel
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditAction
-import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditIntent
+import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditIntent.PropertyCreateIntent
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditResult
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditViewState
 import io.reactivex.Observable
@@ -16,9 +16,9 @@ import javax.inject.Inject
 
 class PropertyCreateViewModel
 @Inject internal constructor(private val propertyCreateActionProcessor: PropertyCreateActionProcessor)
-    : ViewModel(), MviViewModel<PropertyEditIntent.PropertyCreateIntent, PropertyEditViewState> {
+    : ViewModel(), MviViewModel<PropertyCreateIntent, PropertyEditViewState> {
 
-    private var intentsSubject: PublishSubject<PropertyEditIntent.PropertyCreateIntent> = PublishSubject.create()
+    private var intentsSubject: PublishSubject<PropertyCreateIntent> = PublishSubject.create()
     private val statesSubject: Observable<PropertyEditViewState> = compose()
     private val disposables = CompositeDisposable()
 
@@ -26,15 +26,14 @@ class PropertyCreateViewModel
      * take only the first ever InitialIntent and all intents of other types
      * to avoid reloading data on config changes
      */
-    private val intentFilter: ObservableTransformer<PropertyEditIntent.PropertyCreateIntent, PropertyEditIntent.PropertyCreateIntent>
+    private val intentFilter: ObservableTransformer<PropertyCreateIntent, PropertyCreateIntent>
         get() = ObservableTransformer { intents ->
             intents.publish { shared ->
-                shared.filter { intent -> intent !is PropertyEditIntent.PropertyCreateIntent.InitialIntent }
+                shared.filter { intent -> intent !is PropertyCreateIntent.InitialIntent }
             }
         }
 
-
-    override fun processIntents(intents: Observable<PropertyEditIntent.PropertyCreateIntent>) {
+    override fun processIntents(intents: Observable<PropertyCreateIntent>) {
         disposables.add(intents.subscribe(intentsSubject::onNext))
     }
 
@@ -52,7 +51,7 @@ class PropertyCreateViewModel
 
     private fun actionFromIntent(intent: MviIntent): PropertyEditAction {
         return when (intent) {
-            is PropertyEditIntent.PropertyCreateIntent.CreatePropertyIntent -> PropertyEditAction.CreatePropertyAction.CreatePropertyAction(intent.property)
+            is PropertyCreateIntent.CreatePropertyIntent -> PropertyEditAction.CreatePropertyAction.CreatePropertyAction(intent.property)
             else -> throw UnsupportedOperationException("Oops, that looks like an unknown intent: " + intent)
         }
     }

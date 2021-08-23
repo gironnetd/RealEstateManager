@@ -8,16 +8,26 @@ import android.util.TypedValue
 import android.view.WindowInsets
 import androidx.annotation.LayoutRes
 import androidx.annotation.NonNull
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.models.Property
 import kotlin.properties.Delegates
 
 abstract class BaseFragment
 constructor(@LayoutRes private val layoutRes: Int): Fragment(layoutRes) {
 
-        var screenWidth by Delegates.notNull<Int>()
+        protected val none by lazy { resources.getString(R.string.none) }
+        protected val colorPrimaryDark by lazy {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        resources.getColor(R.color.colorPrimaryDark, null)
+                } else {
+                        ContextCompat.getColor(requireContext(), R.color.colorPrimaryDark)
+                }
+        }
 
+        var screenWidth by Delegates.notNull<Int>()
         val masterWidthWeight = TypedValue()
         val detailWidthWeight = TypedValue()
 

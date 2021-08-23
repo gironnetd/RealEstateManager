@@ -32,7 +32,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <LinearLayout
+                <FrameLayout
                     android:id="@+id/media_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -44,23 +44,45 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
+                    <TextView
+                        android:id="@+id/no_photos_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="134dp"
+                        android:layout_gravity="fill_vertical|center_horizontal"
+                        android:gravity="fill_vertical|center_horizontal"
+                        android:text="@string/no_photos_for_this_property"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginTop="24dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginBottom="16dp"/>
+
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/photos_recycler_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:minHeight="134dp"
+                        android:layout_marginStart="12dp"
                         android:layout_marginTop="24dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:layout_marginBottom="16dp"
+                        android:orientation="horizontal"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        android:orientation="horizontal"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:listitem="@layout/layout_photo_list_item" />
+                        tools:listitem="@layout/layout_photo_list_item"/>
 
-                </LinearLayout>
+                    <ProgressBar
+                        android:id="@+id/loading_progressbar"
+                        android:indeterminate="true"
+                        android:theme="@style/CircularProgress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:visibility="gone"/>
+                </FrameLayout>
                 <TextView
                     android:id="@+id/label_media"
                     android:layout_width="wrap_content"
@@ -97,8 +119,8 @@
                 android:focusable="false"
                 android:inputType="textMultiLine|textNoSuggestions"
                 android:hint="@string/description"
-                android:text="@string/app_name"
-                android:textColor="@android:color/black"/>
+                android:text="@string/none"
+                android:textColor="@color/colorPrimaryDark"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -137,8 +159,8 @@
                         android:focusable="false"
                         android:hint="@string/property_entry_date"
                         android:inputType="number"
-                        android:text="@string/app_name"
-                        android:textColor="@android:color/black"/>
+                        android:text="@string/none"
+                        android:textColor="@color/colorPrimaryDark"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -173,8 +195,8 @@
                         android:focusable="false"
                         android:hint="@string/property_status"
                         android:inputType="number"
-                        android:text="@string/app_name"
-                        android:textColor="@android:color/black"/>
+                        android:text="@string/none"
+                        android:textColor="@color/colorPrimaryDark"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -209,8 +231,8 @@
                         android:focusable="false"
                         android:hint="@string/property_sold_date"
                         android:inputType="number"
-                        android:text="@string/no_sold_date"
-                        android:textColor="@android:color/black"/>
+                        android:text="@string/none"
+                        android:textColor="@color/colorPrimaryDark"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -237,6 +259,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="16dp"
+                        android:minHeight="60dp"
                         android:background="@drawable/edit_location_border"
                         android:orientation="vertical"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -315,8 +338,8 @@
                             android:focusable="false"
                             android:inputType="number"
                             android:layout_alignParentEnd="true"
-                            android:text="@string/app_name"
-                            android:textColor="@android:color/black"/>
+                            android:text="@string/none"
+                            android:textColor="@color/colorPrimaryDark"/>
                     </com.google.android.material.textfield.TextInputLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -351,8 +374,8 @@
                             android:focusable="false"
                             android:hint="@string/property_type"
                             android:inputType="number"
-                            android:text="@string/app_name"
-                            android:textColor="@android:color/black"/>
+                            android:text="@string/none"
+                            android:textColor="@color/colorPrimaryDark"/>
                     </com.google.android.material.textfield.TextInputLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -388,8 +411,8 @@
                             android:layout_height="wrap_content"
                             android:focusable="false"
                             android:hint="@string/surface"
-                            android:text="@string/app_name"
-                            android:textColor="@android:color/black"
+                            android:text="@string/none"
+                            android:textColor="@color/colorPrimaryDark"
                             android:inputType="number"/>
                     </com.google.android.material.textfield.TextInputLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -427,7 +450,7 @@
                             android:hint="@string/number_of_rooms"
                             android:inputType="number"
                             android:text="@string/none"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@color/colorPrimaryDark"/>
                     </com.google.android.material.textfield.TextInputLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -464,7 +487,7 @@
                             android:hint="@string/number_of_bathrooms"
                             android:inputType="number"
                             android:text="@string/none"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@color/colorPrimaryDark"/>
                     </com.google.android.material.textfield.TextInputLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -503,7 +526,7 @@
                             android:hint="@string/number_of_bedrooms"
                             android:inputType="number"
                             android:text="@string/none"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@color/colorPrimaryDark"/>
                     </com.google.android.material.textfield.TextInputLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -565,7 +588,7 @@
                                     android:inputType="textNoSuggestions"
                                     android:hint="@string/street"
                                     android:text="@string/none"
-                                    android:textColor="@android:color/black"/>
+                                    android:textColor="@color/colorPrimaryDark"/>
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
@@ -589,7 +612,7 @@
                                     android:inputType="textNoSuggestions"
                                     android:hint="@string/city"
                                     android:text="@string/none"
-                                    android:textColor="@android:color/black"/>
+                                    android:textColor="@color/colorPrimaryDark"/>
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
@@ -613,7 +636,7 @@
                                     android:inputType="textNoSuggestions"
                                     android:hint="@string/postal_code"
                                     android:text="@string/none"
-                                    android:textColor="@android:color/black"/>
+                                    android:textColor="@color/colorPrimaryDark"/>
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
@@ -637,7 +660,7 @@
                                     android:inputType="textNoSuggestions"
                                     android:hint="@string/country"
                                     android:text="@string/none"
-                                    android:textColor="@android:color/black"/>
+                                    android:textColor="@color/colorPrimaryDark"/>
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
@@ -662,7 +685,7 @@
                                     android:inputType="textNoSuggestions"
                                     android:hint="@string/state"
                                     android:text="@string/none"
-                                    android:textColor="@android:color/black"/>
+                                    android:textColor="@color/colorPrimaryDark"/>
                             </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
 
@@ -681,8 +704,7 @@
                             app:layout_constraintStart_toStartOf="@+id/linearLayout"
                             app:layout_constraintTop_toTopOf="parent" />
                     </FrameLayout>
-
-                                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout

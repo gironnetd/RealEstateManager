@@ -1,13 +1,17 @@
 package com.openclassrooms.realestatemanager.models
 
 import android.content.ContentValues
+import android.content.res.Resources
 import android.database.Cursor
 import android.provider.BaseColumns
 import androidx.annotation.NonNull
 import androidx.room.*
 import com.google.firebase.firestore.Exclude
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_CITY
 import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_COUNTRY
 import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_LATITUDE
@@ -16,15 +20,16 @@ import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDR
 import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_STATE
 import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_STREET
 import com.openclassrooms.realestatemanager.models.Property.Companion.TABLE_NAME
+import com.openclassrooms.realestatemanager.util.Constants.PROPERTIES_COLLECTION
 import java.util.*
 
 @Entity(tableName = TABLE_NAME)
-data class Property(
+data class Property (
 
         @PrimaryKey
         @ColumnInfo(index = true, name = COLUMN_ID)
         @SerializedName(value = "id")
-        var id: String = "",
+        var id: String = Firebase.firestore.collection(PROPERTIES_COLLECTION).document().id,
 
         @SerializedName(value = "type")
         @ColumnInfo(name = "type")
@@ -49,10 +54,10 @@ data class Property(
         var description: String = "",
 
         @Embedded
-        var address: Address? = null,
+        var address: Address = Address(),
 
         @ColumnInfo(name = "interest_points")
-        var interestPoints: MutableList<InterestPoint> = mutableListOf(),
+        var interestPoints: MutableList<InterestPoint> = mutableListOf(InterestPoint.NONE),
 
         var status: PropertyStatus = PropertyStatus.NONE,
 
@@ -80,6 +85,21 @@ data class Property(
         @get:Exclude
         var locallyCreated: Boolean = false
 ) {
+
+        fun deepCopy(id: String = this.id, type: PropertyType = this.type, price: Int = this.price,
+                     surface: Int = this.surface, rooms: Int = this.rooms, bedRooms: Int = this.bedRooms,
+                     bathRooms: Int = this.bathRooms, description: String = this.description,
+                     address: Address = this.address.deepCopy(),
+                     interestPoints: MutableList<InterestPoint> = this.interestPoints,
+                     status: PropertyStatus = this.status, agentId: String? = this.agentId,
+                     mainPhotoId: String? = this.mainPhotoId, entryDate: Date? = this.entryDate,
+                     soldDate: Date? = this.soldDate,
+                     photos: MutableList<Photo> = this.photos.map { photo -> photo.deepCopy() }.toMutableList(),
+                     locallyUpdated: Boolean = this.locallyUpdated,
+                     locallyCreated: Boolean = this.locallyCreated
+        ) = Property(id, type, price, surface, rooms, bedRooms, bathRooms, description, address,
+                interestPoints, status, agentId, mainPhotoId, entryDate, soldDate,
+                photos, locallyUpdated, locallyCreated)
 
         constructor(cursor: Cursor) : this() {
                 id = cursor.getString(cursor.getColumnIndex(COLUMN_ID))
@@ -111,6 +131,9 @@ data class Property(
                         soldDate = DateConverter()
                                 .fromTimestamp(cursor.getLong(cursor.getColumnIndex(COLUMN_SOLD_DATE)))!!
                 }
+
+                locallyUpdated = cursor.getInt(cursor.getColumnIndex(COLUMN_LOCALLY_UPDATED)) > 0
+                locallyCreated = cursor.getInt(cursor.getColumnIndex(COLUMN_LOCALLY_CREATED)) > 0
         }
 
         constructor( property: Property) : this() {
@@ -222,36 +245,32 @@ data class Property(
                                         property.description = it.getAsString(COLUMN_DESCRIPTION)
                                 }
 
-                                if(property.address == null) {
-                                        property.address = Address()
-                                }
-
                                 if (it.containsKey(COLUMN_ADDRESS_STREET)) {
-                                         property.address!!.street = it.getAsString(COLUMN_ADDRESS_STREET)
+                                         property.address.street = it.getAsString(COLUMN_ADDRESS_STREET)
                                 }
 
                                 if (it.containsKey(COLUMN_ADDRESS_CITY)) {
-                                        property.address!!.city = it.getAsString(COLUMN_ADDRESS_CITY)
+                                        property.address.city = it.getAsString(COLUMN_ADDRESS_CITY)
                                 }
 
                                 if (it.containsKey(COLUMN_ADDRESS_POSTAL_CODE)) {
-                                        property.address!!.postalCode = it.getAsString(COLUMN_ADDRESS_POSTAL_CODE)
+                                        property.address.postalCode = it.getAsString(COLUMN_ADDRESS_POSTAL_CODE)
                                 }
 
                                 if (it.containsKey(COLUMN_ADDRESS_COUNTRY)) {
-                                        property.address!!.country = it.getAsString(COLUMN_ADDRESS_COUNTRY)
+                                        property.address.country = it.getAsString(COLUMN_ADDRESS_COUNTRY)
                                 }
 
                                 if (it.containsKey(COLUMN_ADDRESS_STATE)) {
-                                        property.address!!.state = it.getAsString(COLUMN_ADDRESS_STATE)
+                                        property.address.state = it.getAsString(COLUMN_ADDRESS_STATE)
                                 }
 
                                 if (it.containsKey(COLUMN_ADDRESS_LATITUDE)) {
-                                        property.address!!.latitude = it.getAsDouble(COLUMN_ADDRESS_LATITUDE)
+                                        property.address.latitude = it.getAsDouble(COLUMN_ADDRESS_LATITUDE)
                                 }
 
                                 if (it.containsKey(COLUMN_ADDRESS_LONGITUDE)) {
-                                        property.address!!.longitude = it.getAsDouble(COLUMN_ADDRESS_LONGITUDE)
+                                        property.address.longitude = it.getAsDouble(COLUMN_ADDRESS_LONGITUDE)
                                 }
 
                                 if (it.containsKey(COLUMN_INTEREST_POINTS)) {
@@ -294,9 +313,14 @@ data class Property(
                 }
         }
 
-        fun titleInToolbar(): String {
-                return address!!.street + ", " +
-                        address!!.postalCode + " " + address!!.city
+        fun titleInToolbar(resources: Resources): String {
+                return if((address.street + ", " +
+                        address.postalCode + " " + address.city).trim() != ",") {
+                        address.street + ", " +
+                                address.postalCode + " " + address.city
+                } else {
+                        resources.getString(R.string.no_address_found)
+                }
         }
 
         fun copy(): Property  {
@@ -328,7 +352,7 @@ data class Property(
 
                 other as Property
 
-                if (id != other.id) return false
+                // if (id != other.id) return false
                 if (type != other.type) return false
                 if (price != other.price) return false
                 if (surface != other.surface) return false
@@ -337,6 +361,9 @@ data class Property(
                 if (bathRooms != other.bathRooms) return false
                 if (description != other.description) return false
                 if (address != other.address) return false
+                if(interestPoints.size != 1 && interestPoints.contains(InterestPoint.NONE)) {
+                        interestPoints.remove(InterestPoint.NONE)
+                }
                 if (interestPoints != other.interestPoints) return false
                 if (status != other.status) return false
                 if (agentId != other.agentId) return false

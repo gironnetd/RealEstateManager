@@ -11,6 +11,7 @@ data class PropertiesViewState(
 ) : MviViewState {
     enum class UiNotification {
         PROPERTIES_FULLY_UPDATED,
+        PROPERTIES_FULLY_CREATED
     }
 
     companion object {
@@ -18,6 +19,7 @@ data class PropertiesViewState(
             return PropertiesViewState(
                 inProgress = false,
                 properties = null,
+                error = null,
                 uiNotification = null
             )
         }

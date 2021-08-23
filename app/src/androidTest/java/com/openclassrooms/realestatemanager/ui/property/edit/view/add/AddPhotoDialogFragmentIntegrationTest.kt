@@ -30,6 +30,7 @@ import com.google.common.truth.Truth.assertThat
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.R.style.AppTheme
 import com.openclassrooms.realestatemanager.TestBaseApplication
+import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.models.PhotoType
 import com.openclassrooms.realestatemanager.models.Property
@@ -37,7 +38,7 @@ import com.openclassrooms.realestatemanager.models.storageLocalDatabase
 import com.openclassrooms.realestatemanager.ui.BaseFragmentTests
 import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
-import com.openclassrooms.realestatemanager.ui.property.edit.update.PhotoUpdateAdapter
+import com.openclassrooms.realestatemanager.ui.property.edit.update.PhotoUpdateAdapter.PhotoViewHolder
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragment
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PhotoDetailAdapter
 import com.openclassrooms.realestatemanager.util.BitmapUtil.sameAs
@@ -69,6 +70,7 @@ class AddPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
         configure_fake_repository()
         injectTest(testApplication)
 
+        (propertiesRepository as DefaultPropertyRepository).cachedProperties.clear()
         fakeProperties = propertiesRepository.findAllProperties().blockingFirst()
         fakeProperties.forEach { property ->
             property.photos = property.photos.toSet().toMutableList()
@@ -87,7 +89,8 @@ class AddPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
             val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext.cacheDir,true))
             if(photoFile.exists()) { photoFile.delete() }
         }
-        BaseFragment.properties.value!!.clear()
+        if(BaseFragment.properties.value != null) { BaseFragment.properties.value!!.clear() }
+        (propertiesRepository as DefaultPropertyRepository).cachedProperties.clear()
         super.tearDown()
     }
 
@@ -419,13 +422,13 @@ class AddPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
         onView(withText(R.string.add_photo)).perform(click())
 
         onView(withId(R.id.photos_recycler_view)). perform(
-            scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(propertyUpdateFragment.binding.photosRecyclerView.adapter!!.itemCount - 1)
+            scrollToPosition<PhotoViewHolder>(propertyUpdateFragment.binding.photosRecyclerView.adapter!!.itemCount - 1)
         )
 
         val viewHolder = propertyUpdateFragment.binding.photosRecyclerView
             .findViewHolderForAdapterPosition(
                 propertyUpdateFragment.binding.photosRecyclerView.adapter!!.itemCount - 1
-            ) as PhotoUpdateAdapter.PhotoViewHolder
+            ) as PhotoViewHolder
 
         val bitmap = (viewHolder.photo.drawable as BitmapDrawable).bitmap
         assertThat(bitmap).isNotNull()
@@ -530,13 +533,13 @@ class AddPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
         onView(withText(R.string.add_photo)).perform(click())
 
         onView(withId(R.id.photos_recycler_view)). perform(
-            scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(propertyUpdateFragment.binding.photosRecyclerView.adapter!!.itemCount - 1)
+            scrollToPosition<PhotoViewHolder>(propertyUpdateFragment.binding.photosRecyclerView.adapter!!.itemCount - 1)
         )
 
         val viewHolder = propertyUpdateFragment.binding.photosRecyclerView
             .findViewHolderForAdapterPosition(
                 propertyUpdateFragment.binding.photosRecyclerView.adapter!!.itemCount - 1
-            ) as PhotoUpdateAdapter.PhotoViewHolder
+            ) as PhotoViewHolder
 
         assertThat((viewHolder.photo.drawable as BitmapDrawable).bitmap).isNull()
     }
@@ -554,7 +557,7 @@ class AddPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
             .indexOf(fakeProperties[itemPosition].photos.single { photo -> photo.mainPhoto })
 
         with(onView(withId(R.id.photos_recycler_view))) {
-            perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(mainPhotoPosition))
+            perform(scrollToPosition<PhotoViewHolder>(mainPhotoPosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(mainPhotoPosition, click()))
         }
 
@@ -578,7 +581,7 @@ class AddPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
         onView(withText(R.string.add_photo)).perform(click())
 
         val oldMainPhotoViewHolder = propertyUpdateFragment.binding.photosRecyclerView
-            .findViewHolderForAdapterPosition(mainPhotoPosition) as PhotoUpdateAdapter.PhotoViewHolder
+            .findViewHolderForAdapterPosition(mainPhotoPosition) as PhotoViewHolder
 
         assertThat(oldMainPhotoViewHolder.type.text).isNotEqualTo(testApplication.resources.getString(
             PhotoType.MAIN.type).uppercase())
@@ -587,11 +590,12 @@ class AddPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
         ).uppercase())
 
         with(onView(withId(R.id.photos_recycler_view))) {
-            perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(fakeProperties[itemPosition].photos.size -1))
+            perform(scrollToPosition<PhotoViewHolder>
+                (propertyUpdateFragment.binding.photosRecyclerView.adapter!!.itemCount - 1))
         }
 
         val newMainPhotoViewHolder = propertyUpdateFragment.binding.photosRecyclerView
-            .findViewHolderForAdapterPosition(fakeProperties[itemPosition].photos.size -1) as PhotoUpdateAdapter.PhotoViewHolder
+            .findViewHolderForAdapterPosition(propertyUpdateFragment.binding.photosRecyclerView.adapter!!.itemCount - 1) as PhotoViewHolder
 
         assertThat(newMainPhotoViewHolder.type.text).isEqualTo(testApplication.resources.getString(
             PhotoType.MAIN.type).uppercase())
@@ -626,8 +630,13 @@ class AddPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
 
         onView(withText(R.string.add_photo)).perform(click())
 
-        assertThat(fakeProperties[itemPosition].photos[mainPhotoPosition].mainPhoto).isFalse()
-        assertThat(fakeProperties[itemPosition].photos[fakeProperties[itemPosition].photos.size - 1].mainPhoto).isTrue()
+        with(onView(withId(R.id.photos_recycler_view))) {
+            perform(scrollToPosition<PhotoViewHolder>
+                (propertyUpdateFragment.binding.photosRecyclerView.adapter!!.itemCount - 1))
+        }
+
+        assertThat(propertyUpdateFragment.newProperty.photos[mainPhotoPosition].mainPhoto).isFalse()
+        assertThat(propertyUpdateFragment.newProperty.photos[propertyUpdateFragment.newProperty.photos.size - 1].mainPhoto).isTrue()
     }
 
     @Test
@@ -662,20 +671,18 @@ class AddPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
         onView(withText(R.string.add_photo)).perform(click())
 
        onView(withId(R.id.photos_recycler_view))
-           .perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(
-               fakeProperties[itemPosition].photos.size - 1
+           .perform(scrollToPosition<PhotoViewHolder>(
+               propertyUpdateFragment.binding.photosRecyclerView.adapter!!.itemCount -1
            ))
 
         val viewHolder = propertyUpdateFragment.binding.photosRecyclerView
-            .findViewHolderForAdapterPosition(fakeProperties[itemPosition].photos.size - 1) as PhotoUpdateAdapter.PhotoViewHolder
+            .findViewHolderForAdapterPosition(propertyUpdateFragment.binding.photosRecyclerView.adapter!!.itemCount -1) as PhotoViewHolder
 
         val viewHolderPhotoBitmap = (viewHolder.photo.drawable as BitmapDrawable).bitmap
         assertThat(sameAs(viewHolderPhotoBitmap, updateDialogPhotoBitmap)).isTrue()
 
         assertThat(viewHolder.type.text)
-            .isEqualTo(
-                testApplication.resources.getString(PhotoType.LOUNGE.type).uppercase()
-            )
+            .isEqualTo(testApplication.resources.getString(PhotoType.LOUNGE.type).uppercase())
     }
 
 

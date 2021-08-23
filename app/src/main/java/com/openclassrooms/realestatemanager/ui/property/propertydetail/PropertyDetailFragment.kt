@@ -3,7 +3,9 @@ package com.openclassrooms.realestatemanager.ui.property.propertydetail
 import android.content.res.Configuration
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
+import android.graphics.Color
 import android.os.Bundle
+import android.text.InputType
 import android.util.TypedValue
 import android.view.*
 import android.view.View.GONE
@@ -22,10 +24,13 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.chip.Chip
+import com.google.android.material.textfield.TextInputEditText
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentDetailBinding
+import com.openclassrooms.realestatemanager.models.InterestPoint
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.models.PropertyStatus
+import com.openclassrooms.realestatemanager.models.PropertyType
 import com.openclassrooms.realestatemanager.ui.mvibase.MviView
 import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
@@ -48,9 +53,9 @@ import javax.inject.Inject
  */
 class PropertyDetailFragment
 @Inject constructor(viewModelFactory: ViewModelProvider.Factory)
-    : BaseFragment(R.layout.fragment_detail), OnMapReadyCallback,
-    GoogleMap.OnMapLoadedCallback, BrowseFragment.OnItemClickListener,
-    PhotoDetailAdapter.OnItemClickListener, MviView<PropertyDetailIntent, PropertyDetailViewState> {
+    : BaseFragment(R.layout.fragment_detail), OnMapReadyCallback, GoogleMap.OnMapLoadedCallback,
+    BrowseFragment.OnItemClickListener, PhotoDetailAdapter.OnItemClickListener,
+    MviView<PropertyDetailIntent, PropertyDetailViewState> {
 
     private val propertyDetailViewModel: PropertyDetailViewModel by viewModels { viewModelFactory }
 
@@ -68,20 +73,10 @@ class PropertyDetailFragment
 
     lateinit var detailPhotoAlertDialog: PhotoDetailDialogFragment
 
-    interface OnItemClickListener {
-        fun onItemClick(propertyId: String)
-    }
-
-    private var callBack: OnItemClickListener? = null
-
-    fun setOnItemClickListener(listener: OnItemClickListener) { callBack = listener }
-
-    private val populatePropertyIntentPublisher =
-        PublishSubject.create<PropertyDetailIntent.PopulatePropertyIntent>()
+    private val populatePropertyIntentPublisher = PublishSubject.create<PropertyDetailIntent.PopulatePropertyIntent>()
     private val compositeDisposable = CompositeDisposable()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
@@ -95,6 +90,18 @@ class PropertyDetailFragment
 
         applyDisposition()
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        compositeDisposable.add(propertyDetailViewModel.states().subscribe(this::render))
+        propertyDetailViewModel.processIntents(intents())
+        showDetails(propertyId)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.dispose()
     }
 
     override fun intents(): Observable<PropertyDetailIntent> {
@@ -116,6 +123,7 @@ class PropertyDetailFragment
                 properties.value?.let { properties ->
                     properties[properties.indexOf(
                         properties.single { property -> property.id == propertyId })] = propertyWithPhotos
+                    binding.loadingProgressbar.visibility = GONE
                     displayDetail()
                 }
             }
@@ -128,58 +136,184 @@ class PropertyDetailFragment
         }
 
         with(binding) {
-            description.setText(property.description)
+            with(description) {
+                setRawInputType(InputType.TYPE_CLASS_TEXT)
+                setText(run {
+                    if(property.description.isNotEmpty()) {
+                        setTextColor(Color.BLACK)
+                        property.description
+                    } else { none }
+                })
+            }
 
             interestPointsChipGroup.removeAllViewsInLayout()
             property.interestPoints.forEach { interestPoint ->
-                val newChip = layoutInflater.inflate(R.layout.layout_interest_point_chip_default,
-                    binding.interestPointsChipGroup, false) as Chip
-                newChip.text = resources.getString(interestPoint.place)
-                newChip.isCheckable = false
-                newChip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
-                newChip.setTextColor(getColorStateList(requireContext(), R.color.chip_text_state_list))
+                if(interestPoint != InterestPoint.NONE) {
+                    val newChip = layoutInflater.inflate(R.layout.layout_interest_point_chip_default,
+                        binding.interestPointsChipGroup, false) as Chip
+                    newChip.text = resources.getString(interestPoint.place)
+                    newChip.isCheckable = false
+                    newChip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
+                    newChip.setTextColor(getColorStateList(requireContext(), R.color.chip_text_state_list))
 
-                interestPointsChipGroup.addView(newChip)
-            }
-
-            entryDate.setText(Utils.formatDate(property.entryDate))
-
-            if(property.status == PropertyStatus.SOLD) {
-                layoutSoldDate.visibility = VISIBLE
-                property.soldDate?.let { soldDate.setText(Utils.formatDate(it)) }
-            } else {
-                layoutSoldDate.visibility = GONE
-            }
-            status.setText(resources.getString(property.status.status))
-
-            if(property.status == PropertyStatus.SOLD) {
-                layoutSoldDate.visibility = VISIBLE
-                property.soldDate?.let {
-                    soldDate.setText(Utils.formatDate(it))
+                    interestPointsChipGroup.addView(newChip)
                 }
-            } else {
-                layoutSoldDate.visibility = GONE
             }
 
-            price.setText(property.price.toString())
-            type.setText(property.type.type)
-            surface.setText("${property.surface}")
-            rooms.setText(property.rooms.toString())
-            bathrooms.setText(property.bathRooms.toString())
-            bedrooms.setText(property.bedRooms.toString())
+            with(entryDate) {
+                property.entryDate?.let {
+                    setText(Utils.formatDate(property.entryDate))
+                    setTextColor(Color.BLACK)
+                }
+            }
 
-            street.setText(property.address?.street)
-            city.setText(property.address?.city)
-            postalCode.setText(property.address?.postalCode)
-            country.setText(property.address?.country)
-            binding.state.setText(property.address?.state)
+            with(status) {
+                if(property.status != PropertyStatus.NONE) {
+                    setText(resources.getString(property.status.status))
+                    setTextColor(Color.BLACK)
+                } else {
+                    setText(none)
+                    setTextColor(colorPrimaryDark)
+                }
+            }
+
+            with(soldDate) {
+                if(property.status == PropertyStatus.SOLD) {
+                    layoutSoldDate.visibility =VISIBLE
+                    property.soldDate?.let { setText(Utils.formatDate(it)) }
+                } else {
+                    layoutSoldDate.visibility = GONE
+                }
+            }
+            
+            //price.filters = arrayOf<InputFilter>(InputFilterMinMax(0, 99999999999999999))
+            with(price) {
+                setText(run {
+                    if(property.price != 0) {
+                        setTextColor(Color.BLACK)
+                        property.price.toString()
+                    } else { none }
+                })
+            }
+
+            with(type) {
+                if(property.type != PropertyType.NONE) {
+                    setText(resources.getString(property.type.type))
+                    setTextColor(Color.BLACK)
+                } else {
+                    setText(none)
+                    setTextColor(colorPrimaryDark)
+                }
+            }
+
+            //surface.filters = arrayOf<InputFilter>(InputFilterMinMax(0, 99999999999999999))
+            with(surface) {
+                setText(run {
+                    if(property.surface != 0) {
+                        setTextColor(Color.BLACK)
+                        property.surface.toString()
+                    } else { none }
+                })
+            }
+
+            with(rooms) {
+                setText(run {
+                    if(property.rooms != 0) {
+                        setTextColor(Color.BLACK)
+                        property.rooms.toString()
+                    } else { none }
+                })
+            }
+
+            with(bedrooms) {
+                setText(run {
+                    if(property.bedRooms != 0) {
+                        setTextColor(Color.BLACK)
+                        property.bedRooms.toString()
+                    } else { none }
+                })
+            }
+
+            with(bathrooms) {
+                setText(run {
+                    if(property.bathRooms != 0) {
+                        setTextColor(Color.BLACK)
+                        property.bathRooms.toString()
+                    } else { none }
+                })
+            }
+
+            bathrooms.setOnFocusChangeListener { view, hasFocus ->
+                with((view as TextInputEditText).text.toString()) {
+                    if(hasFocus && this == none) {
+                        bathrooms.setText("")
+                        bathrooms.setTextColor(Color.BLACK)
+                    }
+                    if(!hasFocus && this == "") {
+                        bathrooms.setText(none)
+                        bathrooms.setTextColor(colorPrimaryDark)
+                    }
+                }
+            }
+
+            with(street) {
+                setText(run {
+                    if(property.address.street.isNotEmpty()) {
+                        setTextColor(Color.BLACK)
+                        property.address.street
+                    } else { none }
+                })
+            }
+
+            with(city) {
+                setText( run {
+                    if(property.address.city.isNotEmpty()) {
+                        setTextColor(Color.BLACK)
+                        property.address.city
+                    } else { none }
+                })
+            }
+            
+            with(postalCode) {
+                setText( run {
+                    if(property.address.postalCode.isNotEmpty()) {
+                        setTextColor(Color.BLACK)
+                        property.address.postalCode
+                    } else { none }
+                })
+            }
+
+            with(country) {
+                setText( run {
+                    if(property.address.country.isNotEmpty()) {
+                        setTextColor(Color.BLACK)
+                        property.address.country
+                    } else { none }
+                })
+            }
+
+            with(state) {
+                setText( run {
+                    if(property.address.state.isNotEmpty()) {
+                        setTextColor(Color.BLACK)
+                        property.address.state
+                    } else { none }
+                })
+            }
+            
+            PhotoDetailAdapter().apply {
+                if(property.photos.isNotEmpty()) { noPhotosTextView.visibility = GONE }
+                photosRecyclerView.adapter = this
+                setOnItemClickListener(this@PropertyDetailFragment)
+                submitList(property.photos)
+            }
         }
 
         this.parentFragment?.parentFragment?.let {
             val browseFragment = this.parentFragment?.parentFragment as BrowseFragment
 
             with(browseFragment.binding.toolBar) {
-                title = property.titleInToolbar()
+                title = property.titleInToolbar(resources)
 
                 if(!onBackPressedCallback.isEnabled) {
                     onBackPressedCallback.isEnabled = true
@@ -196,13 +330,6 @@ class PropertyDetailFragment
             }
         }
 
-        PhotoDetailAdapter().apply {
-            binding.photosRecyclerView.adapter = this
-            setOnItemClickListener(this@PropertyDetailFragment)
-            submitList(property.photos)
-            notifyDataSetChanged()
-        }
-
         if(binding.mapConstraintLayout.contentDescription != DETAIL_MAP_FINISH_LOADING) {
             activity?.runOnUiThread {
                 (this.childFragmentManager.findFragmentById(R.id.map_detail_fragment) as SupportMapFragment)
@@ -214,7 +341,7 @@ class PropertyDetailFragment
 
         this.parentFragment?.parentFragment?.let {
             val browseFragment = this.parentFragment?.parentFragment as BrowseFragment
-            browseFragment.binding.toolBar.title = property.titleInToolbar()
+            browseFragment.binding.toolBar.title = property.titleInToolbar(resources)
         }
     }
 
@@ -222,12 +349,13 @@ class PropertyDetailFragment
         this.propertyId = propertyId!!
 
         properties.value?.let { properties ->
-            if(properties.single { property -> property.id == propertyId }.photos.none { photo -> !photo.mainPhoto }) {
+            val photos = properties.single { property -> property.id == propertyId }.photos
+            if(photos.isNotEmpty() && photos.none { photo -> !photo.mainPhoto }) {
+                binding.loadingProgressbar.visibility = VISIBLE
                 populatePropertyIntentPublisher.onNext(PropertyDetailIntent.PopulatePropertyIntent(propertyId))
             }
             displayDetail()
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -274,7 +402,7 @@ class PropertyDetailFragment
             applyDisposition()
             onBackPressedCallback.isEnabled = true
             binding.detailFragment.fullScroll(ScrollView.FOCUS_UP)
-            binding.photosRecyclerView.adapter?.notifyDataSetChanged()
+            //binding.photosRecyclerView.adapter?.notifyDataSetChanged()
         }
     }
 
@@ -284,11 +412,6 @@ class PropertyDetailFragment
             val browseFragment = this.parentFragment?.parentFragment as BrowseFragment
             browseFragment.setOnItemClickListener(this)
         }
-
-        compositeDisposable.add(propertyDetailViewModel.states().subscribe(this::render))
-        propertyDetailViewModel.processIntents(intents())
-
-        showDetails(propertyId)
     }
 
     private fun onBackPressedCallback() {
@@ -337,7 +460,7 @@ class PropertyDetailFragment
             }
             else if (!resources.getBoolean(R.bool.isMasterDetail)) {
                 applyNormalDisposition()
-            } else {}
+            }
         }
     }
 
@@ -600,17 +723,20 @@ class PropertyDetailFragment
 
     private fun moveCameraToPropertyInsideMap() {
         mMap.clear()
-        mMap.addMarker(MarkerOptions()
-            .position(LatLng(property.address!!.latitude,
-                property.address!!.longitude)
+
+        if(!property.address.latitude.equals(0.0) && !property.address.longitude.equals(0.0)) {
+            mMap.addMarker(MarkerOptions()
+                .position(LatLng(property.address.latitude,
+                    property.address.longitude)
+                )
             )
-        )
 
-        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-            LatLng(property.address!!.latitude,
-                property.address!!.longitude), (DEFAULT_ZOOM + 3))
+            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                LatLng(property.address.latitude,
+                    property.address.longitude), (DEFAULT_ZOOM + 3))
 
-        mMap.moveCamera(cameraUpdate)
+            mMap.moveCamera(cameraUpdate)
+        }
     }
 
     companion object {
@@ -623,10 +749,5 @@ class PropertyDetailFragment
             it.photo = property.photos.singleOrNull { photo -> photo.id == photoId }
         }
         detailPhotoAlertDialog.show(childFragmentManager, PhotoDetailDialogFragment.TAG)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        compositeDisposable.dispose()
     }
 }

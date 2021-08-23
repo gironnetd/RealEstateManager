@@ -10,6 +10,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import com.google.firebase.firestore.Exclude
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.gson.annotations.SerializedName
 import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_ID
 import com.openclassrooms.realestatemanager.models.Photo.Companion.TABLE_NAME
@@ -69,7 +71,7 @@ fun Photo.storageUrl(storageBucket: String, isThumbnail: Boolean = false): Strin
 data class Photo (
     @SerializedName(value = "id")
     @ColumnInfo(index = true, name = COLUMN_ID)
-    var id: String = "",
+    var id: String = Firebase.firestore.collection(PHOTOS_COLLECTION).document().id,
 
     @ColumnInfo(name = "property_id")
     @get:Exclude var propertyId: String = "",
@@ -92,7 +94,19 @@ data class Photo (
 
     @ColumnInfo(name = "locally_created")
     @get:Exclude
-    var locallyCreated: Boolean = false) : Parcelable {
+    var locallyCreated: Boolean = false,
+
+    @ColumnInfo(name = "locally_deleted")
+    @get:Exclude
+    var locallyDeleted: Boolean = false ) : Parcelable {
+
+    fun deepCopy(id: String = this.id, propertyId: String = this.propertyId,
+                 description: String = this.description, mainPhoto: Boolean = this.mainPhoto,
+                 type: PhotoType = this.type, bitmap: Bitmap? = this.bitmap,
+                 locallyUpdated: Boolean = this.locallyUpdated,
+                 locallyCreated: Boolean = this.locallyCreated,
+                 locallyDeleted: Boolean = this.locallyDeleted
+    ) = Photo(id, propertyId, description, mainPhoto, type, bitmap, locallyUpdated, locallyCreated, locallyDeleted)
 
     constructor(cursor: Cursor): this() {
         id = cursor.getString(cursor.getColumnIndex(COLUMN_ID))
@@ -132,6 +146,9 @@ data class Photo (
         if(bitmap != null && other.bitmap != null) {
             if (!sameAs(bitmap!!, other.bitmap!!) ) return false
         }
+        if (locallyUpdated != other.locallyUpdated) return false
+        if (locallyCreated != other.locallyCreated) return false
+        if (locallyDeleted != other.locallyDeleted) return false
 
         return true
     }
@@ -143,8 +160,41 @@ data class Photo (
         result = 31 * result + mainPhoto.hashCode()
         result = 31 * result + type.hashCode()
         result = 31 * result + (bitmap?.hashCode() ?: 0)
+        result = 31 * result + locallyUpdated.hashCode()
+        result = 31 * result + locallyCreated.hashCode()
+        result = 31 * result + locallyDeleted.hashCode()
         return result
     }
+
+//    override fun equals(other: Any?): Boolean {
+//        if (this === other) return true
+//        if (javaClass != other?.javaClass) return false
+//
+//        other as Photo
+//
+//        if (id != other.id) return false
+//        if (propertyId != other.propertyId) return false
+//        if (description != other.description) return false
+//        if (mainPhoto != other.mainPhoto) return false
+//        if (type != other.type) return false
+//        if(bitmap != null && other.bitmap != null) {
+//            if (!sameAs(bitmap!!, other.bitmap!!) ) return false
+//        }
+//
+//
+//        return true
+//    }
+//
+//    override fun hashCode(): Int {
+//        var result = id.hashCode()
+//        result = 31 * result + propertyId.hashCode()
+//        result = 31 * result + description.hashCode()
+//        result = 31 * result + mainPhoto.hashCode()
+//        result = 31 * result + type.hashCode()
+//        result = 31 * result + (bitmap?.hashCode() ?: 0)
+//        return result
+//    }
+
 
 
     companion object {

@@ -47,8 +47,6 @@ class PropertyUpdateViewModel
             .map(this::actionFromIntent)
             .compose(propertyUpdateActionProcessor.actionProcessor)
             .scan(PropertyEditViewState.idle(), reducer)
-            .replay(1)
-            .autoConnect(0)
     }
 
     private fun actionFromIntent(intent: MviIntent): PropertyEditAction {

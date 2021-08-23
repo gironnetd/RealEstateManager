@@ -53,11 +53,11 @@ class PhotoUpdateAdapter : RecyclerView.Adapter<PhotoUpdateAdapter.PhotoViewHold
 
     fun submitList(photos: List<Photo>?) {
         differ.submitList(photos)
+        notifyDataSetChanged()
     }
 
     fun clear() {
-        differ.currentList.toMutableList().clear()
-        notifyDataSetChanged()
+        differ.submitList(null)
     }
 
     class PhotoViewHolder

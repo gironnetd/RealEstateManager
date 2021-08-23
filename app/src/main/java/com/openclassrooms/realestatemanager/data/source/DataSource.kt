@@ -76,10 +76,12 @@ constructor(var propertySource: T, var photoSource: U) {
                 if(propertySource is PropertyRemoteSource && photoSource is PhotoRemoteSource) {
                     propertySource.findAllProperties().flatMap { properties ->
                         Observable.fromIterable(properties).flatMapSingle { property ->
-                            photoSource.findPhotoById(property.id, property.mainPhotoId!!).flatMap { photo ->
-                                property.photos.add(photo)
-                                Single.just(property)
-                            }
+                            property.mainPhotoId?.let {
+                                photoSource.findPhotoById(property.id, property.mainPhotoId!!).flatMap { photo ->
+                                    property.photos.add(photo)
+                                    Single.just(property)
+                                }
+                            } ?: Single.just(property)
                         }.toList().flatMap { Single.just(properties.sortedBy { it.id }) }
                     } as Single<List<T>>
                 } else if (propertySource is PropertyCacheSource && photoSource is PhotoCacheSource) {
@@ -112,7 +114,6 @@ constructor(var propertySource: T, var photoSource: U) {
                 value.filterIsInstance(Property::class.java).let { properties ->
                     Observable.fromIterable(properties).flatMapCompletable { property ->
                         propertySource.updateProperty(property)
-                            //.andThen(photoSource.savePhotos(property.photos))
                     }
                 }
             }
@@ -130,6 +131,22 @@ constructor(var propertySource: T, var photoSource: U) {
         return when (type) {
             Property::class -> { propertySource.deleteAllProperties() }
             Photo::class -> { photoSource.deleteAllPhotos() }
+            else -> { Completable.error(Throwable(ClassNotFoundException())) }
+        }
+    }
+
+    open fun <T: Any>  delete(type: KClass<T>, value: T): Completable {
+        return when (type) {
+            Property::class -> { propertySource.deletePropertyById((value as Property).id) }
+            Photo::class -> { photoSource.deletePhotoById((value as Property).id) }
+            else -> { Completable.error(Throwable(ClassNotFoundException())) }
+        }
+    }
+
+    open fun <T: Any>  delete(type: KClass<T>,  value: List<T>): Completable {
+        return when (type) {
+            Property::class -> { propertySource.deleteProperties(value as List<Property>) }
+            Photo::class -> { photoSource.deletePhotos(value as List<Photo>) }
             else -> { Completable.error(Throwable(ClassNotFoundException())) }
         }
     }

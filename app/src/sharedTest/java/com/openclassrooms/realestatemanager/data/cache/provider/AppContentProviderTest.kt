@@ -384,7 +384,15 @@ class AppContentProviderTest : TestCase() {
             assertFalse(idx == -1)
             when (valueCursor.getType(idx)) {
                 Cursor.FIELD_TYPE_FLOAT -> assertEquals(value, valueCursor.getDouble(idx))
-                Cursor.FIELD_TYPE_INTEGER -> assertEquals(value.toString().toInt(), valueCursor.getInt(idx))
+                Cursor.FIELD_TYPE_INTEGER ->  {
+                    if(value.toString() == "false") {
+                        assertEquals(0, valueCursor.getInt(idx))
+                    } else if(value.toString() == "true") {
+                        assertEquals(1, valueCursor.getInt(idx))
+                    } else {
+                        assertEquals(value.toString().toInt(), valueCursor.getInt(idx))
+                    }
+                }
                 Cursor.FIELD_TYPE_STRING -> assertEquals(value, valueCursor.getString(idx))
                 Cursor.FIELD_TYPE_NULL -> {}
                 else -> assertEquals(value.toString(), valueCursor.getString(idx))

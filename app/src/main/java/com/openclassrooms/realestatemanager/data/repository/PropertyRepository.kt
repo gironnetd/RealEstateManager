@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.data.repository
 
+import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository.CreateOrUpdate
 import com.openclassrooms.realestatemanager.models.Property
 import io.reactivex.Observable
 
@@ -13,5 +14,5 @@ interface PropertyRepository {
 
     fun createProperty(createdProperty: Property): Observable<Boolean>
 
-    fun saveRemotelyLocalChanges(updates: Boolean = false, creations: Boolean = false): Observable<List<Property>>
+    fun pushLocalChanges(): Observable<Pair<CreateOrUpdate, List<Property>>>
 }

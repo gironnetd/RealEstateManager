@@ -20,6 +20,7 @@ import androidx.test.filters.MediumTest
 import com.google.common.truth.Truth.assertThat
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
+import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.models.PhotoType
 import com.openclassrooms.realestatemanager.models.Property
@@ -60,6 +61,7 @@ class PhotoDetailDialogFragmentIntegrationTest : BaseFragmentTests() {
         configure_fake_repository()
         injectTest(testApplication)
 
+        (propertiesRepository as DefaultPropertyRepository).cachedProperties.clear()
         fakeProperties = propertiesRepository.findAllProperties().blockingFirst()
         itemPosition = (fakeProperties.indices).random()
 
@@ -89,6 +91,8 @@ class PhotoDetailDialogFragmentIntegrationTest : BaseFragmentTests() {
             val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext.cacheDir,true))
             if(photoFile.exists()) { photoFile.delete() }
         }
+        if(BaseFragment.properties.value != null) { BaseFragment.properties.value!!.clear() }
+        (propertiesRepository as DefaultPropertyRepository).cachedProperties.clear()
         super.tearDown()
     }
 

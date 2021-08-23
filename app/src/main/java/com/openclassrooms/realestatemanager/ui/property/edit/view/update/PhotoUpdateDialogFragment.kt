@@ -28,7 +28,6 @@ import com.openclassrooms.realestatemanager.models.storageLocalDatabase
 import com.openclassrooms.realestatemanager.ui.property.BaseDialogFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PhotoUpdateAdapter
-import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragment
 import java.io.File
 import java.io.FileOutputStream
 
@@ -65,6 +64,7 @@ class PhotoUpdateDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_up
                                 it.mainPhoto = false
                             }
                             photo.mainPhoto = true
+                            propertyEditFragment.newProperty.mainPhotoId = photo.id
                         }
 
                         if(binding.photoImageview.drawable != null) {
@@ -86,26 +86,30 @@ class PhotoUpdateDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_up
                         }
 
                         tmpFile?.delete()
+                        photo.locallyUpdated = true
 
                         with(propertyEditFragment.binding.photosRecyclerView.adapter as PhotoUpdateAdapter) {
                             submitList(propertyEditFragment.newProperty.photos)
-                            notifyDataSetChanged()
                         }
                     }
                 }
                 setNeutralButton(getString(R.string.cancel)) { _, _ ->}
                 setNegativeButton(getString(R.string.delete_photo)) { _, _ ->
-                    if (photo!!.mainPhoto) {
-                        Toast.makeText(requireContext(), R.string.cannot_delete_photo, Toast.LENGTH_LONG).show()
-                        return@setNegativeButton
+
+                    photo?.let { photo ->
+                        if (photo.mainPhoto) {
+                            Toast.makeText(requireContext(), R.string.cannot_delete_photo, Toast.LENGTH_LONG).show()
+                            return@setNegativeButton
+                        }
+
+                        photo.locallyDeleted = true
+
+                        val propertyEditFragment: PropertyEditFragment = parentFragment as PropertyEditFragment
+                        with(propertyEditFragment.binding.photosRecyclerView.adapter as PhotoUpdateAdapter) {
+                            submitList(propertyEditFragment.newProperty.photos.filter { photo -> !photo.locallyDeleted })
+                        }
                     }
 
-                    val propertyUpdateFragment: PropertyUpdateFragment = parentFragment as PropertyUpdateFragment
-                    propertyUpdateFragment.property.photos.remove(photo)
-                    with(propertyUpdateFragment.binding.photosRecyclerView.adapter as PhotoUpdateAdapter) {
-                        submitList(propertyUpdateFragment.property.photos)
-                        notifyDataSetChanged()
-                    }
                 }
                 create()
             }

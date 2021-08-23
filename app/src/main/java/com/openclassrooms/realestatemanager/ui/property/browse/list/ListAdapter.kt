@@ -12,11 +12,12 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.PropertyType
 import com.openclassrooms.realestatemanager.models.storageUrl
 import com.openclassrooms.realestatemanager.ui.property.browse.list.ListAdapter.PropertyViewHolder
 import com.openclassrooms.realestatemanager.util.GlideManager
 
-class ListAdapter(private val requestManager: GlideManager, ) : RecyclerView.Adapter<PropertyViewHolder>() {
+class ListAdapter(private val requestManager: GlideManager) : RecyclerView.Adapter<PropertyViewHolder>() {
 
     interface OnItemClickListener {
         fun onItemClick(propertyId: String)
@@ -35,7 +36,6 @@ class ListAdapter(private val requestManager: GlideManager, ) : RecyclerView.Ada
         override fun areContentsTheSame(oldItem: Property, newItem: Property): Boolean {
             return oldItem == newItem
         }
-
     }
     private val differ = AsyncListDiffer(this, DIFF_CALLBACK)
 
@@ -50,13 +50,13 @@ class ListAdapter(private val requestManager: GlideManager, ) : RecyclerView.Ada
         holder.bind(differ.currentList[position])
     }
 
-    override fun getItemCount(): Int {
-        return differ.currentList.size
+    override fun getItemCount(): Int { return differ.currentList.size }
+
+    fun submitList(properties: List<Property>) {
+        differ.submitList(properties)
+        notifyDataSetChanged()
     }
 
-    fun submitList(properties: List<Property>?, ) {
-        differ.submitList(properties)
-    }
 
     class PropertyViewHolder
     constructor(
@@ -81,8 +81,13 @@ class ListAdapter(private val requestManager: GlideManager, ) : RecyclerView.Ada
                 }
             }
 
-            item.type.let { type.text = resources.getString(it.type) }
-            item.address?.let { street.text = it.street }
+            item.type.let {
+                if(it != PropertyType.NONE) { type.text = resources.getString(it.type) }
+            }
+
+            item.address.let {
+                if(it.street.isNotEmpty()) { street.text = it.street }
+            }
             item.price.let { price.text = "$".plus(" $it") }
 
             itemView.setOnClickListener {

@@ -2,8 +2,8 @@ package com.openclassrooms.realestatemanager.ui.property.edit
 
 import android.app.DatePickerDialog
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
+import android.text.InputType.TYPE_CLASS_TEXT
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +17,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
 import com.google.android.material.chip.Chip
+import com.google.android.material.textfield.TextInputEditText
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentEditBinding
 import com.openclassrooms.realestatemanager.models.InterestPoint
@@ -47,6 +48,11 @@ constructor(var registry: ActivityResultRegistry?)
 
     val compositeDisposable = CompositeDisposable()
 
+    abstract fun confirmSaveChanges()
+    abstract fun onBackPressedCallback()
+
+    abstract override fun initializeToolbar()
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -55,13 +61,6 @@ constructor(var registry: ActivityResultRegistry?)
         setHasOptionsMenu(true)
         onBackPressedCallback()
 
-        with(binding) {
-            entryDate.setOnClickListener { showEntryDateAlertDialog() }
-            status.setOnClickListener { showStatusAlertDialog() }
-            layoutSoldDate.setOnClickListener { showSoldDateAlertDialog() }
-            type.setOnClickListener { showTypeAlertDialog() }
-        }
-
         binding.addAPhoto.setOnClickListener {
             addPhotoAlertDialog = AddPhotoDialogFragment().also {
                 it.registry = registry ?: requireActivity().activityResultRegistry
@@ -69,18 +68,17 @@ constructor(var registry: ActivityResultRegistry?)
             }
             addPhotoAlertDialog.show(childFragmentManager, AddPhotoDialogFragment.TAG)
         }
-
         return binding.root
     }
 
-    abstract fun confirmSaveChanges()
-    abstract fun onBackPressedCallback()
-
-    abstract override fun initializeToolbar()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        clearField()
+        configureView()
+    }
 
     fun populateChanges() {
         with(binding) {
-            val none = resources.getString(R.string.none)
             newProperty.description = if(description.text.toString() != none) { description.text.toString() } else { "" }
 
             newProperty.price = if(price.text.toString() != none) { price.text.toString().toInt() } else { 0 }
@@ -89,7 +87,7 @@ constructor(var registry: ActivityResultRegistry?)
             newProperty.bathRooms = if(bathrooms.text.toString() != none) { bathrooms.text.toString().toInt() } else { 0 }
             newProperty.bedRooms = if(bedrooms.text.toString() != none) { bedrooms.text.toString().toInt() } else { 0 }
 
-            newProperty.address?.let { address ->
+            newProperty.address.let { address ->
                 address.street = if(street.text.toString() != none) { street.text.toString() } else { "" }
                 address.city = if(city.text.toString() != none) { city.text.toString() } else { "" }
                 address.postalCode = if(postalCode.text.toString() != none) { postalCode.text.toString() } else { "" }
@@ -99,34 +97,22 @@ constructor(var registry: ActivityResultRegistry?)
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
-        if (hidden) {
-            clearField()
-            onBackPressedCallback.isEnabled = false
-        } else {
+        if (!hidden) {
             initializeToolbar()
-            onBackPressedCallback.isEnabled = true
             binding.editFragment.fullScroll(ScrollView.FOCUS_UP)
         }
     }
 
     fun clearField() {
         with(binding) {
-            val none = resources.getString(R.string.none)
-            val colorPrimaryDark: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                resources.getColor(R.color.colorPrimaryDark, null)
-            } else {
-                resources.getColor(R.color.colorPrimaryDark)
-            }
-
             description.setText(none)
             description.setTextColor(colorPrimaryDark)
-
-            entryDate.text = ""
-            status.text = ""
-            soldDate.text = ""
+            entryDate.text = none
+            status.text = none
+            soldDate.text = none
             price.setText(none)
             price.setTextColor(colorPrimaryDark)
-            type.text = ""
+            type.text = none
             surface.setText(none)
             surface.setTextColor(colorPrimaryDark)
             rooms.setText(none)
@@ -146,7 +132,9 @@ constructor(var registry: ActivityResultRegistry?)
             state.setText(none)
             state.setTextColor(colorPrimaryDark)
             newProperty.photos.clear()
-            (photosRecyclerView.adapter as PhotoUpdateAdapter).clear()
+            photosRecyclerView.adapter?.let {
+                (photosRecyclerView.adapter as PhotoUpdateAdapter).clear()
+            }
 
             initInterestPoints()
 
@@ -154,44 +142,246 @@ constructor(var registry: ActivityResultRegistry?)
         }
     }
 
-    fun initInterestPoints() {
+    open fun configureView() {
+        with(binding) {
+
+            entryDate.setOnClickListener { showEntryDateAlertDialog() }
+            status.setOnClickListener { showStatusAlertDialog() }
+            layoutSoldDate.setOnClickListener { showSoldDateAlertDialog() }
+            type.setOnClickListener { showTypeAlertDialog() }
+
+            val onFocusChangeListener = View.OnFocusChangeListener { view, hasFocus ->
+                with((view as TextInputEditText).text.toString()) {
+                    if(hasFocus && this == none) {
+                        view.setText("")
+                        view.setTextColor(Color.BLACK)
+                    }
+                    if(!hasFocus && (this == "" || this == "0")) {
+                        view.setText(none)
+                        view.setTextColor(colorPrimaryDark)
+                    }
+                }
+            }
+
+            with(description) {
+                setRawInputType(TYPE_CLASS_TEXT)
+                setText(run {
+                    if(newProperty.description.isNotEmpty()) {
+                        setTextColor(Color.BLACK)
+                        newProperty.description
+                    } else { none }
+                })
+                setOnFocusChangeListener(onFocusChangeListener)
+            }
+
+            with(entryDate) {
+                newProperty.entryDate?.let {
+                    text = Utils.formatDate(newProperty.entryDate)
+                    setTextColor(Color.BLACK)
+                }
+            }
+
+            with(status) {
+                if(newProperty.status != PropertyStatus.NONE) {
+                    text = resources.getString(newProperty.status.status)
+                    setTextColor(Color.BLACK)
+                } else {
+                    text = none
+                    setTextColor(colorPrimaryDark)
+                }
+            }
+
+            with(soldDate) {
+                if(newProperty.status == PropertyStatus.SOLD) {
+                    layoutSoldDate.visibility =VISIBLE
+                    newProperty.soldDate?.let { text = Utils.formatDate(it) }
+                } else {
+                    layoutSoldDate.visibility = View.GONE
+                }
+            }
+
+            initInterestPoints()
+
+            //price.filters = arrayOf<InputFilter>(InputFilterMinMax(0, 99999999999999999))
+            with(price) {
+                setText(run {
+                    if(newProperty.price != 0) {
+                        setTextColor(Color.BLACK)
+                        newProperty.price.toString()
+                    } else { none }
+                })
+                setOnFocusChangeListener(onFocusChangeListener)
+            }
+
+            with(type) {
+                if(newProperty.type != PropertyType.NONE) {
+                    text = resources.getString(newProperty.type.type)
+                    setTextColor(Color.BLACK)
+                } else {
+                    text = none
+                    setTextColor(colorPrimaryDark)
+                }
+            }
+
+            //surface.filters = arrayOf<InputFilter>(InputFilterMinMax(0, 99999999999999999))
+            with(surface) {
+                setText(run {
+                    if(newProperty.surface != 0) {
+                        setTextColor(Color.BLACK)
+                        newProperty.surface.toString()
+                    } else { none }
+                })
+                setOnFocusChangeListener(onFocusChangeListener)
+            }
+
+            with(rooms) {
+                setText(run {
+                    if(newProperty.rooms != 0) {
+                        setTextColor(Color.BLACK)
+                        newProperty.rooms.toString()
+                    } else { none }
+                })
+                setOnFocusChangeListener(onFocusChangeListener)
+            }
+
+            with(bedrooms) {
+                setText(run {
+                    if(newProperty.bedRooms != 0) {
+                        setTextColor(Color.BLACK)
+                        newProperty.bedRooms.toString()
+                    } else { none }
+                })
+                setOnFocusChangeListener(onFocusChangeListener)
+            }
+
+            with(bathrooms) {
+                setText(run {
+                    if(newProperty.bathRooms != 0) {
+                        setTextColor(Color.BLACK)
+                        newProperty.bathRooms.toString()
+                    } else { none }
+                })
+                setOnFocusChangeListener(onFocusChangeListener)
+            }
+
+            bathrooms.setOnFocusChangeListener { view, hasFocus ->
+                with((view as TextInputEditText).text.toString()) {
+                    if(hasFocus && this == none) {
+                        bathrooms.setText("")
+                        bathrooms.setTextColor(Color.BLACK)
+                    }
+                    if(!hasFocus && this == "") {
+                        bathrooms.setText(none)
+                        bathrooms.setTextColor(colorPrimaryDark)
+                    }
+                }
+            }
+
+            with(street) {
+                setText(run {
+                    if(newProperty.address.street.isNotEmpty()) {
+                        setTextColor(Color.BLACK)
+                        newProperty.address.street
+                    } else { none }
+                })
+                setOnFocusChangeListener(onFocusChangeListener)
+            }
+
+            with(city) {
+                setText( run {
+                    if(newProperty.address.city.isNotEmpty()) {
+                        setTextColor(Color.BLACK)
+                        newProperty.address.city
+                    } else { none }
+                })
+                setOnFocusChangeListener(onFocusChangeListener)
+            }
+
+
+            with(postalCode) {
+                setText( run {
+                    if(newProperty.address.postalCode.isNotEmpty()) {
+                        setTextColor(Color.BLACK)
+                        newProperty.address.postalCode
+                    } else { none }
+                })
+                setOnFocusChangeListener(onFocusChangeListener)
+            }
+
+            with(country) {
+                setText( run {
+                    if(newProperty.address.country.isNotEmpty()) {
+                        setTextColor(Color.BLACK)
+                        newProperty.address.country
+                    } else { none }
+                })
+                setOnFocusChangeListener(onFocusChangeListener)
+            }
+
+            with(state) {
+                setText( run {
+                    if(newProperty.address.state.isNotEmpty()) {
+                        setTextColor(Color.BLACK)
+                        newProperty.address.state
+                    } else { none }
+                })
+                setOnFocusChangeListener(onFocusChangeListener)
+            }
+
+            PhotoUpdateAdapter().apply {
+                if(newProperty.photos.isNotEmpty()) { noPhotosTextView.visibility = View.GONE }
+                binding.photosRecyclerView.adapter = this
+                setOnItemClickListener(this@PropertyEditFragment)
+                submitList(newProperty.photos)
+            }
+        }
+    }
+
+    fun clearView() {
+        newProperty = Property()
+        clearField()
+    }
+
+    private fun initInterestPoints() {
         with(binding) {
             interestPointsChipGroup.removeAllViewsInLayout()
             InterestPoint.values().forEach { interestPoint ->
-                val newChip = layoutInflater.inflate(R.layout.layout_interest_point_chip_default,
-                    binding.interestPointsChipGroup, false) as Chip
-                newChip.text = resources.getString(interestPoint.place)
-                newChip.isCheckable = true
+                if(interestPoint != InterestPoint.NONE) {
+                    val newChip = layoutInflater.inflate(R.layout.layout_interest_point_chip_default,
+                        binding.interestPointsChipGroup, false) as Chip
+                    newChip.text = resources.getString(interestPoint.place)
+                    newChip.isCheckable = true
 
-                newChip.checkedIcon?.let {
-                    val wrappedDrawable = DrawableCompat.wrap(it)
-                    DrawableCompat.setTint(wrappedDrawable, Color.WHITE)
-                    newChip.checkedIcon = wrappedDrawable
-                }
+                    newChip.checkedIcon?.let {
+                        val wrappedDrawable = DrawableCompat.wrap(it)
+                        DrawableCompat.setTint(wrappedDrawable, Color.WHITE)
+                        newChip.checkedIcon = wrappedDrawable
+                    }
 
-                if(newProperty.interestPoints.contains(interestPoint)) { newChip.isChecked = true }
+                    if(newProperty.interestPoints.contains(interestPoint)) { newChip.isChecked = true }
 
-                newChip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
-                newChip.setTextColor(
-                    AppCompatResources.getColorStateList(
-                        requireContext(),
-                        R.color.chip_text_state_list
+                    newChip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
+                    newChip.setTextColor(
+                        AppCompatResources.getColorStateList(
+                            requireContext(),
+                            R.color.chip_text_state_list
+                        )
                     )
-                )
 
-                newChip.setOnClickListener {
-                    val chip = it as Chip
-                    val interestPointFromChip = InterestPoint.values().singleOrNull { interestPoint ->
-                        resources.getString(interestPoint.place) == chip.text
-                    }
+                    newChip.setOnClickListener {
+                        val chip = it as Chip
+                        val interestPointFromChip = InterestPoint.values().singleOrNull { interestPoint ->
+                            resources.getString(interestPoint.place) == chip.text
+                        }
 
-                    if(newProperty.interestPoints.contains(interestPointFromChip)) {
-                        newProperty.interestPoints.remove(interestPointFromChip)
-                    } else {
-                        newProperty.interestPoints.add(interestPointFromChip!!)
+                        if(newProperty.interestPoints.contains(interestPointFromChip)) {
+                            newProperty.interestPoints.remove(interestPointFromChip)
+                        } else {
+                            newProperty.interestPoints.add(interestPointFromChip!!)
+                        }
                     }
+                    interestPointsChipGroup.addView(newChip)
                 }
-                interestPointsChipGroup.addView(newChip)
             }
         }
     }
@@ -208,7 +398,6 @@ constructor(var registry: ActivityResultRegistry?)
             var selectedItem: Int = if(items.singleOrNull { it == binding.status.text.toString() } != null) {
                 items.indexOf(items.singleOrNull { it == binding.status.text.toString() })
             } else { -1 }
-                //items.indexOf()
             setSingleChoiceItems(items.toTypedArray(), selectedItem) { _, which -> selectedItem = which }
             setPositiveButton(getString(R.string.change_property_status)) { _, _ ->
                 val status = PropertyStatus.values().first { resources.getString(it.status) == items[selectedItem] }
@@ -248,7 +437,7 @@ constructor(var registry: ActivityResultRegistry?)
     }
 
     private fun showEntryDateAlertDialog() {
-        val entryDate = Utils.fromStringToDate(binding.entryDate.text.toString())
+        val entryDate = if(binding.entryDate.text.isNotEmpty()) { Utils.fromStringToDate(binding.entryDate.text.toString()) } else { null }
         val calendar = Calendar.getInstance()
         calendar.time = entryDate ?: calendar.time
 

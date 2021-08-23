@@ -30,11 +30,11 @@ class FakePropertyDataSource
     }
 
     override fun saveProperty(property: Property): Completable {
-        return Completable.fromAction { properties.toMutableList().add(property) }
+        return Completable.fromAction { properties.add(property) }
     }
 
     override fun saveProperties(properties: List<Property>): Completable {
-        return Completable.fromAction { this.properties.toMutableList().addAll(properties) }
+        return Completable.fromAction { this.properties.addAll(properties) }
     }
 
     override fun findPropertyById(id: String): Single<Property> {

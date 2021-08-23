@@ -120,13 +120,8 @@ class ListFragment
             binding.recyclerView.visibility = VISIBLE
             binding.noDataTextView.visibility = GONE
 
-            if (!::recyclerAdapter.isInitialized) {
-                initRecyclerView()
-            }
-            recyclerAdapter.apply {
-                submitList(properties = properties)
-                notifyDataSetChanged()
-            }
+            if (!::recyclerAdapter.isInitialized) { initRecyclerView() }
+            recyclerAdapter.submitList(properties)
         } else {
             binding.recyclerView.visibility = GONE
             binding.noDataTextView.visibility = VISIBLE

@@ -13,7 +13,8 @@ enum class InterestPoint constructor(@StringRes val place: Int) {
     PARK(R.string.interest_point_park),
     HOSPITAL(R.string.interest_point_hospital),
     RESTAURANTS(R.string.interest_point_restaurants),
-    GAS_STATIONS(R.string.interest_point_gas_stations)
+    GAS_STATIONS(R.string.interest_point_gas_stations),
+    NONE(R.string.interest_point_none)
 }
 
 class InterestPointConverter {

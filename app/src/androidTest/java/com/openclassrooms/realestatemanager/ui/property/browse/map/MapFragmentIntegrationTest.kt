@@ -20,15 +20,18 @@ import com.google.common.truth.Truth.assertThat
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.R.style.AppTheme
 import com.openclassrooms.realestatemanager.TestBaseApplication
+import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.ui.BaseFragmentTests
 import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests.ScreenSize.SMARTPHONE
 import com.openclassrooms.realestatemanager.ui.MainActivity
+import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.DEFAULT_ZOOM
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.INFO_WINDOW_SHOWN
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.INITIAL_ZOOM_LEVEL
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.defaultLocation
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -57,9 +60,16 @@ class MapFragmentIntegrationTest : BaseFragmentTests() {
         fakeProperties.forEach { property ->
             property.photos = property.photos.toSet().toMutableList()
         }
+        BaseFragment.properties.value = fakeProperties.toMutableList()
         itemPosition = (fakeProperties.indices).random()
 
         BrowseFragment.WHEN_NORMAL_MODE_IS_DETAIL_FRAGMENT_SELECTED = true
+    }
+
+    @After
+    public override fun tearDown() {
+        BaseFragment.properties.value!!.clear()
+        (propertiesRepository as DefaultPropertyRepository).cachedProperties.clear()
     }
 
     @Test

@@ -23,7 +23,9 @@ import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.properties.PropertiesIntent
 import com.openclassrooms.realestatemanager.ui.property.properties.PropertiesViewModel
 import com.openclassrooms.realestatemanager.ui.property.properties.PropertiesViewState
+import com.openclassrooms.realestatemanager.ui.property.properties.PropertiesViewState.UiNotification.PROPERTIES_FULLY_CREATED
 import com.openclassrooms.realestatemanager.ui.property.properties.PropertiesViewState.UiNotification.PROPERTIES_FULLY_UPDATED
+import com.openclassrooms.realestatemanager.util.AppNotificationManager
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
@@ -126,6 +128,11 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
         state.uiNotification?.let { uiNotification ->
             if(uiNotification == PROPERTIES_FULLY_UPDATED) {
                 showMessage(resources.getString(R.string.property_update_totally))
+            }
+
+            if(uiNotification == PROPERTIES_FULLY_CREATED) {
+                val mNotificationManager = AppNotificationManager(this)
+                mNotificationManager.showNotification(null, resources.getString(R.string.property_create_totally))
             }
         }
     }

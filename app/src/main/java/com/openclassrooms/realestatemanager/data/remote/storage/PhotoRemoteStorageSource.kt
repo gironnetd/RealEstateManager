@@ -78,9 +78,9 @@ class PhotoRemoteStorageSource
     override fun findPhotoById(propertyId: String, id: String): Single<Bitmap> {
         if(cachePhotos != null &&
             cachePhotos!!.keys.singleOrNull { key -> key.contains(id) } != null) {
-                cachePhotos?.let { cachePhotos ->
-                    return Single.just(cachePhotos[cachePhotos.keys.single { key -> key.contains(id) }])
-                } ?: return Single.error(java.lang.NullPointerException("Photo Not Found for propertyId: $propertyId and photoId: $id"))
+            cachePhotos?.let { cachePhotos ->
+                return Single.just(cachePhotos[cachePhotos.keys.single { key -> key.contains(id) }])
+            } ?: return Single.error(java.lang.NullPointerException("Photo Not Found for propertyId: $propertyId and photoId: $id"))
         } else {
             return Single.create { emitter ->
                 val file = File.createTempFile("tmp_file_", ".png").apply {
@@ -337,7 +337,6 @@ class PhotoRemoteStorageSource
             try {
                 Tasks.await(item.delete().addOnCompleteListener { task ->
                     if (task.isSuccessful && task.isComplete) {
-                        cachePhotos!!.remove(cachePhotos!!.keys.filter { it in item.path }[0])
                         emitter.onComplete()
                     } else { task.exception?.let { exception -> emitter.onError(exception) } }
                 }.addOnFailureListener { emitter.onError(it) })
@@ -350,12 +349,15 @@ class PhotoRemoteStorageSource
     }
 
     override fun deletePhotoById(id: String): Completable {
-        return Observable.just(storage.reference.child(
-                cachePhotos!!.keys.single { key -> key.contains(id) }
-            )).toList().flatMapCompletable { photosRef ->
-            Observable.fromIterable(photosRef).flatMapCompletable { photoItem ->
-                deletePhotoByItem(photoItem)
-            }.subscribeOn(SchedulerProvider.io())
-        }
+        return cachePhotos!!.keys.singleOrNull { key -> key.contains(id) }?.let { path ->
+            Observable.just(storage.reference.child(path))
+                .toList()
+                .flatMapCompletable { photosRef ->
+                    Observable.fromIterable(photosRef).flatMapCompletable { photoItem ->
+                        cachePhotos!!.remove(cachePhotos!!.keys.single { key -> key.contains(id) })
+                        deletePhotoByItem(photoItem)
+                    }.subscribeOn(SchedulerProvider.io())
+                }
+        } ?: Completable.complete()
     }
 }

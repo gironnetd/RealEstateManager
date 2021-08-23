@@ -11,8 +11,8 @@ data class Address(
         var country: String = "",
         var state: String = "",
         var latitude: Double = 0.0,
-        var longitude: Double = 0.0,
-) {
+        var longitude: Double = 0.0) {
+
     constructor(cursor: Cursor): this() {
         street = cursor.getString(cursor.getColumnIndex(COLUMN_ADDRESS_STREET))
         city = cursor.getString(cursor.getColumnIndex(COLUMN_ADDRESS_CITY))
@@ -22,6 +22,11 @@ data class Address(
         latitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_ADDRESS_LATITUDE))
         longitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_ADDRESS_LONGITUDE))
     }
+
+    fun deepCopy(street: String = this.street, city: String = this.city,
+                 postalCode: String = this.postalCode, country: String = this.country,
+                 state: String = this.state, latitude: Double = this.latitude,
+                 longitude: Double = this.longitude) = Address(street, city, postalCode, country, state, latitude, longitude)
 
     companion object {
         /** The name of the street column.  */

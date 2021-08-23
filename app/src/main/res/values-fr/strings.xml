@@ -60,6 +60,7 @@
     <string name="interest_point_hospital">Hospital</string>
     <string name="interest_point_restaurants">Restaurant</string>
     <string name="interest_point_gas_stations">Station Service</string>
+    <string name="interest_point_none">Aucun</string>
 
     <string name="photo_type_main">principal</string>
     <string name="photo_type_bathroom">salle de bain</string>
@@ -96,5 +97,14 @@
     <string name="no_changes">Aucuns changements n\'a été effectués</string>
     <string name="property_create_locally">La propriété a été crée localement et sera crée à distance une fois la connexion rétablie</string>
     <string name="property_create_totally">Les propriétés ont été créées entièrement</string>
-    <string name="notification_title">Property Created</string>
+    <string name="no_property_type_found">Aucun de type de propriété trouvé</string>
+    <string name="no_address_found">Aucune adresse trouvée</string>
+
+    <!-- Notifications -->
+    <string name="notification_title">Propriétés créées</string>
+    <string name="notification_channel_properties_name">Propriétés</string>
+    <string name="notification_channel_properties_description">Informations sur les propriétés</string>
+    <string name="notification_channel_app_name">Application</string>
+    <string name="notification_channel_app_description">Mises à jour générales de l\'application</string>
+    <string name="notification_action_all_properties">Toutes les propriétés</string>
 </resources>

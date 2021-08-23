@@ -30,6 +30,7 @@ import com.openclassrooms.realestatemanager.models.PhotoType
 import com.openclassrooms.realestatemanager.models.storageLocalDatabase
 import com.openclassrooms.realestatemanager.ui.property.BaseDialogFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditFragment
+import com.openclassrooms.realestatemanager.ui.property.edit.create.PropertyCreateFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PhotoUpdateAdapter
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragment
 import com.openclassrooms.realestatemanager.util.Constants
@@ -49,6 +50,8 @@ class AddPhotoDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_add_p
     private lateinit var selectImageFromGalleryResult: ActivityResultLauncher<String>
     private lateinit var takeImageResult: ActivityResultLauncher<Void?>
 
+    private lateinit var parentEditFragment: PropertyEditFragment
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = FragmentDialogAddPhotoBinding.inflate(LayoutInflater.from(context))
 
@@ -57,21 +60,27 @@ class AddPhotoDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_add_p
                 setView(binding.root)
                 setPositiveButton(getString(R.string.add_photo)) { _, _ ->
 
-                    val propertyEditFragment: PropertyEditFragment = parentFragment as PropertyEditFragment
+                    parentFragment?.let { parentFragment ->
+                        when(parentFragment::class.java) {
+                            PropertyUpdateFragment::class.java -> { parentEditFragment = parentFragment as PropertyUpdateFragment }
+                            PropertyCreateFragment::class.java -> { parentEditFragment = parentFragment as PropertyCreateFragment }
+                        }
+                    }
 
                     if(binding.descriptionTextInputLayout.editText?.text.toString() != resources.getString(R.string.enter_a_description)) {
                         tmpPhoto.description = binding.descriptionTextInputLayout.editText?.text.toString()
                     }
 
                     if(!tmpPhoto.mainPhoto && binding.isMainPhoto.isChecked) {
-                        propertyEditFragment.newProperty.photos.singleOrNull { it.mainPhoto }?.let { photo ->
+                        parentEditFragment.newProperty.photos.singleOrNull { it.mainPhoto }?.let { photo ->
                             photo.mainPhoto = false
                         }
                         tmpPhoto.mainPhoto = true
+                        parentEditFragment.newProperty.mainPhotoId = tmpPhoto.id
                     }
 
                     if(binding.photoImageview.drawable != null) {
-                        if(propertyEditFragment is PropertyUpdateFragment ) {
+                        if(parentEditFragment is PropertyUpdateFragment ) {
                             val bitmap = (binding.photoImageview.drawable as BitmapDrawable).bitmap
 
                             tmpPhoto.id = Firebase.firestore.collection(Constants.PROPERTIES_COLLECTION)
@@ -90,15 +99,15 @@ class AddPhotoDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_add_p
 
                     tmpFile?.delete()
 
-                    propertyEditFragment.newProperty.photos.add(tmpPhoto)
+                    tmpPhoto.locallyCreated = true
+                    parentEditFragment.newProperty.photos.add(parentEditFragment.newProperty.photos.size, tmpPhoto)
 
-                    if(propertyEditFragment.binding.noPhotosTextView.visibility == VISIBLE) {
-                        propertyEditFragment.binding.noPhotosTextView.visibility = GONE
+                    if(parentEditFragment.binding.noPhotosTextView.visibility == VISIBLE) {
+                        parentEditFragment.binding.noPhotosTextView.visibility = GONE
                     }
 
-                    with(propertyEditFragment.binding.photosRecyclerView.adapter as PhotoUpdateAdapter) {
-                        submitList(propertyEditFragment.newProperty.photos)
-                        notifyDataSetChanged()
+                    with(parentEditFragment.binding.photosRecyclerView.adapter as PhotoUpdateAdapter) {
+                        submitList(parentEditFragment.newProperty.photos)
                     }
                 }
                 setNegativeButton(getString(R.string.cancel)) { _, _ -> }

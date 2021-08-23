@@ -19,7 +19,6 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.replaceText
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
@@ -34,6 +33,7 @@ import com.google.common.truth.Truth.assertThat
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.R.style.AppTheme
 import com.openclassrooms.realestatemanager.TestBaseApplication
+import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.models.PhotoType
 import com.openclassrooms.realestatemanager.models.PhotoType.*
@@ -75,6 +75,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         configure_fake_repository()
         injectTest(testApplication)
 
+        (propertiesRepository as DefaultPropertyRepository).cachedProperties.clear()
         fakeProperties = propertiesRepository.findAllProperties().blockingFirst()
         fakeProperties.forEach { property ->
             property.photos = property.photos.toSet().toMutableList()
@@ -106,7 +107,8 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext.cacheDir,true))
             if(photoFile.exists()) { photoFile.delete() }
         }
-        BaseFragment.properties.value!!.clear()
+        if(BaseFragment.properties.value != null) { BaseFragment.properties.value!!.clear() }
+        (propertiesRepository as DefaultPropertyRepository).cachedProperties.clear()
         super.tearDown()
     }
 
@@ -187,7 +189,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         }
 
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory,/*requestManager,*/ testRegistry)
+            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
         }.onFragment {
             propertyUpdateFragment = it
         }
@@ -236,7 +238,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
     fun given_update_photo_dialog_when_rotate_then_alert_dialog_shown_again() {
         // Given Update fragment
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ null)
+            PropertyUpdateFragment(propertiesViewModelFactory, null)
         }.onFragment {
             mainActivity = it.requireActivity()
         }
@@ -278,7 +280,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         }
 
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ testRegistry)
+            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
         }.onFragment {
             mainActivity = it.requireActivity()
             propertyUpdateFragment = it
@@ -341,7 +343,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         }
 
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ testRegistry)
+            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
         }.onFragment {
             propertyUpdateFragment = it
         }
@@ -374,7 +376,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         }
 
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ testRegistry)
+            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
         }.onFragment {
             propertyUpdateFragment = it
         }
@@ -417,7 +419,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         }
 
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ testRegistry)
+            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
         }.onFragment {
             propertyUpdateFragment = it
         }
@@ -459,7 +461,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         }
 
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ testRegistry)
+            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
         }.onFragment {
             propertyUpdateFragment = it
         }
@@ -499,7 +501,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         }
 
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ testRegistry)
+            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
         }.onFragment {
             propertyUpdateFragment = it
         }
@@ -538,7 +540,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         }
 
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ testRegistry)
+            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
         }.onFragment {
             propertyUpdateFragment = it
         }
@@ -586,7 +588,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         }
 
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ testRegistry)
+            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
         }.onFragment {
             propertyUpdateFragment = it
         }
@@ -629,7 +631,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         }
 
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ testRegistry)
+            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
         }.onFragment {
             propertyUpdateFragment = it
         }
@@ -647,7 +649,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
 
         onView(withText(R.string.delete_photo)).perform(click())
 
-        assertThat(propertyUpdateFragment.property.photos.contains(photoUpdate)).isFalse()
+        assertThat(propertyUpdateFragment.newProperty.photos.contains(photoUpdate)).isFalse()
 
         val photoAdapter: PhotoUpdateAdapter = propertyUpdateFragment.binding.photosRecyclerView.adapter as PhotoUpdateAdapter
         assertThat(photoAdapter.differ.currentList.contains(photoUpdate)).isFalse()
@@ -671,7 +673,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         }
 
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ testRegistry)
+            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
         }.onFragment {
             propertyUpdateFragment = it
             mainActivity = it.requireActivity()
@@ -692,7 +694,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
 
         onView(withText(R.string.cannot_delete_photo))
             .inRoot(ToastMatcher().apply {
-                ViewAssertions.matches(isDisplayed())
+                matches(isDisplayed())
             })
 
         assertThat(propertyUpdateFragment.property.photos.contains(photoUpdate)).isTrue()
@@ -719,7 +721,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         }
 
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ testRegistry)
+            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
         }.onFragment {
             propertyUpdateFragment = it
         }
@@ -758,7 +760,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         }
 
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ testRegistry)
+            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
         }.onFragment {
             propertyUpdateFragment = it
         }
@@ -788,7 +790,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
     fun given_update_photo_dialog_when_click_on_item_which_is_main_photo_then_main_photo_is_checked_and_non_clickable() {
         // Given Update fragment
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ null)
+            PropertyUpdateFragment(propertiesViewModelFactory, null)
         }.onFragment {
             propertyUpdateFragment = it
         }
@@ -809,7 +811,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
     fun given_update_photo_dialog_when_click_on_main_photo_then_main_photo_change() {
         // Given Update fragment
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ null)
+            PropertyUpdateFragment(propertiesViewModelFactory, null)
         }.onFragment {
             propertyUpdateFragment = it
         }
@@ -878,7 +880,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
     fun given_update_photo_dialog_when_main_photo_change_then_change_occurs_in_property() {
         // Given Update fragment
         launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ null)
+            PropertyUpdateFragment(propertiesViewModelFactory,null)
         }.onFragment {
             propertyUpdateFragment = it
         }
@@ -909,8 +911,8 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
 
         onView(withText(R.string.update_photo_detail)).perform(click())
 
-        assertThat(fakeProperties[itemPosition].photos[mainPhotoPosition].mainPhoto).isFalse()
-        assertThat(fakeProperties[itemPosition].photos[newPhotoPosition].mainPhoto).isTrue()
+        assertThat(propertyUpdateFragment.newProperty.photos[mainPhotoPosition].mainPhoto).isFalse()
+        assertThat(propertyUpdateFragment.newProperty.photos[newPhotoPosition].mainPhoto).isTrue()
     }
 
     companion object {

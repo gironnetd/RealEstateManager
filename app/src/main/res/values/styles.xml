@@ -71,4 +71,8 @@
         <item name="android:textColor">@android:color/holo_green_dark</item>
         <item name="android:textAllCaps">true</item>
     </style>
+
+    <style name="CircularProgress" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 </resources>

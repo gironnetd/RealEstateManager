@@ -22,6 +22,7 @@ import com.google.common.truth.Truth.assertThat
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.R.style.AppTheme
 import com.openclassrooms.realestatemanager.TestBaseApplication
+import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.ui.BaseFragmentTests
 import com.openclassrooms.realestatemanager.ui.MainActivity
@@ -33,13 +34,13 @@ import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.C
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.INITIAL_ZOOM_LEVEL
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.defaultLocation
 import com.openclassrooms.realestatemanager.util.EspressoIdlingResourceRule
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ListFragmentIntegrationTest : BaseFragmentTests() {
 
     @get:Rule val instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -51,10 +52,18 @@ class ListFragmentIntegrationTest : BaseFragmentTests() {
         configure_fake_repository()
         injectTest(testApplication)
 
+        (propertiesRepository as DefaultPropertyRepository).cachedProperties.clear()
         fakeProperties = propertiesRepository.findAllProperties().blockingFirst()
+        BaseFragment.properties.value = fakeProperties.toMutableList()
         itemPosition = (fakeProperties.indices).random()
 
         BrowseFragment.WHEN_NORMAL_MODE_IS_DETAIL_FRAGMENT_SELECTED = false
+    }
+
+    @After
+    public override fun tearDown() {
+        BaseFragment.properties.value!!.clear()
+        (propertiesRepository as DefaultPropertyRepository).cachedProperties.clear()
     }
 
     @Test
@@ -75,7 +84,6 @@ class ListFragmentIntegrationTest : BaseFragmentTests() {
 
     @Test
     fun given_list_when_properties_are_not_empty_then_properties_list_scrolling() {
-
         // Given List fragment
 
         // When properties list is not empty

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.openclassrooms.realestatemanager.ui.mvibase.MviIntent
 import com.openclassrooms.realestatemanager.ui.mvibase.MviViewModel
 import com.openclassrooms.realestatemanager.ui.property.properties.PropertiesResult.*
+import com.openclassrooms.realestatemanager.ui.property.properties.PropertiesViewState.UiNotification.PROPERTIES_FULLY_CREATED
 import com.openclassrooms.realestatemanager.ui.property.properties.PropertiesViewState.UiNotification.PROPERTIES_FULLY_UPDATED
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
@@ -46,8 +47,6 @@ class PropertiesViewModel
             .map(this::actionFromIntent)
             .compose(propertiesProcessor.actionProcessor)
             .scan(PropertiesViewState.idle(), reducer)
-            .replay(1)
-            .autoConnect(0)
     }
 
     private fun actionFromIntent(intent: MviIntent): PropertiesAction {
@@ -67,13 +66,10 @@ class PropertiesViewModel
             when (result) {
                 is LoadPropertiesResult -> when(result) {
                     is LoadPropertiesResult.Success -> {
-                        val haveBeenFullyUpdated = result.haveBeenFullyUpdated
-                        val properties = result.properties
-
                         previousState.copy(
                             inProgress = false,
-                            properties = properties,
-                            uiNotification = if (haveBeenFullyUpdated == true) {PROPERTIES_FULLY_UPDATED} else null
+                            properties = result.properties,
+                            uiNotification = null
                         )
                     }
                     is LoadPropertiesResult.Failure -> {
@@ -83,6 +79,28 @@ class PropertiesViewModel
                         previousState.copy(
                             inProgress = true,
                             properties = null,
+                            uiNotification = null
+                        )
+                    }
+                }
+                is CreatePropertyResult -> when(result) {
+                    is CreatePropertyResult.Created -> {
+                        previousState.copy(
+                            inProgress = false,
+                            properties = null,
+                            error = null,
+                            uiNotification = if (result.fullyCreated) { PROPERTIES_FULLY_CREATED } else null
+                        )
+                    }
+                    is CreatePropertyResult.Failure -> {
+                        previousState.copy(inProgress = false, error = result.error)
+                    }
+                    is CreatePropertyResult.InFlight -> {
+                        previousState.copy(
+                            inProgress = true,
+                            properties = null,
+                            error = null,
+                            uiNotification = null
                         )
                     }
                 }
@@ -91,7 +109,8 @@ class PropertiesViewModel
                         previousState.copy(
                             inProgress = false,
                             properties = null,
-                            uiNotification = if (result.fullyUpdated) {PROPERTIES_FULLY_UPDATED} else null
+                            error = null,
+                            uiNotification = if (result.fullyUpdated) { PROPERTIES_FULLY_UPDATED } else null
                         )
                     }
                     is UpdatePropertyResult.Failure -> {
@@ -103,33 +122,6 @@ class PropertiesViewModel
                             properties = null,
                         )
                     }
-                }
-                is CreatePropertyResult -> when(result) {
-                    is CreatePropertyResult.Created -> {
-                        previousState.copy(
-                            inProgress = false,
-                            properties = null,
-                            uiNotification = if (result.fullyCreated) {PROPERTIES_FULLY_UPDATED} else null
-                        )
-                    }
-                    is CreatePropertyResult.Failure -> {
-                        previousState.copy(inProgress = false, error = result.error)
-                    }
-                    is CreatePropertyResult.InFlight -> {
-                        previousState.copy(
-                            inProgress = true,
-                            properties = null,
-                        )
-                    }
-                }
-                is Failure -> {
-                    previousState.copy(inProgress = false, error = result.error)
-                }
-                is InFlight -> {
-                    previousState.copy(
-                        inProgress = true,
-                        properties = null,
-                    )
                 }
             }
         }

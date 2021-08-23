@@ -6,7 +6,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.Lifecycle.State.RESUMED
-import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
@@ -21,6 +21,7 @@ import com.google.common.truth.Truth.assertThat
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.R.style.AppTheme
 import com.openclassrooms.realestatemanager.TestBaseApplication
+import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository
 import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.models.InterestPoint
 import com.openclassrooms.realestatemanager.models.Property
@@ -31,7 +32,7 @@ import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.INITIAL_ZOOM_LEVEL
 import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.defaultLocation
-import com.openclassrooms.realestatemanager.ui.property.edit.util.UpdatePropertyUtil.update_property
+import com.openclassrooms.realestatemanager.ui.property.edit.util.EnterPropertyUtil.update_property
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil.switchAllNetworks
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil.waitInternetStateChange
 import com.openclassrooms.realestatemanager.util.Constants
@@ -41,8 +42,8 @@ import com.openclassrooms.realestatemanager.util.RxImmediateSchedulerRule
 import com.openclassrooms.realestatemanager.util.ToastMatcher
 import com.openclassrooms.realestatemanager.util.Utils
 import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
-import io.reactivex.Completable
 import io.reactivex.Completable.concatArray
+import io.reactivex.Single
 import org.hamcrest.Description
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.equalTo
@@ -70,23 +71,27 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
         configure_fake_repository()
         injectTest(testApplication)
 
+        (propertiesRepository as DefaultPropertyRepository).cachedProperties.clear()
         fakeProperties = propertiesRepository.findAllProperties().blockingFirst()
         itemPosition = (fakeProperties.indices).random()
-
+        BaseFragment.properties.value = fakeProperties.toMutableList()
         BrowseFragment.WHEN_NORMAL_MODE_IS_DETAIL_FRAGMENT_SELECTED = false
     }
 
     @After
     public override fun tearDown() {
-        BaseFragment.properties.value!!.clear()
-        Completable.fromCallable { if(!Utils.isInternetAvailable()) {
-            concatArray(switchAllNetworks(true),
-                waitInternetStateChange(true))
-                .blockingAwait().let {
-                    super.tearDown()
-                }
-        } else { super.tearDown() }
-        }.subscribeOn(SchedulerProvider.io())
+        if(BaseFragment.properties.value != null) { BaseFragment.properties.value!!.clear() }
+        (propertiesRepository as DefaultPropertyRepository).cachedProperties.clear()
+        Single.fromCallable { Utils.isInternetAvailable() }
+            .doOnSuccess { isInternetAvailable ->
+                if (!isInternetAvailable) {
+                    concatArray(switchAllNetworks(true),
+                        waitInternetStateChange(true))
+                        .blockingAwait().let {
+                            super.tearDown()
+                        }
+                } else { super.tearDown() }
+            }.subscribeOn(SchedulerProvider.io()).blockingGet()
     }
 
     @Test
@@ -170,7 +175,7 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
     @Test
     fun given_update_when_navigate_on_update_fragment_then_update_menu_item_is_shown() {
 
-        ActivityScenario.launch(MainActivity::class.java).onActivity {
+        launch(MainActivity::class.java).onActivity {
             INITIAL_ZOOM_LEVEL = 17f
             defaultLocation = leChesnay
             mainActivity = it
@@ -186,9 +191,7 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
     @Test
     fun given_update_when_property_is_updated_then_return_on_detail_fragment() {
 
-        ActivityScenario.launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
+        launch(MainActivity::class.java).onActivity {
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -206,9 +209,7 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
     @Test
     fun given_update_when_return_on_detail_after_update_then_detail_property_is_updated_too() {
 
-        ActivityScenario.launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
+        launch(MainActivity::class.java).onActivity {
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -228,7 +229,7 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
 
     @Test
     fun given_update_when_on_back_pressed_then_confirm_dialog_is_shown() {
-        ActivityScenario.launch(MainActivity::class.java).onActivity {
+        launch(MainActivity::class.java).onActivity {
             INITIAL_ZOOM_LEVEL = 17f
             defaultLocation = leChesnay
             mainActivity = it
@@ -249,7 +250,7 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
 
     @Test
     fun given_update_when_on_back_pressed_and_click_confirm_then_return_to_detail_fragment() {
-        ActivityScenario.launch(MainActivity::class.java).onActivity {
+        launch(MainActivity::class.java).onActivity {
             INITIAL_ZOOM_LEVEL = 17f
             defaultLocation = leChesnay
             mainActivity = it
@@ -274,9 +275,7 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
         concatArray(switchAllNetworks(false), waitInternetStateChange(false))
             .blockingAwait().let {
 
-                ActivityScenario.launch(MainActivity::class.java).onActivity {
-                    INITIAL_ZOOM_LEVEL = 17f
-                    defaultLocation = leChesnay
+                launch(MainActivity::class.java).onActivity {
                     mainActivity = it
                     browseFragment = BrowseFragment()
                     it.setFragment(browseFragment)
@@ -300,7 +299,7 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
 
         concatArray(switchAllNetworks(false), waitInternetStateChange(false))
             .blockingAwait().let {
-                ActivityScenario.launch(MainActivity::class.java).onActivity {
+                launch(MainActivity::class.java).onActivity {
                     INITIAL_ZOOM_LEVEL = 17f
                     defaultLocation = leChesnay
                     mainActivity = it
@@ -356,7 +355,7 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
         }
         onView(withId(R.id.layout_interest_points)).perform(scrollTo())
 
-        InterestPoint.values().forEachIndexed { index, interestPoint ->
+        InterestPoint.values().filter { interestPoint ->  interestPoint != InterestPoint.NONE }.forEachIndexed { index, interestPoint ->
             val chip: Chip = propertyUpdateFragment.binding.interestPointsChipGroup.getChildAt(index) as Chip
             var interestPointValue = ""
             fakeProperties[itemPosition].interestPoints.forEach {
