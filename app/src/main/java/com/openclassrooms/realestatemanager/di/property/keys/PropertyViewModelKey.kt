@@ -1,4 +1,4 @@
-package com.codingwithmitch.openapi.di.auth.keys
+package com.openclassrooms.realestatemanager.di.property.keys
 
 import androidx.lifecycle.ViewModel
 import dagger.MapKey

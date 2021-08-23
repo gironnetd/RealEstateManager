@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:id="@+id/real_estate_master_detail_fragment"
+    android:id="@+id/browse_fragment"
     tools:context=".ui.property.browse.BrowseFragment">
 
         <androidx.appcompat.widget.Toolbar
@@ -31,7 +31,7 @@
 
                 <fragment
                     android:id="@+id/detail_nav_fragment"
-                    android:name="com.openclassrooms.realestatemanager.fragments.property.browse.detail.BrowseDetailNavHostFragment"
+                    android:name="com.openclassrooms.realestatemanager.ui.fragments.browsedetail.BrowseDetailNavHostFragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:defaultNavHost="false" />

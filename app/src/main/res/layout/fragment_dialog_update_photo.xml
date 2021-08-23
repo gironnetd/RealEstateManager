@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/update_photo_dialog_fragment"
+    android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_photo_image"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/photo_image_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/edit_location_border"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/add_photo_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_a_photo"
+                    android:textColor="@android:color/black"
+                    android:textSize="19sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/photo_imageview"
+                    android:layout_width="0dp"
+                    android:layout_height="250dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="26dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:contentDescription="@string/content_description"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:srcCompat="@tools:sample/avatars" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:id="@+id/add_photo_buttons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="16dp"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/take_photo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:background="@android:color/white"
+                    android:contentDescription="@string/content_description"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_baseline_add_a_photo_24" />
+
+                <ImageView
+                    android:id="@+id/select_photo_from_gallery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:layout_gravity="end"
+                    android:background="@android:color/white"
+                    android:contentDescription="@string/content_description"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_baseline_folder_24" />
+
+                <ImageView
+                    android:id="@+id/delete_photo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:layout_gravity="end"
+                    android:visibility="gone"
+                    android:layout_marginStart="16dp"
+                    android:background="@android:color/white"
+                    android:contentDescription="@string/content_description"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_baseline_delete_24" />
+            </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/is_main_photo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginTop="-7dp"
+                android:background="@android:color/white"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="@string/is_main_photo_question"
+                android:textColor="@android:color/black"
+                android:textSize="19sp"
+                app:layout_constraintEnd_toEndOf="@+id/linearLayout"
+                app:layout_constraintStart_toStartOf="@+id/linearLayout"
+                app:layout_constraintTop_toTopOf="parent"/>
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_photo_type"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_photo_image">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <FrameLayout
+                android:id="@+id/photo_type_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/edit_location_border"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <RadioGroup
+                    android:id="@+id/radio_group_photo_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:ignore="UselessParent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginEnd="24dp"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/radio_button_lounge"
+                            android:layout_width="0dp"
+                            android:layout_weight="0.33"
+                            android:layout_height="wrap_content"
+                            android:textSize="19sp"
+                            android:text="@string/photo_type_lounge" />
+
+                        <RadioButton
+                            android:id="@+id/radio_button_facade"
+                            android:layout_width="0dp"
+                            android:layout_weight="0.33"
+                            android:layout_height="wrap_content"
+                            android:textSize="19sp"
+                            android:text="@string/photo_type_facade" />
+
+                        <RadioButton
+                            android:id="@+id/radio_button_kitchen"
+                            android:layout_width="0dp"
+                            android:layout_weight="0.33"
+                            android:layout_height="wrap_content"
+                            android:textSize="19sp"
+                            android:text="@string/photo_type_kitchen" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginEnd="24dp"
+                        android:weightSum="1"
+                        android:layout_gravity="center">
+
+                        <RadioButton
+                            android:id="@+id/radio_button_bedroom"
+                            android:layout_width="0dp"
+                            android:layout_weight="0.33"
+                            android:layout_height="wrap_content"
+                            android:textSize="19sp"
+                            android:text="@string/photo_type_bedroom" />
+
+                        <RadioButton
+                            android:id="@+id/radio_button_bathroom"
+                            android:layout_width="0dp"
+                            android:layout_weight="0.33"
+                            android:layout_height="wrap_content"
+                            android:textSize="19sp"
+                            android:text="@string/photo_type_bathroom" />
+                    </LinearLayout>
+                </RadioGroup>
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/label_photo_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="5dp"
+                android:background="@android:color/white"
+                android:padding="4dp"
+                android:text="@string/property_type"
+                android:textColor="@android:color/black"
+                android:textSize="19sp"
+
+                app:layout_constraintEnd_toEndOf="@+id/linearLayout"
+                app:layout_constraintStart_toStartOf="@+id/linearLayout"
+                app:layout_constraintTop_toTopOf="parent" />
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/description_text_input_layout"
+        style="@style/TextInputLayoutAppearance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_photo_type"
+        app:hintTextColor="@color/colorAccent"
+        app:boxStrokeColor="@color/colorAccent"
+        android:textColorHint="@android:color/black"
+        app:hintTextAppearance="@style/TextInputEditTextAppearance">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/description_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:focusable="true"
+            android:hint="@string/description"
+            android:text="@string/enter_a_description"/>
+    </com.google.android.material.textfield.TextInputLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

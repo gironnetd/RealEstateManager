@@ -1,14 +1,20 @@
 package com.openclassrooms.realestatemanager.models
 
+import androidx.annotation.StringRes
 import androidx.room.TypeConverter
+import com.openclassrooms.realestatemanager.R
 
-enum class InterestPoint(val place: String) {
-    SCHOOL("School"),
-    PLAYGROUND("Playground"),
-    SHOP("Shop"),
-    BUSES("Buses"),
-    SUBWAY("Subway"),
-    PARK("Park")
+enum class InterestPoint constructor(@StringRes val place: Int) {
+    SCHOOL(R.string.interest_point_school),
+    PLAYGROUND(R.string.interest_point_playground),
+    SHOP(R.string.interest_point_shop),
+    BUSES(R.string.interest_point_buses),
+    SUBWAY(R.string.interest_point_subway),
+    PARK(R.string.interest_point_park),
+    HOSPITAL(R.string.interest_point_hospital),
+    RESTAURANTS(R.string.interest_point_restaurants),
+    GAS_STATIONS(R.string.interest_point_gas_stations),
+    NONE(R.string.interest_point_none)
 }
 
 class InterestPointConverter {

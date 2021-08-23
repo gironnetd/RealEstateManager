@@ -2,7 +2,7 @@ package com.openclassrooms.realestatemanager.di.property.browse
 
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModelProvider
-import com.openclassrooms.realestatemanager.fragments.property.browse.detail.BrowseDetailFragmentFactory
+import com.openclassrooms.realestatemanager.ui.fragments.browsedetail.BrowseDetailFragmentFactory
 import com.openclassrooms.realestatemanager.util.GlideManager
 import dagger.Module
 import dagger.Provides
@@ -20,7 +20,7 @@ object BrowsePropertyFragmentsModule {
             glideManager: GlideManager,
     ): FragmentFactory {
         return BrowseDetailFragmentFactory(viewModelFactory = viewModelFactory,
-                requestManager = glideManager
+                requestManager = glideManager, registry = null
         )
     }
 }

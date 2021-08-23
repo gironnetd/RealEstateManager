@@ -12,8 +12,8 @@
         tools:layout="@layout/fragment_browse" />
     <main_fragment
         android:id="@+id/navigation_create"
-        android:name="com.openclassrooms.realestatemanager.ui.property.create.CreateFragment"
-        android:label="@string/create"
+        android:name="com.openclassrooms.realestatemanager.ui.property.edit.create.PropertyCreateFragment"
+        android:label="@string/create_property"
         tools:layout="@layout/fragment_create" />
     <main_fragment
         android:id="@+id/navigation_search"

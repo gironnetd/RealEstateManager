@@ -2,8 +2,9 @@ package com.openclassrooms.realestatemanager.ui
 
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
+import androidx.navigation.Navigation.findNavController
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.espresso.Espresso.onView
@@ -17,11 +18,11 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.di.TestAppComponent
-import com.openclassrooms.realestatemanager.util.ConstantsTest.EMPTY_LIST
 import com.openclassrooms.realestatemanager.util.OrientationChangeAction
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.anyOf
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.lang.Thread.sleep
@@ -30,92 +31,87 @@ import java.lang.Thread.sleep
 @LargeTest
 class MainRotationTest : BaseMainActivityTests() {
 
+    @get:Rule val instantTaskExecutorRule = InstantTaskExecutorRule()
+
     private lateinit var activityScenario: ActivityScenario<MainActivity>
     private lateinit var navController: NavController
 
     @Before
     public override fun setUp() {
         super.setUp()
-
-        val app = InstrumentationRegistry
-                .getInstrumentation()
-                .targetContext
-                .applicationContext as TestBaseApplication
-
-        val apiService = configureFakeApiService(
-                propertiesDataSource = EMPTY_LIST, // empty list of data
-                networkDelay = 0L,
-                application = app
-        )
-
-        configureFakeRepository(apiService, app)
-        injectTest(app)
+        configure_fake_repository()
+        injectTest(testApplication)
     }
 
     @Test
     fun given_create_fragment_displayed_when_rotation_then_display_create_fragment() {
+        // Given Create fragment
         activityScenario = launch(MainActivity::class.java)
                 .onActivity { activity ->
-                    navController = Navigation.findNavController(activity, R.id.nav_host_fragment)
+                    navController = findNavController(activity, R.id.nav_host_fragment)
                     mainActivity = activity
                 }
 
         onView(allOf(withId(R.id.navigation_create), isDisplayed()))
                 .perform(click())
-        onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
+        onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()))
 
+        // When a rotation occurs
+        // Then Create fragment is displayed
         val orientation = mainActivity.applicationContext.resources.configuration.orientation
         if(orientation == ORIENTATION_PORTRAIT) {
-            onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity));
-            onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
+            onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity))
+            onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()))
 
-            onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity));
-            onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
+            onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity))
+            onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()))
         }
         if(orientation == ORIENTATION_LANDSCAPE) {
-            onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity));
-            onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
+            onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity))
+            onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()))
 
-            onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity));
-            onView(withId(R.id.create_fragment)).check(matches(isDisplayed()))
+            onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity))
+            onView(withId(R.id.edit_fragment)).check(matches(isDisplayed()))
         }
     }
 
     @Test
     fun given_search_fragment_displayed_when_rotation_then_display_search_fragment() {
+        // Given Search fragment
         activityScenario = launch(MainActivity::class.java)
                 .onActivity { activity ->
-                    navController = Navigation.findNavController(activity, R.id.nav_host_fragment)
+                    navController = findNavController(activity, R.id.nav_host_fragment)
                     mainActivity = activity
                 }
 
         onView(withId(R.id.navigation_search)).perform(click())
         onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
 
+        // When a rotation occurs
+        // Then Search fragment is displayed
         val orientation = mainActivity.applicationContext.resources.configuration.orientation
         if(orientation == ORIENTATION_PORTRAIT) {
-            onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity));
+            onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity))
             onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
 
-            onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity));
+            onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity))
             onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
         }
         if(orientation == ORIENTATION_LANDSCAPE) {
-            onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity));
-            //assertEquals(navController.currentDestination?.id, R.id.navigation_search)
+            onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity))
             onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
 
-            onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity));
+            onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity))
             onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
-            //assertEquals(navController.currentDestination?.id, R.id.navigation_search)
         }
     }
 
     @Test
-    fun given_real_estate_fragment_displayed_when_rotation_then_display_real_estate_fragment() {
+    fun given_browse_fragment_displayed_when_rotation_then_display_browse_fragment() {
+        // Given Browse fragment
         activityScenario = launch(MainActivity::class.java)
                 .onActivity { activity ->
-                    navController = Navigation.findNavController(activity, R.id.nav_host_fragment)
+                    navController = findNavController(activity, R.id.nav_host_fragment)
                     mainActivity = activity
                 }
 
@@ -124,20 +120,22 @@ class MainRotationTest : BaseMainActivityTests() {
 
         is_this_the_correct_fragment_displayed()
 
+        // When a rotation occurs
+        // Then Browse fragment is displayed
         val orientation = mainActivity.applicationContext.resources.configuration.orientation
         if(orientation == ORIENTATION_PORTRAIT) {
-            onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity));
+            onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity))
             is_this_the_correct_fragment_displayed()
 
-            onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity));
+            onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity))
             is_this_the_correct_fragment_displayed()
         }
 
         if(orientation == ORIENTATION_LANDSCAPE) {
-            onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity));
+            onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity))
             is_this_the_correct_fragment_displayed()
 
-            onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity));
+            onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity))
             is_this_the_correct_fragment_displayed()
         }
     }

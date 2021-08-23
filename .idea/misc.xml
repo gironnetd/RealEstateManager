@@ -1,5 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/res/layout-land/fragment_detail.xml" value="0.16181657848324515" />
+        <entry key="app/src/main/res/layout-land/fragment_list.xml" value="0.16887125220458554" />
+        <entry key="app/src/main/res/layout-sw600dp-land/fragment_browse.xml" value="0.2300936768149883" />
+        <entry key="app/src/main/res/layout-sw600dp-land/fragment_detail.xml" value="0.25" />
+        <entry key="app/src/main/res/layout-sw600dp-land/fragment_list.xml" value="0.22423887587822014" />
+        <entry key="app/src/main/res/layout-sw600dp/fragment_browse.xml" value="0.30703125" />
+        <entry key="app/src/main/res/layout-sw600dp/fragment_detail.xml" value="0.5" />
+        <entry key="app/src/main/res/layout-sw600dp/fragment_edit.xml" value="0.5" />
+        <entry key="app/src/main/res/layout-sw600dp/fragment_list.xml" value="0.29921875" />
+        <entry key="app/src/main/res/layout-sw600dp/fragment_update.xml" value="0.48847087378640774" />
+        <entry key="app/src/main/res/layout-sw600dp/layout_photo_list_item.xml" value="0.48847087378640774" />
+        <entry key="app/src/main/res/layout-sw720dp-land/fragment_detail.xml" value="0.11540880503144654" />
+        <entry key="app/src/main/res/layout-sw720dp/fragment_detail.xml" value="0.22" />
+        <entry key="app/src/main/res/layout-sw720dp/fragment_list.xml" value="0.18701171875" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.29921875" />
+        <entry key="app/src/main/res/layout/fragment_create.xml" value="0.25390625" />
+        <entry key="app/src/main/res/layout/fragment_detail.xml" value="0.16531531531531532" />
+        <entry key="app/src/main/res/layout/fragment_edit.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_list.xml" value="0.1725225225225225" />
+        <entry key="app/src/main/res/layout/fragment_map.xml" value="0.2546875" />
+        <entry key="app/src/main/res/layout/fragment_update.xml" value="0.18" />
+        <entry key="app/src/main/res/layout/layout_interest_point_chip_default.xml" value="0.28671875" />
+        <entry key="app/src/main/res/layout/layout_photo_list_item.xml" value="0.3099099099099099" />
+        <entry key="app/src/main/res/layout/layout_property_list_item.xml" value="0.33" />
+        <entry key="app/src/main/res/menu/menu_action_bar.xml" value="0.25390625" />
+        <entry key="app/src/main/res/menu/menu_bottom_navigation.xml" value="0.29140625" />
+        <entry key="app/src/main/res/menu/menu_navigation.xml" value="0.28046875" />
+      </map>
+    </option>
+  </component>
   <component name="NullableNotNullManager">
     <option name="myDefaultNullable" value="android.support.annotation.Nullable" />
     <option name="myDefaultNotNull" value="android.support.annotation.NonNull" />
@@ -25,7 +58,7 @@
     </option>
     <option name="myNotNulls">
       <value>
-        <list size="13">
+        <list size="14">
           <item index="0" class="java.lang.String" itemvalue="org.jetbrains.annotations.NotNull" />
           <item index="1" class="java.lang.String" itemvalue="javax.annotation.Nonnull" />
           <item index="2" class="java.lang.String" itemvalue="edu.umd.cs.findbugs.annotations.NonNull" />
@@ -39,14 +72,22 @@
           <item index="10" class="java.lang.String" itemvalue="org.eclipse.jdt.annotation.NonNull" />
           <item index="11" class="java.lang.String" itemvalue="io.reactivex.annotations.NonNull" />
           <item index="12" class="java.lang.String" itemvalue="io.reactivex.rxjava3.annotations.NonNull" />
+          <item index="13" class="java.lang.String" itemvalue="lombok.NonNull" />
         </list>
       </value>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
+  </component>
+  <component name="VisualizationToolProject">
+    <option name="state">
+      <ProjectState>
+        <option name="scale" value="0.22" />
+      </ProjectState>
+    </option>
   </component>
 </project>

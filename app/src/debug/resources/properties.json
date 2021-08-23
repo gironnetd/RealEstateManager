@@ -18,13 +18,14 @@
     "id": "2orYJD9m1aAPbTKcrkBj",
     "rooms": 5,
     "bathRooms": 3,
+    "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
     "surface": 60,
     "price": 13924,
     "bedRooms": 3,
     "type": "HOUSE",
     "entryDate": "1970-01-01T00:00:15.742Z",
     "status": "IN_SALE",
-    "mainPicture": {
+    "mainPhoto": {
       "id": "lDKc1F0GZfHycUf43HC9",
       "url": "",
       "thumbnailUrl": "",
@@ -46,6 +47,7 @@
       "PARK",
       "SHOP"
     ],
+    "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
     "type": "FLAT",
     "status": "SOLD",
     "id": "AMEs0idV3ur4eqK2vF3O",
@@ -59,7 +61,7 @@
       "street": "2-8 Square de Castiglione",
       "latitude": 48.829394665153714
     },
-    "mainPicture": {
+    "mainPhoto": {
       "id": "bs9CzvhLjpxahoAUzWuN",
       "url": "",
       "thumbnailUrl": "",
@@ -75,7 +77,7 @@
   {
     "agentId": "ydjypZLSjCbFuEOJlNfM",
     "rooms": 4,
-    "soldDate": "1970-01-01T00:00:18.307Z",
+    "soldDate": null,
     "bathRooms": 3,
     "entryDate": "1970-01-01T00:00:14.992Z",
     "interestPoints": [
@@ -83,8 +85,9 @@
       "PARK",
       "SHOP"
     ],
+    "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
     "type": "FLAT",
-    "status": "SOLD",
+    "status": "IN_SALE",
     "id": "NITe6lIGdZYjiiAiIX3y",
     "surface": 30,
     "address": {
@@ -96,7 +99,7 @@
       "street": "29 Rue des cousins",
       "latitude": 48.83052669143428
     },
-    "mainPicture": {
+    "mainPhoto": {
       "id": "Erki1UuwOThRzE88VuLG",
       "url": "",
       "thumbnailUrl": "",
@@ -114,6 +117,7 @@
     "entryDate": "1970-01-01T00:00:18.333Z",
     "soldDate": null,
     "status": "IN_SALE",
+    "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
     "type": "FLAT",
     "agentId": "NdceWChhVEKxVaPHPgxQ",
     "address": {
@@ -135,7 +139,7 @@
       "PARK",
       "SCHOOL"
     ],
-    "mainPicture": {
+    "mainPhoto": {
       "id": "IcIYBfyd35zxNLGv6jmj",
       "url": "",
       "thumbnailUrl": "",
@@ -152,6 +156,7 @@
     "soldDate": null,
     "price": 14149,
     "surface": 38,
+    "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
     "status": "FOR_RENT",
     "bathRooms": 1,
     "entryDate": "1970-01-01T00:00:16.465Z",
@@ -160,7 +165,7 @@
       "PARK",
       "SUBWAY"
     ],
-    "mainPicture": {
+    "mainPhoto": {
       "id": "X3Xj3IJDYxy6BJqkxo5q",
       "url": "",
       "thumbnailUrl": "",
@@ -186,8 +191,9 @@
   {
     "agentId": "2orYJD9m1aAPbTKcrkBj",
     "rooms": 4,
-    "soldDate": "1970-01-01T00:00:18.307Z",
+    "soldDate": null,
     "bathRooms": 3,
+    "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
     "entryDate": "1970-01-01T00:00:14.992Z",
     "interestPoints": [
       "BUSES",
@@ -195,7 +201,7 @@
       "SHOP"
     ],
     "type": "FLAT",
-    "status": "SOLD",
+    "status": "FOR_RENT",
     "id": "ydjypZLSjCbFuEOJlNfM",
     "surface": 30,
     "address": {
@@ -207,7 +213,7 @@
       "street": "21 Rue Kléber",
       "latitude": 48.82888799341022
     },
-    "mainPicture": {
+    "mainPhoto": {
       "id": "lDKc1F0GZfHycUf43HC9",
       "url": "",
       "thumbnailUrl": "",
@@ -223,8 +229,9 @@
   {
     "agentId": "AMEs0idV3ur4eqK2vF3O",
     "rooms": 4,
-    "soldDate": "1970-01-01T00:00:18.307Z",
+    "soldDate": null,
     "bathRooms": 3,
+    "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
     "entryDate": "1970-01-01T00:00:14.992Z",
     "interestPoints": [
       "BUSES",
@@ -232,7 +239,7 @@
       "SHOP"
     ],
     "type": "FLAT",
-    "status": "SOLD",
+    "status": "FOR_RENT",
     "id": "bs9CzvhLjpxahoAUzWuN",
     "surface": 30,
     "address": {
@@ -244,7 +251,7 @@
       "street": "3 Place de la Loi",
       "latitude": 48.82812820341748
     },
-    "mainPicture": {
+    "mainPhoto": {
       "id": "ydjypZLSjCbFuEOJlNfM",
       "url": "",
       "thumbnailUrl": "",
@@ -260,8 +267,9 @@
   {
     "agentId": "NITe6lIGdZYjiiAiIX3t",
     "rooms": 4,
-    "soldDate": "1970-01-01T00:00:18.307Z",
+    "soldDate": null,
     "bathRooms": 3,
+    "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
     "entryDate": "1970-01-01T00:00:14.992Z",
     "interestPoints": [
       "BUSES",
@@ -269,7 +277,7 @@
       "SHOP"
     ],
     "type": "FLAT",
-    "status": "SOLD",
+    "status": "IN_SALE",
     "id": "Erki1UuwOThRzE88VuLG",
     "surface": 30,
     "address": {
@@ -281,7 +289,7 @@
       "street": "29 Rue des Anciens Combattants",
       "latitude": 48.82768584245489
     },
-    "mainPicture": {
+    "mainPhoto": {
       "id": "ydjypZLSjCbFuEOJlNfM",
       "url": "",
       "thumbnailUrl": "",
@@ -297,8 +305,9 @@
   {
     "agentId": "ydjypZLSjCbFuEOJlNfM",
     "rooms": 4,
-    "soldDate": "1970-01-01T00:00:18.307Z",
+    "soldDate": null,
     "bathRooms": 3,
+    "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
     "entryDate": "1970-01-01T00:00:14.992Z",
     "interestPoints": [
       "BUSES",
@@ -306,7 +315,7 @@
       "SHOP"
     ],
     "type": "FLAT",
-    "status": "SOLD",
+    "status": "IN_SALE",
     "id": "IcIYBfyd35zxNLGv6jmj",
     "surface": 30,
     "address": {
@@ -318,7 +327,7 @@
       "street": "2 Avenue Jeanne d'Arc",
       "latitude": 48.828327690540725
     },
-    "mainPicture": {
+    "mainPhoto": {
       "id": "OWCrS4aotKLE0Oo29BBC",
       "url": "",
       "thumbnailUrl": "",
@@ -334,8 +343,9 @@
   {
     "agentId": "ydjypZLSjCbFuEOJlNfM",
     "rooms": 4,
-    "soldDate": "1970-01-01T00:00:18.307Z",
+    "soldDate": null,
     "bathRooms": 3,
+    "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
     "entryDate": "1970-01-01T00:00:14.992Z",
     "interestPoints": [
       "BUSES",
@@ -343,7 +353,7 @@
       "SHOP"
     ],
     "type": "FLAT",
-    "status": "SOLD",
+    "status": "FOR_RENT",
     "id": "X3Xj3IJDYxy6BJqkxo5q",
     "surface": 30,
     "address": {
@@ -355,7 +365,7 @@
       "street": "19 Rue Saint-Joseph",
       "latitude": 48.82959261993131
     },
-    "mainPicture": {
+    "mainPhoto": {
       "id": "fcijcR9oZQXU5WcJFYXh",
       "url": "",
       "thumbnailUrl": "",
