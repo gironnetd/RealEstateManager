@@ -24,8 +24,4 @@ class TestBaseApplication : BaseApplication() {
         }
         return browseComponent as TestBrowseComponent
     }
-
-//    open fun appComponent(): AppComponent {
-//        return appComponent
-//    }
 }

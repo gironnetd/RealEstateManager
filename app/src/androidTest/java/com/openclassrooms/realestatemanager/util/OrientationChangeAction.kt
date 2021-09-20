@@ -52,7 +52,6 @@ class OrientationChangeAction private constructor(private val orientation: Int) 
 
     override fun perform(uiController: UiController, view: View) {
         uiController.loopMainThreadUntilIdle()
-        //val activity = view.context as Activity
         activity.requestedOrientation = orientation
         val resumedActivities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
         if (resumedActivities.isEmpty()) {

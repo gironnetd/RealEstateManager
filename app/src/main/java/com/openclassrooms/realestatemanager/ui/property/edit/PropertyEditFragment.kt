@@ -5,18 +5,16 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.InputType.TYPE_CLASS_TEXT
 import android.util.TypedValue
-import android.view.LayoutInflater
-import android.view.View
+import android.view.*
+import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.view.ViewGroup
 import android.widget.ScrollView
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultRegistry
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
 import com.google.android.material.chip.Chip
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentEditBinding
@@ -24,19 +22,21 @@ import com.openclassrooms.realestatemanager.models.InterestPoint
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.models.PropertyStatus
 import com.openclassrooms.realestatemanager.models.PropertyType
-import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PhotoUpdateAdapter
 import com.openclassrooms.realestatemanager.ui.property.edit.view.add.AddPhotoDialogFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.view.update.PhotoUpdateDialogFragment
+import com.openclassrooms.realestatemanager.ui.property.shared.BaseBrowseFragment
+import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
 import com.openclassrooms.realestatemanager.util.Utils
 import io.reactivex.disposables.CompositeDisposable
 import java.util.*
+
 
 abstract class PropertyEditFragment
 constructor(var registry: ActivityResultRegistry?)
     : BaseFragment(R.layout.fragment_edit), PhotoUpdateAdapter.OnItemClickListener {
 
-    private var _binding: FragmentEditBinding? = null
+    var _binding: FragmentEditBinding? = null
     val binding get() = _binding!!
 
     lateinit var onBackPressedCallback: OnBackPressedCallback
@@ -48,32 +48,24 @@ constructor(var registry: ActivityResultRegistry?)
 
     val compositeDisposable = CompositeDisposable()
 
+    val baseBrowseFragment by lazy { requireParentFragment().parentFragment as BaseBrowseFragment }
+
     abstract fun confirmSaveChanges()
     abstract fun onBackPressedCallback()
+    abstract fun layoutInflater(): LayoutInflater
 
     abstract override fun initializeToolbar()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        _binding = FragmentEditBinding.inflate(inflater, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        super.onCreateView(inflater, container, savedInstanceState)
 
         setHasOptionsMenu(true)
         onBackPressedCallback()
-
-        binding.addAPhoto.setOnClickListener {
-            addPhotoAlertDialog = AddPhotoDialogFragment().also {
-                it.registry = registry ?: requireActivity().activityResultRegistry
-                it.tmpPhoto.propertyId = newProperty.id
-            }
-            addPhotoAlertDialog.show(childFragmentManager, AddPhotoDialogFragment.TAG)
-        }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        clearField()
         configureView()
     }
 
@@ -97,57 +89,33 @@ constructor(var registry: ActivityResultRegistry?)
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
-        if (!hidden) {
-            initializeToolbar()
-            binding.editFragment.fullScroll(ScrollView.FOCUS_UP)
-        }
+        if (hidden) { binding.editFragment.fullScroll(ScrollView.FOCUS_UP) }
     }
 
     fun clearField() {
         with(binding) {
-            description.setText(none)
-            description.setTextColor(colorPrimaryDark)
-            entryDate.text = none
-            status.text = none
-            soldDate.text = none
-            price.setText(none)
-            price.setTextColor(colorPrimaryDark)
-            type.text = none
-            surface.setText(none)
-            surface.setTextColor(colorPrimaryDark)
-            rooms.setText(none)
-            rooms.setTextColor(colorPrimaryDark)
-            bathrooms.setText(none)
-            bathrooms.setTextColor(colorPrimaryDark)
-            bedrooms.setText(none)
-            bedrooms.setTextColor(colorPrimaryDark)
-            street.setText(none)
-            street.setTextColor(colorPrimaryDark)
-            city.setText(none)
-            city.setTextColor(colorPrimaryDark)
-            postalCode.setText(none)
-            postalCode.setTextColor(colorPrimaryDark)
-            country.setText(none)
-            country.setTextColor(colorPrimaryDark)
-            state.setText(none)
-            state.setTextColor(colorPrimaryDark)
             newProperty.photos.clear()
             photosRecyclerView.adapter?.let {
                 (photosRecyclerView.adapter as PhotoUpdateAdapter).clear()
             }
-
             initInterestPoints()
-
-            noPhotosTextView.visibility = VISIBLE
+            noPhotos.visibility = VISIBLE
         }
     }
 
     open fun configureView() {
         with(binding) {
+            binding.addAPhoto.setOnClickListener {
+                addPhotoAlertDialog = AddPhotoDialogFragment().also {
+                    it.registry = registry ?: requireActivity().activityResultRegistry
+                    it.tmpPhoto.propertyId = newProperty.id
+                }
+                addPhotoAlertDialog.show(childFragmentManager, AddPhotoDialogFragment.TAG)
+            }
 
             entryDate.setOnClickListener { showEntryDateAlertDialog() }
             status.setOnClickListener { showStatusAlertDialog() }
-            layoutSoldDate.setOnClickListener { showSoldDateAlertDialog() }
+            soldDate.setOnClickListener { showSoldDateAlertDialog() }
             type.setOnClickListener { showTypeAlertDialog() }
 
             val onFocusChangeListener = View.OnFocusChangeListener { view, hasFocus ->
@@ -158,7 +126,7 @@ constructor(var registry: ActivityResultRegistry?)
                     }
                     if(!hasFocus && (this == "" || this == "0")) {
                         view.setText(none)
-                        view.setTextColor(colorPrimaryDark)
+                        view.setTextColor(colorPrimary)
                     }
                 }
             }
@@ -176,27 +144,26 @@ constructor(var registry: ActivityResultRegistry?)
 
             with(entryDate) {
                 newProperty.entryDate?.let {
-                    text = Utils.formatDate(newProperty.entryDate)
+                    setText(Utils.formatDate(newProperty.entryDate))
                     setTextColor(Color.BLACK)
                 }
             }
 
             with(status) {
                 if(newProperty.status != PropertyStatus.NONE) {
-                    text = resources.getString(newProperty.status.status)
+                    setText(resources.getString(newProperty.status.status))
                     setTextColor(Color.BLACK)
-                } else {
-                    text = none
-                    setTextColor(colorPrimaryDark)
                 }
             }
 
-            with(soldDate) {
+            with(soldDateTextInputLayout) {
                 if(newProperty.status == PropertyStatus.SOLD) {
-                    layoutSoldDate.visibility =VISIBLE
-                    newProperty.soldDate?.let { text = Utils.formatDate(it) }
+                    visibility =VISIBLE
+                    newProperty.soldDate?.let {
+                        soldDate.setText(Utils.formatDate(it))
+                    }
                 } else {
-                    layoutSoldDate.visibility = View.GONE
+                    visibility = GONE
                 }
             }
 
@@ -215,11 +182,8 @@ constructor(var registry: ActivityResultRegistry?)
 
             with(type) {
                 if(newProperty.type != PropertyType.NONE) {
-                    text = resources.getString(newProperty.type.type)
+                    setText(resources.getString(newProperty.type.type))
                     setTextColor(Color.BLACK)
-                } else {
-                    text = none
-                    setTextColor(colorPrimaryDark)
                 }
             }
 
@@ -272,7 +236,7 @@ constructor(var registry: ActivityResultRegistry?)
                     }
                     if(!hasFocus && this == "") {
                         bathrooms.setText(none)
-                        bathrooms.setTextColor(colorPrimaryDark)
+                        bathrooms.setTextColor(colorPrimary)
                     }
                 }
             }
@@ -296,7 +260,6 @@ constructor(var registry: ActivityResultRegistry?)
                 })
                 setOnFocusChangeListener(onFocusChangeListener)
             }
-
 
             with(postalCode) {
                 setText( run {
@@ -329,7 +292,7 @@ constructor(var registry: ActivityResultRegistry?)
             }
 
             PhotoUpdateAdapter().apply {
-                if(newProperty.photos.isNotEmpty()) { noPhotosTextView.visibility = View.GONE }
+                if(newProperty.photos.isNotEmpty()) { noPhotos.visibility = GONE }
                 binding.photosRecyclerView.adapter = this
                 setOnItemClickListener(this@PropertyEditFragment)
                 submitList(newProperty.photos)
@@ -342,13 +305,14 @@ constructor(var registry: ActivityResultRegistry?)
         clearField()
     }
 
-    private fun initInterestPoints() {
+    open fun initInterestPoints() {
         with(binding) {
             interestPointsChipGroup.removeAllViewsInLayout()
             InterestPoint.values().forEach { interestPoint ->
                 if(interestPoint != InterestPoint.NONE) {
-                    val newChip = layoutInflater.inflate(R.layout.layout_interest_point_chip_default,
+                    val newChip = layoutInflater().inflate(R.layout.layout_interest_point_chip_default,
                         binding.interestPointsChipGroup, false) as Chip
+
                     newChip.text = resources.getString(interestPoint.place)
                     newChip.isCheckable = true
 
@@ -361,12 +325,6 @@ constructor(var registry: ActivityResultRegistry?)
                     if(newProperty.interestPoints.contains(interestPoint)) { newChip.isChecked = true }
 
                     newChip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
-                    newChip.setTextColor(
-                        AppCompatResources.getColorStateList(
-                            requireContext(),
-                            R.color.chip_text_state_list
-                        )
-                    )
 
                     newChip.setOnClickListener {
                         val chip = it as Chip
@@ -387,12 +345,12 @@ constructor(var registry: ActivityResultRegistry?)
     }
 
     fun showMessage(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+        Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG).show()
     }
 
     private fun showStatusAlertDialog() {
         val items = PropertyStatus.values().filter { it != PropertyStatus.NONE }.map { resources.getString(it.status)  }
-        val builder = AlertDialog.Builder(requireContext())
+        val builder = AlertDialog.Builder(layoutInflater().context)
         with(builder) {
             setTitle(resources.getString(R.string.choose_property_status))
             var selectedItem: Int = if(items.singleOrNull { it == binding.status.text.toString() } != null) {
@@ -403,14 +361,14 @@ constructor(var registry: ActivityResultRegistry?)
                 val status = PropertyStatus.values().first { resources.getString(it.status) == items[selectedItem] }
                 newProperty.status = status
                 if(status == PropertyStatus.SOLD) {
-                    binding.layoutSoldDate.visibility = VISIBLE
-                    newProperty.soldDate?.let { binding.soldDate.text = Utils.formatDate(it) }
+                    binding.soldDateTextInputLayout.visibility = VISIBLE
+                    newProperty.soldDate?.let { binding.soldDate.setText(Utils.formatDate(it)) }
                 } else {
-                    binding.layoutSoldDate.visibility = View.GONE
-                    binding.soldDate.text = ""
+                    binding.soldDateTextInputLayout.visibility = GONE
+                    binding.soldDate.setText("")
                     newProperty.soldDate = null
                 }
-                binding.status.text = resources.getString(status.status)
+                binding.status.setText(resources.getString(status.status))
             }
             setNegativeButton(getString(R.string.cancel)) { _, _ -> }
             show()
@@ -419,7 +377,7 @@ constructor(var registry: ActivityResultRegistry?)
 
     private fun showTypeAlertDialog() {
         val items = PropertyType.values().filter { it != PropertyType.NONE }.map { resources.getString(it.type)  }
-        val builder = AlertDialog.Builder(requireContext())
+        val builder = AlertDialog.Builder(layoutInflater().context)
         with(builder) {
             setTitle(resources.getString(R.string.choose_property_type))
             var selectedItem: Int = if(items.singleOrNull { it == binding.type.text.toString() } != null) {
@@ -429,7 +387,7 @@ constructor(var registry: ActivityResultRegistry?)
             setSingleChoiceItems(items.toTypedArray(), selectedItem) { _, which -> selectedItem = which }
             setPositiveButton(getString(R.string.change_property_type)) { _, _ ->
                 newProperty.type = PropertyType.values().first { resources.getString(it.type) == items[selectedItem] }
-                binding.type.text = resources.getString(newProperty.type.type)
+                binding.type.setText(resources.getString(newProperty.type.type))
             }
             setNegativeButton(getString(R.string.cancel)) { _, _ -> }
             show()
@@ -437,14 +395,14 @@ constructor(var registry: ActivityResultRegistry?)
     }
 
     private fun showEntryDateAlertDialog() {
-        val entryDate = if(binding.entryDate.text.isNotEmpty()) { Utils.fromStringToDate(binding.entryDate.text.toString()) } else { null }
+        val entryDate = if(binding.entryDate.text!!.isNotEmpty()) { Utils.fromStringToDate(binding.entryDate.text.toString()) } else { null }
         val calendar = Calendar.getInstance()
         calendar.time = entryDate ?: calendar.time
 
-        DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
+        DatePickerDialog(layoutInflater().context, { _, year, month, dayOfMonth ->
             val selectedDate = GregorianCalendar(year, month, dayOfMonth, 0, 0).time
             newProperty.entryDate = selectedDate
-            binding.entryDate.text = Utils.formatDate(selectedDate)
+            binding.entryDate.setText(Utils.formatDate(selectedDate))
         },
             calendar[Calendar.YEAR],
             calendar[Calendar.MONTH],
@@ -456,10 +414,10 @@ constructor(var registry: ActivityResultRegistry?)
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = System.currentTimeMillis()
 
-        DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
+        DatePickerDialog(layoutInflater().context, { _, year, month, dayOfMonth ->
             val selectedDate = GregorianCalendar(year, month, dayOfMonth, 0, 0).time
             newProperty.soldDate = selectedDate
-            binding.soldDate.text = Utils.formatDate(selectedDate)
+            binding.soldDate.setText(Utils.formatDate(selectedDate))
         },
             calendar[Calendar.YEAR],
             calendar[Calendar.MONTH],
@@ -475,8 +433,8 @@ constructor(var registry: ActivityResultRegistry?)
         updatePhotoAlertDialog.show(childFragmentManager, PhotoUpdateDialogFragment.TAG)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         compositeDisposable.dispose()
     }
 }

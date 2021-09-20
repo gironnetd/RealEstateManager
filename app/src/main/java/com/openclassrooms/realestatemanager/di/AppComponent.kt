@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.di
 import android.app.Application
 import com.openclassrooms.realestatemanager.data.cache.provider.AppContentProvider
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseComponent
+import com.openclassrooms.realestatemanager.di.property.search.SearchComponent
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.fragments.MainNavHostFragment
 import dagger.BindsInstance
@@ -32,4 +33,5 @@ interface AppComponent {
     fun inject(mainNavHostFragment: MainNavHostFragment)
     fun inject(contentProvider: AppContentProvider)
     fun browseComponent(): BrowseComponent.Factory
+    fun searchComponent(): SearchComponent.Factory
 }

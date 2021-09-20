@@ -33,7 +33,7 @@ class ConnectivityManagerTest : BaseMainActivityTests() {
 
     @get:Rule var rule: TestRule = InstantTaskExecutorRule()
 
-    lateinit var networkConnectionLiveData: NetworkConnectionLiveData
+    private lateinit var networkConnectionLiveData: NetworkConnectionLiveData
 
     private lateinit var activityScenario: ActivityScenario<MainActivity>
 
@@ -173,6 +173,6 @@ class ConnectivityManagerTest : BaseMainActivityTests() {
     }
 
     companion object {
-        private val TAG = ConnectivityManagerTest::class.simpleName
+        private  val TAG = ConnectivityManagerTest::class.simpleName!!
     }
 }

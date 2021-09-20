@@ -323,6 +323,14 @@ data class Property (
                 }
         }
 
+        fun addressInList(resources: Resources): String {
+                return if((address.street + ",\n" + address.postalCode + " " + address.city).trim() != ",") {
+                        address.street + ",\n" + address.postalCode + " " + address.city
+                } else {
+                        resources.getString(R.string.no_address_found)
+                }
+        }
+
         fun copy(): Property  {
                 val property: String = Gson().toJson(this, Property::class.java)
                 return Gson().fromJson(property, Property::class.java)
@@ -384,14 +392,13 @@ data class Property (
                 result = 31 * result + bedRooms
                 result = 31 * result + bathRooms
                 result = 31 * result + description.hashCode()
-                result = 31 * result + (address?.hashCode() ?: 0)
+                result = 31 * result + (address.hashCode())
                 result = 31 * result + interestPoints.hashCode()
                 result = 31 * result + status.hashCode()
                 result = 31 * result + (agentId?.hashCode() ?: 0)
                 result = 31 * result + (mainPhotoId?.hashCode() ?: 0)
                 result = 31 * result + entryDate.hashCode()
                 result = 31 * result + (soldDate?.hashCode() ?: 0)
-                // result = 31 * result + photos.hashCode()
                 return result
         }
 

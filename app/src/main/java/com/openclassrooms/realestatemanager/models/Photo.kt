@@ -166,37 +166,6 @@ data class Photo (
         return result
     }
 
-//    override fun equals(other: Any?): Boolean {
-//        if (this === other) return true
-//        if (javaClass != other?.javaClass) return false
-//
-//        other as Photo
-//
-//        if (id != other.id) return false
-//        if (propertyId != other.propertyId) return false
-//        if (description != other.description) return false
-//        if (mainPhoto != other.mainPhoto) return false
-//        if (type != other.type) return false
-//        if(bitmap != null && other.bitmap != null) {
-//            if (!sameAs(bitmap!!, other.bitmap!!) ) return false
-//        }
-//
-//
-//        return true
-//    }
-//
-//    override fun hashCode(): Int {
-//        var result = id.hashCode()
-//        result = 31 * result + propertyId.hashCode()
-//        result = 31 * result + description.hashCode()
-//        result = 31 * result + mainPhoto.hashCode()
-//        result = 31 * result + type.hashCode()
-//        result = 31 * result + (bitmap?.hashCode() ?: 0)
-//        return result
-//    }
-
-
-
     companion object {
 
         const val SEPARATOR = ","

@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager
 
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
 import com.google.android.gms.maps.MapsInitializer
 import com.google.firebase.firestore.FirebaseFirestore
@@ -7,6 +8,7 @@ import com.google.firebase.firestore.ktx.firestoreSettings
 import com.openclassrooms.realestatemanager.di.AppComponent
 import com.openclassrooms.realestatemanager.di.DaggerAppComponent
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseComponent
+import com.openclassrooms.realestatemanager.di.property.search.SearchComponent
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 
@@ -15,6 +17,7 @@ open class BaseApplication: MultiDexApplication() {
     lateinit var appComponent: AppComponent
 
     private var browseComponent: BrowseComponent? = null
+    private var searchComponent: SearchComponent? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -38,6 +41,7 @@ open class BaseApplication: MultiDexApplication() {
 //                        populateFirestore()
 //                    }
 //                }
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
     }
 
     open fun initAppComponent() {
@@ -55,5 +59,12 @@ open class BaseApplication: MultiDexApplication() {
             browseComponent = appComponent.browseComponent().create()
         }
         return browseComponent as BrowseComponent
+    }
+
+    open fun searchComponent(): SearchComponent {
+        if (searchComponent == null) {
+            searchComponent = appComponent.searchComponent().create()
+        }
+        return searchComponent as SearchComponent
     }
 }

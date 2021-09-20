@@ -3,48 +3,46 @@ package com.openclassrooms.realestatemanager.ui.property.propertydetail
 import android.content.res.Configuration
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
-import android.graphics.Color
 import android.os.Bundle
-import android.text.InputType
 import android.util.TypedValue
 import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.FrameLayout
-import android.widget.ScrollView
+import android.widget.ScrollView.FOCUS_UP
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultRegistry
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat.getColorStateList
 import androidx.core.os.bundleOf
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.*
+import com.google.android.gms.maps.GoogleMap.OnMapLoadedCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.chip.Chip
-import com.google.android.material.textfield.TextInputEditText
 import com.openclassrooms.realestatemanager.R
-import com.openclassrooms.realestatemanager.databinding.FragmentDetailBinding
+import com.openclassrooms.realestatemanager.databinding.FragmentEditBinding
 import com.openclassrooms.realestatemanager.models.InterestPoint
 import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.models.PropertyStatus
-import com.openclassrooms.realestatemanager.models.PropertyType
+import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.mvibase.MviView
-import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.list.ListAdapter
-import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment.Companion.DEFAULT_ZOOM
+import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragment
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.view.PhotoDetailDialogFragment
+import com.openclassrooms.realestatemanager.ui.property.search.MainSearchFragment
+import com.openclassrooms.realestatemanager.ui.property.search.result.BrowseResultFragment
+import com.openclassrooms.realestatemanager.ui.property.shared.BaseBrowseFragment
+import com.openclassrooms.realestatemanager.ui.property.shared.list.BaseListFragment
+import com.openclassrooms.realestatemanager.ui.property.shared.map.BaseMapFragment
+import com.openclassrooms.realestatemanager.ui.property.shared.map.BaseMapFragment.Companion.DEFAULT_ZOOM
 import com.openclassrooms.realestatemanager.util.Constants.FROM
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTY_ID
-import com.openclassrooms.realestatemanager.util.Utils
 import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
@@ -52,21 +50,21 @@ import javax.inject.Inject
  * Fragment to display and edit a real estate.
  */
 class PropertyDetailFragment
-@Inject constructor(viewModelFactory: ViewModelProvider.Factory)
-    : BaseFragment(R.layout.fragment_detail), OnMapReadyCallback, GoogleMap.OnMapLoadedCallback,
-    BrowseFragment.OnItemClickListener, PhotoDetailAdapter.OnItemClickListener,
+@Inject constructor(viewModelFactory: ViewModelProvider.Factory, registry: ActivityResultRegistry?)
+    : PropertyEditFragment(registry), OnMapReadyCallback, OnMapLoadedCallback,
+    BaseBrowseFragment.OnItemClickListener, PhotoDetailAdapter.OnItemClickListener,
     MviView<PropertyDetailIntent, PropertyDetailViewState> {
+
+    private val mainActivity by lazy { activity as FragmentActivity }
 
     private val propertyDetailViewModel: PropertyDetailViewModel by viewModels { viewModelFactory }
 
-    private var _binding: FragmentDetailBinding? = null
-    val binding get() = _binding!!
-
-    lateinit var propertyId: String
     lateinit var property: Property
     private lateinit var editItem: MenuItem
+    private lateinit var searchItem: MenuItem
     private lateinit var mMap: GoogleMap
-    private lateinit var onBackPressedCallback: OnBackPressedCallback
+
+    private lateinit var innerInflater: LayoutInflater
 
     private lateinit var detailLayoutParams: FrameLayout.LayoutParams
     private lateinit var browseDetailNavHostFragment: NavHostFragment
@@ -74,33 +72,43 @@ class PropertyDetailFragment
     lateinit var detailPhotoAlertDialog: PhotoDetailDialogFragment
 
     private val populatePropertyIntentPublisher = PublishSubject.create<PropertyDetailIntent.PopulatePropertyIntent>()
-    private val compositeDisposable = CompositeDisposable()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        // Inflate the layout for this fragment
-        _binding = FragmentDetailBinding.inflate(inflater, container, false)
-        setHasOptionsMenu(true)
-        onBackPressedCallback()
-
-        arguments?.let { arguments ->
-            propertyId = arguments.getString(PROPERTY_ID).toString()
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        baseBrowseFragment.let { baseBrowseFragment ->
+            when(baseBrowseFragment::class.java) {
+                BrowseResultFragment::class.java -> {
+                    innerInflater = inflater.cloneInContext(ContextThemeWrapper(activity, R.style.AppTheme_Tertiary))
+                }
+                BrowseFragment::class.java -> {
+                    innerInflater = inflater.cloneInContext(ContextThemeWrapper(activity, R.style.AppTheme_Primary))
+                }
+            }
         }
 
-        applyDisposition()
+        _binding = FragmentEditBinding.inflate(innerInflater, container, false)
+        compositeDisposable.add(propertyDetailViewModel.states().subscribe(this::render))
+        propertyDetailViewModel.processIntents(intents())
+
+        super.onCreateView(innerInflater, container, savedInstanceState)
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         compositeDisposable.add(propertyDetailViewModel.states().subscribe(this::render))
         propertyDetailViewModel.processIntents(intents())
-        showDetails(propertyId)
+        applyDisposition()
+        requireArguments().getString(PROPERTY_ID)?.let { propertyId ->
+            showDetails(propertyId)
+        }
+        if(!onBackPressedCallback.isEnabled) {
+            onBackPressedCallback.isEnabled = true
+        }
+        super.onViewCreated(view, savedInstanceState)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         compositeDisposable.dispose()
     }
 
@@ -109,7 +117,7 @@ class PropertyDetailFragment
     }
 
     private fun initialIntent(): Observable<PropertyDetailIntent> {
-        return Observable.just(PropertyDetailIntent.InitialIntent(propertyId))
+        return Observable.just(PropertyDetailIntent.InitialIntent)
     }
 
     private fun populatePropertyIntentPublisher(): Observable<PropertyDetailIntent.PopulatePropertyIntent> {
@@ -121,311 +129,168 @@ class PropertyDetailFragment
             if(!::property.isInitialized || property != propertyWithPhotos || property.photos != propertyWithPhotos.photos) {
                 property = propertyWithPhotos
                 properties.value?.let { properties ->
-                    properties[properties.indexOf(
-                        properties.single { property -> property.id == propertyId })] = propertyWithPhotos
-                    binding.loadingProgressbar.visibility = GONE
-                    displayDetail()
+                    properties[properties.indexOf(properties.single { it.id == property.id })] = propertyWithPhotos
+                    binding.loadingPhotos.visibility = GONE
+                    with((binding.photosRecyclerView.adapter as PhotoDetailAdapter)) {
+                        submitList(property.photos)
+                    }
+                }
+            }
+        }
+    }
+
+    override fun configureView() {
+        super.configureView()
+        with(binding) {
+            description.isFocusable = false
+            entryDate.isFocusable = false
+            status.isFocusable = false
+            soldDate.isFocusable = false
+            price.isFocusable = false
+            type.isFocusable = false
+            surface.isFocusable = false
+            rooms.isFocusable = false
+            bedrooms.isFocusable = false
+            bathrooms.isFocusable = false
+            street.isFocusable = false
+            city.isFocusable = false
+            postalCode.isFocusable = false
+            country.isFocusable = false
+            state.isFocusable = false
+
+            addAPhoto.visibility = GONE
+
+            entryDate.setOnClickListener(null)
+            status.setOnClickListener(null)
+            soldDate.setOnClickListener(null)
+            type.setOnClickListener(null)
+
+            //price.filters = arrayOf<InputFilter>(InputFilterMinMax(0, 99999999999999999))
+            //surface.filters = arrayOf<InputFilter>(InputFilterMinMax(0, 99999999999999999))
+
+            PhotoDetailAdapter().apply {
+                if(property.photos.isNotEmpty()) { noPhotos.visibility = GONE }
+                photosRecyclerView.adapter = this
+                setOnItemClickListener(this@PropertyDetailFragment)
+                submitList(property.photos)
+            }
+
+            if(mapDetailFragment.contentDescription != DETAIL_MAP_FINISH_LOADING) {
+                activity?.runOnUiThread {
+                    (childFragmentManager.findFragmentById(R.id.map_detail_fragment) as SupportMapFragment)
+                        .getMapAsync(this@PropertyDetailFragment)
+                }
+            } else {
+                moveCameraToPropertyInsideMap()
+            }
+        }
+    }
+
+    override fun initInterestPoints() {
+        with(binding) {
+            interestPointsChipGroup.removeAllViewsInLayout()
+            if(::property.isInitialized) {
+                property.interestPoints.forEach { interestPoint ->
+                    if(interestPoint != InterestPoint.NONE) {
+                        val newChip = innerInflater.inflate(R.layout.layout_interest_point_chip_default,
+                            binding.interestPointsChipGroup, false) as Chip
+                        newChip.text = resources.getString(interestPoint.place)
+                        newChip.isCheckable = false
+                        newChip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
+
+                        interestPointsChipGroup.addView(newChip)
+                    }
                 }
             }
         }
     }
 
     private fun displayDetail() {
-        properties.value?.let { properties ->
-            property = properties.single { property -> property.id == propertyId }
+        baseBrowseFragment.binding.toolBar.title = property.titleInToolbar(resources)
+
+        if(baseBrowseFragment.binding.toolBar.visibility == GONE) {
+            baseBrowseFragment.binding.toolBar.visibility = VISIBLE
         }
 
-        with(binding) {
-            with(description) {
-                setRawInputType(InputType.TYPE_CLASS_TEXT)
-                setText(run {
-                    if(property.description.isNotEmpty()) {
-                        setTextColor(Color.BLACK)
-                        property.description
-                    } else { none }
-                })
-            }
+        if(baseBrowseFragment is BrowseResultFragment) {
+            val mainSearchFragment: MainSearchFragment = baseBrowseFragment.parentFragment?.parentFragment as MainSearchFragment
 
-            interestPointsChipGroup.removeAllViewsInLayout()
-            property.interestPoints.forEach { interestPoint ->
-                if(interestPoint != InterestPoint.NONE) {
-                    val newChip = layoutInflater.inflate(R.layout.layout_interest_point_chip_default,
-                        binding.interestPointsChipGroup, false) as Chip
-                    newChip.text = resources.getString(interestPoint.place)
-                    newChip.isCheckable = false
-                    newChip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
-                    newChip.setTextColor(getColorStateList(requireContext(), R.color.chip_text_state_list))
-
-                    interestPointsChipGroup.addView(newChip)
-                }
-            }
-
-            with(entryDate) {
-                property.entryDate?.let {
-                    setText(Utils.formatDate(property.entryDate))
-                    setTextColor(Color.BLACK)
-                }
-            }
-
-            with(status) {
-                if(property.status != PropertyStatus.NONE) {
-                    setText(resources.getString(property.status.status))
-                    setTextColor(Color.BLACK)
-                } else {
-                    setText(none)
-                    setTextColor(colorPrimaryDark)
-                }
-            }
-
-            with(soldDate) {
-                if(property.status == PropertyStatus.SOLD) {
-                    layoutSoldDate.visibility =VISIBLE
-                    property.soldDate?.let { setText(Utils.formatDate(it)) }
-                } else {
-                    layoutSoldDate.visibility = GONE
-                }
-            }
-            
-            //price.filters = arrayOf<InputFilter>(InputFilterMinMax(0, 99999999999999999))
-            with(price) {
-                setText(run {
-                    if(property.price != 0) {
-                        setTextColor(Color.BLACK)
-                        property.price.toString()
-                    } else { none }
-                })
-            }
-
-            with(type) {
-                if(property.type != PropertyType.NONE) {
-                    setText(resources.getString(property.type.type))
-                    setTextColor(Color.BLACK)
-                } else {
-                    setText(none)
-                    setTextColor(colorPrimaryDark)
-                }
-            }
-
-            //surface.filters = arrayOf<InputFilter>(InputFilterMinMax(0, 99999999999999999))
-            with(surface) {
-                setText(run {
-                    if(property.surface != 0) {
-                        setTextColor(Color.BLACK)
-                        property.surface.toString()
-                    } else { none }
-                })
-            }
-
-            with(rooms) {
-                setText(run {
-                    if(property.rooms != 0) {
-                        setTextColor(Color.BLACK)
-                        property.rooms.toString()
-                    } else { none }
-                })
-            }
-
-            with(bedrooms) {
-                setText(run {
-                    if(property.bedRooms != 0) {
-                        setTextColor(Color.BLACK)
-                        property.bedRooms.toString()
-                    } else { none }
-                })
-            }
-
-            with(bathrooms) {
-                setText(run {
-                    if(property.bathRooms != 0) {
-                        setTextColor(Color.BLACK)
-                        property.bathRooms.toString()
-                    } else { none }
-                })
-            }
-
-            bathrooms.setOnFocusChangeListener { view, hasFocus ->
-                with((view as TextInputEditText).text.toString()) {
-                    if(hasFocus && this == none) {
-                        bathrooms.setText("")
-                        bathrooms.setTextColor(Color.BLACK)
-                    }
-                    if(!hasFocus && this == "") {
-                        bathrooms.setText(none)
-                        bathrooms.setTextColor(colorPrimaryDark)
-                    }
-                }
-            }
-
-            with(street) {
-                setText(run {
-                    if(property.address.street.isNotEmpty()) {
-                        setTextColor(Color.BLACK)
-                        property.address.street
-                    } else { none }
-                })
-            }
-
-            with(city) {
-                setText( run {
-                    if(property.address.city.isNotEmpty()) {
-                        setTextColor(Color.BLACK)
-                        property.address.city
-                    } else { none }
-                })
-            }
-            
-            with(postalCode) {
-                setText( run {
-                    if(property.address.postalCode.isNotEmpty()) {
-                        setTextColor(Color.BLACK)
-                        property.address.postalCode
-                    } else { none }
-                })
-            }
-
-            with(country) {
-                setText( run {
-                    if(property.address.country.isNotEmpty()) {
-                        setTextColor(Color.BLACK)
-                        property.address.country
-                    } else { none }
-                })
-            }
-
-            with(state) {
-                setText( run {
-                    if(property.address.state.isNotEmpty()) {
-                        setTextColor(Color.BLACK)
-                        property.address.state
-                    } else { none }
-                })
-            }
-            
-            PhotoDetailAdapter().apply {
-                if(property.photos.isNotEmpty()) { noPhotosTextView.visibility = GONE }
-                photosRecyclerView.adapter = this
-                setOnItemClickListener(this@PropertyDetailFragment)
-                submitList(property.photos)
+            if(mainSearchFragment.binding.toolBar.visibility == VISIBLE) {
+                mainSearchFragment.binding.toolBar.visibility = GONE
             }
         }
 
-        this.parentFragment?.parentFragment?.let {
-            val browseFragment = this.parentFragment?.parentFragment as BrowseFragment
-
-            with(browseFragment.binding.toolBar) {
-                title = property.titleInToolbar(resources)
-
-                if(!onBackPressedCallback.isEnabled) {
-                    onBackPressedCallback.isEnabled = true
-                }
-
-                setNavigationOnClickListener {
-                    if (resources.getBoolean(R.bool.isMasterDetail)) {
-                        masterDetailOnBackPressed()
-                    } else {
-                        normalOnBackPressed()
-                    }
-                    onBackPressedCallback.isEnabled = false
-                }
+        with(baseBrowseFragment.binding.toolBar) {
+            setNavigationOnClickListener {
+                onBackPressed()
+                onBackPressedCallback.isEnabled = false
             }
         }
-
-        if(binding.mapConstraintLayout.contentDescription != DETAIL_MAP_FINISH_LOADING) {
-            activity?.runOnUiThread {
-                (this.childFragmentManager.findFragmentById(R.id.map_detail_fragment) as SupportMapFragment)
-                    .getMapAsync(this)
-            }
-        } else {
-            moveCameraToPropertyInsideMap()
-        }
-
-        this.parentFragment?.parentFragment?.let {
-            val browseFragment = this.parentFragment?.parentFragment as BrowseFragment
-            browseFragment.binding.toolBar.title = property.titleInToolbar(resources)
-        }
+        baseBrowseFragment.setOnItemClickListener(this)
     }
 
-    fun showDetails(propertyId: String?) {
-        this.propertyId = propertyId!!
-
+    fun showDetails(propertyId: String) {
         properties.value?.let { properties ->
+            property = properties.single { property -> property.id == propertyId }
+            newProperty = property.deepCopy()
             val photos = properties.single { property -> property.id == propertyId }.photos
             if(photos.isNotEmpty() && photos.none { photo -> !photo.mainPhoto }) {
-                binding.loadingProgressbar.visibility = VISIBLE
-                populatePropertyIntentPublisher.onNext(PropertyDetailIntent.PopulatePropertyIntent(propertyId))
+                binding.loadingPhotos.visibility = VISIBLE
+                populatePropertyIntentPublisher.onNext(PropertyDetailIntent.PopulatePropertyIntent(property.id))
             }
             displayDetail()
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        editItem = menu.findItem(R.id.navigation_edit)
-        editItem.isVisible = true
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_main_search).isVisible = false
+        baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_edit).isVisible = true
+        super.onPrepareOptionsMenu(baseBrowseFragment.binding.toolBar.menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.navigation_edit -> {
-                val masterDetailFragment = this.parentFragment?.parentFragment as BrowseFragment
-
-                if(masterDetailFragment.detail.childFragmentManager
-                        .findFragmentByTag(R.id.navigation_edit.toString()) != null) {
-
-                    val propertyUpdateFragment: PropertyUpdateFragment = masterDetailFragment.detail.childFragmentManager
-                        .findFragmentByTag(R.id.navigation_edit.toString()) as PropertyUpdateFragment
-
-                    val propertyId = property.id
-                    propertyUpdateFragment.showDetails(propertyId)
-                    val bundle = bundleOf(FROM to arguments?.getString(FROM),
-                        PROPERTY_ID to propertyId
-                    )
-                    masterDetailFragment.detail.findNavController().navigate(R.id.navigation_edit, bundle)
-                } else {
-                    val propertyId = property.id
-                    val bundle = bundleOf(FROM to arguments?.getString(FROM),
-                        PROPERTY_ID to propertyId
-                    )
-                    masterDetailFragment.detail.findNavController().navigate(R.id.navigation_edit, bundle)
-                }
-            }
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        if(!::editItem.isInitialized) {
+            editItem = baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_edit)
         }
-        return super.onOptionsItemSelected(item)
+        editItem.isVisible = true
+        editItem.setOnMenuItemClickListener {
+            val bundle = bundleOf(FROM to arguments?.getString(FROM), PROPERTY_ID to property.id)
+            if(baseBrowseFragment.detail.childFragmentManager
+                    .findFragmentByTag(R.id.navigation_edit.toString()) != null) {
+
+                val propertyUpdateFragment: PropertyUpdateFragment = baseBrowseFragment.detail.childFragmentManager
+                    .findFragmentByTag(R.id.navigation_edit.toString()) as PropertyUpdateFragment
+
+                propertyUpdateFragment.showDetails(property.id)
+                baseBrowseFragment.detail.findNavController().navigate(R.id.navigation_edit, bundle)
+            } else {
+                baseBrowseFragment.detail.findNavController().navigate(R.id.navigation_edit, bundle)
+            }
+            true
+        }
+
+        if(!::searchItem.isInitialized) {
+            searchItem = baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_main_search)
+        }
+        searchItem.isVisible = false
+
+        super.onCreateOptionsMenu(baseBrowseFragment.binding.toolBar.menu, inflater)
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         if (hidden) {
-            editItem.isVisible = false
-            onBackPressedCallback.isEnabled = false
+            if(::searchItem.isInitialized) { searchItem.isVisible = true }
+            if(::editItem.isInitialized) { editItem.isVisible = false }
+            binding.editFragment.fullScroll(FOCUS_UP)
+            baseBrowseFragment.binding.toolBar.setNavigationOnClickListener(null)
         } else {
-            displayDetail()
-            initializeToolbar()
             applyDisposition()
-            onBackPressedCallback.isEnabled = true
-            binding.detailFragment.fullScroll(ScrollView.FOCUS_UP)
-            //binding.photosRecyclerView.adapter?.notifyDataSetChanged()
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        this.parentFragment?.let {
-            val browseFragment = this.parentFragment?.parentFragment as BrowseFragment
-            browseFragment.setOnItemClickListener(this)
-        }
-    }
-
-    private fun onBackPressedCallback() {
-        onBackPressedCallback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (resources.getBoolean(R.bool.isMasterDetail)) {
-                    masterDetailOnBackPressed()
-                } else {
-                    normalOnBackPressed()
-                }
-                isEnabled = false
+            requireArguments().getString(PROPERTY_ID)?.let { propertyId ->
+                showDetails(propertyId)
             }
+            configureView()
+            onBackPressedCallback.isEnabled = true
         }
-        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, onBackPressedCallback)
     }
 
     override fun onItemClick(propertyId: String) {
@@ -490,11 +355,11 @@ class PropertyDetailFragment
         (binding.layoutPropertyAddress!!.layoutParams as ConstraintLayout.LayoutParams).apply {
             endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
             endToStart = ConstraintLayout.LayoutParams.UNSET
-            bottomToTop = binding.mapConstraintLayout.id
+            bottomToTop = binding.mapDetailFragment.id
             horizontalWeight = 1f
             height = ConstraintLayout.LayoutParams.MATCH_PARENT
-            leftMargin = 16
-            rightMargin = 16
+            leftMargin = 0
+            rightMargin = 0
         }.also { addressLayoutParams ->
             binding.layoutPropertyAddress!!.layoutParams = addressLayoutParams
 
@@ -553,13 +418,13 @@ class PropertyDetailFragment
             }
         }
 
-        (binding.mapConstraintLayout.layoutParams as ConstraintLayout.LayoutParams).apply {
+        (binding.mapDetailFragment.layoutParams as ConstraintLayout.LayoutParams).apply {
 
             val containerLayoutParams = binding.container.layoutParams as FrameLayout.LayoutParams
 
             leftMargin = 16
             rightMargin = 16
-            topMargin = 16
+            topMargin = 0
             bottomMargin = 16
 
             width = screenWidth(requireActivity())
@@ -574,7 +439,7 @@ class PropertyDetailFragment
             bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
             horizontalWeight = 1f
         }.also { layoutParams ->
-            binding.mapConstraintLayout.layoutParams = layoutParams
+            binding.mapDetailFragment.layoutParams = layoutParams
         }
     }
 
@@ -593,7 +458,7 @@ class PropertyDetailFragment
 
         (binding.layoutPropertyAddress!!.layoutParams as ConstraintLayout.LayoutParams).apply {
             endToEnd = ConstraintLayout.LayoutParams.UNSET
-            endToStart = binding.mapConstraintLayout.id
+            endToStart = binding.mapDetailFragment.id
             bottomToTop = ConstraintLayout.LayoutParams.UNSET
             horizontalWeight = 0.5f
             height = ConstraintLayout.LayoutParams.MATCH_PARENT
@@ -654,7 +519,7 @@ class PropertyDetailFragment
             }
         }
 
-        (binding.mapConstraintLayout.layoutParams as ConstraintLayout.LayoutParams).apply {
+        (binding.mapDetailFragment.layoutParams as ConstraintLayout.LayoutParams).apply {
             width = 0
             height = 0
             startToStart = ConstraintLayout.LayoutParams.UNSET
@@ -665,16 +530,53 @@ class PropertyDetailFragment
             horizontalWeight = 0.5f
             setMargins( 8, 16, 16, 16)
         }.also { layoutParams ->
-            binding.mapConstraintLayout.layoutParams = layoutParams
+            binding.mapDetailFragment.layoutParams = layoutParams
         }
+    }
+
+    override fun confirmSaveChanges() {}
+
+    override fun onBackPressedCallback() {
+        onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() { onBackPressed() }
+        }
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, onBackPressedCallback)
+    }
+
+    override fun layoutInflater(): LayoutInflater {
+        return innerInflater
     }
 
     override fun initializeToolbar() {}
 
+    private fun onBackPressed() {
+        if(baseBrowseFragment is BrowseResultFragment) {
+            baseBrowseFragment.binding.toolBar.visibility = GONE
+            baseBrowseFragment.parentFragment?.let {
+                (it.parentFragment as MainSearchFragment).binding.toolBar.visibility = VISIBLE
+            }
+        } else {
+            baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_main_search).isVisible = true
+            baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_edit).isVisible = false
+            baseBrowseFragment.binding.toolBar.visibility = GONE
+
+            (mainActivity as? MainActivity)?.let { mainActivity ->
+                mainActivity.binding.toolBar.visibility = VISIBLE
+            }
+        }
+
+        onBackPressedCallback.isEnabled = false
+        if (resources.getBoolean(R.bool.isMasterDetail)) {
+            masterDetailOnBackPressed()
+        } else {
+            normalOnBackPressed()
+        }
+    }
+
     private fun masterDetailOnBackPressed() {
         when(arguments?.getString(FROM)) {
-            MapFragment::class.java.name -> {
-                (parentFragment?.parentFragment as BrowseFragment)
+            BaseMapFragment::class.java.name -> {
+                baseBrowseFragment
                     .detail
                     .navController
                     .navigate(R.id.navigation_map)
@@ -684,41 +586,50 @@ class PropertyDetailFragment
 
     private fun normalOnBackPressed() {
         when(arguments?.getString(FROM)) {
-            ListFragment::class.java.name -> {
-                (this.parentFragment?.parentFragment as BrowseFragment).apply {
+            BaseListFragment::class.java.name -> {
+                baseBrowseFragment.apply {
                     master.requireView().visibility = VISIBLE
                     detail.requireView().visibility = GONE
                     detail.navController.navigate(R.id.navigation_map)
-                    binding.buttonContainer.visibility = VISIBLE
-                    binding.listViewButton.isSelected = true
-                    binding.mapViewButton.isSelected = false
-                    (master.binding.recyclerView.adapter as ListAdapter).notifyDataSetChanged()
+                    binding.segmentedcontrol.buttonContainer.visibility = VISIBLE
+                    binding.segmentedcontrol.listViewButton.isSelected = true
+                    binding.segmentedcontrol.mapViewButton.isSelected = false
                 }
             }
-            MapFragment::class.java.name -> {
-                (this.parentFragment?.parentFragment as BrowseFragment).apply {
+            BaseMapFragment::class.java.name -> {
+                baseBrowseFragment.apply {
                     detail.navController.navigate(R.id.navigation_map)
                     master.requireView().visibility = GONE
                     detail.requireView().visibility = VISIBLE
-                    binding.buttonContainer.visibility = VISIBLE
-                    binding.listViewButton.isSelected = false
-                    binding.mapViewButton.isSelected = true
+                    binding.segmentedcontrol.buttonContainer.visibility = VISIBLE
+                    binding.segmentedcontrol.listViewButton.isSelected = false
+                    binding.segmentedcontrol.mapViewButton.isSelected = true
                 }
             }
         }
     }
 
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
+    override fun onMapReady(googleMap: GoogleMap) { mMap = googleMap
+
+        /*
+        Deprecation notice: In a future release, indoor will no longer be supported on satellite,
+        hybrid or terrain type maps. Even where indoor is not supported, isIndoorEnabled()
+        will continue to return the value that has been set via setIndoorEnabled(),
+        as it does now. By default, setIndoorEnabled is 'true'.
+        The API release notes (https://developers.google.com/maps/documentation/android-api/releases)
+        will let you know when indoor support becomes unavailable on those map types.
+        */
+
+        mMap.isIndoorEnabled = false
         moveCameraToPropertyInsideMap()
         val options = GoogleMapOptions().liteMode(true)
         mMap.mapType = options.mapType
-        binding.mapConstraintLayout.contentDescription = DETAIL_MAP_NOT_FINISH_LOADING
+        binding.mapDetailFragment.contentDescription = DETAIL_MAP_NOT_FINISH_LOADING
         mMap.setOnMapLoadedCallback(this)
     }
 
     override fun onMapLoaded() {
-        binding.mapConstraintLayout.contentDescription = DETAIL_MAP_FINISH_LOADING
+        binding.mapDetailFragment.contentDescription = DETAIL_MAP_FINISH_LOADING
     }
 
     private fun moveCameraToPropertyInsideMap() {

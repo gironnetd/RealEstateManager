@@ -1,11 +1,17 @@
 <component name="ProjectDictionaryState">
   <dictionary name="damien">
     <words>
+      <w>appbarlayout</w>
       <w>chesnay</w>
       <w>firestore</w>
       <w>gmail</w>
       <w>phablet</w>
+      <w>radiogroup</w>
       <w>rocquencourt</w>
+      <w>segmentedcontrol</w>
+      <w>sharedpref</w>
+      <w>snackbar</w>
+      <w>statusbar</w>
       <w>yvelines</w>
     </words>
   </dictionary>

@@ -10,11 +10,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.NavHostFragment
 import com.openclassrooms.realestatemanager.R
+import com.openclassrooms.realestatemanager.databinding.FragmentEditBinding
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.ui.mvibase.MviView
-import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditIntent.PropertyUpdateIntent
@@ -23,6 +22,8 @@ import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditIntent.
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditViewState
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditViewState.UiNotification.PROPERTIES_FULLY_UPDATED
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditViewState.UiNotification.PROPERTY_LOCALLY_UPDATED
+import com.openclassrooms.realestatemanager.ui.property.search.result.BrowseResultFragment
+import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
 import com.openclassrooms.realestatemanager.util.Constants.FROM
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTY_ID
 import io.reactivex.Observable
@@ -34,27 +35,39 @@ import javax.inject.Inject
  */
 class PropertyUpdateFragment
 @Inject constructor(viewModelFactory: ViewModelProvider.Factory, registry: ActivityResultRegistry?)
-    : PropertyEditFragment(registry), /*PropertyDetailFragment.OnItemClickListener,*/
-    MviView<PropertyUpdateIntent, PropertyEditViewState> {
+    : PropertyEditFragment(registry), MviView<PropertyUpdateIntent, PropertyEditViewState> {
 
     private val propertyUpdateViewModel: PropertyUpdateViewModel by viewModels { viewModelFactory }
 
     lateinit var property: Property
     private lateinit var updateItem: MenuItem
+    private lateinit var searchItem: MenuItem
+
+    private lateinit var innerInflater: LayoutInflater
 
     private val updatePropertyIntentPublisher = PublishSubject.create<UpdatePropertyIntent>()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle? ): View {
-        super.onCreateView(inflater, container, savedInstanceState)
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         properties.value?.let { properties ->
             property = properties.single { property -> property.id == arguments?.getString(PROPERTY_ID) }
             newProperty = property.deepCopy()
         }
-        onBackPressedCallback()
         applyDisposition()
+    }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View {
+        when(baseBrowseFragment::class.java) {
+            BrowseResultFragment::class.java -> {
+                innerInflater = inflater.cloneInContext(ContextThemeWrapper(activity, R.style.AppTheme_Tertiary))
+            }
+            BrowseFragment::class.java -> {
+                innerInflater = inflater.cloneInContext(ContextThemeWrapper(activity, R.style.AppTheme_Primary))
+            }
+        }
+        _binding = FragmentEditBinding.inflate(innerInflater, container, false)
+        super.onCreateView(innerInflater, container, savedInstanceState)
+        binding.mapDetailFragment.visibility = View.GONE
         return binding.root
     }
 
@@ -65,23 +78,32 @@ class PropertyUpdateFragment
         showDetails(property.id)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        updateItem = menu.findItem(R.id.navigation_update)
-        updateItem.isVisible = true
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_update).isVisible = true
+        baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_main_search).isVisible = false
+        super.onPrepareOptionsMenu(baseBrowseFragment.binding.toolBar.menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.navigation_update -> {
-                populateChanges()
-                if(newProperty != property || newProperty.photos != property.photos) {
-                    confirmSaveChanges()
-                } else {
-                    showMessage(resources.getString(R.string.no_changes))
-                }
-            }
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        if(!::updateItem.isInitialized) {
+            updateItem = baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_update)
         }
-        return super.onOptionsItemSelected(item)
+        updateItem.isVisible = true
+        updateItem.setOnMenuItemClickListener {
+            populateChanges()
+            if(newProperty != property || newProperty.photos != property.photos) {
+                confirmSaveChanges()
+            } else {
+                showMessage(resources.getString(R.string.no_changes))
+            }
+            true
+        }
+
+        if(!::searchItem.isInitialized) {
+            searchItem = baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_main_search)
+        }
+        searchItem.isVisible = false
+        super.onCreateOptionsMenu(baseBrowseFragment.binding.toolBar.menu, inflater)
     }
 
     override fun intents(): Observable<PropertyUpdateIntent> {
@@ -124,23 +146,16 @@ class PropertyUpdateFragment
         }
         configureView()
 
-        this.parentFragment?.parentFragment?.let {
-            val browseFragment = this.parentFragment?.parentFragment as BrowseFragment
-            browseFragment.binding.toolBar.title = property.titleInToolbar(resources)
-        }
+        baseBrowseFragment.binding.toolBar.title = property.titleInToolbar(resources)
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (hidden) {
-            this.parentFragment?.parentFragment?.let {
-                val browseFragment = this.parentFragment?.parentFragment as BrowseFragment
-                browseFragment.binding.toolBar.setNavigationOnClickListener(null)
-            }
-            onBackPressedCallback.isEnabled = false
-            updateItem.isVisible = false
+            baseBrowseFragment.binding.toolBar.setNavigationOnClickListener(null)
             clearView()
         } else {
+            initializeToolbar()
             updateItem.isVisible = true
             onBackPressedCallback.isEnabled = true
         }
@@ -149,19 +164,25 @@ class PropertyUpdateFragment
     override fun onBackPressedCallback() {
         onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                populateChanges()
-                if(newProperty != property || newProperty.photos != property.photos) {
-                    confirmSaveChanges()
-                } else {
-                    onBackPressed()
+                if(!isHidden) {
+                    populateChanges()
+                    if(newProperty != property || newProperty.photos != property.photos) {
+                        confirmSaveChanges()
+                    } else {
+                        onBackPressed()
+                    }
                 }
             }
         }
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, onBackPressedCallback)
     }
 
+    override fun layoutInflater(): LayoutInflater {
+        return innerInflater
+    }
+
     override fun confirmSaveChanges() {
-        val builder = AlertDialog.Builder(requireContext())
+        val builder = AlertDialog.Builder(innerInflater.context)
         with(builder) {
             setTitle(getString(R.string.confirm_save_changes_dialog_title))
             setMessage(getString(R.string.confirm_save_changes_dialog_message))
@@ -179,57 +200,36 @@ class PropertyUpdateFragment
     }
 
     private fun applyDisposition() {
-        this.parentFragment?.let {
-            val detailFragment = this.parentFragment as NavHostFragment
-            if(!resources.getBoolean(R.bool.isMasterDetail)) {
-                detailFragment.requireView().layoutParams.apply {
-                    width = ViewGroup.LayoutParams.MATCH_PARENT
-                    height = ViewGroup.LayoutParams.MATCH_PARENT
-                    (this as FrameLayout.LayoutParams).leftMargin = 0
-                }
+        if(!resources.getBoolean(R.bool.isMasterDetail)) {
+            baseBrowseFragment.detail.requireView().layoutParams.apply {
+                width = ViewGroup.LayoutParams.MATCH_PARENT
+                height = ViewGroup.LayoutParams.MATCH_PARENT
+                (this as FrameLayout.LayoutParams).leftMargin = 0
             }
         }
     }
 
     override fun initializeToolbar() {
-        this.parentFragment?.parentFragment?.let {
-            val browseFragment =  this.parentFragment?.parentFragment as BrowseFragment
-            with(browseFragment.binding.toolBar) {
-                title = property.titleInToolbar(resources)
-                setNavigationOnClickListener {
-                    populateChanges()
-                    if(newProperty != property || newProperty.photos != property.photos) {
-                        confirmSaveChanges()
-                    } else {
-                        onBackPressed()
-                    }
+        with(baseBrowseFragment.binding.toolBar) {
+            title = property.titleInToolbar(resources)
+            setNavigationOnClickListener {
+                populateChanges()
+                if(newProperty != property || newProperty.photos != property.photos) {
+                    confirmSaveChanges()
+                } else {
+                    onBackPressed()
                 }
             }
         }
     }
 
     fun onBackPressed() {
-        if (resources.getBoolean(R.bool.isMasterDetail)) {
-            masterDetailOnBackPressed()
-        } else {
-            normalOnBackPressed()
-        }
-    }
-
-    private fun masterDetailOnBackPressed() {
-        (parentFragment?.parentFragment as BrowseFragment)
-            .detail
-            .navController
-            .navigate(R.id.navigation_detail, bundleOf(FROM to arguments?.getString(FROM),
-                PROPERTY_ID to property.id))
-    }
-
-    private fun normalOnBackPressed() {
-        (this.parentFragment?.parentFragment as BrowseFragment)
-            .detail
-            .navController
-            .navigate(R.id.navigation_detail, bundleOf(FROM to arguments?.getString(FROM),
-                PROPERTY_ID to property.id))
+        updateItem.isVisible = false
+        onBackPressedCallback.isEnabled = false
+        baseBrowseFragment.detail.navController.navigate(
+            R.id.navigation_detail, bundleOf(FROM to arguments?.getString(FROM),
+                PROPERTY_ID to property.id)
+        )
     }
 }
 

@@ -112,7 +112,7 @@ class PhotoRemoteDataSource
                             val photosByPropertyId = result.toObjects(Photo::class.java)
                             photosByPropertyId.forEach { photo -> photo.propertyId = propertyId }
                             emitter.onSuccess(photosByPropertyId)
-                        } ?: emitter.onError(java.lang.NullPointerException("No Photos Found for property: ${propertyId}"))
+                        } ?: emitter.onError(java.lang.NullPointerException("No Photos Found for property: $propertyId"))
                     }.addOnFailureListener { exception ->
                         emitter.onError(exception)
                     })

@@ -4,7 +4,7 @@ import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.ui.mvibase.MviViewState
 
 data class PropertiesViewState(
-        val inProgress: Boolean = false,
+        val inProgress: Boolean? = false,
         val properties: List<Property>? = null,
         val error: Throwable? = null,
         val uiNotification: UiNotification? = null

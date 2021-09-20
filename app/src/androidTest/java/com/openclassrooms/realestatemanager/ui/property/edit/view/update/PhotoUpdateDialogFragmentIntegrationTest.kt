@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.ActivityResultRegistry
@@ -12,8 +13,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
-import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.lifecycle.Lifecycle.State.RESUMED
+import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
@@ -24,14 +24,12 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE
-import androidx.test.espresso.matcher.ViewMatchers.Visibility.INVISIBLE
+import androidx.test.espresso.matcher.ViewMatchers.Visibility.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
 import com.openclassrooms.realestatemanager.R
-import com.openclassrooms.realestatemanager.R.style.AppTheme
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository
 import com.openclassrooms.realestatemanager.di.TestAppComponent
@@ -40,11 +38,12 @@ import com.openclassrooms.realestatemanager.models.PhotoType.*
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.models.storageLocalDatabase
 import com.openclassrooms.realestatemanager.ui.BaseFragmentTests
-import com.openclassrooms.realestatemanager.ui.property.BaseFragment
+import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PhotoUpdateAdapter
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragment
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PhotoDetailAdapter
+import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
 import com.openclassrooms.realestatemanager.util.BitmapUtil.sameAs
 import com.openclassrooms.realestatemanager.util.Constants
 import com.openclassrooms.realestatemanager.util.OrientationChangeAction
@@ -57,7 +56,6 @@ import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
 import java.io.File
 import java.io.FileOutputStream
-
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
@@ -115,15 +113,25 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
     @Test
     fun given_update_photo_dialog_when_click_on_item_in_photo_recycler_view_then_alert_dialog_shown() {
         // Given Update fragment
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, /*requestManager,*/ null)
-        }.onFragment {
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
         }
 
         val photoUpdatePosition = fakeProperties[itemPosition].photos.indices.random()
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(
+            VISIBLE
+        )))))) {
             perform(scrollToPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -134,15 +142,25 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
     @Test
     fun given_update_photo_dialog_when_update_dialog_shown_then_photo_detail_displayed() {
         // Given Update fragment
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory,null)
-        }.onFragment {
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
         }
 
         val photoUpdatePosition = fakeProperties[itemPosition].photos.indices.random()
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(
+            VISIBLE
+        )))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -153,6 +171,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             KITCHEN -> { onView(withId(R.id.radio_button_kitchen)).check(matches(isChecked())) }
             BEDROOM -> { onView(withId(R.id.radio_button_bedroom)).check(matches(isChecked())) }
             BATHROOM -> { onView(withId(R.id.radio_button_bathroom)).check(matches(isChecked())) }
+            else -> {}
         }
 
         onView(withId(R.id.description_edit_text))
@@ -188,16 +207,25 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             }
         }
 
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
-        }.onFragment {
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
+            propertyUpdateFragment.registry = testRegistry
         }
 
         val photoUpdatePosition = fakeProperties[itemPosition].photos
             .indexOf(fakeProperties[itemPosition].photos.first { photo -> !photo.mainPhoto })
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -237,15 +265,23 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
     @Test
     fun given_update_photo_dialog_when_rotate_then_alert_dialog_shown_again() {
         // Given Update fragment
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, null)
-        }.onFragment {
-            mainActivity = it.requireActivity()
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
         }
 
         val photoUpdatePosition = fakeProperties[itemPosition].photos.indices.random()
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -279,16 +315,24 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             }
         }
 
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
-        }.onFragment {
-            mainActivity = it.requireActivity()
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
+            propertyUpdateFragment.registry = testRegistry
         }
 
         val photoUpdatePosition = fakeProperties[itemPosition].photos.indices.random()
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -342,15 +386,24 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             }
         }
 
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
-        }.onFragment {
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
+            propertyUpdateFragment.registry = testRegistry
         }
 
         val photoUpdatePosition = fakeProperties[itemPosition].photos.indices.random()
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -375,15 +428,24 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             }
         }
 
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
-        }.onFragment {
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
+            propertyUpdateFragment.registry = testRegistry
         }
 
         val photoUpdatePosition = fakeProperties[itemPosition].photos.indices.random()
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -418,15 +480,24 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             }
         }
 
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
-        }.onFragment {
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
+            propertyUpdateFragment.registry = testRegistry
         }
 
         val photoUpdatePosition = fakeProperties[itemPosition].photos.indices.random()
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -460,15 +531,24 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             }
         }
 
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
-        }.onFragment {
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
+            propertyUpdateFragment.registry = testRegistry
         }
 
         val photoUpdatePosition = fakeProperties[itemPosition].photos.indices.random()
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -500,15 +580,24 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             }
         }
 
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
-        }.onFragment {
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
+            propertyUpdateFragment.registry = testRegistry
         }
 
         val photoUpdatePosition = fakeProperties[itemPosition].photos.indices.random()
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -539,15 +628,23 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             }
         }
 
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
-        }.onFragment {
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
         }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
+            propertyUpdateFragment.registry = testRegistry
+        }
         val photoUpdatePosition = fakeProperties[itemPosition].photos.indices.random()
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -587,15 +684,24 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             }
         }
 
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
-        }.onFragment {
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
+            propertyUpdateFragment.registry = testRegistry
         }
 
         val photoUpdatePosition = fakeProperties[itemPosition].photos.indices.random()
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -630,10 +736,19 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             }
         }
 
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
-        }.onFragment {
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
+            propertyUpdateFragment.registry = testRegistry
         }
 
         val photoUpdatePosition = fakeProperties[itemPosition].photos.indexOf(
@@ -642,7 +757,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
 
         val photoUpdate = fakeProperties[itemPosition].photos[photoUpdatePosition]
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -672,11 +787,19 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             }
         }
 
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
-        }.onFragment {
-            propertyUpdateFragment = it
-            mainActivity = it.requireActivity()
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
+            propertyUpdateFragment.registry = testRegistry
         }
 
         val photoUpdatePosition = fakeProperties[itemPosition].photos.indexOf(
@@ -685,7 +808,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
 
         val photoUpdate = fakeProperties[itemPosition].photos[photoUpdatePosition]
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -720,15 +843,24 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             }
         }
 
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
-        }.onFragment {
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
+            propertyUpdateFragment.registry = testRegistry
         }
 
         val photoUpdatePosition = fakeProperties[itemPosition].photos.indices.random()
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -759,15 +891,23 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             }
         }
 
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, testRegistry)
-        }.onFragment {
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
         }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
+            propertyUpdateFragment.registry = testRegistry
+        }
         val photoUpdatePosition = fakeProperties[itemPosition].photos.indices.random()
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -783,22 +923,31 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             propertyUpdateFragment.binding.photosRecyclerView
                 .findViewHolderForAdapterPosition(photoUpdatePosition) as PhotoUpdateAdapter.PhotoViewHolder
 
-        assertThat((viewHolder.photo.drawable as BitmapDrawable).bitmap).isNull()
+        // The Default value is a VectorDrawable
+        assertThat((viewHolder.photo.drawable)).isInstanceOf(VectorDrawable::class.java)
     }
 
     @Test
     fun given_update_photo_dialog_when_click_on_item_which_is_main_photo_then_main_photo_is_checked_and_non_clickable() {
         // Given Update fragment
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, null)
-        }.onFragment {
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
         }
 
         val photoUpdatePosition: Int = fakeProperties[itemPosition].photos
             .indexOf(fakeProperties[itemPosition].photos.single { photo -> photo.mainPhoto })
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(photoUpdatePosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
@@ -810,10 +959,18 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
     @Test
     fun given_update_photo_dialog_when_click_on_main_photo_then_main_photo_change() {
         // Given Update fragment
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory, null)
-        }.onFragment {
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
         }
 
         val mainPhotoPosition: Int = fakeProperties[itemPosition].photos
@@ -838,7 +995,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
             fakeProperties[itemPosition].photos[otherPhotoPosition].type.type
         ).uppercase())
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(mainPhotoPosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(mainPhotoPosition, click()))
         }
@@ -847,7 +1004,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         onView(withId(R.id.is_main_photo)).check(matches(not(isClickable())))
         onView(withText(R.string.cancel)).perform(click())
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(otherPhotoPosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(otherPhotoPosition, click()))
         }
@@ -879,10 +1036,18 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
     @Test
     fun given_update_photo_dialog_when_main_photo_change_then_change_occurs_in_property() {
         // Given Update fragment
-        launchFragmentInContainer(fragmentArgs = bundle, AppTheme, RESUMED) {
-            PropertyUpdateFragment(propertiesViewModelFactory,null)
-        }.onFragment {
-            propertyUpdateFragment = it
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = ActivityScenario.launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
         }
 
         val mainPhotoPosition: Int = fakeProperties[itemPosition].photos
@@ -894,7 +1059,7 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
         assertThat(fakeProperties[itemPosition].photos[mainPhotoPosition].mainPhoto).isTrue()
         assertThat(fakeProperties[itemPosition].photos[newPhotoPosition].mainPhoto).isFalse()
 
-        with(onView(withId(R.id.photos_recycler_view))) {
+        with(onView(allOf(withId(R.id.photos_recycler_view), withParent(allOf(withId(R.id.media_layout), withEffectiveVisibility(VISIBLE)))))) {
             perform(scrollToPosition<PhotoUpdateAdapter.PhotoViewHolder>(newPhotoPosition))
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(newPhotoPosition, click()))
         }
@@ -913,6 +1078,11 @@ class PhotoUpdateDialogFragmentIntegrationTest  : BaseFragmentTests() {
 
         assertThat(propertyUpdateFragment.newProperty.photos[mainPhotoPosition].mainPhoto).isFalse()
         assertThat(propertyUpdateFragment.newProperty.photos[newPhotoPosition].mainPhoto).isTrue()
+    }
+
+    override fun navigate_to_update_fragment() {
+        navigate_to_detail_fragment()
+        super.navigate_to_update_fragment()
     }
 
     companion object {

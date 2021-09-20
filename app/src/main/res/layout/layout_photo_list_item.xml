@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="82dp"
     android:layout_height="wrap_content"
     android:padding="2dp">
 
@@ -13,32 +12,26 @@
         android:layout_height="80dp"
         android:scaleType="fitXY"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars"
+        android:padding="16dp"
+        app:srcCompat="@drawable/ic_baseline_no_photography_24"
         android:contentDescription="@string/content_description"/>
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:alpha="0.5"
-        android:background="@android:color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:alpha="0.6"
+        android:background="@android:color/black">
 
         <TextView
             android:id="@+id/property_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textSize="8sp"
+            android:textSize="11sp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
             android:textStyle="bold"
             android:textColor="@android:color/white" />
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

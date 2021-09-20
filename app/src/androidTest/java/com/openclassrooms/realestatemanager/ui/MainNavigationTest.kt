@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.ui
 
+import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -13,6 +14,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
+import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.di.TestAppComponent
@@ -39,7 +41,7 @@ class MainNavigationTest : BaseMainActivityTests() {
     }
 
     @Test
-    fun given_main_activity_launched_when_click_on_real_estate_bottom_navigation_view_then_browse_fragment_is_shown() {
+    fun given_main_activity_launched_when_click_on_properties_bottom_navigation_view_then_browse_fragment_is_shown() {
         // Given Main activity is launched
         activityScenario = launch(MainActivity::class.java)
                 .onActivity { mainActivity ->
@@ -53,10 +55,10 @@ class MainNavigationTest : BaseMainActivityTests() {
         }
 
         // When click on Real estate Bottom Navigation view
-        onView(allOf(withId(R.id.navigation_real_estate), isDisplayed())).perform(click())
+        onView(allOf(withId(R.id.navigation_browse), isDisplayed())).perform(click())
 
         // Then Browse fragment is shown
-        assertEquals(navController.currentDestination?.id, R.id.navigation_real_estate)
+        assertEquals(navController.currentDestination?.id, R.id.navigation_browse)
     }
 
     @Test
@@ -76,7 +78,23 @@ class MainNavigationTest : BaseMainActivityTests() {
     }
 
     @Test
-    fun given_main_activity_launched_when_click_on_real_estate_navigation_view_then_browse_fragment_is_shown() {
+    fun given_main_activity_launched_when_click_on_search_bottom_navigation_view_then_create_fragment_is_shown() {
+        // Given Main activity is launched
+        activityScenario = launch(MainActivity::class.java)
+            .onActivity { mainActivity ->
+                navController = Navigation.findNavController(mainActivity, R.id.nav_host_fragment)
+            }
+
+        // When click on Search Bottom Navigation view
+        onView(allOf(withId(R.id.navigation_main_search), isAssignableFrom(BottomNavigationItemView::class.java), isDisplayed()))
+            .perform(click())
+
+        // Then Create fragment is shown
+        onView(withId(R.id.main_search_fragment)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun given_main_activity_launched_when_click_on_properties_navigation_view_then_browse_fragment_is_shown() {
         // Given Main activity is launched
         activityScenario = launch(MainActivity::class.java)
                 .onActivity { mainActivity ->
@@ -87,7 +105,7 @@ class MainNavigationTest : BaseMainActivityTests() {
                 activityScenario.get_toolbar_navigation_content_description()), isDisplayed()))
                 .perform(click())
 
-        if(navController.currentDestination?.id!! == R.id.navigation_real_estate) {
+        if(navController.currentDestination?.id!! == R.id.navigation_browse) {
             runOnUiThread {
                 navController.navigate(R.id.navigation_create)
             }
@@ -95,10 +113,10 @@ class MainNavigationTest : BaseMainActivityTests() {
 
         // When click on Real estate Navigation view
         onView(withId(R.id.navigation_view))
-            .perform(NavigationViewActions.navigateTo(R.id.navigation_real_estate))
+            .perform(NavigationViewActions.navigateTo(R.id.navigation_browse))
 
         // Then Browse fragment is shown
-        assertEquals(navController.currentDestination?.id, R.id.navigation_real_estate)
+        assertEquals(navController.currentDestination?.id, R.id.navigation_browse)
     }
 
     @Test
@@ -121,6 +139,25 @@ class MainNavigationTest : BaseMainActivityTests() {
     }
 
     @Test
+    fun given_main_activity_launched_when_click_on_search_navigation_view_then_create_fragment_is_shown() {
+        // Given Main activity is launched
+        activityScenario = launch(MainActivity::class.java)
+            .onActivity { mainActivity ->
+                navController = Navigation.findNavController(mainActivity, R.id.nav_host_fragment)
+            }
+        onView(allOf(withContentDescription(
+            activityScenario.get_toolbar_navigation_content_description()), isDisplayed()))
+            .perform(click())
+
+        // When click on Search Navigation view
+        onView(withId(R.id.navigation_view))
+            .perform(NavigationViewActions.navigateTo(R.id.navigation_main_search))
+
+        // Then Create fragment is shown
+        onView(withId(R.id.main_search_fragment)).check(matches(isDisplayed()))
+    }
+
+    @Test
     fun given_main_activity_launched_when_click_on_search_tool_bar_item_then_search_fragment_is_shown() {
         // Given Main activity is launched
         activityScenario = launch(MainActivity::class.java)
@@ -129,10 +166,10 @@ class MainNavigationTest : BaseMainActivityTests() {
                 }
 
         // When click on Search Toolbar item
-        onView(withId(R.id.navigation_search)).perform(click())
+        onView(allOf(withId(R.id.navigation_main_search), isAssignableFrom(ActionMenuItemView::class.java), isDisplayed())).perform(click())
 
         // Then Search fragment is shown
-        onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
+        onView(withId(R.id.main_search_fragment)).check(matches(isDisplayed()))
     }
 
     override fun injectTest(application: TestBaseApplication) {

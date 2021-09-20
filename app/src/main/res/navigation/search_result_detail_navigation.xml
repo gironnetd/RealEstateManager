@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/search_result_detail_navigation"
+    app:startDestination="@id/navigation_splash">
+
+    <browse_detail_fragment
+        android:id="@+id/navigation_splash"
+        android:name="com.openclassrooms.realestatemanager.ui.property.shared.SplashFragment">
+    </browse_detail_fragment>
+
+    <browse_detail_fragment
+        android:id="@+id/navigation_map"
+        android:name="com.openclassrooms.realestatemanager.ui.property.search.result.map.SearchMapFragment"
+        tools:layout="@layout/fragment_map">
+
+        <action android:id="@+id/navigation_detail_action"
+            app:destination="@id/navigation_detail"
+            app:popUpTo="@id/navigation_map"/>
+
+        <argument
+            android:name="propertyId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </browse_detail_fragment>
+
+    <browse_detail_fragment
+        android:id="@+id/navigation_detail"
+        android:name="com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragment"
+        tools:layout="@layout/fragment_detail">
+
+        <action android:id="@+id/navigation_edit_action"
+            app:destination="@id/navigation_edit"
+            app:popUpTo="@id/navigation_detail"/>
+
+        <argument
+            android:name="from"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+
+        <argument
+            android:name="propertyId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </browse_detail_fragment>
+
+    <browse_detail_fragment
+        android:id="@+id/navigation_edit"
+        android:name="com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragment"
+        tools:layout="@layout/fragment_edit">
+
+        <argument
+            android:name="from"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+
+        <argument
+            android:name="propertyId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </browse_detail_fragment>
+</navigation>

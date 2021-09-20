@@ -13,6 +13,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import kotlin.reflect.KClass
 
+@Suppress("UNCHECKED_CAST")
 open class DataSource <T: PropertySource, U: PhotoSource>
 constructor(var propertySource: T, var photoSource: U) {
 
@@ -147,14 +148,6 @@ constructor(var propertySource: T, var photoSource: U) {
         return when (type) {
             Property::class -> { propertySource.deleteProperties(value as List<Property>) }
             Photo::class -> { photoSource.deletePhotos(value as List<Photo>) }
-            else -> { Completable.error(Throwable(ClassNotFoundException())) }
-        }
-    }
-
-    open fun <T: Any> deleteById(type: KClass<T>, id: String): Completable {
-        return when (type) {
-            Property::class -> { propertySource.deletePropertyById(id) }
-            Photo::class -> { photoSource.deletePhotoById(id) }
             else -> { Completable.error(Throwable(ClassNotFoundException())) }
         }
     }

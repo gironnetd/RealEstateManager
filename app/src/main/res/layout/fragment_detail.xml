@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"
     android:id="@+id/detail_fragment"
     tools:context=".ui.property.propertydetail.PropertyDetailFragment">
     <LinearLayout
@@ -45,27 +44,30 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
-                        android:id="@+id/no_photos_text_view"
+                        android:id="@+id/no_photos"
+                        style="@style/TextAppearance"
                         android:layout_width="wrap_content"
-                        android:layout_height="80dp"
+                        android:layout_height="84dp"
                         android:layout_gravity="fill_vertical|center_horizontal"
                         android:gravity="fill_vertical|center_horizontal"
                         android:text="@string/no_photos_for_this_property"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginTop="24dp"
-                        android:layout_marginEnd="12dp"
-                        android:layout_marginBottom="16dp"/>
+                        android:layout_margin="8dp" />
+
+                    <ProgressBar
+                        android:id="@+id/loading_photos"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:visibility="gone"/>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/photos_recycler_view"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:minHeight="80dp"
+                        android:layout_height="84dp"
                         android:layout_marginStart="12dp"
-                        android:layout_marginTop="24dp"
+                        android:layout_marginTop="16dp"
                         android:layout_marginEnd="12dp"
-                        android:layout_marginBottom="16dp"
+                        android:layout_marginBottom="12dp"
                         android:orientation="horizontal"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -73,27 +75,13 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         tools:listitem="@layout/layout_photo_list_item"/>
-
-                    <ProgressBar
-                        android:id="@+id/loading_progressbar"
-                        android:indeterminate="true"
-                        android:theme="@style/CircularProgress"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:visibility="gone"/>
                 </FrameLayout>
                 <TextView
                     android:id="@+id/label_media"
+                    style="@style/LabelTextAppearance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="5dp"
-                    android:background="@android:color/white"
-                    android:padding="4dp"
                     android:text="@string/media"
-                    android:textColor="@android:color/black"
-                    android:textSize="19sp"
                     app:layout_constraintEnd_toEndOf="@+id/linearLayout"
                     app:layout_constraintStart_toStartOf="@+id/linearLayout"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -102,15 +90,10 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/description_text_input_layout"
-            style="@style/TextInputLayoutAppearance"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            app:hintTextColor="@color/colorAccent"
-            app:boxStrokeColor="@color/colorAccent"
-            android:textColorHint="@android:color/black"
-            app:hintTextAppearance="@style/TextInputEditTextAppearance">
+            android:layout_marginBottom="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/description"
@@ -118,9 +101,7 @@
                 android:layout_height="wrap_content"
                 android:focusable="false"
                 android:inputType="textMultiLine|textNoSuggestions"
-                android:hint="@string/description"
-                android:text="@string/none"
-                android:textColor="@color/colorPrimaryDark"/>
+                android:hint="@string/description" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -138,16 +119,10 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/entry_date_date_text_input_layout"
-                    style="@style/TextInputLayoutAppearance"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-
-                    android:textColorHint="@android:color/black"
-                    app:boxStrokeColor="@color/colorAccent"
-                    app:hintTextAppearance="@style/TextInputEditTextAppearance"
-                    app:hintTextColor="@color/colorAccent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
@@ -157,9 +132,7 @@
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:hint="@string/property_entry_date"
-                        android:inputType="number"
-                        android:text="@string/none"
-                        android:textColor="@color/colorPrimaryDark"/>
+                        android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -173,14 +146,9 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/status_text_input_layout"
-                    style="@style/TextInputLayoutAppearance"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:textColorHint="@android:color/black"
-                    app:boxStrokeColor="@color/colorAccent"
-                    app:hintTextAppearance="@style/TextInputEditTextAppearance"
-                    app:hintTextColor="@color/colorAccent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -191,12 +159,8 @@
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:hint="@string/property_status"
-                        android:inputType="number"
-                        android:text="@string/none"
-                        android:textColor="@color/colorPrimaryDark"/>
+                        android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
-
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -209,15 +173,10 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/sold_date_text_input_layout"
-                    style="@style/TextInputLayoutAppearance"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:textColorHint="@android:color/black"
-                    app:boxStrokeColor="@color/colorAccent"
-                    app:hintTextAppearance="@style/TextInputEditTextAppearance"
-                    app:hintTextColor="@color/colorAccent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
@@ -228,8 +187,7 @@
                         android:focusable="false"
                         android:hint="@string/property_sold_date"
                         android:text="@string/no_sold_date"
-                        android:inputType="number"
-                        android:textColor="@color/colorPrimaryDark"/>
+                        android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -274,15 +232,10 @@
                     </LinearLayout>
                     <TextView
                         android:id="@+id/label_interest_points"
+                        style="@style/LabelTextAppearance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="5dp"
-                        android:background="@android:color/white"
-                        android:padding="4dp"
                         android:text="@string/interest_points"
-                        android:textColor="@android:color/black"
-                        android:textSize="19sp"
                         app:layout_constraintEnd_toEndOf="@+id/linearLayout"
                         app:layout_constraintStart_toStartOf="@+id/linearLayout"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -309,19 +262,12 @@
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/price_text_input_layout"
-                        style="@style/TextInputLayoutAppearance"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
-                        android:textColorHint="@android:color/black"
-                        app:boxStrokeColor="@color/colorAccent"
-                        app:hintTextAppearance="@style/TextInputEditTextAppearance"
-                        app:hintTextColor="@color/colorAccent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:endIconMode="custom"
-                        app:endIconTint="@android:color/black"
                         app:endIconDrawable="@drawable/ic_baseline_euro_24">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -330,9 +276,7 @@
                             android:layout_height="wrap_content"
                             android:focusable="false"
                             android:hint="@string/property_price"
-                            android:inputType="number"
-                            android:text="@string/none"
-                            android:textColor="@color/colorPrimaryDark"/>
+                            android:inputType="number" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -346,18 +290,12 @@
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/type_text_input_layout"
-                        style="@style/TextInputLayoutAppearance"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:textColorHint="@android:color/black"
-                        app:boxStrokeColor="@color/colorAccent"
-                        app:hintTextAppearance="@style/TextInputEditTextAppearance"
-                        app:hintTextColor="@color/colorAccent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        >
+                        app:layout_constraintTop_toTopOf="parent">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/type"
@@ -365,9 +303,7 @@
                             android:layout_height="wrap_content"
                             android:focusable="false"
                             android:hint="@string/property_type"
-                            android:inputType="number"
-                            android:text="@string/none"
-                            android:textColor="@color/colorPrimaryDark"/>
+                            android:inputType="number" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -375,22 +311,17 @@
                     android:id="@+id/layout_surface"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/layout_type">
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/surface_text_input_layout"
-                        style="@style/TextInputLayoutAppearance"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColorHint="@android:color/black"
-                        app:boxStrokeColor="@color/colorAccent"
                         app:endIconDrawable="@drawable/ic_baseline_square_meter_24"
-                        app:endIconMode="custom"
-                        app:endIconTint="@android:color/black"
-                        app:hintTextAppearance="@style/TextInputEditTextAppearance"
-                        app:hintTextColor="@color/colorAccent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
@@ -401,9 +332,7 @@
                             android:layout_height="wrap_content"
                             android:focusable="false"
                             android:hint="@string/surface"
-                            android:inputType="number"
-                            android:text="@string/none"
-                            android:textColor="@color/colorPrimaryDark" />
+                            android:inputType="number" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -417,19 +346,14 @@
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/rooms_text_input_layout"
-                        style="@style/TextInputLayoutAppearance"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:textColorHint="@android:color/black"
-                        app:boxStrokeColor="@color/colorAccent"
-                        app:hintTextAppearance="@style/TextInputEditTextAppearance"
-                        app:hintTextColor="@color/colorAccent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:startIconDrawable="@drawable/ic_baseline_home_24"
-                        app:startIconTint="@android:color/black">
+                        >
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/rooms"
@@ -437,9 +361,7 @@
                             android:layout_height="wrap_content"
                             android:focusable="false"
                             android:hint="@string/number_of_rooms"
-                            android:inputType="number"
-                            android:text="@string/none"
-                            android:textColor="@color/colorPrimaryDark"/>
+                            android:inputType="number" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -454,19 +376,13 @@
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/bathrooms_text_input_layout"
-                        style="@style/TextInputLayoutAppearance"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:textColorHint="@android:color/black"
-                        app:boxStrokeColor="@color/colorAccent"
-                        app:hintTextAppearance="@style/TextInputEditTextAppearance"
-                        app:hintTextColor="@color/colorAccent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:startIconDrawable="@drawable/ic_baseline_hot_tub_24"
-                        app:startIconTint="@android:color/black">
+                        app:startIconDrawable="@drawable/ic_baseline_hot_tub_24">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/bathrooms"
@@ -474,9 +390,7 @@
                             android:layout_height="wrap_content"
                             android:focusable="false"
                             android:hint="@string/number_of_bathrooms"
-                            android:inputType="number"
-                            android:text="@string/none"
-                            android:textColor="@color/colorPrimaryDark"/>
+                            android:inputType="number"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -492,21 +406,15 @@
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/bedrooms_text_input_layout"
-                        style="@style/TextInputLayoutAppearance"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
-                        android:textColorHint="@android:color/black"
-                        app:boxStrokeColor="@color/colorAccent"
-                        app:hintTextAppearance="@style/TextInputEditTextAppearance"
-                        app:hintTextColor="@color/colorAccent"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:startIconDrawable="@drawable/ic_baseline_hotel_24"
-                        app:startIconTint="@android:color/black">
+                        app:startIconDrawable="@drawable/ic_baseline_hotel_24">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/bedrooms"
@@ -514,11 +422,8 @@
                             android:layout_height="wrap_content"
                             android:focusable="false"
                             android:hint="@string/number_of_bedrooms"
-                            android:inputType="number"
-                            android:text="@string/none"
-                            android:textColor="@color/colorPrimaryDark"/>
+                            android:inputType="number" />
                     </com.google.android.material.textfield.TextInputLayout>
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -553,16 +458,11 @@
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:id="@+id/street_text_input_layout"
-                                style="@style/TextInputLayoutAppearance"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="16dp"
                                 android:layout_marginEnd="16dp"
-                                android:textColorHint="@android:color/black"
-                                app:boxStrokeColor="@color/colorAccent"
-                                app:hintTextAppearance="@style/TextInputEditTextAppearance"
-                                app:hintTextColor="@color/colorAccent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent">
@@ -573,23 +473,16 @@
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
                                     android:inputType="textNoSuggestions"
-                                    android:hint="@string/street"
-                                    android:text="@string/none"
-                                    android:textColor="@color/colorPrimaryDark"/>
+                                    android:hint="@string/street" />
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:id="@+id/city_text_input_layout"
-                                style="@style/TextInputLayoutAppearance"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="8dp"
                                 android:layout_marginEnd="16dp"
-                                android:textColorHint="@android:color/black"
-                                app:boxStrokeColor="@color/colorAccent"
-                                app:hintTextAppearance="@style/TextInputEditTextAppearance"
-                                app:hintTextColor="@color/colorAccent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@id/street_text_input_layout">
@@ -600,23 +493,16 @@
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
                                     android:inputType="textNoSuggestions"
-                                    android:hint="@string/city"
-                                    android:text="@string/none"
-                                    android:textColor="@color/colorPrimaryDark"/>
+                                    android:hint="@string/city" />
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:id="@+id/postal_code_text_input_layout"
-                                style="@style/TextInputLayoutAppearance"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="8dp"
                                 android:layout_marginEnd="16dp"
-                                android:textColorHint="@android:color/black"
-                                app:boxStrokeColor="@color/colorAccent"
-                                app:hintTextAppearance="@style/TextInputEditTextAppearance"
-                                app:hintTextColor="@color/colorAccent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@id/city_text_input_layout">
@@ -627,23 +513,16 @@
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
                                     android:inputType="textNoSuggestions"
-                                    android:hint="@string/postal_code"
-                                    android:text="@string/none"
-                                    android:textColor="@color/colorPrimaryDark"/>
+                                    android:hint="@string/postal_code" />
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:id="@+id/country_text_input_layout"
-                                style="@style/TextInputLayoutAppearance"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="8dp"
                                 android:layout_marginEnd="16dp"
-                                android:textColorHint="@android:color/black"
-                                app:boxStrokeColor="@color/colorAccent"
-                                app:hintTextAppearance="@style/TextInputEditTextAppearance"
-                                app:hintTextColor="@color/colorAccent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@id/postal_code_text_input_layout">
@@ -654,24 +533,17 @@
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
                                     android:inputType="textNoSuggestions"
-                                    android:hint="@string/country"
-                                    android:text="@string/none"
-                                    android:textColor="@color/colorPrimaryDark"/>
+                                    android:hint="@string/country" />
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:id="@+id/state_text_input_layout"
-                                style="@style/TextInputLayoutAppearance"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="8dp"
                                 android:layout_marginEnd="16dp"
                                 android:layout_marginBottom="8dp"
-                                android:textColorHint="@android:color/black"
-                                app:boxStrokeColor="@color/colorAccent"
-                                app:hintTextAppearance="@style/TextInputEditTextAppearance"
-                                app:hintTextColor="@color/colorAccent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@id/country_text_input_layout">
@@ -682,9 +554,7 @@
                                     android:layout_height="wrap_content"
                                     android:focusable="false"
                                     android:inputType="textNoSuggestions"
-                                    android:hint="@string/state"
-                                    android:text="@string/none"
-                                    android:textColor="@color/colorPrimaryDark"/>
+                                    android:hint="@string/state" />
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <androidx.constraintlayout.widget.ConstraintLayout
@@ -715,15 +585,10 @@
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                         <TextView
+                            style="@style/LabelTextAppearance"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginEnd="5dp"
-                            android:padding="4dp"
                             android:text="@string/location"
-                            android:textColor="@android:color/black"
-                            android:background="@android:color/white"
-                            android:textSize="20sp"
                             app:layout_constraintEnd_toEndOf="@+id/linearLayout"
                             app:layout_constraintStart_toStartOf="@+id/linearLayout"
                             app:layout_constraintTop_toTopOf="parent" />

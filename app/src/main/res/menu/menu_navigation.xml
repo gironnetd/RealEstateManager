@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <group android:checkableBehavior="single">
     <item
-        android:id="@+id/navigation_real_estate"
+        android:id="@+id/navigation_browse"
         android:title="@string/real_estate"
-        android:icon="@drawable/ic_baseline_real_estate_24"
+        android:icon="@drawable/ic_baseline_real_estate_not_selected_24"
         />
+
     <item
         android:id="@+id/navigation_create"
         android:title="@string/create_property"
-        android:icon="@drawable/ic_baseline_add_real_estate_24"
+        android:icon="@drawable/ic_baseline_add_real_estate_not_selected_24"
         />
+
+    <item
+        android:id="@+id/navigation_main_search"
+        android:title="@string/search_properties"
+        android:icon="@drawable/ic_baseline_search_not_selected_24"
+        />
+    </group>
 </menu>

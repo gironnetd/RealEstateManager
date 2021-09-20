@@ -12,17 +12,26 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
+    <!-- android:usesCleartextTraffic="true" -->
+
+    <!--<queries>
+        <package android:name="com.google.android.apps.maps" />
+    </queries>-->
+
     <application
         android:name=".BaseApplication"
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
-        <activity android:name="com.openclassrooms.realestatemanager.ui.MainActivity"
-            android:configChanges="orientation|screenSize">
+        android:theme="@style/AppTheme.Primary">
+        <activity
+            android:name=".ui.MainActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -31,12 +40,14 @@
 
         <provider
             android:name=".data.cache.provider.AppContentProvider"
-            android:authorities="com.openclassrooms.realestatemanager.provider"
             android:exported="true"
+            android:authorities="com.openclassrooms.realestatemanager.provider"
             android:permission="com.openclassrooms.realestatemanager.provider.READ_WRITE"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
+
+        <!--<uses-library android:name="android.test.runner" android:required="false" />-->
     </application>
 </manifest>

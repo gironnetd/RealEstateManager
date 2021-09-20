@@ -23,7 +23,6 @@ class PropertyDetailActionProcessor
                     .onErrorReturn(PopulatePropertyResult::Failure)
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .startWith(PopulatePropertyResult.InFlight)
             }
         }
 

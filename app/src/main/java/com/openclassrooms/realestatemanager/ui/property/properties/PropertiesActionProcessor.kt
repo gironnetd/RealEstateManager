@@ -18,8 +18,7 @@ class PropertiesActionProcessor
         ObservableTransformer<LoadPropertiesAction, PropertiesResult> { actions ->
             actions.flatMap {
                 propertyRepository.findAllProperties()
-                    .filter { properties -> properties.isNotEmpty() }
-                    .map { properties -> LoadPropertiesResult.Success(false, properties) }
+                    .map { properties -> LoadPropertiesResult.Success(properties) }
                     .cast(LoadPropertiesResult::class.java)
                     .onErrorReturn {
                         LoadPropertiesResult.Failure(it)

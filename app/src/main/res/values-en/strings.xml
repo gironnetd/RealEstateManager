@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--Navigation View and Bottom Navigation View Strings-->
-    <string name="real_estate">Real estate</string>
+    <string name="real_estate">All Properties</string>
     <string name="add_real_estate">Add real estate</string>
     <string name="create_property">Create Property</string>
     <string name="create">&#160;&#160;CREATE</string>
-    <string name="update">&#160;&#160;UPDATE</string>
+    <string name="update">&#160;&#160;UPDATE&#160;&#160;</string>
     <string name="map">Real estate Map</string>
     <string name="list">Real estate List</string>
     <string name="detail">Real estate Detail</string>
-    <string name="search">Search</string>
-    <string name="edit">&#160;&#160;Edit</string>
+    <string name="search">&#160;&#160;SEARCH&#160;&#160;</string>
+    <string name="edit">&#160;&#160;Edit&#160;&#160;</string>
     <string name="button_list_title">List</string>
     <string name="button_map_title">Map</string>
     <string name="no_property_to_display">No Property to Display</string>
@@ -75,7 +75,7 @@
     <string name="add_a_photo">Add a photo</string>
     <string name="enter_a_description">Enter a description</string>
     <string name="change_property_type">CHANGE TYPE</string>
-    <string name="cancel">CANCEL</string>
+    <string name="cancel">@android:string/cancel</string>
     <string name="no">NO</string>
     <string name="change_property_status">CHANGE STATUS</string>
     <string name="add_photo">ADD PHOTO</string>
@@ -104,4 +104,16 @@
     <string name="notification_channel_app_name">Application</string>
     <string name="notification_channel_app_description">General app updates</string>
     <string name="notification_action_all_properties">All properties</string>
+    <string name="result_search_properties">Result Search Properties</string>
+    <string name="search_properties">Search Properties</string>
+    <string name="nearby">Nearby</string>
+    <string name="property_min_price">Minimum Price</string>
+    <string name="property_max_price">Maximum Price</string>
+    <string name="min_surface">Minimum Surface</string>
+    <string name="max_surface">Maximum Surface</string>
+    <string name="min_rooms">Minimum Rooms</string>
+    <string name="max_rooms">Maximum Rooms</string>
+    <string name="all_property_type">All Type</string>
+    <string name="all_property_status">All Status</string>
+    <string name="no_property_found">No Property Found</string>
 </resources>

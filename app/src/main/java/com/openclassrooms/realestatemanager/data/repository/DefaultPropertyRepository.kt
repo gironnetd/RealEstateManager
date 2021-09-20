@@ -37,16 +37,21 @@ class DefaultPropertyRepository
     }
 
     override fun findAllProperties(): Observable<List<Property>> {
-        return isInternetSubject.filter { isInternetAvailable -> isInternetAvailable }
-            .flatMap {
-                Observable
-                    .interval(1, TimeUnit.SECONDS)
-                    .filter { cachedProperties.all { property -> !property.locallyUpdated }
-                            && cachedProperties.all { property -> !property.locallyCreated } }
-                    .map { it }
-                    .take(1)
+        return isInternetSubject
+            .flatMap { isInternetAvailable ->
+                if (isInternetAvailable) {
+                    Observable
+                        .interval(1, TimeUnit.SECONDS)
+                        .filter { cachedProperties.all { property -> !property.locallyUpdated }
+                                && cachedProperties.all { property -> !property.locallyCreated } }
+                        .map { it }
+                        .take(1)
+                        .flatMap { allProperties() }
+                } else {
+                    Observable.just(emptyList())
+                }
             }
-            .flatMap { allProperties() }.startWith(findLocalProperties())
+            .startWith(findLocalProperties())
     }
 
     private fun allProperties(): Observable<List<Property>> {

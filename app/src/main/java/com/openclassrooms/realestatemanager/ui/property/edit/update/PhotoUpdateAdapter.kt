@@ -19,11 +19,11 @@ class PhotoUpdateAdapter : RecyclerView.Adapter<PhotoUpdateAdapter.PhotoViewHold
         fun clickOnPhotoAtPosition(photoId: String)
     }
 
-    var callBack: OnItemClickListener? = null
+    private var callBack: OnItemClickListener? = null
 
     fun setOnItemClickListener(listener: OnItemClickListener) { callBack = listener }
 
-    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Photo>() {
+    private val diffCallback = object : DiffUtil.ItemCallback<Photo>() {
 
         override fun areItemsTheSame(oldItem: Photo, newItem: Photo): Boolean {
             return oldItem.id == newItem.id
@@ -34,7 +34,7 @@ class PhotoUpdateAdapter : RecyclerView.Adapter<PhotoUpdateAdapter.PhotoViewHold
         }
 
     }
-    val differ = AsyncListDiffer(this, DIFF_CALLBACK)
+    val differ = AsyncListDiffer(this, diffCallback)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
         return PhotoViewHolder(from(parent.context).inflate(R.layout.layout_photo_list_item,
@@ -51,7 +51,7 @@ class PhotoUpdateAdapter : RecyclerView.Adapter<PhotoUpdateAdapter.PhotoViewHold
         return differ.currentList.size
     }
 
-    fun submitList(photos: List<Photo>?) {
+    fun submitList(photos: List<Photo>) {
         differ.submitList(photos)
         notifyDataSetChanged()
     }
@@ -63,7 +63,7 @@ class PhotoUpdateAdapter : RecyclerView.Adapter<PhotoUpdateAdapter.PhotoViewHold
     class PhotoViewHolder
     constructor(
         itemView: View,
-        var callBack: OnItemClickListener?,
+        private var callBack: OnItemClickListener?,
     ) : RecyclerView.ViewHolder(itemView) {
 
         var photo: ImageView = itemView.findViewById(R.id.property_photo)
@@ -71,18 +71,13 @@ class PhotoUpdateAdapter : RecyclerView.Adapter<PhotoUpdateAdapter.PhotoViewHold
 
         fun bind(item: Photo) = with(itemView) {
             item.let { photo ->
-                if(photo.bitmap != null) {
+                photo.bitmap?.let {
+                    this@PhotoViewHolder.photo.setPadding(0,0,0,0)
                     this@PhotoViewHolder.photo.setImageBitmap(photo.bitmap)
-                } else {
-//                    val localFile = File(photo.storageLocalDatabase(context.cacheDir, true))
-//                    if(localFile.exists()) {
-//                        with(this@PhotoViewHolder.photo) {
-//                            setImageURI(null)
-//                            setImageURI(localFile.toUri())
-//                        }
-//                    } else {
-                        this@PhotoViewHolder.photo.setImageBitmap(null)
-//                    }
+                }?: with(this@PhotoViewHolder.photo) {
+                    setImageBitmap(null)
+                    setPadding(32,32,32,32)
+                    setImageResource(R.drawable.ic_baseline_no_photography_24)
                 }
 
                 if(photo.mainPhoto) {
