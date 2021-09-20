@@ -6,8 +6,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.core.os.bundleOf
-import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.lifecycle.Lifecycle
+import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -26,11 +25,12 @@ import com.openclassrooms.realestatemanager.models.PhotoType
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.models.storageLocalDatabase
 import com.openclassrooms.realestatemanager.ui.BaseFragmentTests
-import com.openclassrooms.realestatemanager.ui.property.BaseFragment
+import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.map.MapFragment
+import com.openclassrooms.realestatemanager.ui.property.browse.map.BrowseMapFragment
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PhotoDetailAdapter
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragment
+import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
 import com.openclassrooms.realestatemanager.util.BitmapUtil.sameAs
 import com.openclassrooms.realestatemanager.util.Constants.FROM
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTY_ID
@@ -68,7 +68,7 @@ class PhotoDetailDialogFragmentIntegrationTest : BaseFragmentTests() {
         BrowseFragment.WHEN_NORMAL_MODE_IS_DETAIL_FRAGMENT_SELECTED = false
 
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
-        bundle = bundleOf(FROM to MapFragment::class.java.name,
+        bundle = bundleOf(FROM to BrowseMapFragment::class.java.name,
             PROPERTY_ID to fakeProperties[itemPosition].id)
 
         fakeProperties[itemPosition].photos.forEach { photo ->
@@ -83,6 +83,7 @@ class PhotoDetailDialogFragmentIntegrationTest : BaseFragmentTests() {
                 outputStream.close()
             }
         }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
     }
 
     @After
@@ -99,10 +100,16 @@ class PhotoDetailDialogFragmentIntegrationTest : BaseFragmentTests() {
     @Test
     fun given_dialog_when_click_on_item_in_photo_recycler_view_then_alert_dialog_shown() {
         // Given Detail fragment and When fragment is launched
-        launchFragmentInContainer(fragmentArgs = bundle, R.style.AppTheme, Lifecycle.State.RESUMED) {
-            PropertyDetailFragment(propertiesViewModelFactory/*, requestManager*/)
-        }.onFragment {
-            propertyDetailFragment = it
+        val scenario = launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+
+        navigate_to_detail_fragment()
+
+        scenario.onActivity {
+            propertyDetailFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyDetailFragment
         }
 
         val photoDetailPosition = fakeProperties[itemPosition].photos.indices.random()
@@ -120,11 +127,16 @@ class PhotoDetailDialogFragmentIntegrationTest : BaseFragmentTests() {
     @Test
     fun given_detail_and_photo_detail_dialog_shown_when_rotate_then_dialog_shown_again() {
         // Given Detail fragment and When fragment is launched
-        launchFragmentInContainer(fragmentArgs = bundle, R.style.AppTheme, Lifecycle.State.RESUMED) {
-            PropertyDetailFragment(propertiesViewModelFactory/*, requestManager*/)
-        }.onFragment {
-            propertyDetailFragment = it
-            mainActivity = it.requireActivity()
+        val scenario = launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+
+        navigate_to_detail_fragment()
+
+        scenario.onActivity {
+            propertyDetailFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyDetailFragment
         }
 
         val photoDetailPosition = fakeProperties[itemPosition].photos.indices.random()
@@ -136,7 +148,7 @@ class PhotoDetailDialogFragmentIntegrationTest : BaseFragmentTests() {
 
         onView(withId(R.id.photo_detail_dialog_fragment))
             .inRoot(isDialog())
-            .check(matches(isDisplayed()));
+            .check(matches(isDisplayed()))
 
         // Then Update fragment rotate
         val orientation = mainActivity.applicationContext.resources.configuration.orientation
@@ -153,11 +165,16 @@ class PhotoDetailDialogFragmentIntegrationTest : BaseFragmentTests() {
     @Test
     fun given_detail_dialog_shown_when_rotate_then_then_same_values_displayed() {
         // Given Detail fragment and When fragment is launched
-        launchFragmentInContainer(fragmentArgs = bundle, R.style.AppTheme, Lifecycle.State.RESUMED) {
-            PropertyDetailFragment(propertiesViewModelFactory)
-        }.onFragment {
-            propertyDetailFragment = it
-            mainActivity = it.requireActivity()
+        val scenario = launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+
+        navigate_to_detail_fragment()
+
+        scenario.onActivity {
+            propertyDetailFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyDetailFragment
         }
 
         val photoDetailPosition = fakeProperties[itemPosition].photos.indices.random()
@@ -167,7 +184,7 @@ class PhotoDetailDialogFragmentIntegrationTest : BaseFragmentTests() {
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoDetailPosition, click()))
         }
         onView(withId(R.id.photo_detail_dialog_fragment))
-            .inRoot(isDialog()).check(matches(isDisplayed()));
+            .inRoot(isDialog()).check(matches(isDisplayed()))
 
         // Then Update fragment rotate
         val orientation = mainActivity.applicationContext.resources.configuration.orientation
@@ -199,10 +216,16 @@ class PhotoDetailDialogFragmentIntegrationTest : BaseFragmentTests() {
     @Test
     fun given_dialog_when_detail_dialog_shown_then_photo_detail_displayed() {
         // Given Detail fragment and When fragment is launched
-        launchFragmentInContainer(fragmentArgs = bundle, R.style.AppTheme, Lifecycle.State.RESUMED) {
-            PropertyDetailFragment(propertiesViewModelFactory/*, requestManager*/)
-        }.onFragment {
-            propertyDetailFragment = it
+        val scenario = launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+            browseFragment = BrowseFragment()
+            it.setFragment(browseFragment)
+        }
+
+        navigate_to_detail_fragment()
+
+        scenario.onActivity {
+            propertyDetailFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyDetailFragment
         }
 
         val photoDetailPosition = fakeProperties[itemPosition].photos.indices.random()

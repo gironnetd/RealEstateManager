@@ -1,14 +1,13 @@
 package com.openclassrooms.realestatemanager.di.property
 
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseComponent
-import com.openclassrooms.realestatemanager.di.property.browse.BrowsePropertyFragmentsModule
+import com.openclassrooms.realestatemanager.di.property.browse.BrowseFragmentsModule
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
 import com.openclassrooms.realestatemanager.ui.fragments.browsedetail.BrowseDetailNavHostFragment
-import com.openclassrooms.realestatemanager.ui.property.browse.list.ListFragment
 import dagger.Subcomponent
 
 @BrowseScope
-@Subcomponent(modules = [BrowsePropertyFragmentsModule::class])
+@Subcomponent(modules = [BrowseFragmentsModule::class])
 interface TestBrowseComponent : BrowseComponent {
 
     @Subcomponent.Factory
@@ -16,6 +15,5 @@ interface TestBrowseComponent : BrowseComponent {
         fun create(): TestBrowseComponent
     }
 
-    override fun inject(listFragment: ListFragment)
     override fun inject(browseDetailNavHostFragment: BrowseDetailNavHostFragment)
 }

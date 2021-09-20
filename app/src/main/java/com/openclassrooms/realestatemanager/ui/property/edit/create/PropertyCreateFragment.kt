@@ -7,10 +7,11 @@ import android.view.View.VISIBLE
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultRegistry
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.ui.setupWithNavController
 import com.openclassrooms.realestatemanager.R
+import com.openclassrooms.realestatemanager.databinding.FragmentEditBinding
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.ui.MainActivity
@@ -34,31 +35,54 @@ class PropertyCreateFragment
 
     private val propertyCreateViewModel: PropertyCreateViewModel by viewModels { viewModelFactory }
 
-    var mainActivity: MainActivity? = null
+    val mainActivity by lazy { activity as MainActivity }
 
     private lateinit var createItem: MenuItem
+    private lateinit var searchItem: MenuItem
+
+    private lateinit var innerInflater: LayoutInflater
 
     private val createPropertyIntentPublisher = PublishSubject.create<CreatePropertyIntent>()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
-        // Inflate the layout for this fragment
-        super.onCreateView(inflater, container, savedInstanceState)
-
-        mainActivity = if(activity is MainActivity) { activity as MainActivity }
-        else { null }
-
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        innerInflater = inflater.cloneInContext(ContextThemeWrapper(activity, R.style.AppTheme_Secondary))
+        _binding = FragmentEditBinding.inflate(innerInflater, container, false)
+        super.onCreateView(innerInflater, container, savedInstanceState)
         return binding.root
     }
 
     override fun configureView() {
         super.configureView()
         binding.description.minLines = 4
+        binding.mapDetailFragment.visibility = GONE
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         createItem = menu.findItem(R.id.navigation_create)
         createItem.isVisible = true
+
+        searchItem = menu.findItem(R.id.navigation_main_search)
+        searchItem.isVisible = false
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.navigation_create -> {
+                populateChanges()
+                if(newProperty != Property() || newProperty.photos.isNotEmpty()) {
+                    confirmSaveChanges()
+                } else {
+                    showMessage(resources.getString(R.string.no_changes))
+                }
+                return true
+            }
+            R.id.navigation_main_search -> {
+                (activity as MainActivity).navController.navigate(R.id.navigation_main_search)
+                return true
+            }
+            else -> { return true }
+        }
     }
 
     override fun onResume() {
@@ -68,26 +92,13 @@ class PropertyCreateFragment
     }
 
     override fun initializeToolbar() {
-        mainActivity?.let { mainActivity ->
+        mainActivity.binding.toolBar.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorSecondary, null))
+        mainActivity.binding.statusbar.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorSecondaryDark, null))
             with(mainActivity) {
-                binding.toolBar.visibility = VISIBLE
-                setSupportActionBar(binding.toolBar)
-                binding.toolBar.setupWithNavController(navController, appBarConfiguration)
-                binding.toolBar.setOnMenuItemClickListener { item ->
-                    when (item.itemId) {
-                        R.id.navigation_create -> {
-                            populateChanges()
-                            if(newProperty != Property() || newProperty.photos.isNotEmpty()) {
-                                confirmSaveChanges()
-                            } else {
-                                showMessage(resources.getString(R.string.no_changes))
-                            }
-                        }
-                    }
-                    super.onOptionsItemSelected(item)
+                if(binding.toolBar.visibility == GONE) {
+                    binding.toolBar.visibility = VISIBLE
                 }
             }
-        }
     }
 
     override fun intents(): Observable<PropertyEditIntent.PropertyCreateIntent> {
@@ -127,7 +138,7 @@ class PropertyCreateFragment
     }
 
     override fun confirmSaveChanges() {
-        val builder = AlertDialog.Builder(requireContext())
+        val builder = AlertDialog.Builder(innerInflater.context)
         with(builder) {
             setTitle(getString(R.string.confirm_create_changes_dialog_title))
             setMessage(getString(R.string.confirm_create_changes_dialog_message))
@@ -145,19 +156,23 @@ class PropertyCreateFragment
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if(hidden) {
+            mainActivity.binding.toolBar.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorSecondary, null))
+            mainActivity.binding.statusbar.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorSecondaryDark, null))
             newProperty = Property()
-            mainActivity?.binding?.toolBar?.visibility = GONE
             createItem.isVisible = false
+            searchItem.isVisible = true
             onBackPressedCallback.isEnabled = true
             clearView()
         } else {
+            initializeToolbar()
             createItem.isVisible = true
+            searchItem.isVisible = false
             onBackPressedCallback.isEnabled = false
         }
     }
 
     fun onBackPressed() {
-        (activity as MainActivity).navController.navigate(R.id.navigation_real_estate)
+        (activity as MainActivity).navController.navigate(R.id.navigation_browse)
     }
 
     override fun onBackPressedCallback() {
@@ -172,5 +187,9 @@ class PropertyCreateFragment
             }
         }
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, onBackPressedCallback)
+    }
+
+    override fun layoutInflater(): LayoutInflater {
+        return innerInflater
     }
 }

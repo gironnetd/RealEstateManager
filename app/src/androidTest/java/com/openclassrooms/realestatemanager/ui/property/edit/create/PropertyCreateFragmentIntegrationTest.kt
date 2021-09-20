@@ -1,11 +1,8 @@
 package com.openclassrooms.realestatemanager.ui.property.edit.create
 
-//import org.junit.jupiter.api.Order
 import android.view.View
 import android.widget.DatePicker
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -26,9 +23,9 @@ import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.models.PropertyStatus
 import com.openclassrooms.realestatemanager.ui.BaseFragmentTests
 import com.openclassrooms.realestatemanager.ui.MainActivity
-import com.openclassrooms.realestatemanager.ui.property.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
-import com.openclassrooms.realestatemanager.ui.property.edit.util.EnterPropertyUtil
+import com.openclassrooms.realestatemanager.ui.property.edit.util.EnterPropertyUtil.update_property
+import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil.switchAllNetworks
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil.waitInternetStateChange
 import com.openclassrooms.realestatemanager.util.Constants.TIMEOUT_INTERNET_CONNECTION
@@ -57,8 +54,6 @@ class PropertyCreateFragmentIntegrationTest : BaseFragmentTests() {
 
     @get:Rule val instantTaskExecutorRule = InstantTaskExecutorRule()
     @get:Rule val rxImmediateSchedulerRule = RxImmediateSchedulerRule()
-
-    private lateinit var propertyCreateFragment: PropertyCreateFragment
 
     private val expectedAppName by lazy { mainActivity.getString(R.string.app_name) }
     private val expectedTitle by lazy { mainActivity.getString(R.string.notification_title) }
@@ -101,18 +96,15 @@ class PropertyCreateFragmentIntegrationTest : BaseFragmentTests() {
 
     @Order(1)
     @Test
-    //@Suppress("UnstableApiUsage")
-    fun given_create_when_has_no_internet_and_property_created_when_has_internet_then_a_message_indicating_property_is_totally_created_is_shown() {
+    fun given_create_when_has_no_internet_a_message_indicating_property_is_created_only_on_local_storage_is_shown() {
         concatArray(switchAllNetworks(false),
             waitInternetStateChange(false))
             .blockingAwait().let {
                 // Given Create fragment
-                launch(MainActivity::class.java).onActivity {
-                    mainActivity = it
-                }
+                launch(MainActivity::class.java).onActivity { mainActivity = it }
 
                 onView(allOf(withId(R.id.navigation_create), isDisplayed())).perform(click())
-                EnterPropertyUtil.update_property(testApplication = testApplication)
+                update_property(testApplication = testApplication)
 
                 onView(allOf(withText(R.string.create), isDisplayed())).perform(click())
                 onView(withText(R.string.confirm_create_changes)).perform(click())
@@ -120,31 +112,18 @@ class PropertyCreateFragmentIntegrationTest : BaseFragmentTests() {
                 uiDevice.openNotification()
                 uiDevice.wait(Until.hasObject(By.textStartsWith(expectedAppName)), timeout)
 
-                var title: UiObject2 = uiDevice.findObject(By.text(expectedTitle))
-                var text: UiObject2 = uiDevice.findObject(By.textStartsWith(propertyLocallyCreated))
+                val title: UiObject2 = uiDevice.findObject(By.text(expectedTitle))
+                val text: UiObject2 = uiDevice.findObject(By.textStartsWith(propertyLocallyCreated))
 
                 assertEquals(expectedTitle, title.text)
                 assertEquals(propertyLocallyCreated, text.text)
+
                 clearAllNotifications()
 
                 concatArray(switchAllNetworks(true),
                     waitInternetStateChange(true))
                     .delay(TIMEOUT_INTERNET_CONNECTION.toLong(), TimeUnit.MILLISECONDS)
-                    .blockingAwait().let {
-                        Completable.fromAction {
-                            uiDevice.openNotification()
-                            uiDevice.wait(Until.hasObject(By.textStartsWith(expectedAppName)), timeout)
-
-                            title = uiDevice.findObject(By.text(expectedTitle))
-                            text = uiDevice.findObject(By.textStartsWith(propertyFullyCreated))
-
-                            assertEquals(expectedTitle, title.text)
-                            assertEquals(propertyFullyCreated, text.text)
-
-                            clearAllNotifications()
-                        }.delaySubscription((TIMEOUT_INTERNET_CONNECTION.toLong() * 2),
-                            TimeUnit.MILLISECONDS).blockingAwait()
-                    }
+                    .blockingAwait()
             }
     }
 
@@ -246,7 +225,7 @@ class PropertyCreateFragmentIntegrationTest : BaseFragmentTests() {
         }
         onView(allOf(withId(R.id.navigation_create), isDisplayed())).perform(click())
 
-        EnterPropertyUtil.update_property(testApplication = testApplication)
+        update_property(testApplication = testApplication)
 
         onView(allOf(withText(R.string.create), isDisplayed())).perform(click())
         onView(withText(R.string.confirm_create_changes)).perform(click())
@@ -263,7 +242,7 @@ class PropertyCreateFragmentIntegrationTest : BaseFragmentTests() {
         }
         onView(allOf(withId(R.id.navigation_create), isDisplayed())).perform(click())
 
-        EnterPropertyUtil.update_property(testApplication = testApplication)
+        update_property(testApplication = testApplication)
 
         onView(isRoot()).perform(pressBack())
 
@@ -284,7 +263,7 @@ class PropertyCreateFragmentIntegrationTest : BaseFragmentTests() {
         }
         onView(allOf(withId(R.id.navigation_create), isDisplayed())).perform(click())
 
-        EnterPropertyUtil.update_property(testApplication = testApplication)
+        update_property(testApplication = testApplication)
 
         onView(isRoot()).perform(pressBack())
 
@@ -298,15 +277,18 @@ class PropertyCreateFragmentIntegrationTest : BaseFragmentTests() {
 
     @Order(9)
     @Test
-    fun given_create_when_has_no_internet_a_message_indicating_property_is_created_only_on_local_storage_is_shown() {
+    @Suppress("UnstableApiUsage")
+    fun given_create_when_has_no_internet_and_property_created_when_has_internet_then_a_message_indicating_property_is_totally_created_is_shown() {
         concatArray(switchAllNetworks(false),
             waitInternetStateChange(false))
             .blockingAwait().let {
                 // Given Create fragment
-                launch(MainActivity::class.java).onActivity { mainActivity = it }
+                launch(MainActivity::class.java).onActivity {
+                    mainActivity = it
+                }
 
                 onView(allOf(withId(R.id.navigation_create), isDisplayed())).perform(click())
-                EnterPropertyUtil.update_property(testApplication = testApplication)
+                update_property(testApplication = testApplication)
 
                 onView(allOf(withText(R.string.create), isDisplayed())).perform(click())
                 onView(withText(R.string.confirm_create_changes)).perform(click())
@@ -314,14 +296,31 @@ class PropertyCreateFragmentIntegrationTest : BaseFragmentTests() {
                 uiDevice.openNotification()
                 uiDevice.wait(Until.hasObject(By.textStartsWith(expectedAppName)), timeout)
 
-                val title: UiObject2 = uiDevice.findObject(By.text(expectedTitle))
-                val text: UiObject2 = uiDevice.findObject(By.textStartsWith(propertyLocallyCreated))
+                var title: UiObject2 = uiDevice.findObject(By.text(expectedTitle))
+                var text: UiObject2 = uiDevice.findObject(By.textStartsWith(propertyLocallyCreated))
 
                 assertEquals(expectedTitle, title.text)
                 assertEquals(propertyLocallyCreated, text.text)
-
                 clearAllNotifications()
-                uiDevice.pressBack()
+
+                concatArray(switchAllNetworks(true),
+                    waitInternetStateChange(true))
+                    .delay(TIMEOUT_INTERNET_CONNECTION.toLong(), TimeUnit.MILLISECONDS)
+                    .blockingAwait().let {
+                        Completable.fromAction {
+                            uiDevice.openNotification()
+                            uiDevice.wait(Until.hasObject(By.textStartsWith(expectedAppName)), timeout)
+
+                            title = uiDevice.findObject(By.text(expectedTitle))
+                            text = uiDevice.findObject(By.textStartsWith(propertyFullyCreated))
+
+                            assertEquals(expectedTitle, title.text)
+                            assertEquals(propertyFullyCreated, text.text)
+
+                            clearAllNotifications()
+                        }.delaySubscription((TIMEOUT_INTERNET_CONNECTION.toLong() * 2),
+                            TimeUnit.MILLISECONDS).blockingAwait()
+                    }
             }
     }
 
@@ -329,11 +328,10 @@ class PropertyCreateFragmentIntegrationTest : BaseFragmentTests() {
     @Test
     fun given_create_when_entry_date_picker_dialog_shown_then_initialize_with_corresponding_date() {
         // Given Create fragment
-        launchFragmentInContainer(fragmentArgs = null, R.style.AppTheme, Lifecycle.State.RESUMED) {
-            PropertyCreateFragment(propertiesViewModelFactory, null)
-        }.onFragment {
-            propertyCreateFragment = it
+        launch(MainActivity::class.java).onActivity {
+            mainActivity = it
         }
+        onView(allOf(withId(R.id.navigation_create), isDisplayed())).perform(click())
 
         onView(allOf(withId(R.id.entry_date), isDisplayed())).perform(click())
         val calendar = Calendar.getInstance()
@@ -345,7 +343,7 @@ class PropertyCreateFragmentIntegrationTest : BaseFragmentTests() {
                         override fun describeTo(description: Description?) {}
 
                         override fun matchesSafely(item: DatePicker?): Boolean {
-                            return (calendar[Calendar.YEAR] == item?.year && calendar[Calendar.MONTH] == item.month && calendar[Calendar.DAY_OF_MONTH] == item.dayOfMonth);
+                            return (calendar[Calendar.YEAR] == item?.year && calendar[Calendar.MONTH] == item.month && calendar[Calendar.DAY_OF_MONTH] == item.dayOfMonth)
                         }
                     })
             )

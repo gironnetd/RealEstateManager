@@ -51,7 +51,6 @@ class PropertyUpdateViewModel
 
     private fun actionFromIntent(intent: MviIntent): PropertyEditAction {
         return when (intent) {
-            //is PropertyUpdateIntent.InitialIntent -> PropertyEditAction.PopulatePropertyAction.PopulatePropertyAction(intent.propertyId)
             is PropertyUpdateIntent.UpdatePropertyIntent -> PropertyEditAction.UpdatePropertyAction.UpdatePropertyAction(intent.property)
             else -> throw UnsupportedOperationException("Oops, that looks like an unknown intent: " + intent)
         }

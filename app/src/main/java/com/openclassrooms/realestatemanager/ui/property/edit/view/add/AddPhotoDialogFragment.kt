@@ -18,7 +18,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.net.toUri
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.firestore.ktx.firestore
@@ -28,11 +27,11 @@ import com.openclassrooms.realestatemanager.databinding.FragmentDialogAddPhotoBi
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.PhotoType
 import com.openclassrooms.realestatemanager.models.storageLocalDatabase
-import com.openclassrooms.realestatemanager.ui.property.BaseDialogFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.create.PropertyCreateFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PhotoUpdateAdapter
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragment
+import com.openclassrooms.realestatemanager.ui.property.shared.BaseDialogFragment
 import com.openclassrooms.realestatemanager.util.Constants
 import java.io.File
 import java.io.FileOutputStream
@@ -56,7 +55,8 @@ class AddPhotoDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_add_p
         _binding = FragmentDialogAddPhotoBinding.inflate(LayoutInflater.from(context))
 
         return activity?.let {
-            MaterialAlertDialogBuilder(ContextThemeWrapper(context, R.style.AppTheme)).run {
+            MaterialAlertDialogBuilder(requireContext()).run {
+
                 setView(binding.root)
                 setPositiveButton(getString(R.string.add_photo)) { _, _ ->
 
@@ -102,8 +102,8 @@ class AddPhotoDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_add_p
                     tmpPhoto.locallyCreated = true
                     parentEditFragment.newProperty.photos.add(parentEditFragment.newProperty.photos.size, tmpPhoto)
 
-                    if(parentEditFragment.binding.noPhotosTextView.visibility == VISIBLE) {
-                        parentEditFragment.binding.noPhotosTextView.visibility = GONE
+                    if(parentEditFragment.binding.noPhotos.visibility == VISIBLE) {
+                        parentEditFragment.binding.noPhotos.visibility = GONE
                     }
 
                     with(parentEditFragment.binding.photosRecyclerView.adapter as PhotoUpdateAdapter) {
@@ -116,8 +116,7 @@ class AddPhotoDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_add_p
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         applyDialogDimension()
         initInteraction()
         return binding.root
@@ -187,7 +186,7 @@ class AddPhotoDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_add_p
 
     private fun displayPhoto() {
         if(binding.addPhotoTextview.visibility == VISIBLE) { binding.addPhotoTextview.visibility =
-            View.GONE
+            GONE
         }
         if(binding.photoImageview.visibility == View.INVISIBLE) { binding.photoImageview.visibility =
             VISIBLE
@@ -229,7 +228,7 @@ class AddPhotoDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_add_p
         }
     }
 
-    fun clearRadioButtons() {
+    private fun clearRadioButtons() {
         with(binding) {
             radioButtonLounge.isChecked = false
             radioButtonFacade.isChecked = false

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--Navigation View and Bottom Navigation View Strings-->
-    <string name="real_estate">Bienes raíces</string>
+    <string name="real_estate">Todas las propiedades</string>
     <string name="add_real_estate">Agregar bienes raíces</string>
     <string name="create_property">Crear Propiedad</string>
     <string name="create">&#160;&#160;CREAR</string>
-    <string name="update">&#160;&#160;&#160;MODIFIAR</string>
+    <string name="update">&#160;&#160;MODIFIAR&#160;&#160;</string>
     <string name="map">Mapa inmobiliario</string>
     <string name="list">Lista de inmuebles</string>
     <string name="detail">Detalle de bienes raíces</string>
-    <string name="search">&#160;&#160;&#160;Buscar</string>
-    <string name="edit">&#160;&#160;&#160;Editar</string>
+    <string name="search">&#160;&#160;BUSCAR&#160;&#160;</string>
+    <string name="edit">&#160;&#160;EDITAR&#160;&#160;</string>
     <string name="button_list_title">lista</string>
     <string name="button_map_title">Mapa</string>
     <string name="no_property_to_display">No hay propiedad para mostrar</string>
@@ -106,4 +106,16 @@
     <string name="notification_channel_app_name">Aplicacion</string>
     <string name="notification_channel_app_description">Actualizaciones generales de la aplicación</string>
     <string name="notification_action_all_properties">Todas las propiedades</string>
+    <string name="result_search_properties">Resultado Propiedades Buscar</string>
+    <string name="search_properties">Búsqueda de Propiedades</string>
+    <string name="nearby">Cercano</string>
+    <string name="property_min_price">Precio mínimo</string>
+    <string name="property_max_price">Precio Máximo</string>
+    <string name="min_surface">Superficie mínima</string>
+    <string name="max_surface">Superficie máxima</string>
+    <string name="min_rooms">Habitaciones Mínimas</string>
+    <string name="max_rooms">Habitaciones máximas</string>
+    <string name="all_property_type">Todo tipo</string>
+    <string name="all_property_status">Todo Estado</string>
+    <string name="no_property_found">No se ha encontrado ninguna propiedad</string>
 </resources>

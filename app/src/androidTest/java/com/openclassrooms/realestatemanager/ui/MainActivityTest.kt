@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.ui
 
 import android.view.View
+import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
@@ -49,7 +50,7 @@ class MainActivityTest : BaseMainActivityTests() {
 
     @Test
     fun given_main_activity_when_launched_then_search_item_displayed() {
-        onView(withId(R.id.navigation_search)).check(matches(isDisplayed()))
+        onView(allOf(withId(R.id.navigation_main_search), isAssignableFrom(ActionMenuItemView::class.java), isDisplayed())).check(matches(isDisplayed()))
     }
 
     @Test
@@ -73,7 +74,7 @@ class MainActivityTest : BaseMainActivityTests() {
     }
 
     @Test
-    fun given_main_activity_launched_when_navigation_view_is_opened_then_real_estate_line_is_displayed() {
+    fun given_main_activity_launched_when_navigation_view_is_opened_then_properties_line_is_displayed() {
         // Given Main activity is launched
 
         // When Navigation view is opened
@@ -82,12 +83,12 @@ class MainActivityTest : BaseMainActivityTests() {
                 .perform(click())
 
         // Then Real estate line is displayed
-        onView(allOf(isAssignableFrom(NavigationMenuItemView::class.java), withId(R.id.navigation_real_estate)))
+        onView(allOf(isAssignableFrom(NavigationMenuItemView::class.java), withId(R.id.navigation_browse)))
                 .check(matches(isDisplayed()))
     }
 
     @Test
-    fun given_main_activity_launched_when_navigation_view_is_opened_then_add_real_estate_line_is_displayed() {
+    fun given_main_activity_launched_when_navigation_view_is_opened_then_add_properties_line_is_displayed() {
         // Given Main activity is launched
 
         // When Navigation view is opened
@@ -101,22 +102,38 @@ class MainActivityTest : BaseMainActivityTests() {
     }
 
     @Test
+    fun given_main_activity_launched_when_navigation_view_is_opened_then_search_properties_line_is_displayed() {
+        // Given Main activity is launched
+
+        // When Navigation view is opened
+        onView(allOf(withContentDescription(
+            activityScenario.get_toolbar_navigation_content_description()), isDisplayed()))
+            .perform(click())
+
+        // Then Search estate line is displayed
+        onView(allOf(isAssignableFrom(NavigationMenuItemView::class.java), withId(R.id.navigation_main_search)))
+            .check(matches(isDisplayed()))
+    }
+
+    @Test
     fun given_main_activity_when_launched_then_bottom_navigation_view_displayed() {
         onView(allOf(isAssignableFrom(BottomNavigationView::class.java)))
                 .check(matches(isDisplayed()))
     }
 
     @Test
-    fun given_main_activity_launched_when_click_on_real_estate_bottom_navigation_view_then_button_is_checked() {
+    fun given_main_activity_launched_when_click_on_properties_bottom_navigation_view_then_button_is_checked() {
         // Given Main activity is launched
 
         // When click on Real estate Bottom Navigation view
-        onView(allOf(withText(R.string.real_estate), isDisplayed())).perform(click())
+        onView(allOf(withId(R.id.navigation_browse), isDisplayed())).perform(click())
 
         // Then Real estate Bottom Navigation button is checked
         onView(allOf(withId(R.id.navigation_create), isDisplayed()))
                 .check(matches(withBottomNavItemCheckedStatus(false)))
-        onView(allOf(withId(R.id.navigation_real_estate), isDisplayed()))
+        onView(allOf(withId(R.id.navigation_main_search), isAssignableFrom(BottomNavigationItemView::class.java), isDisplayed()))
+            .check(matches(withBottomNavItemCheckedStatus(false)))
+        onView(allOf(withId(R.id.navigation_browse), isDisplayed()))
             .check(matches(withBottomNavItemCheckedStatus(true)))
     }
 
@@ -128,9 +145,27 @@ class MainActivityTest : BaseMainActivityTests() {
         onView(allOf(withId(R.id.navigation_create), isAssignableFrom(BottomNavigationItemView::class.java))).perform(click())
 
         // Then Create Real estate Bottom Navigation button is checked
-        onView(allOf(withId(R.id.navigation_real_estate), isDisplayed()))
+        onView(allOf(withId(R.id.navigation_browse), isDisplayed()))
                 .check(matches(withBottomNavItemCheckedStatus(false)))
+        onView(allOf(withId(R.id.navigation_main_search), isAssignableFrom(BottomNavigationItemView::class.java) , isDisplayed()))
+            .check(matches(withBottomNavItemCheckedStatus(false)))
         onView(allOf(withId(R.id.navigation_create), isAssignableFrom(BottomNavigationItemView::class.java)))
+            .check(matches(withBottomNavItemCheckedStatus(true)))
+    }
+
+    @Test
+    fun given_main_activity_launched_when_click_on_search_bottom_navigation_view_then_button_is_checked() {
+        // Given Main activity is launched
+
+        // When click on Create Real estate Bottom Navigation view
+        onView(allOf(withId(R.id.navigation_main_search), isAssignableFrom(BottomNavigationItemView::class.java))).perform(click())
+
+        // Then Search Real estate Bottom Navigation button is checked
+        onView(allOf(withId(R.id.navigation_browse), isDisplayed()))
+            .check(matches(withBottomNavItemCheckedStatus(false)))
+        onView(allOf(withId(R.id.navigation_create), isDisplayed()))
+            .check(matches(withBottomNavItemCheckedStatus(false)))
+        onView(allOf(withId(R.id.navigation_main_search), isAssignableFrom(BottomNavigationItemView::class.java)))
             .check(matches(withBottomNavItemCheckedStatus(true)))
     }
 

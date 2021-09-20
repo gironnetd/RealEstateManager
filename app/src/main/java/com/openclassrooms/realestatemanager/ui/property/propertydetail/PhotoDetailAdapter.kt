@@ -20,11 +20,11 @@ class PhotoDetailAdapter : RecyclerView.Adapter<PhotoViewHolder>() {
         fun clickOnPhotoAtPosition(photoId: String)
     }
 
-    var callBack: OnItemClickListener? = null
+    private var callBack: OnItemClickListener? = null
 
     fun setOnItemClickListener(listener: OnItemClickListener) { callBack = listener }
 
-    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Photo>() {
+    private val diffCallback = object : DiffUtil.ItemCallback<Photo>() {
 
         override fun areItemsTheSame(oldItem: Photo, newItem: Photo): Boolean {
             return oldItem.id == newItem.id
@@ -35,7 +35,7 @@ class PhotoDetailAdapter : RecyclerView.Adapter<PhotoViewHolder>() {
         }
 
     }
-    private val differ = AsyncListDiffer(this, DIFF_CALLBACK)
+    private val differ = AsyncListDiffer(this, diffCallback)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
         return PhotoViewHolder(from(parent.context).inflate(R.layout.layout_photo_list_item,
@@ -53,14 +53,14 @@ class PhotoDetailAdapter : RecyclerView.Adapter<PhotoViewHolder>() {
         return differ.currentList.size
     }
 
-    fun submitList(photos: List<Photo>?, ) {
+    fun submitList(photos: List<Photo>?) {
         differ.submitList(photos)
     }
 
     class PhotoViewHolder
     constructor(
         itemView: View,
-        var callBack: OnItemClickListener?,
+        private var callBack: OnItemClickListener?,
     ) : RecyclerView.ViewHolder(itemView) {
 
         var photo: ImageView = itemView.findViewById(R.id.property_photo)
@@ -70,8 +70,7 @@ class PhotoDetailAdapter : RecyclerView.Adapter<PhotoViewHolder>() {
             item.let { photo ->
                 if(photo.bitmap != null) {
                     this@PhotoViewHolder.photo.setImageBitmap(photo.bitmap)
-                } else {
-                    this@PhotoViewHolder.photo.setImageURI(null)
+                    this@PhotoViewHolder.photo.setPadding(0,0,0,0)
                 }
 
                 if(photo.mainPhoto) {

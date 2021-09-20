@@ -23,7 +23,7 @@
     "price": 13924,
     "bedRooms": 3,
     "type": "HOUSE",
-    "entryDate": "1970-01-01T00:00:15.742Z",
+    "entryDate": "1970-01-01",
     "status": "IN_SALE",
     "mainPhoto": {
       "id": "lDKc1F0GZfHycUf43HC9",
@@ -39,16 +39,16 @@
   {
     "agentId": "ydjypZLSjCbFuEOJlNfM",
     "rooms": 4,
-    "soldDate": "1970-01-01T00:00:18.307Z",
+    "soldDate": "1970-01-01",
     "bathRooms": 3,
-    "entryDate": "1970-01-01T00:00:14.992Z",
+    "entryDate": "1970-01-01",
     "interestPoints": [
       "BUSES",
       "PARK",
       "SHOP"
     ],
     "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
-    "type": "FLAT",
+    "type": "HOUSE",
     "status": "SOLD",
     "id": "AMEs0idV3ur4eqK2vF3O",
     "surface": 30,
@@ -68,7 +68,7 @@
       "description": "",
       "type": "MAIN"
     },
-    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
+    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)",
     "price": 16140,
     "bedRooms": 2,
     "createTime": "2021-01-18T16:21:00.128326Z",
@@ -79,14 +79,14 @@
     "rooms": 4,
     "soldDate": null,
     "bathRooms": 3,
-    "entryDate": "1970-01-01T00:00:14.992Z",
+    "entryDate": "1970-01-01",
     "interestPoints": [
       "BUSES",
       "PARK",
       "SHOP"
     ],
     "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
-    "type": "FLAT",
+    "type": "PENTHOUSE",
     "status": "IN_SALE",
     "id": "NITe6lIGdZYjiiAiIX3y",
     "surface": 30,
@@ -106,7 +106,7 @@
       "description": "",
       "type": "MAIN"
     },
-    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
+    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. \n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
     "price": 16140,
     "bedRooms": 2,
     "createTime": "2021-01-18T16:21:00.128326Z",
@@ -114,7 +114,7 @@
   },
   {
     "rooms": 4,
-    "entryDate": "1970-01-01T00:00:18.333Z",
+    "entryDate": "1970-01-01",
     "soldDate": null,
     "status": "IN_SALE",
     "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
@@ -159,7 +159,7 @@
     "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
     "status": "FOR_RENT",
     "bathRooms": 1,
-    "entryDate": "1970-01-01T00:00:16.465Z",
+    "entryDate": "1970-01-01",
     "interestPoints": [
       "BUSES",
       "PARK",
@@ -194,7 +194,7 @@
     "soldDate": null,
     "bathRooms": 3,
     "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
-    "entryDate": "1970-01-01T00:00:14.992Z",
+    "entryDate": "1970-01-01",
     "interestPoints": [
       "BUSES",
       "PARK",
@@ -220,7 +220,7 @@
       "description": "",
       "type": "MAIN"
     },
-    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
+    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle.",
     "price": 16140,
     "bedRooms": 2,
     "createTime": "2021-01-18T16:21:00.128326Z",
@@ -232,7 +232,7 @@
     "soldDate": null,
     "bathRooms": 3,
     "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
-    "entryDate": "1970-01-01T00:00:14.992Z",
+    "entryDate": "1970-01-01",
     "interestPoints": [
       "BUSES",
       "PARK",
@@ -249,7 +249,7 @@
       "longitude": 2.124734251155427,
       "country": "France",
       "street": "3 Place de la Loi",
-      "latitude": 48.82812820341748
+      "latitude": 48.829394665153714
     },
     "mainPhoto": {
       "id": "ydjypZLSjCbFuEOJlNfM",
@@ -258,7 +258,7 @@
       "description": "",
       "type": "MAIN"
     },
-    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
+    "description": "Secure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
     "price": 16140,
     "bedRooms": 2,
     "createTime": "2021-01-18T16:21:00.128326Z",
@@ -270,7 +270,7 @@
     "soldDate": null,
     "bathRooms": 3,
     "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
-    "entryDate": "1970-01-01T00:00:14.992Z",
+    "entryDate": "1970-01-01",
     "interestPoints": [
       "BUSES",
       "PARK",
@@ -296,7 +296,7 @@
       "description": "",
       "type": "MAIN"
     },
-    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
+    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
     "price": 16140,
     "bedRooms": 2,
     "createTime": "2021-01-18T16:21:00.128326Z",
@@ -308,7 +308,7 @@
     "soldDate": null,
     "bathRooms": 3,
     "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
-    "entryDate": "1970-01-01T00:00:14.992Z",
+    "entryDate": "1970-01-01",
     "interestPoints": [
       "BUSES",
       "PARK",
@@ -334,7 +334,7 @@
       "description": "",
       "type": "MAIN"
     },
-    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
+    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery.  10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
     "price": 16140,
     "bedRooms": 2,
     "createTime": "2021-01-18T16:21:00.128326Z",
@@ -346,7 +346,7 @@
     "soldDate": null,
     "bathRooms": 3,
     "mainPhotoId": "9uCYQYqQGrW2JvqJlj5B",
-    "entryDate": "1970-01-01T00:00:14.992Z",
+    "entryDate": "1970-01-01",
     "interestPoints": [
       "BUSES",
       "PARK",
@@ -372,7 +372,7 @@
       "description": "",
       "type": "MAIN"
     },
-    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station (direct line La Défense, St Lazare)\n- 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street\n\nA small storage room on the middle floor for various storage: household accessories, suitcases, tools ...\n\nIndividual hot water and electric heating.",
+    "description": "Notre-Dame Richaud district, 2 rooms furnished completely renovated, 27.78 m2 + 1.30 m2.\n\nNear the Hoche and La Bruyère high schools, universities, ISIPCA, the school of architecture, the administrative and judicial city, the market, the Castle and its park.\n\nSecure building, intercom, armored door with peephole. 2nd floor, no lift.\n\nEntrance, living room with view on the Richaud district, quiet bedroom overlooking the courtyard, fitted kitchen open to living room, bathroom with walk-in shower.\n\nEquipment: 4 * refrigerator, hotplates, extractor hood, oven and microwave, vacuum cleaner, Queen size bed, sofa bed for third bed.\n\nAdditional equipment: dishwasher, washing machine, TV, numerous kitchen utensils and small appliances (Dolce Gusto coffee maker, kettle, toaster, iron, etc.), large reception crockery. Linens provided.\n\nPossibility to park a bicycle. Well connected :\n- 4 minutes walk from Versailles Rive Droite station - 10 minutes walk from Versailles Rive Gauche station (direct Saint-Michel)\n- Bus stop at the corner of the street",
     "price": 16140,
     "bedRooms": 2,
     "createTime": "2021-01-18T16:21:00.128326Z",

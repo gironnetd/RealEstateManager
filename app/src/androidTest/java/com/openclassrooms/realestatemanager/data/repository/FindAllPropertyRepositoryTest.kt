@@ -34,7 +34,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
 import org.mockito.ArgumentMatchers.anyList
 import org.mockito.Mockito.*
-import timber.log.Timber.tag
+import timber.log.Timber.Forest.tag
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -60,7 +60,7 @@ class FindAllPropertyRepositoryTest : TestCase() {
         .targetContext
         .applicationContext as TestBaseApplication
 
-    lateinit var testObserver: TestObserver<List<Property>>
+    private lateinit var testObserver: TestObserver<List<Property>>
 
     @Before
     public override fun setUp() {
@@ -471,6 +471,7 @@ class FindAllPropertyRepositoryTest : TestCase() {
             }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun <T> any(type: T): T {
         any<T>()
         return null as T
@@ -482,6 +483,6 @@ class FindAllPropertyRepositoryTest : TestCase() {
     }
 
     companion object {
-        private val TAG = FindAllPropertyRepositoryTest::class.simpleName
+        private val TAG = FindAllPropertyRepositoryTest::class.simpleName!!
     }
 }

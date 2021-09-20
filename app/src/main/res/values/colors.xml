@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#9e9e9e</color>
-    <color name="colorPrimaryDark">#707070</color>
-    <color name="colorAccent">#FF4081</color>
+
+    <color name="colorPrimaryDark">#1B4849</color>
+    <color name="colorPrimary">#235D5E</color>
+    <color name="colorPrimaryLight">#76CBCC</color>
+    <color name="colorPrimaryScrollbar">#66235D5E</color>
+    <color name="colorPrimaryRipple">#1A235D5E</color>
+
+    <color name="colorPrimaryAccentDark">#985C1F</color>
+    <color name="colorPrimaryAccent">#D68533</color>
+    <color name="colorPrimaryAccentLight">#FFEACE</color>
+    <color name="colorPrimaryAccentSnackBar">#E6FFEACE</color>
+
+    <color name="colorSecondaryDark">#194B5D</color>
+    <color name="colorSecondary">#1E5B70</color>
+    <color name="colorSecondaryLight">#6CBCD8</color>
+    <color name="colorSecondaryScrollbar">#661E5B70</color>
+    <color name="colorSecondaryRipple">#1A1E5B70</color>
+
+    <color name="colorSecondaryAccentDark">#985C1F</color>
+    <color name="colorSecondaryAccent">#D68533</color>
+    <color name="colorSecondaryAccentLight">#FFEACE</color>
+    <color name="colorSecondaryAccentSnackBar">#E6FFEACE</color>
+
+    <color name="colorTertiaryDark">#5D2539</color>
+    <color name="colorTertiary">#81334F</color>
+    <color name="colorTertiaryLight">#CA7A97</color>
+    <color name="colorTertiaryScrollbar">#8081334F</color>
+    <color name="colorTertiaryRipple">#1A81334F</color>
+
+    <color name="colorTertiaryAccentDark">#985C1F</color>
+    <color name="colorTertiaryAccent">#D68533</color>
+    <color name="colorTertiaryAccentLight">#FFEACE</color>
+    <color name="colorTertiaryAccentSnackBar">#E6FFEACE</color>
+
+    <color name="colorGrayDark">#606368</color>
 </resources>

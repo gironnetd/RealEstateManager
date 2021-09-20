@@ -39,6 +39,7 @@ class BrowseDetailFragmentNavigator(
         if (currentFragment != null) {
             ft.hide(currentFragment)
         }
+        mFragmentManager.executePendingTransactions()
 
         var fragment = mFragmentManager.findFragmentByTag(tag)
 
@@ -50,8 +51,10 @@ class BrowseDetailFragmentNavigator(
             fragment.arguments = args
             ft.show(fragment)
         }
+        mFragmentManager.executePendingTransactions()
 
         ft.setPrimaryNavigationFragment(fragment)
+        mFragmentManager.executePendingTransactions()
 
         @IdRes val destId = destination.id
         val initialNavigation = mBackStack.isEmpty()
@@ -60,24 +63,28 @@ class BrowseDetailFragmentNavigator(
                 && navOptions.shouldLaunchSingleTop()
                 && mBackStack.peekLast() == destId)
 
-        val isAdded: Boolean = if (initialNavigation) {
-            true
-        } else if (isSingleTopReplacement) {
-            // Single Top means we only want one instance on the back stack
-            if (mBackStack.size > 1) {
-                // If the Fragment to be replaced is on the FragmentManager's
-                // back stack, a simple replace() isn't enough so we
-                // remove it from the back stack and put our replacement
-                // on the back stack in its place
-                mFragmentManager.popBackStack(
+        val isAdded: Boolean = when {
+            initialNavigation -> {
+                true
+            }
+            isSingleTopReplacement -> {
+                // Single Top means we only want one instance on the back stack
+                if (mBackStack.size > 1) {
+                    // If the Fragment to be replaced is on the FragmentManager's
+                    // back stack, a simple replace() isn't enough so we
+                    // remove it from the back stack and put our replacement
+                    // on the back stack in its place
+                    mFragmentManager.popBackStack(
                         generateBackStackName(mBackStack.size, mBackStack.peekLast()!!),
                         FragmentManager.POP_BACK_STACK_INCLUSIVE)
-                ft.addToBackStack(generateBackStackName(mBackStack.size, destId))
+                    ft.addToBackStack(generateBackStackName(mBackStack.size, destId))
+                }
+                false
             }
-            false
-        } else {
-            ft.addToBackStack(generateBackStackName(mBackStack.size + 1, destId))
-            true
+            else -> {
+                ft.addToBackStack(generateBackStackName(mBackStack.size + 1, destId))
+                true
+            }
         }
         if (navigatorExtras is Extras) {
             for ((key, value) in navigatorExtras.sharedElements) {
@@ -86,6 +93,7 @@ class BrowseDetailFragmentNavigator(
         }
         ft.setReorderingAllowed(true)
         ft.commit()
+        mFragmentManager.executePendingTransactions()
         // The commit succeeded, update our view of the world
         return if (isAdded) {
             mBackStack.add(destId)

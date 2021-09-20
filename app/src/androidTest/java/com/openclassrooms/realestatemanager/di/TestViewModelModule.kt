@@ -2,7 +2,7 @@ package com.openclassrooms.realestatemanager.di
 
 import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
-import com.openclassrooms.realestatemanager.viewmodels.FakePropertiesViewModelFactory
+import com.openclassrooms.realestatemanager.ui.viewmodels.FakePropertiesViewModelFactory
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

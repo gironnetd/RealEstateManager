@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.ui.property.browse
 
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.FragmentActivity
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.espresso.Espresso.onView
@@ -20,14 +21,19 @@ import com.openclassrooms.realestatemanager.di.TestAppComponent
 import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests
 import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests.ScreenSize.*
 import com.openclassrooms.realestatemanager.ui.MainActivity
+import com.openclassrooms.realestatemanager.util.RxImmediateSchedulerRule
 import org.hamcrest.CoreMatchers.anyOf
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class BrowseFragmentTest : BaseMainActivityTests() {
+
+    @get:Rule val instantTaskExecutorRule = InstantTaskExecutorRule()
+    @get:Rule val rxImmediateSchedulerRule = RxImmediateSchedulerRule()
 
     // device size variables
     private var screenSize: ScreenSize = UNDEFINED
@@ -65,7 +71,7 @@ class BrowseFragmentTest : BaseMainActivityTests() {
             onView(withId(R.id.map_view_button)).check(matches(ViewMatchers.isSelected()))
 
             onView(withId(R.id.list_view_button)).perform(ViewActions.click())
-            onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
+            onView(withId(R.id.properties_recycler_view)).check(matches(isDisplayed()))
 
             onView(withId(R.id.map_view_button)).perform(ViewActions.click())
             onView(withId(R.id.map_fragment)).check(matches(isDisplayed()))
@@ -80,24 +86,24 @@ class BrowseFragmentTest : BaseMainActivityTests() {
 
         // Then the view correspond with size and orientation layout
         if(screenSize == SMARTPHONE && orientation == ORIENTATION_PORTRAIT) {
-            onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
-            onView(withId(R.id.button_container)).check(matches(isDisplayed()))
+            onView(withId(R.id.properties_recycler_view)).check(matches(isDisplayed()))
+            onView(withId(R.id.segmentedcontrol)).check(matches(isDisplayed()))
         }
 
         if(screenSize == SMARTPHONE && orientation == ORIENTATION_LANDSCAPE) {
-            onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
-            onView(withId(R.id.button_container)).check(matches(isDisplayed()))
+            onView(withId(R.id.properties_recycler_view)).check(matches(isDisplayed()))
+            onView(withId(R.id.segmentedcontrol)).check(matches(isDisplayed()))
         }
 
         if(screenSize == PHABLET && orientation == ORIENTATION_PORTRAIT) {
-            onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
-            onView(withId(R.id.button_container)).check(matches(isDisplayed()))
+            onView(withId(R.id.properties_recycler_view)).check(matches(isDisplayed()))
+            onView(withId(R.id.segmentedcontrol)).check(matches(isDisplayed()))
         }
 
         if(screenSize == PHABLET && orientation == ORIENTATION_LANDSCAPE) {
-            onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
+            onView(withId(R.id.properties_recycler_view)).check(matches(isDisplayed()))
 
-            onView(withId(R.id.list_fragment))
+            onView(withId(R.id.properties_recycler_view))
                     .check(isCompletelyLeftOf(
                             anyOf(withId(R.id.map_fragment),
                                     withId(R.id.detail_fragment))))
@@ -108,9 +114,9 @@ class BrowseFragmentTest : BaseMainActivityTests() {
         }
 
         if(screenSize == TABLET && orientation == ORIENTATION_PORTRAIT) {
-            onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
+            onView(withId(R.id.properties_recycler_view)).check(matches(isDisplayed()))
 
-            onView(withId(R.id.list_fragment))
+            onView(withId(R.id.properties_recycler_view))
                     .check(isCompletelyLeftOf(
                             anyOf(withId(R.id.map_fragment),
                                     withId(R.id.detail_fragment))))
@@ -121,9 +127,9 @@ class BrowseFragmentTest : BaseMainActivityTests() {
         }
 
         if(screenSize == TABLET && orientation == ORIENTATION_LANDSCAPE) {
-            onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
+            onView(withId(R.id.properties_recycler_view)).check(matches(isDisplayed()))
 
-            onView(withId(R.id.list_fragment))
+            onView(withId(R.id.properties_recycler_view))
                     .check(isCompletelyLeftOf(
                             anyOf(withId(R.id.map_fragment),
                                     withId(R.id.detail_fragment))))

@@ -17,7 +17,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.net.toUri
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.openclassrooms.realestatemanager.R
@@ -25,9 +24,9 @@ import com.openclassrooms.realestatemanager.databinding.FragmentDialogUpdatePhot
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.PhotoType
 import com.openclassrooms.realestatemanager.models.storageLocalDatabase
-import com.openclassrooms.realestatemanager.ui.property.BaseDialogFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PhotoUpdateAdapter
+import com.openclassrooms.realestatemanager.ui.property.shared.BaseDialogFragment
 import java.io.File
 import java.io.FileOutputStream
 
@@ -48,7 +47,7 @@ class PhotoUpdateDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_up
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = FragmentDialogUpdatePhotoBinding.inflate(LayoutInflater.from(context))
         return activity?.let {
-            MaterialAlertDialogBuilder(ContextThemeWrapper(context, R.style.AppTheme)).run {
+            MaterialAlertDialogBuilder(requireContext()).run {
                 setView(binding.root)
 
                 setPositiveButton(getString(R.string.update_photo_detail)) { _, _ ->
@@ -147,8 +146,6 @@ class PhotoUpdateDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_up
                     if (deletePhoto.visibility == View.GONE) { deletePhoto.visibility = View.VISIBLE }
                 }
 
-
-
                 descriptionTextInputLayout.editText?.imeOptions = EditorInfo.IME_ACTION_DONE
                 descriptionTextInputLayout.editText?.setRawInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE)
 
@@ -236,9 +233,7 @@ class PhotoUpdateDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_up
         if(binding.photoImageview.visibility == View.INVISIBLE) { binding.photoImageview.visibility =
             View.VISIBLE
         }
-
         binding.photoImageview.setImageURI(latestTmpUri)
-
     }
 
     private fun selectImageFromGallery() {

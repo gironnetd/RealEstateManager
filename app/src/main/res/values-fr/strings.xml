@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--Navigation View and Bottom Navigation View Strings-->
-    <string name="real_estate">Biens immobiliers</string>
+    <string name="real_estate">Toutes les propriétés</string>
     <string name="add_real_estate">Ajouter un bien immobilier</string>
     <string name="create_property">Créer un bien immobilier</string>
     <string name="create">&#160;&#160;CRÉER</string>
-    <string name="update">&#160;&#160;&#160;MODIFIER</string>
+    <string name="update">&#160;&#160;MODIFIER&#160;&#160;</string>
     <string name="map">Carte des biens immobiliers</string>
     <string name="list">Liste des biens immobiliers</string>
     <string name="detail">Detail de bien immobilier</string>
-    <string name="search">&#160;&#160;&#160;Rechercher</string>
-    <string name="edit">&#160;&#160;&#160;Editer</string>
+    <string name="search">&#160;&#160;RECHERCHER&#160;&#160;</string>
+    <string name="edit">&#160;&#160;EDITER&#160;&#160;</string>
     <string name="button_list_title">Liste</string>
     <string name="button_map_title">Carte</string>
     <string name="no_property_to_display">Aucune propriété à afficher</string>
@@ -107,4 +107,16 @@
     <string name="notification_channel_app_name">Application</string>
     <string name="notification_channel_app_description">Mises à jour générales de l\'application</string>
     <string name="notification_action_all_properties">Toutes les propriétés</string>
+    <string name="result_search_properties">Résultat Recherche Propriétés</string>
+    <string name="search_properties">Recherche de Propriétés</string>
+    <string name="nearby">À proximité</string>
+    <string name="property_min_price">Prix minimum</string>
+    <string name="property_max_price">Prix maximum</string>
+    <string name="min_surface">Surface minimale</string>
+    <string name="max_surface">Maximum Surface</string>
+    <string name="min_rooms">Chambres minimales</string>
+    <string name="max_rooms">Nombre maximal de chambres</string>
+    <string name="all_property_type">Tous les types</string>
+    <string name="all_property_status">Tous les statuts</string>
+    <string name="no_property_found">Aucune propriété trouvée</string>
 </resources>

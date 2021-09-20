@@ -6,16 +6,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.net.toUri
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.openclassrooms.realestatemanager.R
-import com.openclassrooms.realestatemanager.R.style.AppTheme
 import com.openclassrooms.realestatemanager.databinding.FragmentDialogDetailPhotoBinding
 import com.openclassrooms.realestatemanager.models.Photo
 import com.openclassrooms.realestatemanager.models.PhotoType
 import com.openclassrooms.realestatemanager.models.storageLocalDatabase
-import com.openclassrooms.realestatemanager.ui.property.BaseDialogFragment
+import com.openclassrooms.realestatemanager.ui.property.shared.BaseDialogFragment
 import java.io.File
 import java.util.*
 
@@ -30,7 +28,7 @@ class PhotoDetailDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_de
         _binding = FragmentDialogDetailPhotoBinding.inflate(LayoutInflater.from(context))
 
         return activity?.let {
-            MaterialAlertDialogBuilder(ContextThemeWrapper(context, AppTheme)).run {
+            MaterialAlertDialogBuilder(requireContext()).run {
                 setView(binding.root)
                 create()
             }

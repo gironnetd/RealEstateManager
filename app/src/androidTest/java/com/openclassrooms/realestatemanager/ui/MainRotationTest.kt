@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.ui
 
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
+import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
@@ -76,7 +77,7 @@ class MainRotationTest : BaseMainActivityTests() {
     }
 
     @Test
-    fun given_search_fragment_displayed_when_rotation_then_display_search_fragment() {
+    fun given_search_fragment_displayed_when_rotation_then_display_main_search_fragment() {
         // Given Search fragment
         activityScenario = launch(MainActivity::class.java)
                 .onActivity { activity ->
@@ -84,25 +85,63 @@ class MainRotationTest : BaseMainActivityTests() {
                     mainActivity = activity
                 }
 
-        onView(withId(R.id.navigation_search)).perform(click())
-        onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
+        onView(allOf(withId(R.id.navigation_main_search), isAssignableFrom(ActionMenuItemView::class.java), isDisplayed())).perform(click())
+        onView(withId(R.id.main_search_fragment)).check(matches(isDisplayed()))
 
         // When a rotation occurs
         // Then Search fragment is displayed
         val orientation = mainActivity.applicationContext.resources.configuration.orientation
         if(orientation == ORIENTATION_PORTRAIT) {
             onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity))
-            onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
+            onView(withId(R.id.main_search_fragment)).check(matches(isDisplayed()))
 
             onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity))
-            onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
+            onView(withId(R.id.main_search_fragment)).check(matches(isDisplayed()))
         }
         if(orientation == ORIENTATION_LANDSCAPE) {
             onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity))
-            onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
+            onView(withId(R.id.main_search_fragment)).check(matches(isDisplayed()))
 
             onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity))
-            onView(withId(R.id.search_fragment)).check(matches(isDisplayed()))
+            onView(withId(R.id.main_search_fragment)).check(matches(isDisplayed()))
+        }
+    }
+
+    @Test
+    fun given_main_search_fragment_displayed_when_browse_search_result_fragment_displayed_and_rotation_then_display_browse_fragment() {
+        // Given Browse fragment
+        activityScenario = launch(MainActivity::class.java)
+            .onActivity { activity ->
+                navController = findNavController(activity, R.id.nav_host_fragment)
+                mainActivity = activity
+            }
+
+        onView(allOf(withId(R.id.navigation_main_search), isAssignableFrom(ActionMenuItemView::class.java), isDisplayed())).perform(click())
+        onView(withId(R.id.navigation_result_search)).perform(click())
+
+        is_this_the_correct_fragment_displayed()
+
+        // When a rotation occurs
+        // Then Search fragment is displayed
+        val orientation = mainActivity.applicationContext.resources.configuration.orientation
+        if(orientation == ORIENTATION_PORTRAIT) {
+            onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity))
+            assertEquals(navController.currentDestination?.id, R.id.navigation_main_search)
+            is_this_the_correct_fragment_displayed()
+
+            onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity))
+            assertEquals(navController.currentDestination?.id, R.id.navigation_main_search)
+            is_this_the_correct_fragment_displayed()
+        }
+
+        if(orientation == ORIENTATION_LANDSCAPE) {
+            onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity))
+            assertEquals(navController.currentDestination?.id, R.id.navigation_main_search)
+            is_this_the_correct_fragment_displayed()
+
+            onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity))
+            assertEquals(navController.currentDestination?.id, R.id.navigation_main_search)
+            is_this_the_correct_fragment_displayed()
         }
     }
 
@@ -115,8 +154,7 @@ class MainRotationTest : BaseMainActivityTests() {
                     mainActivity = activity
                 }
 
-        onView(allOf(withId(R.id.navigation_real_estate), isDisplayed()))
-                .perform(click())
+        onView(allOf(withId(R.id.navigation_browse), isDisplayed())).perform(click())
 
         is_this_the_correct_fragment_displayed()
 
@@ -125,6 +163,7 @@ class MainRotationTest : BaseMainActivityTests() {
         val orientation = mainActivity.applicationContext.resources.configuration.orientation
         if(orientation == ORIENTATION_PORTRAIT) {
             onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity))
+            assertEquals(navController.currentDestination?.id, R.id.navigation_browse)
             is_this_the_correct_fragment_displayed()
 
             onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity))
@@ -133,9 +172,11 @@ class MainRotationTest : BaseMainActivityTests() {
 
         if(orientation == ORIENTATION_LANDSCAPE) {
             onView(isRoot()).perform(OrientationChangeAction.orientationPortrait(mainActivity))
+            assertEquals(navController.currentDestination?.id, R.id.navigation_browse)
             is_this_the_correct_fragment_displayed()
 
             onView(isRoot()).perform(OrientationChangeAction.orientationLandscape(mainActivity))
+            assertEquals(navController.currentDestination?.id, R.id.navigation_browse)
             is_this_the_correct_fragment_displayed()
         }
     }
@@ -146,22 +187,21 @@ class MainRotationTest : BaseMainActivityTests() {
                 .targetContext.resources.getBoolean(R.bool.isMasterDetail)
 
         if (isTablet) {
-            assertEquals(navController.currentDestination?.id, R.id.navigation_real_estate)
-            onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
+            onView(allOf(withId(R.id.properties_recycler_view), isDisplayed())).check(matches(isDisplayed()))
 
-            onView(withId(R.id.list_fragment))
+            onView(allOf(withId(R.id.properties_recycler_view), isDisplayed()))
                     .check(isCompletelyLeftOf(
-                            anyOf(withId(R.id.map_fragment),
-                                    withId(R.id.detail_fragment))))
+                            anyOf(allOf(withId(R.id.map_fragment), isDisplayed()),
+                                allOf(withId(R.id.edit_fragment), isDisplayed()))))
 
-            onView(anyOf(withId(R.id.map_fragment),
-                    withId(R.id.detail_fragment)))
+            onView(anyOf(allOf(withId(R.id.map_fragment), isDisplayed()),
+                allOf(withId(R.id.edit_fragment), isDisplayed())))
                     .check(matches(isDisplayed()))
         }
         if(!isTablet) {
-            assertEquals(navController.currentDestination?.id, R.id.navigation_real_estate)
-            onView(withId(R.id.list_fragment)).check(matches(isDisplayed()))
-            onView(withId(R.id.button_container)).check(matches(isDisplayed()))
+            onView(allOf(withId(R.id.properties_recycler_view), isDisplayed())).check(matches(isDisplayed()))
+            onView(allOf(withId(R.id.list_view_button), withParent(allOf(withId(R.id.segmentedcontrol), isDisplayed())))).check(matches(isDisplayed()))
+            onView(allOf(withId(R.id.map_view_button), withParent(allOf(withId(R.id.segmentedcontrol), isDisplayed())))).check(matches(isDisplayed()))
         }
     }
 

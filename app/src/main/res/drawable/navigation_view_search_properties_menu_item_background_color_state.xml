@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true">
+        <layer-list>
+            <item
+                android:right="16dp">
+
+                <shape android:shape="rectangle" >
+                    <solid android:color="@color/colorTertiaryRipple" />
+                    <corners
+                        android:bottomRightRadius="50dp"
+                        android:topRightRadius="50dp"
+                        />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+    <item
+        android:drawable="@drawable/navigation_view_background_round_padded_pressed"
+        android:state_window_focused="true"
+        />
+</selector>

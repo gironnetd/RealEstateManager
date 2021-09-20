@@ -11,21 +11,19 @@ import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragment
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragment
-import com.openclassrooms.realestatemanager.util.GlideManager
+import com.openclassrooms.realestatemanager.ui.viewmodels.FakePropertiesViewModelFactory
 import com.openclassrooms.realestatemanager.util.NavigationHelper
-import com.openclassrooms.realestatemanager.viewmodels.FakePropertiesViewModelFactory
 import org.hamcrest.core.AllOf.allOf
 import javax.inject.Inject
 
 open class BaseFragmentTests: BaseMainActivityTests() {
 
     @Inject lateinit var uiDevice: UiDevice
-    @Inject lateinit var requestManager: GlideManager
     @Inject lateinit var propertiesViewModelFactory: FakePropertiesViewModelFactory
 
     lateinit var browseFragment: BrowseFragment
 
-    val isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+    var isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
     var leChesnay = LatLng(48.82958536116524, 2.125609030745346)
     var itemPosition = -1
@@ -43,7 +41,7 @@ open class BaseFragmentTests: BaseMainActivityTests() {
 
     open fun navigate_to_detail_fragment_in_master_detail_mode() {
         NavigationHelper.navigate_to_detail_fragment_in_master_detail_mode(
-            uiDevice, mainActivity, browseFragment, itemPosition, fakeProperties)
+            testApplication, uiDevice, mainActivity, browseFragment, itemPosition, fakeProperties)
     }
 
     open fun navigate_to_update_fragment() {

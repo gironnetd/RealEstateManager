@@ -20,11 +20,17 @@
         android:title="@string/create"
         android:visible="false"
         android:contentDescription="@string/create"
-        app:showAsAction="always|withText"/>
+        app:showAsAction="ifRoom|withText"/>
 
-    <item android:id="@+id/navigation_search"
+    <item android:id="@+id/navigation_main_search"
         android:title="@string/search"
         android:icon="@drawable/ic_search_24"
         android:contentDescription="@string/search"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/navigation_result_search"
+        android:title="@string/search"
+        android:visible="false"
+        android:contentDescription="@string/search"
+        app:showAsAction="ifRoom|withText"/>
 </menu>

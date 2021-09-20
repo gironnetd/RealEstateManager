@@ -53,7 +53,7 @@ class PropertiesViewModel
         return when (intent) {
             is PropertiesIntent.InitialIntent -> PropertiesAction.LoadPropertiesAction
             is PropertiesIntent.LoadPropertiesIntent -> PropertiesAction.LoadPropertiesAction
-            else -> throw UnsupportedOperationException("Oops, that looks like an unknown intent: " + intent)
+            else -> throw UnsupportedOperationException("Oops, that looks like an unknown intent: $intent")
         }
     }
 
@@ -66,9 +66,37 @@ class PropertiesViewModel
             when (result) {
                 is LoadPropertiesResult -> when(result) {
                     is LoadPropertiesResult.Success -> {
-                        previousState.copy(
-                            inProgress = false,
-                            properties = result.properties,
+                        result.properties?.let { properties ->
+                             if(properties.isEmpty()) {
+                                 if(previousState.inProgress == true && previousState.properties == null) {
+                                     previousState.copy(
+                                         inProgress = true,
+                                         properties = properties,
+                                         error = null,
+                                         uiNotification = null
+                                     )
+                                 } else if(previousState.inProgress == true && previousState.properties!!.isEmpty()){
+                                     previousState.copy(
+                                         inProgress = null,
+                                         properties = null,
+                                         error = null,
+                                         uiNotification = null
+                                     )
+                                 } else {
+                                     previousState
+                                 }
+                             } else {
+                                 previousState.copy(
+                                     inProgress = false,
+                                     properties = properties,
+                                     error = null,
+                                     uiNotification = null
+                                 )
+                             }
+                        } ?: previousState.copy(
+                            inProgress = true,
+                            properties = null,
+                            error = null,
                             uiNotification = null
                         )
                     }
