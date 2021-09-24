@@ -119,4 +119,8 @@
     <string name="all_property_type">Tous les types</string>
     <string name="all_property_status">Tous les statuts</string>
     <string name="no_property_found">Aucune propriété trouvée</string>
+    <string name="currency">Devise</string>
+    <string name="default_currency">Devise par défaut</string>
+    <string name="choose_default_currency">Choisissez la devise par défaut</string>
+    <string name="settings">Paramètres</string>
 </resources>

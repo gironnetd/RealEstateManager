@@ -20,17 +20,19 @@ import com.openclassrooms.realestatemanager.ui.property.edit.view.update.PhotoUp
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.view.PhotoDetailDialogFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.search.PropertySearchFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.setting.PropertyCurrencySettingIntegrationTest
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 
 @RunWith(Suite::class)
 @Suite.SuiteClasses(
-        MainActivityTest::class,
-        MainNavigationTest::class,
-        MainRotationTest::class,
         BrowseFragmentTest::class,
         BrowseMapFragmentIntegrationTest::class,
         BrowseListFragmentIntegrationTest::class,
+        ConnectivityManagerTest::class,
+        MainActivityTest::class,
+        MainNavigationTest::class,
+        MainRotationTest::class,
         PropertyDetailFragmentIntegrationTest::class,
         PhotoDetailDialogFragmentIntegrationTest::class,
         PropertyUpdateFragmentIntegrationTest::class,
@@ -38,10 +40,10 @@ import org.junit.runners.Suite
         PhotoUpdateDialogFragmentIntegrationTest::class,
         PropertyCreateFragmentIntegrationTest::class,
         PropertySearchFragmentIntegrationTest::class,
+        PropertyCurrencySettingIntegrationTest::class,
         PropertyDaoTest::class,
         PhotoDaoTest::class,
         AppContentProviderTest::class,
-        ConnectivityManagerTest::class,
         FindAllPropertyRepositoryTest::class,
         UpdatePropertyRepositoryTest::class,
         CreatePropertyRepositoryTest::class

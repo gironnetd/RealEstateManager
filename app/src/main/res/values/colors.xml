@@ -35,4 +35,5 @@
     <color name="colorTertiaryAccentSnackBar">#E6FFEACE</color>
 
     <color name="colorGrayDark">#606368</color>
+    <color name="colorGrayLight">#33606368</color>
 </resources>

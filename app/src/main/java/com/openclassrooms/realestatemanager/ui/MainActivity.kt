@@ -48,6 +48,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
+
 class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesViewState> {
 
     lateinit var binding: ActivityMainBinding
@@ -97,6 +98,7 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
             navigationView.itemIconTintList = null
             bottomNavigationView.setupWithNavController(navController)
             bottomNavigationView.itemIconTintList = null
+
 
             if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
                 val states = arrayOf(intArrayOf(android.R.attr.state_enabled))
@@ -179,7 +181,6 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                     }
 
                     R.id.navigation_main_search -> {
-
                         menuItem.setOnMenuItemClickListener {
                             menuItem.setIcon(R.drawable.ic_baseline_search_selected_24)
                             SpannableString(menuItem.title.toSpannable()).apply {
@@ -196,8 +197,23 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                             true
                         }
                     }
+                    R.id.euros_choice -> {
+                        navigationView.itemBackground = ResourcesCompat.getDrawable(
+                                resources,
+                                R.drawable.navigation_view_choose_default_currency_menu_item_background_color_state,
+                                null
+                        )
+                    }
+                    R.id.dollars_choice -> {
+                        navigationView.itemBackground = ResourcesCompat.getDrawable(
+                                resources,
+                                R.drawable.navigation_view_choose_default_currency_menu_item_background_color_state,
+                                null
+                        )
+                    }
                 }
             }
+
             navController.addOnDestinationChangedListener { _, destination, _ ->
 
                 navigationView.menu.children.iterator().forEach { menuItem ->

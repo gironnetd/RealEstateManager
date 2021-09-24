@@ -163,10 +163,6 @@ dependencies {
     androidTestImplementation "androidx.test:runner:$androidx_test_runner"
     testImplementation "androidx.test:runner:$androidx_test_runner"
 
-    /*def hierarchical_context_runner_version = '4.12.2'
-    androidTestImplementation "de.bechte.junit:junit-hierarchicalcontextrunner:$hierarchical_context_runner_version"
-    testImplementation "de.bechte.junit:junit-hierarchicalcontextrunner:$hierarchical_context_runner_version"*/
-
     //def test_orchestrator_version = "1.4.0-alpha04"
     //androidTestUtil "androidx.test:orchestrator:$test_orchestrator_version"
 
@@ -184,9 +180,9 @@ dependencies {
     androidTestImplementation "androidx.arch.core:core-testing:$arch_testing_version"
     testImplementation "androidx.arch.core:core-testing:$arch_testing_version"
 
-//    // Robolectric environment
-//    def robolectric_version = "4.4"
-//    testImplementation "org.robolectric:robolectric:$robolectric_version"
+    // Robolectric environment
+    def robolectric_version = "4.4"
+    testImplementation "org.robolectric:robolectric:$robolectric_version"
 
     def truth_version = '1.4.0'
     androidTestImplementation "androidx.test.ext:truth:$truth_version"

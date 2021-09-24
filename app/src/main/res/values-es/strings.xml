@@ -118,4 +118,8 @@
     <string name="all_property_type">Todo tipo</string>
     <string name="all_property_status">Todo Estado</string>
     <string name="no_property_found">No se ha encontrado ninguna propiedad</string>
+    <string name="currency">Moneda</string>
+    <string name="default_currency">Moneda predeterminada</string>
+    <string name="choose_default_currency">Elija la moneda predeterminada</string>
+    <string name="settings">Ajustes</string>
 </resources>

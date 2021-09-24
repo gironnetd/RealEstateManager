@@ -116,4 +116,8 @@
     <string name="all_property_type">All Type</string>
     <string name="all_property_status">All Status</string>
     <string name="no_property_found">No Property Found</string>
+    <string name="currency">Currency</string>
+    <string name="default_currency">Default Currency</string>
+    <string name="choose_default_currency">Choose default currency</string>
+    <string name="settings">Settings</string>
 </resources>

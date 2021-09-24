@@ -18,10 +18,10 @@ import io.reactivex.observers.TestObserver
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import org.mockito.Mockito.`when`
+import org.robolectric.RobolectricTestRunner
 
-@RunWith(JUnit4::class)
+@RunWith(RobolectricTestRunner::class)
 class PropertyUpdateViewModelTest {
 
     private lateinit var propertyUpdateViewModel: PropertyUpdateViewModel
@@ -64,7 +64,7 @@ class PropertyUpdateViewModelTest {
             PropertyEditIntent.PropertyUpdateIntent.UpdatePropertyIntent(property = property))
         )
 
-        testObserver.assertValueAt(2) { state -> state.uiNotification == PROPERTY_LOCALLY_UPDATED }
+        testObserver.assertValueAt(1) { state -> state.uiNotification == PROPERTY_LOCALLY_UPDATED }
     }
 
     @Test
@@ -76,7 +76,7 @@ class PropertyUpdateViewModelTest {
             PropertyEditIntent.PropertyUpdateIntent.UpdatePropertyIntent(property = property))
         )
 
-        testObserver.assertValueAt(2) { state -> state.uiNotification == PROPERTIES_FULLY_UPDATED }
+        testObserver.assertValueAt(1) { state -> state.uiNotification == PROPERTIES_FULLY_UPDATED }
     }
 
     @Test
@@ -91,7 +91,7 @@ class PropertyUpdateViewModelTest {
         )
 
         // Then state is in Failed status
-        testObserver.assertValueAt(2)  { state -> state.error != null }
+        testObserver.assertValueAt(1)  { state -> state.error != null }
     }
 
     @Test
@@ -106,6 +106,6 @@ class PropertyUpdateViewModelTest {
         )
 
         // Then state is not in Progress status
-        testObserver.assertValueAt(2) { state -> !state.inProgress }
+        testObserver.assertValueAt(1) { state -> !state.inProgress }
     }
 }

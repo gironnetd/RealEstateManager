@@ -18,6 +18,7 @@ import com.openclassrooms.realestatemanager.ui.property.edit.view.update.PhotoUp
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.view.PhotoDetailDialogFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.search.PropertySearchFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.setting.PropertyCurrencySettingIntegrationTest
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -52,6 +53,7 @@ interface TestAppComponent : AppComponent {
     fun inject(addPhotoDialogFragmentIntegrationTest: AddPhotoDialogFragmentIntegrationTest)
     fun inject(photoUpdateDialogFragmentIntegrationTest: PhotoUpdateDialogFragmentIntegrationTest)
     fun inject(searchFragmentIntegrationTest: PropertySearchFragmentIntegrationTest)
+    fun inject(propertyCurrencySettingIntegrationTest: PropertyCurrencySettingIntegrationTest)
     fun inject(mainActivityTest: MainActivityTest)
     fun inject(mainNavigationTest: MainNavigationTest)
     fun inject(mainRotationTest: MainRotationTest)

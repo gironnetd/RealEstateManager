@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.ui.property.properties
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nhaarman.mockito_kotlin.mock
+import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository.CreateOrUpdate.CREATE
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
 import com.openclassrooms.realestatemanager.models.Property
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
@@ -14,10 +15,10 @@ import io.reactivex.observers.TestObserver
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import org.mockito.Mockito.`when`
+import org.robolectric.RobolectricTestRunner
 
-@RunWith(JUnit4::class)
+@RunWith(RobolectricTestRunner::class)
 class PropertiesViewModelTest {
 
     private lateinit var propertiesViewModel: PropertiesViewModel
@@ -54,85 +55,85 @@ class PropertiesViewModelTest {
     @Test
     fun given_properties_when_load_all_properties_then_intent_return_success() {
         // Given that properties are available in the repository
-        `when`(propertyRepository.saveRemotelyLocalChanges(updates = true)).thenReturn(Observable.just(fakeProperties))
+        `when`(propertyRepository.pushLocalChanges()).thenReturn(Observable.just(Pair(CREATE, fakeProperties)))
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.just(fakeProperties))
 
         // When properties are loaded
         propertiesViewModel.processIntents(Observable.just(PropertiesIntent.LoadPropertiesIntent))
 
         // Then state is in Success status
-        testObserver.assertValueAt(2) { state -> state.properties == fakeProperties }
+        testObserver.assertValueAt(3) { state -> state.properties == fakeProperties }
     }
 
     @Test
     fun given_properties_when_load_all_properties_then_returns_loading() {
         // Given that properties are available in the repository
-        `when`(propertyRepository.saveRemotelyLocalChanges(updates = true)).thenReturn(Observable.just(fakeProperties))
+        `when`(propertyRepository.pushLocalChanges()).thenReturn(Observable.just(Pair(CREATE, fakeProperties)))
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.just(fakeProperties))
 
         // When properties are loaded
         propertiesViewModel.processIntents(Observable.just(PropertiesIntent.LoadPropertiesIntent))
 
         // Then progress indicator state is emitted
-        testObserver.assertValueAt(1, PropertiesViewState::inProgress)
+        testObserver.assertValueAt(2) { state -> state.inProgress!! }
     }
 
     @Test
     fun given_properties_when_load_all_properties_then_intent_when_success_is_not_in_progress() {
         // Given that properties are available in the repository
-        `when`(propertyRepository.saveRemotelyLocalChanges(updates = true)).thenReturn(Observable.just(fakeProperties))
+        `when`(propertyRepository.pushLocalChanges()).thenReturn(Observable.just(Pair(CREATE, fakeProperties)))
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.just(fakeProperties))
 
         // When properties are loaded
         propertiesViewModel.processIntents(Observable.just(PropertiesIntent.LoadPropertiesIntent))
 
         // Then state is not in Progress status
-        testObserver.assertValueAt(2) { state -> !state.inProgress }
+        testObserver.assertValueAt(3) { state -> !state.inProgress!! }
     }
 
     @Test
     fun given_properties_when_load_all_properties_then_intent_return_data() {
         // Given that properties are available in the repository
-        `when`(propertyRepository.saveRemotelyLocalChanges(updates = true)).thenReturn(Observable.just(fakeProperties))
+        `when`(propertyRepository.pushLocalChanges()).thenReturn(Observable.just(Pair(CREATE, fakeProperties)))
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.just(fakeProperties))
 
         // When properties are loaded
         propertiesViewModel.processIntents(Observable.just(PropertiesIntent.LoadPropertiesIntent))
 
         //Then properties are equal to fake properties
-        testObserver.assertValueAt(2) { state -> state.properties == fakeProperties  }
+        testObserver.assertValueAt(3) { state -> state.properties == fakeProperties  }
     }
 
     @Test
     fun given_properties_when_load_all_properties_then_returns_error() {
         // Given that no properties are available in the repository
-        `when`(propertyRepository.saveRemotelyLocalChanges(updates = true)).thenReturn(Observable.just(fakeProperties))
+        `when`(propertyRepository.pushLocalChanges()).thenReturn(Observable.just(Pair(CREATE, fakeProperties)))
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.error(Exception()))
 
         // When properties are loaded
         propertiesViewModel.processIntents(Observable.just(PropertiesIntent.LoadPropertiesIntent))
 
         // Then state is in Failed status
-        testObserver.assertValueAt(2)  { state -> state.error != null }
+        testObserver.assertValueAt(3)  { state -> state.error != null }
     }
 
     @Test
     fun given_properties_when_error_then_is_not_in_progress() {
         // Given that no properties are available in the repository
-        `when`(propertyRepository.saveRemotelyLocalChanges(updates = true)).thenReturn(Observable.just(fakeProperties))
+        `when`(propertyRepository.pushLocalChanges()).thenReturn(Observable.just(Pair(CREATE, fakeProperties)))
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.error(Exception()))
 
         // When properties are loaded
         propertiesViewModel.processIntents(Observable.just(PropertiesIntent.LoadPropertiesIntent))
 
         // Then state is not in Progress status
-        testObserver.assertValueAt(2) { state -> !state.inProgress }
+        testObserver.assertValueAt(3) { state -> !state.inProgress!! }
     }
 
     @Test
     fun given_properties_when_error_then_is_not_contains_data() {
         // Given that no properties are available in the repository
-        `when`(propertyRepository.saveRemotelyLocalChanges(updates = true)).thenReturn(Observable.just(fakeProperties))
+        `when`(propertyRepository.pushLocalChanges()).thenReturn(Observable.just(Pair(CREATE, fakeProperties)))
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.error(Exception()))
 
         // When properties are loaded
@@ -145,7 +146,7 @@ class PropertiesViewModelTest {
     @Test
     fun given_properties_when_load_all_properties_then_intent_begin_as_idle() {
         // Given that no properties are available in the repository
-        `when`(propertyRepository.saveRemotelyLocalChanges(updates = true)).thenReturn(Observable.just(fakeProperties))
+        `when`(propertyRepository.pushLocalChanges()).thenReturn(Observable.just(Pair(CREATE, fakeProperties)))
         `when`(propertyRepository.findAllProperties()).thenReturn(Observable.error(Exception()))
 
         // When properties are loaded

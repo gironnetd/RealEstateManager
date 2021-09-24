@@ -14,4 +14,9 @@ object Constants {
     // keys for bundle when navigate
     const val FROM = "from"
     const val PROPERTY_ID = "propertyId"
+
+    const val SHARED_PREFERENCES_SETTINGS = "shared_preferences_settings"
+    const val DEFAULT_CURRENCY = "default_currency"
+
+    const val CONVERSION_RATE_EUROS_DOLLARS = 1.188
 }
