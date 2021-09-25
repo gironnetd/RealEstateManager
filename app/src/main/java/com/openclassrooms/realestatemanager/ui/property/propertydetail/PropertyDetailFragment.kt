@@ -40,6 +40,7 @@ import com.openclassrooms.realestatemanager.ui.property.shared.BaseBrowseFragmen
 import com.openclassrooms.realestatemanager.ui.property.shared.list.BaseListFragment
 import com.openclassrooms.realestatemanager.ui.property.shared.map.BaseMapFragment
 import com.openclassrooms.realestatemanager.ui.property.shared.map.BaseMapFragment.Companion.DEFAULT_ZOOM
+import com.openclassrooms.realestatemanager.util.BitmapUtil
 import com.openclassrooms.realestatemanager.util.Constants.FROM
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTY_ID
 import io.reactivex.Observable
@@ -639,7 +640,7 @@ class PropertyDetailFragment
             mMap.addMarker(MarkerOptions()
                 .position(LatLng(property.address.latitude,
                     property.address.longitude)
-                )
+                ).icon(BitmapUtil.bitmapDescriptorFromVector(innerInflater.context, R.drawable.ic_marker_selected))
             )
 
             val cameraUpdate = CameraUpdateFactory.newLatLngZoom(

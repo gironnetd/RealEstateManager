@@ -10,6 +10,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.ui.property.setting.Currency
+import com.openclassrooms.realestatemanager.ui.property.setting.Currency.EUROS
+import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
+import com.openclassrooms.realestatemanager.util.Utils
 
 class ListAdapter : RecyclerView.Adapter<ListAdapter.PropertyViewHolder>() {
 
@@ -35,8 +39,8 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.PropertyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PropertyViewHolder {
         return PropertyViewHolder(LayoutInflater.from(parent.context).inflate(
-            R.layout.layout_property_list_item,
-            parent, false
+                R.layout.layout_property_list_item,
+                parent, false
         ), if(::callBack.isInitialized) { callBack } else { null } )
     }
 
@@ -86,7 +90,19 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.PropertyViewHolder>() {
                     }
                 }
             }
-            item.price.let { price.text = "$".plus(" $it") }
+            item.price.let {
+                BaseFragment.defaultCurrency.value?.let { defaultCurrency ->
+                    if(defaultCurrency == EUROS.currency) {
+                        price.text = resources.getString(R.string.euros_symbol).plus(" $it")
+                    }
+
+                    if(defaultCurrency == Currency.DOLLARS.currency) {
+                        price.text = resources.getString(R.string.dollars_symbol).plus(" ${Utils.convertEuroToDollar(it)}")
+                    }
+                }
+            }
+
+
 
             itemView.setOnClickListener {
                 callBack?.onItemClick(item.id)

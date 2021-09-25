@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.ui
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.drawable.RippleDrawable
 import android.os.Build.VERSION
@@ -29,6 +30,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_LABELED
+import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.ripple.RippleUtils
 import com.google.android.material.snackbar.Snackbar
 import com.openclassrooms.realestatemanager.BaseApplication
@@ -41,13 +43,15 @@ import com.openclassrooms.realestatemanager.ui.property.properties.PropertiesVie
 import com.openclassrooms.realestatemanager.ui.property.properties.PropertiesViewState
 import com.openclassrooms.realestatemanager.ui.property.properties.PropertiesViewState.UiNotification.PROPERTIES_FULLY_CREATED
 import com.openclassrooms.realestatemanager.ui.property.properties.PropertiesViewState.UiNotification.PROPERTIES_FULLY_UPDATED
+import com.openclassrooms.realestatemanager.ui.property.setting.Currency.DOLLARS
+import com.openclassrooms.realestatemanager.ui.property.setting.Currency.EUROS
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
 import com.openclassrooms.realestatemanager.util.AppNotificationManager
+import com.openclassrooms.realestatemanager.util.Constants.DEFAULT_CURRENCY
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
-
 
 class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesViewState> {
 
@@ -61,22 +65,25 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
     private val compositeDisposable = CompositeDisposable()
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var sharedPreferences: SharedPreferences
 
     private val propertiesViewModel: PropertiesViewModel by viewModels {
-        (application as BaseApplication).appComponent.inject(this)
         viewModelFactory
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        (application as BaseApplication).appComponent.inject(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.toolBar.inflateMenu(R.menu.menu_action_bar)
         setSupportActionBar(binding.toolBar)
 
+        initDefaultCurrency()
+
         navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+                .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 
         navController = navHostFragment.navController
 
@@ -88,9 +95,9 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
         }
 
         appBarConfiguration = AppBarConfiguration.Builder(
-            R.id.navigation_browse, R.id.navigation_create, R.id.navigation_main_search)
-            .setOpenableLayout(binding.drawerLayout)
-            .build()
+                R.id.navigation_browse, R.id.navigation_create, R.id.navigation_main_search)
+                .setOpenableLayout(binding.drawerLayout)
+                .build()
 
         with(binding) {
             toolBar.setupWithNavController(navController, appBarConfiguration)
@@ -105,27 +112,27 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                 var colors: IntArray = intArrayOf()
 
                 (bottomNavigationView.getChildAt(0) as BottomNavigationMenuView)
-                    .children.iterator().forEach { bottomNavigationItemView ->
-                        when (bottomNavigationItemView.id) {
-                            R.id.navigation_browse -> {
-                                colors = intArrayOf(ResourcesCompat.getColor(resources, R.color.colorPrimaryRipple, null))
+                        .children.iterator().forEach { bottomNavigationItemView ->
+                            when (bottomNavigationItemView.id) {
+                                R.id.navigation_browse -> {
+                                    colors = intArrayOf(ResourcesCompat.getColor(resources, R.color.colorPrimaryRipple, null))
+                                }
+                                R.id.navigation_create -> {
+                                    colors = intArrayOf(ResourcesCompat.getColor(resources, R.color.colorSecondaryRipple, null))
+                                }
+                                R.id.navigation_main_search -> {
+                                    colors = intArrayOf(ResourcesCompat.getColor(resources, R.color.colorTertiaryRipple, null))
+                                }
                             }
-                            R.id.navigation_create -> {
-                                colors = intArrayOf(ResourcesCompat.getColor(resources, R.color.colorSecondaryRipple, null))
-                            }
-                            R.id.navigation_main_search -> {
-                                colors = intArrayOf(ResourcesCompat.getColor(resources, R.color.colorTertiaryRipple, null))
-                            }
+                            (bottomNavigationItemView as BottomNavigationItemView)
+                                    .setItemBackground(
+                                            RippleDrawable(
+                                                    RippleUtils.convertToRippleDrawableColor(ColorStateList(states, colors)),
+                                                    null,
+                                                    null
+                                            )
+                                    )
                         }
-                        (bottomNavigationItemView as BottomNavigationItemView)
-                            .setItemBackground(
-                                RippleDrawable(
-                                    RippleUtils.convertToRippleDrawableColor(ColorStateList(states, colors)),
-                                    null,
-                                    null
-                                )
-                            )
-                    }
             }
 
             navigationView.menu.children.iterator().forEach { menuItem ->
@@ -139,9 +146,9 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                         }
 
                         navigationView.itemBackground = ResourcesCompat.getDrawable(
-                            resources,
-                            R.drawable.navigation_view_all_properties_menu_item_background_color_state,
-                            null
+                                resources,
+                                R.drawable.navigation_view_all_properties_menu_item_background_color_state,
+                                null
                         )
 
                         menuItem.setOnMenuItemClickListener {
@@ -151,9 +158,9 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                                 menuItem.title = this
                             }
                             navigationView.itemBackground = ResourcesCompat.getDrawable(
-                                resources,
-                                R.drawable.navigation_view_all_properties_menu_item_background_color_state,
-                                null
+                                    resources,
+                                    R.drawable.navigation_view_all_properties_menu_item_background_color_state,
+                                    null
                             )
                             binding.drawerLayout.closeDrawer(START)
                             navController.navigate(R.id.navigation_browse)
@@ -170,9 +177,9 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                             }
 
                             navigationView.itemBackground = ResourcesCompat.getDrawable(
-                                resources,
-                                R.drawable.navigation_view_create_property_menu_item_background_color_state,
-                                null
+                                    resources,
+                                    R.drawable.navigation_view_create_property_menu_item_background_color_state,
+                                    null
                             )
                             binding.drawerLayout.closeDrawer(START)
                             navController.navigate(R.id.navigation_create)
@@ -188,9 +195,9 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                                 menuItem.title = this
                             }
                             navigationView.itemBackground = ResourcesCompat.getDrawable(
-                                resources,
-                                R.drawable.navigation_view_search_properties_menu_item_background_color_state,
-                                null
+                                    resources,
+                                    R.drawable.navigation_view_search_properties_menu_item_background_color_state,
+                                    null
                             )
                             binding.drawerLayout.closeDrawer(START)
                             navController.navigate(R.id.navigation_main_search)
@@ -214,6 +221,28 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                 }
             }
 
+            navigationView.setNavigationItemSelectedListener { menuItem ->
+                when(menuItem.itemId) {
+                    R.id.euros_choice -> {
+                        (menuItem.actionView as MaterialRadioButton).isChecked = true
+                        sharedPreferences.edit().putString(DEFAULT_CURRENCY, EUROS.currency).apply().let {
+                            BaseFragment.defaultCurrency.value = EUROS.currency
+                        }
+                        (navigationView.menu.findItem(R.id.dollars_choice).actionView as MaterialRadioButton).isChecked = false
+                        binding.drawerLayout.closeDrawer(START)
+                    }
+                    R.id.dollars_choice -> {
+                        (menuItem.actionView as MaterialRadioButton).isChecked = true
+                        sharedPreferences.edit().putString(DEFAULT_CURRENCY, DOLLARS.currency).apply().let {
+                            BaseFragment.defaultCurrency.value = DOLLARS.currency
+                        }
+                        (navigationView.menu.findItem(R.id.euros_choice).actionView as MaterialRadioButton).isChecked = false
+                        binding.drawerLayout.closeDrawer(START)
+                    }
+                }
+                true
+            }
+
             navController.addOnDestinationChangedListener { _, destination, _ ->
 
                 navigationView.menu.children.iterator().forEach { menuItem ->
@@ -221,9 +250,9 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                         when(menuItem.itemId) {
                             R.id.navigation_browse -> {
                                 navigationView.itemBackground = ResourcesCompat.getDrawable(
-                                    resources,
-                                    R.drawable.navigation_view_all_properties_menu_item_background_color_state,
-                                    null
+                                        resources,
+                                        R.drawable.navigation_view_all_properties_menu_item_background_color_state,
+                                        null
                                 )
                                 menuItem.setIcon(R.drawable.ic_baseline_real_estate_selected_24)
                                 SpannableString(menuItem.title.toSpannable()).apply {
@@ -233,9 +262,9 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                             }
                             R.id.navigation_create -> {
                                 navigationView.itemBackground = ResourcesCompat.getDrawable(
-                                    resources,
-                                    R.drawable.navigation_view_create_property_menu_item_background_color_state,
-                                    null
+                                        resources,
+                                        R.drawable.navigation_view_create_property_menu_item_background_color_state,
+                                        null
                                 )
                                 menuItem.setIcon(R.drawable.ic_baseline_add_real_estate_selected_24)
                                 SpannableString(menuItem.title.toSpannable()).apply {
@@ -245,9 +274,9 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                             }
                             R.id.navigation_main_search -> {
                                 navigationView.itemBackground = ResourcesCompat.getDrawable(
-                                    resources,
-                                    R.drawable.navigation_view_search_properties_menu_item_background_color_state,
-                                    null
+                                        resources,
+                                        R.drawable.navigation_view_search_properties_menu_item_background_color_state,
+                                        null
                                 )
                                 menuItem.setIcon(R.drawable.ic_baseline_search_selected_24)
                                 SpannableString(menuItem.title.toSpannable()).apply {
@@ -334,6 +363,23 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
         }
     }
 
+    private fun initDefaultCurrency() {
+        val defaultCurrency = sharedPreferences.getString(DEFAULT_CURRENCY, EUROS.currency)
+
+        with(binding) {
+            when(defaultCurrency) {
+                EUROS.currency -> {
+                    (navigationView.menu.findItem(R.id.euros_choice).actionView as MaterialRadioButton).isChecked = true
+                    BaseFragment.defaultCurrency.value = EUROS.currency
+                }
+                DOLLARS.currency -> {
+                    (navigationView.menu.findItem(R.id.dollars_choice).actionView as MaterialRadioButton).isChecked = true
+                    BaseFragment.defaultCurrency.value = DOLLARS.currency
+                }
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         compositeDisposable.add(propertiesViewModel.states().subscribe(this::render))
@@ -343,8 +389,8 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_action_bar, menu)
 
-        menu?.let { menu ->
-            val searchItem = menu.findItem(R.id.navigation_main_search)
+        menu?.let {
+            val searchItem = it.findItem(R.id.navigation_main_search)
             searchItem.setOnMenuItemClickListener {
                 navController.navigate(R.id.navigation_main_search)
                 true

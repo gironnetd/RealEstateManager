@@ -9,7 +9,7 @@ object Constants {
     const val MAIN_FILE_NAME = "main.jpg"
     const val THUMBNAIL_FILE_NAME = "thumbnail.jpg"
 
-    const val TIMEOUT_INTERNET_CONNECTION = 1500
+    const val TIMEOUT_INTERNET_CONNECTION = 2000
 
     // keys for bundle when navigate
     const val FROM = "from"
