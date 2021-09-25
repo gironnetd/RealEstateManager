@@ -129,8 +129,8 @@
         <item name="boxCornerRadiusTopStart">2dp</item>
         <item name="boxCornerRadiusBottomStart">2dp</item>
         <item name="boxCornerRadiusBottomEnd">2dp</item>
-        <item name="startIconTint">@color/box_stroke_color</item>
-        <item name="endIconTint">@color/box_stroke_color</item>
+        <item name="startIconTint">@android:color/black</item>
+        <item name="endIconTint">@android:color/black</item>
         <item name="hintTextAppearance">@style/HintTextAppearance</item>
         <item name="android:theme">@style/ThemeOverlayOutlinedBox</item>
     </style>
@@ -151,7 +151,7 @@
         <item name="boxStrokeColor">@color/box_stroke_color</item>
         <item name="startIconTint">@color/box_stroke_color</item>
         <item name="endIconMode">custom</item>
-        <item name="endIconTint">@color/box_stroke_color</item>
+        <item name="endIconTint">@android:color/black</item>
         <item name="hintTextAppearance">@style/HintTextAppearance</item>
         <item name="android:theme">@style/ThemeOverlayOutlinedBox</item>
         <item name="android:textCursorDrawable">?attr/colorPrimaryDark</item>
@@ -256,7 +256,6 @@
         <item name="android:fontFamily">@font/roboto_slab</item>
         <item name="fontFamily">@font/roboto_slab</item>
         <item name="android:textSize">19sp</item>
-
         <item name="android:textColor">@color/button_color_hint</item>
         <item name="buttonTint">@color/button_color_hint</item>
     </style>
@@ -271,14 +270,27 @@
 
     <style name="NavigationViewStyle" parent="@style/Widget.MaterialComponents.NavigationView">
         <item name="android:background">@android:color/transparent</item>
-        <item name="android:layout_margin">0dp</item>
-        <item name="android:padding">0dp</item>
         <item name="android:theme">@style/NavigationViewTheme</item>
     </style>
 
     <style name="NavigationViewTheme" parent="AppTheme">
+        <item name="android:textColorSecondary">@android:color/black</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:listPreferredItemHeightSmall">60dp</item>
+        <item name="android:listDivider">@drawable/navigation_view_divider</item>
+    </style>
+
+    <style name="TextAppearance.AppCompat.Body2">
+
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+    </style>
+
+    <style name="NavigationViewStyle.RadioButtonStyle" parent="@style/Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+        <item name="android:textSize">19sp</item>
+        <item name="buttonTint">@color/colorGrayDark</item>
     </style>
 
     <style name="ThemeOverlayAlertDialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">

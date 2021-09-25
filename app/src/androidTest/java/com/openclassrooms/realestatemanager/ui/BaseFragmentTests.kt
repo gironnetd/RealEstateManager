@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.ui
 
+import android.content.SharedPreferences
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -19,6 +20,7 @@ import javax.inject.Inject
 open class BaseFragmentTests: BaseMainActivityTests() {
 
     @Inject lateinit var uiDevice: UiDevice
+    @Inject lateinit var sharedPreferences: SharedPreferences
     @Inject lateinit var propertiesViewModelFactory: FakePropertiesViewModelFactory
 
     lateinit var browseFragment: BrowseFragment

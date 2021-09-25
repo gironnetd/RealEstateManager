@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.di
 
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -108,6 +109,12 @@ object TestAppModule {
     @Provides
     fun provideNetworkConnectionLiveData(context: Context): LiveData<Boolean> =
         NetworkConnectionLiveData(context = context)
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideSharedPreferences(application: Application): SharedPreferences =
+            application.getSharedPreferences(Constants.SHARED_PREFERENCES_SETTINGS, Context.MODE_PRIVATE)
 
     @JvmStatic
     @Singleton

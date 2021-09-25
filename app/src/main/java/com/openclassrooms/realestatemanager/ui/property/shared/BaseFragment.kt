@@ -52,5 +52,6 @@ constructor(@LayoutRes private val layoutRes: Int): Fragment(layoutRes) {
 
         companion object {
                 val properties: MutableLiveData<MutableList<Property>> = MutableLiveData<MutableList<Property>>()
+                val defaultCurrency: MutableLiveData<String> = MutableLiveData()
         }
 }

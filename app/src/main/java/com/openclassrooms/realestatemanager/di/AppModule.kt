@@ -2,6 +2,8 @@ package com.openclassrooms.realestatemanager.di
 
 import android.app.Application
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.bumptech.glide.Glide
@@ -11,6 +13,7 @@ import com.google.firebase.storage.ktx.storage
 import com.openclassrooms.realestatemanager.data.cache.AppDatabase
 import com.openclassrooms.realestatemanager.data.cache.AppDatabase.Companion.DATABASE_NAME
 import com.openclassrooms.realestatemanager.data.cache.dao.PropertyDao
+import com.openclassrooms.realestatemanager.util.Constants.SHARED_PREFERENCES_SETTINGS
 import com.openclassrooms.realestatemanager.util.GlideManager
 import com.openclassrooms.realestatemanager.util.GlideRequestManager
 import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
@@ -69,4 +72,11 @@ object AppModule {
     @Provides
     fun provideNetworkConnectionLiveData(context: Context): LiveData<Boolean> =
          NetworkConnectionLiveData(context = context)
+
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideSharedPreferences(application: Application): SharedPreferences =
+            application.getSharedPreferences(SHARED_PREFERENCES_SETTINGS, MODE_PRIVATE)
 }

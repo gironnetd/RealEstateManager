@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
 import com.google.android.gms.maps.MapsInitializer
+import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestoreSettings
 import com.openclassrooms.realestatemanager.di.AppComponent
@@ -30,6 +31,8 @@ open class BaseApplication: MultiDexApplication() {
             val settings = firestoreSettings {
                 isPersistenceEnabled = false
             }
+
+            FirebaseApp.initializeApp(this)
             FirebaseFirestore.getInstance().firestoreSettings = settings
         }
 

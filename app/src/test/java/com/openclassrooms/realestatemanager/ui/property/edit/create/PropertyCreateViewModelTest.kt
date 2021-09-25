@@ -16,10 +16,10 @@ import io.reactivex.observers.TestObserver
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import org.mockito.Mockito.`when`
+import org.robolectric.RobolectricTestRunner
 
-@RunWith(JUnit4::class)
+@RunWith(RobolectricTestRunner::class)
 class PropertyCreateViewModelTest {
 
     private lateinit var propertyCreateViewModel: PropertyCreateViewModel

@@ -2,9 +2,6 @@ package com.openclassrooms.realestatemanager.ui.property.shared.map
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -14,14 +11,14 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.clustering.ClusterManager
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentMapBinding
@@ -31,6 +28,7 @@ import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragment
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseBrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
+import com.openclassrooms.realestatemanager.util.BitmapUtil.bitmapDescriptorFromVector
 import com.openclassrooms.realestatemanager.util.Constants
 import java.io.File
 import java.util.*
@@ -107,23 +105,6 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
         }
     }
 
-    fun bitmapDescriptorFromVector(drawableId: Int): BitmapDescriptor? {
-        var drawable = ContextCompat.getDrawable(innerInflater.context, drawableId)
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            drawable = DrawableCompat.wrap(Objects.requireNonNull(drawable!!)).mutate()
-        }
-        drawable = DrawableCompat.wrap(drawable!!).mutate()
-        val bitmap = Bitmap.createBitmap(
-            innerInflater.context.resources.getDimension(R.dimen.ic_marker_width).toInt(),
-            innerInflater.context.resources.getDimension(R.dimen.ic_marker_height).toInt(),
-            Bitmap.Config.ARGB_8888
-        )
-        val canvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-        return BitmapDescriptorFactory.fromBitmap(bitmap)
-    }
-
     override fun onMapReady(googleMap: GoogleMap) {
 
         val location = CameraUpdateFactory.newLatLngZoom(defaultLocation, INITIAL_ZOOM_LEVEL)
@@ -142,7 +123,7 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
             }
 
             override fun onBeforeClusterItemRendered(item: CustomClusterItem, markerOptions: MarkerOptions) {
-                markerOptions.icon(bitmapDescriptorFromVector(R.drawable.ic_marker_not_selected))
+                markerOptions.icon(bitmapDescriptorFromVector(innerInflater.context, R.drawable.ic_marker_not_selected))
                 super.onBeforeClusterItemRendered(item, markerOptions)
             }
 
@@ -153,12 +134,12 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
                     selectedItem?.let { selectedItem ->
                         if(marker.title == selectedItem.title) {
                             if(!items[selectedItem]!!) {
-                                marker.setIcon(bitmapDescriptorFromVector(R.drawable.ic_marker_selected))
+                                marker.setIcon(bitmapDescriptorFromVector(innerInflater.context, R.drawable.ic_marker_selected))
                                 marker.showInfoWindow()
                                 items[selectedItem] = true
                                 mMap.setContentDescription(INFO_WINDOW_SHOWN)
                             } else {
-                                marker.setIcon(bitmapDescriptorFromVector(R.drawable.ic_marker_not_selected))
+                                marker.setIcon(bitmapDescriptorFromVector(innerInflater.context, R.drawable.ic_marker_not_selected))
                                 marker.hideInfoWindow()
                                 items[selectedItem] = false
                                 mMap.setContentDescription(NO_INFO_WINDOW_SHOWN)
@@ -191,7 +172,7 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
             }
 
             for (marker in clusterManager.markerCollection.markers) {
-                marker.setIcon(bitmapDescriptorFromVector(R.drawable.ic_marker_not_selected))
+                marker.setIcon(bitmapDescriptorFromVector(innerInflater.context, R.drawable.ic_marker_not_selected))
                 marker.hideInfoWindow()
             }
 
@@ -234,8 +215,7 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
         this.parentFragment?.parentFragment?.let { parentFragment ->
             (parentFragment as BaseBrowseFragment?)?.let { masterDetailFragment ->
                 clusterManager.setOnClusterItemInfoWindowClickListener { item ->
-                    val bundle: Bundle
-                    bundle = if(masterDetailFragment.detail.childFragmentManager
+                    val bundle: Bundle = if(masterDetailFragment.detail.childFragmentManager
                             .findFragmentByTag(R.id.navigation_detail.toString()) != null) {
 
                         val detailFragment: PropertyDetailFragment = masterDetailFragment.detail.childFragmentManager
@@ -324,7 +304,7 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
 
         for ((item, _) in items) {
             items[item] = false
-            markers.forEach { marker -> marker.setIcon(bitmapDescriptorFromVector(R.drawable.ic_marker_not_selected)) }
+            markers.forEach { marker -> marker.setIcon(bitmapDescriptorFromVector(innerInflater.context, R.drawable.ic_marker_not_selected)) }
         }
 
         var cameraUpdate: CameraUpdate
@@ -353,7 +333,7 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
                             val marker = markers.find { marker -> marker.title == selectedItem.title }
                             marker?.let {
                                 if (!items[selectedItem]!!) {
-                                    marker.setIcon(bitmapDescriptorFromVector(R.drawable.ic_marker_selected))
+                                    marker.setIcon(bitmapDescriptorFromVector(innerInflater.context, R.drawable.ic_marker_selected))
                                     it.showInfoWindow()
                                     items[selectedItem] = true
                                     mMap.setContentDescription(INFO_WINDOW_SHOWN)
@@ -372,7 +352,7 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
                     override fun onFinish() {
                         val marker = markers.find { marker -> marker.title == selectedItem.title }
                         marker?.let {
-                            marker.setIcon(bitmapDescriptorFromVector(R.drawable.ic_marker_not_selected))
+                            marker.setIcon(bitmapDescriptorFromVector(innerInflater.context, R.drawable.ic_marker_not_selected))
                             marker.hideInfoWindow()
                             items[selectedItem] = false
                             mMap.setContentDescription(NO_INFO_WINDOW_SHOWN)

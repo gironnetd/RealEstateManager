@@ -84,6 +84,7 @@ class BrowseMapFragmentIntegrationTest : BaseFragmentTests() {
         // Given Map fragment
         launch(MainActivity::class.java).onActivity {
             INITIAL_ZOOM_LEVEL = 17f
+            DEFAULT_ZOOM = 15f
             defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
@@ -149,6 +150,7 @@ class BrowseMapFragmentIntegrationTest : BaseFragmentTests() {
         // Given Map fragment
         launch(MainActivity::class.java).onActivity {
             INITIAL_ZOOM_LEVEL = 17f
+            DEFAULT_ZOOM = 15f
             defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
@@ -167,6 +169,7 @@ class BrowseMapFragmentIntegrationTest : BaseFragmentTests() {
         // Given Detail fragment
         launch(MainActivity::class.java).onActivity {
             INITIAL_ZOOM_LEVEL = 17f
+            DEFAULT_ZOOM = 15f
             defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
@@ -191,7 +194,7 @@ class BrowseMapFragmentIntegrationTest : BaseFragmentTests() {
         // Given Map fragment
         launchFragmentInContainer(null, AppTheme, RESUMED) {
             INITIAL_ZOOM_LEVEL = 17f
-            DEFAULT_ZOOM = 17f
+            DEFAULT_ZOOM = 15f
             defaultLocation = leChesnay
             BrowseMapFragment()
         }.onFragment {

@@ -15,11 +15,11 @@ import io.reactivex.observers.TestObserver
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import org.mockito.Mockito.`when`
+import org.robolectric.RobolectricTestRunner
 import kotlin.properties.Delegates
 
-@RunWith(JUnit4::class)
+@RunWith(RobolectricTestRunner::class)
 class PropertyDetailViewModelTest {
 
     private lateinit var propertyDetailViewModel: PropertyDetailViewModel
@@ -76,19 +76,7 @@ class PropertyDetailViewModelTest {
         propertyDetailViewModel.processIntents(Observable.just(PropertyDetailIntent.PopulatePropertyIntent(fakeProperties[itemPosition].id)))
 
         // Then state property is equal to selected property
-        testObserver.assertValueAt(2) { state -> state.property == fakeProperties[itemPosition] }
-    }
-
-    @Test
-    fun given_properties_when_load_a_full_property_then_returns_loading() {
-        // Given that property to found is available in the repository
-        `when`(propertyRepository.findProperty(fakeProperties[itemPosition].id)).thenReturn(Observable.just(fakeProperties[itemPosition]))
-
-        // When property is loaded
-        propertyDetailViewModel.processIntents(Observable.just(PropertyDetailIntent.PopulatePropertyIntent(fakeProperties[itemPosition].id)))
-
-        // Then progress indicator state is emitted
-        testObserver.assertValueAt(1, PropertyDetailViewState::inProgress)
+        testObserver.assertValueAt(1) { state -> state.property == fakeProperties[itemPosition] }
     }
 
     @Test
@@ -100,7 +88,7 @@ class PropertyDetailViewModelTest {
         propertyDetailViewModel.processIntents(Observable.just(PropertyDetailIntent.PopulatePropertyIntent(fakeProperties[itemPosition].id)))
 
         // Then state is not in Progress status
-        testObserver.assertValueAt(2) { state -> !state.inProgress }
+        testObserver.assertValueAt(1) { state -> !state.inProgress }
     }
 
     @Test
@@ -112,7 +100,7 @@ class PropertyDetailViewModelTest {
         propertyDetailViewModel.processIntents(Observable.just(PropertyDetailIntent.PopulatePropertyIntent(fakeProperties[itemPosition].id)))
 
         //Then property are equal to selected fake property
-        testObserver.assertValueAt(2) { state -> state.property == fakeProperties[itemPosition]  }
+        testObserver.assertValueAt(1) { state -> state.property == fakeProperties[itemPosition]  }
     }
 
     @Test
@@ -124,7 +112,7 @@ class PropertyDetailViewModelTest {
         propertyDetailViewModel.processIntents(Observable.just(PropertyDetailIntent.PopulatePropertyIntent(fakeProperties[itemPosition].id)))
 
         // Then state is in Failed status
-        testObserver.assertValueAt(2)  { state -> state.error != null }
+        testObserver.assertValueAt(1)  { state -> state.error != null }
     }
 
     @Test
@@ -136,7 +124,7 @@ class PropertyDetailViewModelTest {
         propertyDetailViewModel.processIntents(Observable.just(PropertyDetailIntent.PopulatePropertyIntent(fakeProperties[itemPosition].id)))
 
         // Then state is not in Progress status
-        testObserver.assertValueAt(2) { state -> !state.inProgress }
+        testObserver.assertValueAt(1) { state -> !state.inProgress }
     }
 
     @Test
@@ -148,7 +136,7 @@ class PropertyDetailViewModelTest {
         propertyDetailViewModel.processIntents(Observable.just(PropertyDetailIntent.PopulatePropertyIntent(fakeProperties[itemPosition].id)))
 
         // Then state property are null
-        testObserver.assertValueAt(2) { state -> state.property == null }
+        testObserver.assertValueAt(1) { state -> state.property == null }
     }
 
     @Test

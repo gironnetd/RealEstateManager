@@ -24,6 +24,13 @@ open class BaseListFragment : BaseFragment(R.layout.fragment_list) {
         _binding = FragmentListBinding.inflate(inflater, container, false)
         applyDisposition()
         initRecyclerView()
+
+        defaultCurrency.observe(viewLifecycleOwner) {
+            properties.value?.let { properties ->
+                recyclerAdapter.submitList(properties)
+            }
+        }
+
         return binding.root
     }
 

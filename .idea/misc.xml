@@ -9,6 +9,10 @@
         <entry key="app/src/main/res/drawable-v21/ic_baseline_add_real_estate_ripple_effect.xml" value="0.22291666666666668" />
         <entry key="app/src/main/res/drawable-v21/ic_marker_not_selected.xml" value="0.453125" />
         <entry key="app/src/main/res/drawable-v21/navigation_view_background_round_padded_pressed.xml" value="0.1578125" />
+        <entry key="app/src/main/res/drawable-v21/navigation_view_choose_default_currency_menu_item_background_color_state.xml" value="0.3525390625" />
+        <entry key="app/src/main/res/drawable/divider_line.xml" value="0.306640625" />
+        <entry key="app/src/main/res/drawable/divider_line_vector.xml" value="0.33" />
+        <entry key="app/src/main/res/drawable/divider_line_vector_2.xml" value="1.0" />
         <entry key="app/src/main/res/drawable/edit_location_border.xml" value="0.25078125" />
         <entry key="app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.29921875" />
         <entry key="app/src/main/res/drawable/ic_baseline_add_a_photo_24.xml" value="0.48828125" />
@@ -19,7 +23,9 @@
         <entry key="app/src/main/res/drawable/ic_baseline_bar_chart_24.xml" value="0.4619140625" />
         <entry key="app/src/main/res/drawable/ic_baseline_date_range_24.xml" value="0.4619140625" />
         <entry key="app/src/main/res/drawable/ic_baseline_delete_24.xml" value="0.48828125" />
+        <entry key="app/src/main/res/drawable/ic_baseline_dollar_24.xml" value="0.392578125" />
         <entry key="app/src/main/res/drawable/ic_baseline_edit_24.xml" value="0.25078125" />
+        <entry key="app/src/main/res/drawable/ic_baseline_euro_24.xml" value="0.3251953125" />
         <entry key="app/src/main/res/drawable/ic_baseline_folder_24.xml" value="0.48828125" />
         <entry key="app/src/main/res/drawable/ic_baseline_home_24.xml" value="0.25078125" />
         <entry key="app/src/main/res/drawable/ic_baseline_hot_tub_24.xml" value="0.25078125" />
@@ -41,11 +47,13 @@
         <entry key="app/src/main/res/drawable/ic_marker_vector.xml" value="0.3828125" />
         <entry key="app/src/main/res/drawable/ic_marker_vector_wrapper.xml" value="0.376953125" />
         <entry key="app/src/main/res/drawable/ic_search_24.xml" value="0.25078125" />
+        <entry key="app/src/main/res/drawable/ic_settings_24dp.xml" value="0.48046875" />
         <entry key="app/src/main/res/drawable/marker.xml" value="0.14375" />
         <entry key="app/src/main/res/drawable/navigation_view_all_properties_menu_item_background_color_state.xml" value="0.4482421875" />
         <entry key="app/src/main/res/drawable/navigation_view_background_round_padded_pressed.xml" value="0.2958984375" />
         <entry key="app/src/main/res/drawable/navigation_view_background_round_padded_selected.xml" value="0.2958984375" />
         <entry key="app/src/main/res/drawable/navigation_view_create_property_menu_item_background_color_state.xml" value="0.40625" />
+        <entry key="app/src/main/res/drawable/navigation_view_divider.xml" value="0.306640625" />
         <entry key="app/src/main/res/drawable/navigation_view_menu_item_background_color_state.xml" value="0.2958984375" />
         <entry key="app/src/main/res/drawable/navigation_view_search_properties_menu_item_background_color_state.xml" value="0.4482421875" />
         <entry key="app/src/main/res/drawable/scroll_bar_background.xml" value="0.40625" />
@@ -74,7 +82,7 @@
         <entry key="app/src/main/res/layout-sw600dp-land/layout_search_result_properties.xml" value="0.202576112412178" />
         <entry key="app/src/main/res/layout-sw600dp-land/layout_segmented_control.xml" value="0.16334894613583137" />
         <entry key="app/src/main/res/layout-sw600dp-v26/fragment_edit.xml" value="0.6219931271477663" />
-        <entry key="app/src/main/res/layout-sw600dp/activity_main.xml" value="0.33" />
+        <entry key="app/src/main/res/layout-sw600dp/activity_main.xml" value="0.67" />
         <entry key="app/src/main/res/layout-sw600dp/fragment_browse.xml" value="0.33" />
         <entry key="app/src/main/res/layout-sw600dp/fragment_browse_result_search.xml" value="0.2703125" />
         <entry key="app/src/main/res/layout-sw600dp/fragment_browse_search_result.xml" value="0.25703125" />
@@ -100,7 +108,9 @@
         <entry key="app/src/main/res/layout-v26/fragment_dialog_add_photo.xml" value="0.67" />
         <entry key="app/src/main/res/layout-v26/fragment_dialog_detail_photo.xml" value="0.67" />
         <entry key="app/src/main/res/layout-v26/fragment_dialog_update_photo.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/action_choose_default_currency.xml" value="0.75" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.29107981220657275" />
+        <entry key="app/src/main/res/layout/default_currency.xml" value="0.322265625" />
         <entry key="app/src/main/res/layout/fragment_browse.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_browse_search_result.xml" value="0.14" />
         <entry key="app/src/main/res/layout/fragment_create.xml" value="0.25390625" />
@@ -128,8 +138,9 @@
         <entry key="app/src/main/res/menu-sw720dp/menu_bottom_navigation.xml" value="0.3359375" />
         <entry key="app/src/main/res/menu/menu_action_bar.xml" value="0.5" />
         <entry key="app/src/main/res/menu/menu_bottom_navigation.xml" value="0.67" />
-        <entry key="app/src/main/res/menu/menu_navigation.xml" value="0.28046875" />
+        <entry key="app/src/main/res/menu/menu_navigation.xml" value="0.5" />
         <entry key="app/src/main/res/xml/backup_rules.xml" value="0.3759765625" />
+        <entry key="app/src/main/res/xml/preferences.xml" value="0.67" />
       </map>
     </option>
   </component>

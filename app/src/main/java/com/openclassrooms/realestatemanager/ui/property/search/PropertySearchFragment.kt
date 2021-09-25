@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.chip.Chip
@@ -22,6 +23,7 @@ import com.openclassrooms.realestatemanager.models.PropertyStatus
 import com.openclassrooms.realestatemanager.models.PropertyType
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.search.result.BrowseResultFragment
+import com.openclassrooms.realestatemanager.ui.property.setting.Currency
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
 import com.openclassrooms.realestatemanager.util.Utils
 import java.util.*
@@ -52,7 +54,25 @@ class PropertySearchFragment : BaseFragment(R.layout.fragment_search) {
         _binding = FragmentSearchBinding.inflate(innerInflater, container, false)
 
         super.onCreateView(innerInflater, container, savedInstanceState)
+        initMinMaxPricesWithDefaultCurrency()
         return binding.root
+    }
+
+    private fun initMinMaxPricesWithDefaultCurrency() {
+        defaultCurrency.observe(viewLifecycleOwner) { defaultCurrency ->
+            with(binding) {
+                when(defaultCurrency) {
+                    Currency.EUROS.currency -> {
+                        minPriceTextInputLayout.endIconDrawable = ResourcesCompat.getDrawable(resources, R.drawable.ic_baseline_euro_24, null)
+                        maxPriceTextInputLayout.endIconDrawable = ResourcesCompat.getDrawable(resources, R.drawable.ic_baseline_euro_24, null)
+                    }
+                    Currency.DOLLARS.currency -> {
+                        minPriceTextInputLayout.endIconDrawable = ResourcesCompat.getDrawable(resources, R.drawable.ic_baseline_dollar_24, null)
+                        maxPriceTextInputLayout.endIconDrawable = ResourcesCompat.getDrawable(resources, R.drawable.ic_baseline_dollar_24, null)
+                    }
+                }
+            }
+        }
     }
 
     fun initResultMenuItem() {

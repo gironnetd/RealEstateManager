@@ -28,6 +28,7 @@
     <string name="property_entry_date">Entry Date</string>
     <string name="property_sold_date">Sold Date</string>
     <string name="euros_symbol" translatable="false">€</string>
+    <string name="dollars_symbol" translatable="false">$</string>
     <string name="street">Street</string>
     <string name="postal_code">Postal Code</string>
     <string name="city">City</string>
@@ -120,4 +121,8 @@
     <string name="all_property_type">All Type</string>
     <string name="all_property_status">All Status</string>
     <string name="no_property_found">No Property Found</string>
+    <string name="currency">Currency</string>
+    <string name="default_currency">Default Currency</string>
+    <string name="choose_default_currency">Choose default currency</string>
+    <string name="settings">Settings</string>
 </resources>

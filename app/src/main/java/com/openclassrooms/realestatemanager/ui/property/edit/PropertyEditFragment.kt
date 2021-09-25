@@ -12,6 +12,7 @@ import android.widget.ScrollView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultRegistry
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
@@ -25,6 +26,8 @@ import com.openclassrooms.realestatemanager.models.PropertyType
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PhotoUpdateAdapter
 import com.openclassrooms.realestatemanager.ui.property.edit.view.add.AddPhotoDialogFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.view.update.PhotoUpdateDialogFragment
+import com.openclassrooms.realestatemanager.ui.property.setting.Currency.DOLLARS
+import com.openclassrooms.realestatemanager.ui.property.setting.Currency.EUROS
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseBrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
 import com.openclassrooms.realestatemanager.util.Utils
@@ -61,6 +64,7 @@ constructor(var registry: ActivityResultRegistry?)
 
         setHasOptionsMenu(true)
         onBackPressedCallback()
+        initPriceWithDefaultCurrency()
         return binding.root
     }
 
@@ -69,11 +73,39 @@ constructor(var registry: ActivityResultRegistry?)
         configureView()
     }
 
+    private fun initPriceWithDefaultCurrency() {
+        defaultCurrency.observe(viewLifecycleOwner) { defaultCurrency ->
+            with(binding) {
+                when(defaultCurrency) {
+                    EUROS.currency -> {
+                        priceTextInputLayout.endIconDrawable = ResourcesCompat.getDrawable(resources, R.drawable.ic_baseline_euro_24, null)
+                        if(price.text.toString() != none && newProperty.price != 0) {
+                            price.setText(newProperty.price.toString())
+                        }
+                    }
+                    DOLLARS.currency -> {
+                        priceTextInputLayout.endIconDrawable = ResourcesCompat.getDrawable(resources, R.drawable.ic_baseline_dollar_24, null)
+                        if(price.text.toString() != none && newProperty.price != 0) {
+                            price.setText(Utils.convertEuroToDollar(newProperty.price).toString())
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     fun populateChanges() {
         with(binding) {
             newProperty.description = if(description.text.toString() != none) { description.text.toString() } else { "" }
 
             newProperty.price = if(price.text.toString() != none) { price.text.toString().toInt() } else { 0 }
+
+            defaultCurrency.value?.let { defaultCurrency ->
+                if(defaultCurrency == DOLLARS.currency && price.text.toString() != none && newProperty.price != 0) {
+                    newProperty.price = Utils.convertDollarToEuro(newProperty.price)
+                }
+            }
+
             newProperty.surface = if(surface.text.toString() != none) { surface.text.toString().toInt() } else { 0 }
             newProperty.rooms = if(rooms.text.toString() != none) { rooms.text.toString().toInt() } else { 0 }
             newProperty.bathRooms = if(bathrooms.text.toString() != none) { bathrooms.text.toString().toInt() } else { 0 }
@@ -174,7 +206,13 @@ constructor(var registry: ActivityResultRegistry?)
                 setText(run {
                     if(newProperty.price != 0) {
                         setTextColor(Color.BLACK)
-                        newProperty.price.toString()
+                        defaultCurrency.value?.let { defaultCurrency ->
+                            if(defaultCurrency == DOLLARS.currency) {
+                                Utils.convertEuroToDollar(newProperty.price).toString()
+                            } else {
+                                newProperty.price.toString()
+                            }
+                        } ?: newProperty.price.toString()
                     } else { none }
                 })
                 setOnFocusChangeListener(onFocusChangeListener)

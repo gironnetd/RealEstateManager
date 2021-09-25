@@ -3,6 +3,14 @@ package com.openclassrooms.realestatemanager.util
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.os.Build
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.openclassrooms.realestatemanager.R
+import java.util.*
 
 object BitmapUtil {
 
@@ -41,5 +49,22 @@ object BitmapUtil {
             return true
         }
         return argbA.contentEquals(argbB)
+    }
+
+    fun bitmapDescriptorFromVector(context: Context, drawableId: Int): BitmapDescriptor? {
+        var drawable = ContextCompat.getDrawable(context, drawableId)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            drawable = DrawableCompat.wrap(Objects.requireNonNull(drawable!!)).mutate()
+        }
+        drawable = DrawableCompat.wrap(drawable!!).mutate()
+        val bitmap = Bitmap.createBitmap(
+                context.resources.getDimension(R.dimen.ic_marker_width).toInt(),
+                context.resources.getDimension(R.dimen.ic_marker_height).toInt(),
+                Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 }
