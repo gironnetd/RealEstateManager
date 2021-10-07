@@ -176,6 +176,17 @@ class PropertyUpdateFragment
                 submitList(newProperty.photos)
             }
             mapViewButton!!.setImageResource(R.drawable.ic_baseline_edit_location_36)
+
+            mapViewButton.setOnClickListener {
+                if(!::updateLocationAlertDialog.isInitialized) {
+                    updateLocationAlertDialog = UpdateLocationDialogFragment(innerContext = innerInflater.context, newProperty.address)
+                    updateLocationAlertDialog.show(childFragmentManager, UpdateLocationDialogFragment.TAG)
+                    updateLocationAlertDialog.setCallBack(this@PropertyUpdateFragment)
+                } else {
+                    updateLocationAlertDialog.address = newProperty.address
+                    updateLocationAlertDialog.alertDialog.show()
+                }
+            }
         }
     }
 
