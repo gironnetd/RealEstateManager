@@ -5,8 +5,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.WriteBatch
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoDataSource
-import com.openclassrooms.realestatemanager.models.Photo
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Photo
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.util.Constants
 import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable

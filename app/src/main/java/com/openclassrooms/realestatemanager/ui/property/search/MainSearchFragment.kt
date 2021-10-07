@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -58,6 +60,13 @@ class MainSearchFragment : BaseFragment(R.layout.fragment_main_search) {
         }
 
         resultItem.isVisible = true
+
+        // getting Linear Layout from custom layout
+        val resultItemLayout = resultItem.actionView as LinearLayout
+
+        resultItemLayout.apply {
+            findViewById<TextView>(R.id.menu_item_title).text = resources.getString(R.string.search)
+        }
 
         searchItem = menu.findItem(R.id.navigation_main_search)
         searchItem.isVisible = false

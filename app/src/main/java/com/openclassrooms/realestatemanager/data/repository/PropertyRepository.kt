@@ -1,7 +1,7 @@
 package com.openclassrooms.realestatemanager.data.repository
 
 import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository.CreateOrUpdate
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Property
 import io.reactivex.Observable
 
 interface PropertyRepository {

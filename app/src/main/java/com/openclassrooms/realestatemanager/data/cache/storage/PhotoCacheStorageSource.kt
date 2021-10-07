@@ -3,8 +3,8 @@ package com.openclassrooms.realestatemanager.data.cache.storage
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoStorageSource
-import com.openclassrooms.realestatemanager.models.Photo
-import com.openclassrooms.realestatemanager.models.storageLocalDatabase
+import com.openclassrooms.realestatemanager.models.property.Photo
+import com.openclassrooms.realestatemanager.models.property.storageLocalDatabase
 import com.openclassrooms.realestatemanager.util.Constants
 import io.reactivex.Completable
 import io.reactivex.Observable

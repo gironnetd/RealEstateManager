@@ -4,6 +4,9 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
 import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultRegistry
 import androidx.appcompat.app.AlertDialog
@@ -12,7 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentEditBinding
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.ui.mvibase.MviView
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditFragment
@@ -22,6 +25,7 @@ import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditIntent.
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditViewState
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditViewState.UiNotification.PROPERTIES_FULLY_UPDATED
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditViewState.UiNotification.PROPERTY_LOCALLY_UPDATED
+import com.openclassrooms.realestatemanager.ui.property.edit.dialog.location.update.UpdateLocationDialogFragment
 import com.openclassrooms.realestatemanager.ui.property.search.result.BrowseResultFragment
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
 import com.openclassrooms.realestatemanager.util.Constants.FROM
@@ -35,7 +39,9 @@ import javax.inject.Inject
  */
 class PropertyUpdateFragment
 @Inject constructor(viewModelFactory: ViewModelProvider.Factory, registry: ActivityResultRegistry?)
-    : PropertyEditFragment(registry), MviView<PropertyUpdateIntent, PropertyEditViewState> {
+    : PropertyEditFragment(registry), MviView<PropertyUpdateIntent, PropertyEditViewState>,
+    UpdateLocationDialogFragment.UpdateLocationListener
+{
 
     private val propertyUpdateViewModel: PropertyUpdateViewModel by viewModels { viewModelFactory }
 
@@ -44,6 +50,8 @@ class PropertyUpdateFragment
     private lateinit var searchItem: MenuItem
 
     private lateinit var innerInflater: LayoutInflater
+
+    lateinit var updateLocationAlertDialog: UpdateLocationDialogFragment
 
     private val updatePropertyIntentPublisher = PublishSubject.create<UpdatePropertyIntent>()
 
@@ -67,7 +75,7 @@ class PropertyUpdateFragment
         }
         _binding = FragmentEditBinding.inflate(innerInflater, container, false)
         super.onCreateView(innerInflater, container, savedInstanceState)
-        binding.mapDetailFragment.visibility = View.GONE
+        //binding.mapDetailFragment.visibility = View.GONE
         return binding.root
     }
 
@@ -89,14 +97,22 @@ class PropertyUpdateFragment
             updateItem = baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_update)
         }
         updateItem.isVisible = true
-        updateItem.setOnMenuItemClickListener {
+
+        // getting Linear Layout from custom layout
+        val updateItemLayout = updateItem.actionView as LinearLayout
+
+        updateItemLayout.apply {
+            findViewById<ImageView>(R.id.menu_item_icon).setImageResource(R.drawable.ic_baseline_update_24)
+            findViewById<TextView>(R.id.menu_item_title).text = resources.getString(R.string.update)
+        }
+
+        updateItemLayout.setOnClickListener {
             populateChanges()
             if(newProperty != property || newProperty.photos != property.photos) {
                 confirmSaveChanges()
             } else {
                 showMessage(resources.getString(R.string.no_changes))
             }
-            true
         }
 
         if(!::searchItem.isInitialized) {
@@ -147,6 +163,20 @@ class PropertyUpdateFragment
         configureView()
 
         baseBrowseFragment.binding.toolBar.title = property.titleInToolbar(resources)
+    }
+
+    override fun configureView() {
+        super.configureView()
+        with(binding) {
+            PhotoUpdateAdapter(layoutInflater().context).apply {
+                if(newProperty.photos.isNotEmpty()) { noPhotos.visibility = android.view.View.GONE
+                }
+                photosRecyclerView.adapter = this
+                setOnItemClickListener(this@PropertyUpdateFragment)
+                submitList(newProperty.photos)
+            }
+            mapViewButton!!.setImageResource(R.drawable.ic_baseline_edit_location_36)
+        }
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -230,6 +260,16 @@ class PropertyUpdateFragment
             R.id.navigation_detail, bundleOf(FROM to arguments?.getString(FROM),
                 PROPERTY_ID to property.id)
         )
+    }
+
+    override fun onUpdateLocationClick() {
+        with(binding) {
+            street.setText(newProperty.address.street)
+            city.setText(newProperty.address.city)
+            postalCode.setText(newProperty.address.postalCode)
+            country.setText(newProperty.address.country)
+            state.setText(newProperty.address.state)
+        }
     }
 }
 

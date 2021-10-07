@@ -8,9 +8,9 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
-import com.openclassrooms.realestatemanager.models.InterestPoint
-import com.openclassrooms.realestatemanager.models.PropertyStatus
-import com.openclassrooms.realestatemanager.models.PropertyType
+import com.openclassrooms.realestatemanager.models.property.InterestPoint
+import com.openclassrooms.realestatemanager.models.property.PropertyStatus
+import com.openclassrooms.realestatemanager.models.property.PropertyType
 import net.andreinc.mockneat.MockNeat
 import net.andreinc.mockneat.types.enums.StringType
 import org.hamcrest.Matchers

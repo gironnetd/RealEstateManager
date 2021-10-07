@@ -8,8 +8,8 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storageMetadata
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoStorageSource
-import com.openclassrooms.realestatemanager.models.Photo
-import com.openclassrooms.realestatemanager.models.storageUrl
+import com.openclassrooms.realestatemanager.models.property.Photo
+import com.openclassrooms.realestatemanager.models.property.storageUrl
 import com.openclassrooms.realestatemanager.util.Constants
 import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable

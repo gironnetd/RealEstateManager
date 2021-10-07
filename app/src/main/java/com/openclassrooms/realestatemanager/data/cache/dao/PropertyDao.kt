@@ -2,11 +2,11 @@ package com.openclassrooms.realestatemanager.data.cache.dao
 
 import android.database.Cursor
 import androidx.room.*
-import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_ID
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_LOCALLY_CREATED
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_LOCALLY_UPDATED
-import com.openclassrooms.realestatemanager.models.Property.Companion.TABLE_NAME
+import com.openclassrooms.realestatemanager.models.property.Property
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_ID
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_LOCALLY_CREATED
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_LOCALLY_UPDATED
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.TABLE_NAME
 import io.reactivex.Single
 
 @Dao

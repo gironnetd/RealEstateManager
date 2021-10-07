@@ -9,7 +9,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.data.cache.AppDatabase
 import com.openclassrooms.realestatemanager.data.cache.provider.toList
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Property
+import com.openclassrooms.realestatemanager.models.property.PropertyType
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import junit.framework.TestCase
@@ -138,7 +139,7 @@ class PropertyDaoTest: TestCase() {
         updatedProperties.forEachIndexed { index,  updatedProperty ->
             with(updatedProperty) {
                 description = "new description"
-                type = com.openclassrooms.realestatemanager.models.PropertyType.values().first { type -> type != initialProperties[index].type }
+                type = PropertyType.values().first { type -> type != initialProperties[index].type }
             }
         }
         updatedProperties = updatedProperties.sortedBy { it.id }

@@ -16,8 +16,8 @@ import com.openclassrooms.realestatemanager.data.remote.source.PhotoRemoteSource
 import com.openclassrooms.realestatemanager.data.remote.source.PropertyRemoteSource
 import com.openclassrooms.realestatemanager.data.source.DataSource
 import com.openclassrooms.realestatemanager.di.TestAppComponent
-import com.openclassrooms.realestatemanager.models.Photo
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Photo
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil.switchAllNetworks
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil.waitInternetStateChange

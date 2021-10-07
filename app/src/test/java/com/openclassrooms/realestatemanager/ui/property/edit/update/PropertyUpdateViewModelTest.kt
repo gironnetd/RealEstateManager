@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nhaarman.mockito_kotlin.mock
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditIntent
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditViewState
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditViewState.UiNotification.PROPERTIES_FULLY_UPDATED

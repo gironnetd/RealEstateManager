@@ -12,11 +12,12 @@ import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragmentTes
 import com.openclassrooms.realestatemanager.ui.property.browse.list.BrowseListFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.browse.map.BrowseMapFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.edit.create.PropertyCreateFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.edit.dialog.location.update.UpdateLocationDialogFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.edit.dialog.photo.add.AddPhotoDialogFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.edit.dialog.photo.update.UpdatePhotoDialogFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragmentIntegrationTest
-import com.openclassrooms.realestatemanager.ui.property.edit.view.add.AddPhotoDialogFragmentIntegrationTest
-import com.openclassrooms.realestatemanager.ui.property.edit.view.update.PhotoUpdateDialogFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragmentIntegrationTest
-import com.openclassrooms.realestatemanager.ui.property.propertydetail.view.PhotoDetailDialogFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.propertydetail.dialog.DetailPhotoDialogFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.search.PropertySearchFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.setting.PropertyCurrencySettingIntegrationTest
 import dagger.BindsInstance
@@ -47,13 +48,14 @@ interface TestAppComponent : AppComponent {
     fun inject(listFragmentIntegrationTest: BrowseListFragmentIntegrationTest)
     fun inject(mapFragmentIntegrationTest: BrowseMapFragmentIntegrationTest)
     fun inject(propertyDetailFragmentIntegrationTest: PropertyDetailFragmentIntegrationTest)
-    fun inject(photoDetailDialogFragmentIntegrationTest: PhotoDetailDialogFragmentIntegrationTest)
+    fun inject(photoDetailDialogFragmentIntegrationTest: DetailPhotoDialogFragmentIntegrationTest)
     fun inject(updateFragmentIntegrationTest: PropertyUpdateFragmentIntegrationTest)
     fun inject(createFragmentIntegrationTest: PropertyCreateFragmentIntegrationTest)
     fun inject(addPhotoDialogFragmentIntegrationTest: AddPhotoDialogFragmentIntegrationTest)
-    fun inject(photoUpdateDialogFragmentIntegrationTest: PhotoUpdateDialogFragmentIntegrationTest)
+    fun inject(photoUpdateDialogFragmentIntegrationTest: UpdatePhotoDialogFragmentIntegrationTest)
     fun inject(searchFragmentIntegrationTest: PropertySearchFragmentIntegrationTest)
     fun inject(propertyCurrencySettingIntegrationTest: PropertyCurrencySettingIntegrationTest)
+    fun inject(updateLocationDialogFragmentIntegrationTest: UpdateLocationDialogFragmentIntegrationTest)
     fun inject(mainActivityTest: MainActivityTest)
     fun inject(mainNavigationTest: MainNavigationTest)
     fun inject(mainRotationTest: MainRotationTest)

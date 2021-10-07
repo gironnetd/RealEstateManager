@@ -2,11 +2,9 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/search_fragment"
-    tools:context=".ui.property.search.PropertySearchFragment">
+    android:id="@+id/search_fragment">
     <LinearLayout
         android:id="@+id/container"
         android:layout_width="match_parent"

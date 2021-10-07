@@ -1,0 +1,205 @@
+[
+  {
+    "description": "France Avenue South, Edina, MN, USA",
+    "matched_substrings": [
+      {
+        "length": 6,
+        "offset": 0
+      }
+    ],
+    "place_id": "EiNGcmFuY2UgQXZlbnVlIFNvdXRoLCBFZGluYSwgTU4sIFVTQSIuKiwKFAoSCZV8OCqmJvaHEWSbposl_iyEEhQKEgk5oFXOOiH2hxF5J_qWN5yvzQ",
+    "reference": "EiNGcmFuY2UgQXZlbnVlIFNvdXRoLCBFZGluYSwgTU4sIFVTQSIuKiwKFAoSCZV8OCqmJvaHEWSbposl_iyEEhQKEgk5oFXOOiH2hxF5J_qWN5yvzQ",
+    "structured_formatting": {
+      "main_text": "France Avenue South",
+      "main_text_matched_substrings": [
+        {
+          "length": 6,
+          "offset": 0
+        }
+      ],
+      "secondary_text": "Edina, MN, USA"
+    },
+    "terms": [
+      {
+        "offset": 0,
+        "value": "France Avenue South"
+      },
+      {
+        "offset": 21,
+        "value": "Edina"
+      },
+      {
+        "offset": 28,
+        "value": "MN"
+      },
+      {
+        "offset": 32,
+        "value": "USA"
+      }
+    ],
+    "types": [
+      "route",
+      "geocode"
+    ]
+  },
+  {
+    "description": "Plaça de Francesc Macià, Barcelona, Spain",
+    "matched_substrings": [
+      {
+        "length": 6,
+        "offset": 9
+      }
+    ],
+    "place_id": "EitQbGHDp2EgZGUgRnJhbmNlc2MgTWFjacOgLCBCYXJjZWxvbmEsIFNwYWluIi4qLAoUChIJV6mZ3HeYpBIRADUTd27KjF0SFAoSCeUwjnEWmKQSEQpmR089-7BE",
+    "reference": "EitQbGHDp2EgZGUgRnJhbmNlc2MgTWFjacOgLCBCYXJjZWxvbmEsIFNwYWluIi4qLAoUChIJV6mZ3HeYpBIRADUTd27KjF0SFAoSCeUwjnEWmKQSEQpmR089-7BE",
+    "structured_formatting": {
+      "main_text": "Plaça de Francesc Macià",
+      "main_text_matched_substrings": [
+        {
+          "length": 6,
+          "offset": 9
+        }
+      ],
+      "secondary_text": "Barcelona, Spain"
+    },
+    "terms": [
+      {
+        "offset": 0,
+        "value": "Plaça de Francesc Macià"
+      },
+      {
+        "offset": 25,
+        "value": "Barcelona"
+      },
+      {
+        "offset": 36,
+        "value": "Spain"
+      }
+    ],
+    "types": [
+      "route",
+      "geocode"
+    ]
+  },
+  {
+    "description": "Frances Street, Vancouver, BC, Canada",
+    "matched_substrings": [
+      {
+        "length": 6,
+        "offset": 0
+      }
+    ],
+    "place_id": "EiVGcmFuY2VzIFN0cmVldCwgVmFuY291dmVyLCBCQywgQ2FuYWRhIi4qLAoUChIJSdmpMRRxhlQRm8R2Inz0H6kSFAoSCbNPqUPxc4ZUEYvzgZvqlpG7",
+    "reference": "EiVGcmFuY2VzIFN0cmVldCwgVmFuY291dmVyLCBCQywgQ2FuYWRhIi4qLAoUChIJSdmpMRRxhlQRm8R2Inz0H6kSFAoSCbNPqUPxc4ZUEYvzgZvqlpG7",
+    "structured_formatting": {
+      "main_text": "Frances Street",
+      "main_text_matched_substrings": [
+        {
+          "length": 6,
+          "offset": 0
+        }
+      ],
+      "secondary_text": "Vancouver, BC, Canada"
+    },
+    "terms": [
+      {
+        "offset": 0,
+        "value": "Frances Street"
+      },
+      {
+        "offset": 16,
+        "value": "Vancouver"
+      },
+      {
+        "offset": 27,
+        "value": "BC"
+      },
+      {
+        "offset": 31,
+        "value": "Canada"
+      }
+    ],
+    "types": [
+      "route",
+      "geocode"
+    ]
+  },
+  {
+    "description": "Frances Street, London, UK",
+    "matched_substrings": [
+      {
+        "length": 6,
+        "offset": 0
+      }
+    ],
+    "place_id": "EhpGcmFuY2VzIFN0cmVldCwgTG9uZG9uLCBVSyIuKiwKFAoSCddhl7_zqNhHESIVW47xdB7ZEhQKEgnz8xe3Wxt2SBEKsgA5eS6RSQ",
+    "reference": "EhpGcmFuY2VzIFN0cmVldCwgTG9uZG9uLCBVSyIuKiwKFAoSCddhl7_zqNhHESIVW47xdB7ZEhQKEgnz8xe3Wxt2SBEKsgA5eS6RSQ",
+    "structured_formatting": {
+      "main_text": "Frances Street",
+      "main_text_matched_substrings": [
+        {
+          "length": 6,
+          "offset": 0
+        }
+      ],
+      "secondary_text": "London, UK"
+    },
+    "terms": [
+      {
+        "offset": 0,
+        "value": "Frances Street"
+      },
+      {
+        "offset": 16,
+        "value": "London"
+      },
+      {
+        "offset": 24,
+        "value": "UK"
+      }
+    ],
+    "types": [
+      "route",
+      "geocode"
+    ]
+  },
+  {
+    "description": "Pułkownika Francesco Nullo, Kraków, Poland",
+    "matched_substrings": [
+      {
+        "length": 6,
+        "offset": 11
+      }
+    ],
+    "place_id": "EixQdcWCa293bmlrYSBGcmFuY2VzY28gTnVsbG8sIEtyYWvDs3csIFBvbGFuZCIuKiwKFAoSCQ8_LdQkWxZHEfPJscbtlMSYEhQKEgnRGE41wEQWRxG_ikd2tbZrtA",
+    "reference": "EixQdcWCa293bmlrYSBGcmFuY2VzY28gTnVsbG8sIEtyYWvDs3csIFBvbGFuZCIuKiwKFAoSCQ8_LdQkWxZHEfPJscbtlMSYEhQKEgnRGE41wEQWRxG_ikd2tbZrtA",
+    "structured_formatting": {
+      "main_text": "Pułkownika Francesco Nullo",
+      "main_text_matched_substrings": [
+        {
+          "length": 6,
+          "offset": 11
+        }
+      ],
+      "secondary_text": "Kraków, Poland"
+    },
+    "terms": [
+      {
+        "offset": 0,
+        "value": "Pułkownika Francesco Nullo"
+      },
+      {
+        "offset": 28,
+        "value": "Kraków"
+      },
+      {
+        "offset": 36,
+        "value": "Poland"
+      }
+    ],
+    "types": [
+      "route",
+      "geocode"
+    ]
+  }
+]

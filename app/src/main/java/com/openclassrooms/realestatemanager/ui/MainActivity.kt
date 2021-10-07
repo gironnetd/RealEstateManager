@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.text.toSpannable
 import androidx.core.view.GravityCompat.START
+import androidx.core.view.MenuItemCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -27,6 +28,8 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_LABELED
@@ -34,6 +37,7 @@ import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.ripple.RippleUtils
 import com.google.android.material.snackbar.Snackbar
 import com.openclassrooms.realestatemanager.BaseApplication
+import com.openclassrooms.realestatemanager.BuildConfig
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.ActivityMainBinding
 import com.openclassrooms.realestatemanager.ui.mvibase.MviView
@@ -66,6 +70,13 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     @Inject lateinit var sharedPreferences: SharedPreferences
+
+    val placesClient: PlacesClient by lazy {
+        if(!Places.isInitialized()) {
+            Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY)
+        }
+        Places.createClient(this)
+    }
 
     private val propertiesViewModel: PropertiesViewModel by viewModels {
         viewModelFactory
@@ -106,7 +117,6 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
             bottomNavigationView.setupWithNavController(navController)
             bottomNavigationView.itemIconTintList = null
 
-
             if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
                 val states = arrayOf(intArrayOf(android.R.attr.state_enabled))
                 var colors: IntArray = intArrayOf()
@@ -139,7 +149,7 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                 when(menuItem.itemId) {
                     R.id.navigation_browse -> {
 
-                        menuItem.setIcon(R.drawable.ic_baseline_real_estate_selected_24)
+                        menuItem.setIcon(R.drawable.ic_baseline_home_work_24)
                         SpannableString(menuItem.title.toSpannable()).apply {
                             setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorPrimary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                             menuItem.title = this
@@ -152,7 +162,7 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                         )
 
                         menuItem.setOnMenuItemClickListener {
-                            menuItem.setIcon(R.drawable.ic_baseline_real_estate_selected_24)
+                            menuItem.setIcon(R.drawable.ic_baseline_home_work_24)
                             SpannableString(menuItem.title.toSpannable()).apply {
                                 setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorPrimary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                                 menuItem.title = this
@@ -170,7 +180,7 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                     R.id.navigation_create -> {
 
                         menuItem.setOnMenuItemClickListener {
-                            menuItem.setIcon(R.drawable.ic_baseline_add_real_estate_selected_24)
+                            menuItem.setIcon(R.drawable.ic_baseline_add_business_24)
                             SpannableString(menuItem.title.toSpannable()).apply {
                                 setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorSecondary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                                 menuItem.title = this
@@ -189,6 +199,7 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
 
                     R.id.navigation_main_search -> {
                         menuItem.setOnMenuItemClickListener {
+                            MenuItemCompat.setIconTintList(menuItem, ColorStateList.valueOf(ResourcesCompat.getColor(resources, R.color.colorTertiary, null)))
                             menuItem.setIcon(R.drawable.ic_baseline_search_selected_24)
                             SpannableString(menuItem.title.toSpannable()).apply {
                                 setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorTertiary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -254,7 +265,7 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                                         R.drawable.navigation_view_all_properties_menu_item_background_color_state,
                                         null
                                 )
-                                menuItem.setIcon(R.drawable.ic_baseline_real_estate_selected_24)
+                                menuItem.setIcon(R.drawable.ic_baseline_home_work_24)
                                 SpannableString(menuItem.title.toSpannable()).apply {
                                     setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorPrimary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                                     menuItem.title = this
@@ -266,7 +277,7 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                                         R.drawable.navigation_view_create_property_menu_item_background_color_state,
                                         null
                                 )
-                                menuItem.setIcon(R.drawable.ic_baseline_add_real_estate_selected_24)
+                                menuItem.setIcon(R.drawable.ic_baseline_add_business_24)
                                 SpannableString(menuItem.title.toSpannable()).apply {
                                     setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorSecondary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                                     menuItem.title = this
@@ -278,6 +289,7 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                                         R.drawable.navigation_view_search_properties_menu_item_background_color_state,
                                         null
                                 )
+                                MenuItemCompat.setIconTintList(menuItem, ColorStateList.valueOf(ResourcesCompat.getColor(resources, R.color.colorTertiary, null)))
                                 menuItem.setIcon(R.drawable.ic_baseline_search_selected_24)
                                 SpannableString(menuItem.title.toSpannable()).apply {
                                     setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorTertiary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -288,12 +300,13 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                     } else {
                         when(menuItem.itemId) {
                             R.id.navigation_browse -> {
-                                menuItem.setIcon(R.drawable.ic_baseline_real_estate_not_selected_24)
+                                menuItem.setIcon(R.drawable.ic_outline_home_work_24)
                             }
                             R.id.navigation_create -> {
-                                menuItem.setIcon(R.drawable.ic_baseline_add_real_estate_not_selected_24)
+                                menuItem.setIcon(R.drawable.ic_outline_add_business_24)
                             }
                             R.id.navigation_main_search -> {
+                                MenuItemCompat.setIconTintList(menuItem, null)
                                 menuItem.setIcon(R.drawable.ic_baseline_search_not_selected_24)
                             }
                         }
@@ -311,7 +324,7 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                     if(menuItem.itemId == destination.id) {
                         when(menuItem.itemId) {
                             R.id.navigation_browse -> {
-                                menuItem.setIcon(R.drawable.ic_baseline_real_estate_selected_24)
+                                menuItem.setIcon(R.drawable.ic_baseline_home_work_24)
                                 if(bottomNavigationView.labelVisibilityMode == LABEL_VISIBILITY_LABELED) {
                                     SpannableString(menuItem.title.toSpannable()).apply {
                                         setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorPrimary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -320,7 +333,7 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                                 }
                             }
                             R.id.navigation_create -> {
-                                menuItem.setIcon(R.drawable.ic_baseline_add_real_estate_selected_24)
+                                menuItem.setIcon(R.drawable.ic_baseline_add_business_24)
                                 if(bottomNavigationView.labelVisibilityMode == LABEL_VISIBILITY_LABELED) {
                                     SpannableString(menuItem.title.toSpannable()).apply {
                                         setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorSecondary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -329,6 +342,7 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                                 }
                             }
                             R.id.navigation_main_search -> {
+                                MenuItemCompat.setIconTintList(menuItem, ColorStateList.valueOf(ResourcesCompat.getColor(resources, R.color.colorTertiary, null)))
                                 menuItem.setIcon(R.drawable.ic_baseline_search_selected_24)
                                 if(bottomNavigationView.labelVisibilityMode == LABEL_VISIBILITY_LABELED) {
                                     SpannableString(menuItem.title.toSpannable()).apply {
@@ -341,12 +355,13 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                     } else {
                         when(menuItem.itemId) {
                             R.id.navigation_browse -> {
-                                menuItem.setIcon(R.drawable.ic_baseline_real_estate_not_selected_24)
+                                menuItem.setIcon(R.drawable.ic_outline_home_work_24)
                             }
                             R.id.navigation_create -> {
-                                menuItem.setIcon(R.drawable.ic_baseline_add_real_estate_not_selected_24)
+                                menuItem.setIcon(R.drawable.ic_outline_add_business_24)
                             }
                             R.id.navigation_main_search -> {
+                                MenuItemCompat.setIconTintList(menuItem, null)
                                 menuItem.setIcon(R.drawable.ic_baseline_search_not_selected_24)
                             }
                         }

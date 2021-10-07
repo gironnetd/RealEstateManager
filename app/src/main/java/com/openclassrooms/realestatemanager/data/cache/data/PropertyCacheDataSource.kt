@@ -3,7 +3,7 @@ package com.openclassrooms.realestatemanager.data.cache.data
 import com.openclassrooms.realestatemanager.data.cache.dao.PropertyDao
 import com.openclassrooms.realestatemanager.data.cache.provider.toList
 import com.openclassrooms.realestatemanager.data.source.property.PropertyDataSource
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable
 import io.reactivex.Single

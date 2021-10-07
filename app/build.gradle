@@ -16,6 +16,12 @@ For more information, see TBD.
 */
 
 android {
+
+    /*Properties properties = new Properties()
+    if (rootProject.file("local.properties").exists()) {
+        properties.load(rootProject.file("local.properties").newDataInputStream())
+    }*/
+
     compileSdkVersion 30
     defaultConfig {
         applicationId "com.openclassrooms.realestatemanager"
@@ -28,7 +34,6 @@ android {
         vectorDrawables.useSupportLibrary = true
         // clear state after each individual test
         // testInstrumentationRunnerArguments clearPackageData: 'true'
-
     }
     buildTypes {
         release {
@@ -126,7 +131,7 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation "com.google.android.material:material:1.4.0"
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     testImplementation 'junit:junit:4.13.2'
@@ -260,8 +265,18 @@ dependencies {
     def maps_version = "17.0.1"
     implementation "com.google.android.gms:play-services-maps:$maps_version"
 
+    // Google Maps Places SDK dependencies
+    def places_version = "2.4.0"
+    implementation "com.google.android.libraries.places:places:$places_version"
+
+    def volley_version = "1.2.1"
+    implementation "com.android.volley:volley:$volley_version"
+
     // Utilities for Maps SDK for Android (requires Google Play Services)
     def maps_utils_version = '2.2.6'
     implementation "com.google.maps.android:android-maps-utils:$maps_utils_version"
+
+    def leakcanary_version = '2.7'
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakcanary_version"
 }
 

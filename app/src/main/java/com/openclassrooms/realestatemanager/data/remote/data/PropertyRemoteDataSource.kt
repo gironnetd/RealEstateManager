@@ -4,7 +4,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import com.openclassrooms.realestatemanager.data.source.property.PropertyDataSource
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.util.Constants
 import io.reactivex.Completable
 import io.reactivex.Observable

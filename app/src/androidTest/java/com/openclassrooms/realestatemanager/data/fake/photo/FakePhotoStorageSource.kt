@@ -6,8 +6,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoStorageSource
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
-import com.openclassrooms.realestatemanager.models.Photo
-import com.openclassrooms.realestatemanager.models.storageUrl
+import com.openclassrooms.realestatemanager.models.property.Photo
+import com.openclassrooms.realestatemanager.models.property.storageUrl
 import com.openclassrooms.realestatemanager.util.BitmapUtil
 import com.openclassrooms.realestatemanager.util.ConstantsTest
 import com.openclassrooms.realestatemanager.util.JsonUtil
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class FakePhotoStorageSource
 @Inject constructor(var jsonUtil: JsonUtil): PhotoStorageSource {
 
-    var photosJsonFileName: String = ConstantsTest.PHOTOS_DATA_FILENAME
+    private var photosJsonFileName: String = ConstantsTest.PHOTOS_DATA_FILENAME
     var photos: MutableMap<String, Bitmap> = ConcurrentHashMap()
 
     init {

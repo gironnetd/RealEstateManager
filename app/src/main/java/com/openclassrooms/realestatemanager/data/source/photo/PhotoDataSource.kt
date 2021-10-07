@@ -1,6 +1,6 @@
 package com.openclassrooms.realestatemanager.data.source.photo
 
-import com.openclassrooms.realestatemanager.models.Photo
+import com.openclassrooms.realestatemanager.models.property.Photo
 import io.reactivex.Completable
 import io.reactivex.Single
 

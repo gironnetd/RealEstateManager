@@ -14,9 +14,8 @@ import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.data.remote.data.PhotoRemoteDataSource
 import com.openclassrooms.realestatemanager.data.remote.storage.PhotoRemoteStorageSource
-import com.openclassrooms.realestatemanager.models.Photo
-import com.openclassrooms.realestatemanager.models.PhotoType
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_PROPERTY_ID
+import com.openclassrooms.realestatemanager.models.property.Photo
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_PROPERTY_ID
 import com.openclassrooms.realestatemanager.util.BitmapUtil
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTIES_COLLECTION
 import com.openclassrooms.realestatemanager.util.ConstantsTest
@@ -212,7 +211,7 @@ class PhotoRemoteSourceTest : TestCase() {
         val updatedPhoto = initialPhoto.copy()
         with(updatedPhoto) {
             description = "new description"
-            type = PhotoType.values().first { type -> type != initialPhoto.type }
+            type = com.openclassrooms.realestatemanager.models.property.PhotoType.values().first { type -> type != initialPhoto.type }
             bitmap = BitmapFactory.decodeResource(resources, R.drawable.default_image)
         }
         remoteSource.updatePhoto(updatedPhoto).blockingAwait()
@@ -231,7 +230,7 @@ class PhotoRemoteSourceTest : TestCase() {
         updatedPhotos.forEachIndexed { index,  updatedPhoto ->
             with(updatedPhoto) {
                 description = "new description"
-                type = PhotoType.values().first { type -> type != initialPhotos[index].type }
+                type = com.openclassrooms.realestatemanager.models.property.PhotoType.values().first { type -> type != initialPhotos[index].type }
                 bitmap = BitmapFactory.decodeResource(resources, R.drawable.default_image)
             }
         }

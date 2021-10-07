@@ -9,10 +9,12 @@ import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ScrollView.FOCUS_UP
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultRegistry
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
@@ -26,14 +28,15 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.chip.Chip
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentEditBinding
-import com.openclassrooms.realestatemanager.models.InterestPoint
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.InterestPoint
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.mvibase.MviView
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragment
-import com.openclassrooms.realestatemanager.ui.property.propertydetail.view.PhotoDetailDialogFragment
+import com.openclassrooms.realestatemanager.ui.property.propertydetail.dialog.location.DetailLocationDialogFragment
+import com.openclassrooms.realestatemanager.ui.property.propertydetail.dialog.photo.DetailPhotoDialogFragment
 import com.openclassrooms.realestatemanager.ui.property.search.MainSearchFragment
 import com.openclassrooms.realestatemanager.ui.property.search.result.BrowseResultFragment
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseBrowseFragment
@@ -70,7 +73,8 @@ class PropertyDetailFragment
     private lateinit var detailLayoutParams: FrameLayout.LayoutParams
     private lateinit var browseDetailNavHostFragment: NavHostFragment
 
-    lateinit var detailPhotoAlertDialog: PhotoDetailDialogFragment
+    lateinit var detailPhotoAlertDialog: DetailPhotoDialogFragment
+    lateinit var detailLocationAlertDialog: DetailLocationDialogFragment
 
     private val populatePropertyIntentPublisher = PublishSubject.create<PropertyDetailIntent.PopulatePropertyIntent>()
 
@@ -86,26 +90,29 @@ class PropertyDetailFragment
             }
         }
 
-        _binding = FragmentEditBinding.inflate(innerInflater, container, false)
-        compositeDisposable.add(propertyDetailViewModel.states().subscribe(this::render))
-        propertyDetailViewModel.processIntents(intents())
-
-        super.onCreateView(innerInflater, container, savedInstanceState)
+        _binding = FragmentEditBinding.inflate(inflater, container, false)
+        //super.onCreateView(innerInflater, container, savedInstanceState)
 
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+    }*/
+
+    override fun onResume() {
+        super.onResume()
         compositeDisposable.add(propertyDetailViewModel.states().subscribe(this::render))
         propertyDetailViewModel.processIntents(intents())
-        applyDisposition()
+        //applyDisposition()
         requireArguments().getString(PROPERTY_ID)?.let { propertyId ->
             showDetails(propertyId)
         }
+        configureView()
         if(!onBackPressedCallback.isEnabled) {
             onBackPressedCallback.isEnabled = true
         }
-        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onDestroyView() {
@@ -159,7 +166,7 @@ class PropertyDetailFragment
             country.isFocusable = false
             state.isFocusable = false
 
-            addAPhoto.visibility = GONE
+            addAPhoto!!.visibility = GONE
 
             entryDate.setOnClickListener(null)
             status.setOnClickListener(null)
@@ -169,21 +176,33 @@ class PropertyDetailFragment
             //price.filters = arrayOf<InputFilter>(InputFilterMinMax(0, 99999999999999999))
             //surface.filters = arrayOf<InputFilter>(InputFilterMinMax(0, 99999999999999999))
 
-            PhotoDetailAdapter().apply {
+            PhotoDetailAdapter(innerInflater.context).apply {
                 if(property.photos.isNotEmpty()) { noPhotos.visibility = GONE }
                 photosRecyclerView.adapter = this
                 setOnItemClickListener(this@PropertyDetailFragment)
                 submitList(property.photos)
             }
 
-            if(mapDetailFragment.contentDescription != DETAIL_MAP_FINISH_LOADING) {
+            mapViewButton!!.setImageResource(R.drawable.ic_baseline_location_on_36)
+
+            mapViewButton.setOnClickListener {
+                if(!::detailLocationAlertDialog.isInitialized) {
+                    detailLocationAlertDialog = DetailLocationDialogFragment(innerContext = innerInflater.context, property)
+                    detailLocationAlertDialog.show(childFragmentManager, DetailLocationDialogFragment.TAG)
+                } else {
+                    detailLocationAlertDialog.property = property
+                    detailLocationAlertDialog.alertDialog.show()
+                }
+            }
+
+            /*if(mapDetailFragment.contentDescription != DETAIL_MAP_FINISH_LOADING) {
                 activity?.runOnUiThread {
                     (childFragmentManager.findFragmentById(R.id.map_detail_fragment) as SupportMapFragment)
                         .getMapAsync(this@PropertyDetailFragment)
                 }
             } else {
                 moveCameraToPropertyInsideMap()
-            }
+            }*/
         }
     }
 
@@ -243,18 +262,27 @@ class PropertyDetailFragment
         }
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
+    /*override fun onPrepareOptionsMenu(menu: Menu) {
         baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_main_search).isVisible = false
         baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_edit).isVisible = true
         super.onPrepareOptionsMenu(baseBrowseFragment.binding.toolBar.menu)
-    }
+    }*/
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         if(!::editItem.isInitialized) {
             editItem = baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_edit)
         }
         editItem.isVisible = true
-        editItem.setOnMenuItemClickListener {
+
+        // getting Linear Layout from custom layout
+        val editItemLayout = editItem.actionView as LinearLayout
+
+        editItemLayout.apply {
+            findViewById<ImageView>(R.id.menu_item_icon).setImageResource(R.drawable.ic_baseline_edit_24)
+            findViewById<TextView>(R.id.menu_item_title).text = resources.getString(R.string.edit)
+        }
+
+        editItemLayout.setOnClickListener {
             val bundle = bundleOf(FROM to arguments?.getString(FROM), PROPERTY_ID to property.id)
             if(baseBrowseFragment.detail.childFragmentManager
                     .findFragmentByTag(R.id.navigation_edit.toString()) != null) {
@@ -263,12 +291,26 @@ class PropertyDetailFragment
                     .findFragmentByTag(R.id.navigation_edit.toString()) as PropertyUpdateFragment
 
                 propertyUpdateFragment.showDetails(property.id)
-                baseBrowseFragment.detail.findNavController().navigate(R.id.navigation_edit, bundle)
-            } else {
-                baseBrowseFragment.detail.findNavController().navigate(R.id.navigation_edit, bundle)
             }
-            true
+            baseBrowseFragment.detail.findNavController().navigate(R.id.navigation_update, bundle)
         }
+
+        /*editItem.setOnMenuItemClickListener {
+            val bundle = bundleOf(FROM to arguments?.getString(FROM), PROPERTY_ID to property.id)
+            if(baseBrowseFragment.detail.childFragmentManager
+                    .findFragmentByTag(R.id.navigation_edit.toString()) != null) {
+
+                val propertyUpdateFragment: PropertyUpdateFragment = baseBrowseFragment.detail.childFragmentManager
+                    .findFragmentByTag(R.id.navigation_edit.toString()) as PropertyUpdateFragment
+
+                propertyUpdateFragment.showDetails(property.id)
+                //baseBrowseFragment.detail.findNavController().navigate(R.id.navigation_update, bundle)
+            } *//*else {
+
+            }*//*
+            baseBrowseFragment.detail.findNavController().navigate(R.id.navigation_edit, bundle)
+            true
+        }*/
 
         if(!::searchItem.isInitialized) {
             searchItem = baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_main_search)
@@ -285,7 +327,7 @@ class PropertyDetailFragment
             binding.editFragment.fullScroll(FOCUS_UP)
             baseBrowseFragment.binding.toolBar.setNavigationOnClickListener(null)
         } else {
-            applyDisposition()
+            //applyDisposition()
             requireArguments().getString(PROPERTY_ID)?.let { propertyId ->
                 showDetails(propertyId)
             }
@@ -300,7 +342,7 @@ class PropertyDetailFragment
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        applyDisposition()
+        //applyDisposition()
     }
 
     private fun applyDisposition() {
@@ -353,7 +395,7 @@ class PropertyDetailFragment
             }
         }
 
-        (binding.layoutPropertyAddress!!.layoutParams as ConstraintLayout.LayoutParams).apply {
+        /*(binding.layoutPropertyAddress!!.layoutParams as ConstraintLayout.LayoutParams).apply {
             endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
             endToStart = ConstraintLayout.LayoutParams.UNSET
             bottomToTop = binding.mapDetailFragment.id
@@ -418,8 +460,8 @@ class PropertyDetailFragment
                 binding.stateTextInputLayout.layoutParams = layoutParams
             }
         }
-
-        (binding.mapDetailFragment.layoutParams as ConstraintLayout.LayoutParams).apply {
+*/
+        /*(binding.mapDetailFragment.layoutParams as ConstraintLayout.LayoutParams).apply {
 
             val containerLayoutParams = binding.container.layoutParams as FrameLayout.LayoutParams
 
@@ -435,13 +477,13 @@ class PropertyDetailFragment
 
             startToStart = ConstraintLayout.LayoutParams.PARENT_ID
             startToEnd = ConstraintLayout.LayoutParams.UNSET
-            topToBottom = binding.layoutPropertyAddress!!.id
+            //topToBottom = binding.layoutPropertyAddress!!.id
             topToTop = ConstraintLayout.LayoutParams.UNSET
             bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
             horizontalWeight = 1f
         }.also { layoutParams ->
             binding.mapDetailFragment.layoutParams = layoutParams
-        }
+        }*/
     }
 
     private fun applyMasterDetailDisposition() {
@@ -457,7 +499,7 @@ class PropertyDetailFragment
             browseDetailNavHostFragment.requireView().layoutParams = layoutParams
         }
 
-        (binding.layoutPropertyAddress!!.layoutParams as ConstraintLayout.LayoutParams).apply {
+        /*(binding.layoutPropertyAddress!!.layoutParams as ConstraintLayout.LayoutParams).apply {
             endToEnd = ConstraintLayout.LayoutParams.UNSET
             endToStart = binding.mapDetailFragment.id
             bottomToTop = ConstraintLayout.LayoutParams.UNSET
@@ -519,20 +561,20 @@ class PropertyDetailFragment
                 binding.stateTextInputLayout.layoutParams = layoutParams
             }
         }
-
-        (binding.mapDetailFragment.layoutParams as ConstraintLayout.LayoutParams).apply {
+*/
+        /*(binding.mapDetailFragment.layoutParams as ConstraintLayout.LayoutParams).apply {
             width = 0
             height = 0
             startToStart = ConstraintLayout.LayoutParams.UNSET
-            startToEnd = binding.layoutPropertyAddress!!.id
+            //startToEnd = binding.layoutPropertyAddress!!.id
             topToBottom = ConstraintLayout.LayoutParams.UNSET
-            topToTop = binding.layoutPropertyAddress!!.id
-            bottomToBottom = binding.layoutPropertyAddress!!.id
+            //topToTop = binding.layoutPropertyAddress!!.id
+            //bottomToBottom = binding.layoutPropertyAddress!!.id
             horizontalWeight = 0.5f
             setMargins( 8, 16, 16, 16)
         }.also { layoutParams ->
             binding.mapDetailFragment.layoutParams = layoutParams
-        }
+        }*/
     }
 
     override fun confirmSaveChanges() {}
@@ -590,18 +632,25 @@ class PropertyDetailFragment
             BaseListFragment::class.java.name -> {
                 baseBrowseFragment.apply {
                     master.requireView().visibility = VISIBLE
+                    binding.resultListFragment.visibility = VISIBLE
+                    binding.resultListFragment.bringToFront()
                     detail.requireView().visibility = GONE
+                    binding.resultDetailNavFragment.visibility = GONE
                     detail.navController.navigate(R.id.navigation_map)
                     binding.segmentedcontrol.buttonContainer.visibility = VISIBLE
                     binding.segmentedcontrol.listViewButton.isSelected = true
                     binding.segmentedcontrol.mapViewButton.isSelected = false
+
                 }
             }
             BaseMapFragment::class.java.name -> {
                 baseBrowseFragment.apply {
                     detail.navController.navigate(R.id.navigation_map)
                     master.requireView().visibility = GONE
+                    binding.resultListFragment.visibility = GONE
                     detail.requireView().visibility = VISIBLE
+                    binding.resultDetailNavFragment.visibility = VISIBLE
+                    binding.resultDetailNavFragment.bringToFront()
                     binding.segmentedcontrol.buttonContainer.visibility = VISIBLE
                     binding.segmentedcontrol.listViewButton.isSelected = false
                     binding.segmentedcontrol.mapViewButton.isSelected = true
@@ -611,7 +660,6 @@ class PropertyDetailFragment
     }
 
     override fun onMapReady(googleMap: GoogleMap) { mMap = googleMap
-
         /*
         Deprecation notice: In a future release, indoor will no longer be supported on satellite,
         hybrid or terrain type maps. Even where indoor is not supported, isIndoorEnabled()
@@ -625,12 +673,12 @@ class PropertyDetailFragment
         moveCameraToPropertyInsideMap()
         val options = GoogleMapOptions().liteMode(true)
         mMap.mapType = options.mapType
-        binding.mapDetailFragment.contentDescription = DETAIL_MAP_NOT_FINISH_LOADING
+        //binding.mapDetailFragment.contentDescription = DETAIL_MAP_NOT_FINISH_LOADING
         mMap.setOnMapLoadedCallback(this)
     }
 
     override fun onMapLoaded() {
-        binding.mapDetailFragment.contentDescription = DETAIL_MAP_FINISH_LOADING
+        //binding.mapDetailFragment.contentDescription = DETAIL_MAP_FINISH_LOADING
     }
 
     private fun moveCameraToPropertyInsideMap() {
@@ -657,9 +705,9 @@ class PropertyDetailFragment
     }
 
     override fun clickOnPhotoAtPosition(photoId: String) {
-        detailPhotoAlertDialog = PhotoDetailDialogFragment().also {
+        detailPhotoAlertDialog = DetailPhotoDialogFragment().also {
             it.photo = property.photos.singleOrNull { photo -> photo.id == photoId }
         }
-        detailPhotoAlertDialog.show(childFragmentManager, PhotoDetailDialogFragment.TAG)
+        detailPhotoAlertDialog.show(childFragmentManager, DetailPhotoDialogFragment.TAG)
     }
 }

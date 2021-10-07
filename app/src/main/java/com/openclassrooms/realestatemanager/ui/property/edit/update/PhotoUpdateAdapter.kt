@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.ui.property.edit.update
 
+import android.content.Context
 import android.view.LayoutInflater.from
 import android.view.View
 import android.view.ViewGroup
@@ -9,11 +10,11 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.openclassrooms.realestatemanager.R
-import com.openclassrooms.realestatemanager.models.Photo
-import com.openclassrooms.realestatemanager.models.PhotoType
+import com.openclassrooms.realestatemanager.models.property.Photo
+import com.openclassrooms.realestatemanager.models.property.PhotoType
 import java.util.*
 
-class PhotoUpdateAdapter : RecyclerView.Adapter<PhotoUpdateAdapter.PhotoViewHolder>() {
+class PhotoUpdateAdapter(val context: Context) : RecyclerView.Adapter<PhotoUpdateAdapter.PhotoViewHolder>() {
 
     interface OnItemClickListener {
         fun clickOnPhotoAtPosition(photoId: String)
@@ -37,7 +38,7 @@ class PhotoUpdateAdapter : RecyclerView.Adapter<PhotoUpdateAdapter.PhotoViewHold
     val differ = AsyncListDiffer(this, diffCallback)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
-        return PhotoViewHolder(from(parent.context).inflate(R.layout.layout_photo_list_item,
+        return PhotoViewHolder(from(context).inflate(R.layout.layout_photo_list_item,
             parent,
             false),
             callBack)

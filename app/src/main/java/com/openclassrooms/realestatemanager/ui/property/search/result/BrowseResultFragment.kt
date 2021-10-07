@@ -11,7 +11,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.NavHostFragment
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentBrowseBinding
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.ui.fragments.search.result.ResultSearchDetailNavHostFragment
 import com.openclassrooms.realestatemanager.ui.navigation.browsedetail.BrowseDetailFragmentNavigator
 import com.openclassrooms.realestatemanager.ui.property.search.result.list.SearchListFragment

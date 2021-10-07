@@ -11,7 +11,7 @@ import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.R
-import com.openclassrooms.realestatemanager.models.Photo
+import com.openclassrooms.realestatemanager.models.property.Photo
 import com.openclassrooms.realestatemanager.util.BitmapUtil
 import com.openclassrooms.realestatemanager.util.BitmapUtil.bitmapFromAsset
 import com.openclassrooms.realestatemanager.util.ConstantsTest

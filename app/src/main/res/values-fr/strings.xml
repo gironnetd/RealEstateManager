@@ -4,7 +4,7 @@
     <string name="real_estate">Toutes les propriétés</string>
     <string name="add_real_estate">Ajouter un bien immobilier</string>
     <string name="create_property">Créer un bien immobilier</string>
-    <string name="create">&#160;&#160;CRÉER</string>
+    <string name="create">&#160;&#160;CRÉER&#160;&#160;</string>
     <string name="update">&#160;&#160;MODIFIER&#160;&#160;</string>
     <string name="map">Carte des biens immobiliers</string>
     <string name="list">Liste des biens immobiliers</string>
@@ -123,4 +123,7 @@
     <string name="default_currency">Devise par défaut</string>
     <string name="choose_default_currency">Choisissez la devise par défaut</string>
     <string name="settings">Paramètres</string>
+    <string name="update_location">Modifier Localisation</string>
+    <string name="search_location_hint">Recherche par adresse, rue, ville, code postale ou pays</string>
+    <string name="search_result">Résultat des recherches</string>
 </resources>

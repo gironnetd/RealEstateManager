@@ -7,7 +7,6 @@ import android.view.Display
 import androidx.fragment.app.FragmentActivity
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -16,9 +15,8 @@ import androidx.test.uiautomator.*
 import com.google.common.truth.Truth.assertThat
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
-import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragment.Companion.DETAIL_MAP_FINISH_LOADING
 import com.openclassrooms.realestatemanager.ui.property.shared.list.ListAdapter
 import com.openclassrooms.realestatemanager.ui.property.shared.map.BaseMapFragment
 import com.openclassrooms.realestatemanager.ui.property.shared.map.BaseMapFragment.Companion.INFO_WINDOW_SHOWN
@@ -62,8 +60,6 @@ object NavigationHelper {
                 uiDevice.click(x, y)
                 uiDevice.wait(Until.hasObject(By.res(mainActivity.packageName,
                     mainActivity.resources.getResourceEntryName(R.id.edit_fragment))), 30000)
-
-                wait_until_detail_map_is_finished_loading(uiDevice)
             }
         } catch (e: UiObjectNotFoundException) {
             e.printStackTrace()
@@ -72,7 +68,7 @@ object NavigationHelper {
 
     fun navigate_to_update_fragment(uiDevice: UiDevice, mainActivity : FragmentActivity) {
         onView(allOf(withId(R.id.edit_fragment), isDisplayed())).check(matches(isDisplayed()))
-        onView(allOf(withId(R.id.navigation_edit), isDisplayed())).perform(click())
+        onView(allOf(withId(R.id.menu_item_container), isDisplayed())).perform(click())
         uiDevice.wait(Until.hasObject(By.res(mainActivity.packageName,
             mainActivity.resources.getResourceEntryName(R.id.edit_fragment))), 10000)
     }
@@ -88,15 +84,6 @@ object NavigationHelper {
             isMapFinishLoading = uiDevice.wait(Until.hasObject(By.desc(MAP_FINISH_LOADING)),
                 50000)
             assertThat(isMapFinishLoading).isTrue()
-        }
-    }
-
-    fun wait_until_detail_map_is_finished_loading(uiDevice: UiDevice) {
-        if(!uiDevice.findObject(UiSelector().descriptionContains(DETAIL_MAP_FINISH_LOADING)).exists()) {
-            onView(withId(R.id.map_detail_fragment)).perform(scrollTo())
-
-            uiDevice.wait(Until.hasObject(By.desc(DETAIL_MAP_FINISH_LOADING)), 50000)
-            //assertThat(isDetailMapFinishLoading).isTrue()
         }
     }
 }

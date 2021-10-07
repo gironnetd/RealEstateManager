@@ -7,9 +7,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.openclassrooms.realestatemanager.models.Photo
-import com.openclassrooms.realestatemanager.models.PhotoType
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Photo
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.util.Constants
 import com.openclassrooms.realestatemanager.util.ConstantsTest
 import com.openclassrooms.realestatemanager.util.ConstantsTest.FIREBASE_EMULATOR_HOST
@@ -174,7 +173,7 @@ class PhotoRemoteDataSourceTest : TestCase() {
         val updatedPhoto = initialPhoto.copy()
         with(updatedPhoto) {
             description = "new description"
-            type = PhotoType.values().first { type -> type != initialPhoto.type }
+            type = com.openclassrooms.realestatemanager.models.property.PhotoType.values().first { type -> type != initialPhoto.type }
         }
         photoRemoteDataSource.updatePhoto(updatedPhoto).blockingAwait()
 
@@ -192,7 +191,7 @@ class PhotoRemoteDataSourceTest : TestCase() {
         updatedPhotos.forEachIndexed { index,  updatedPhoto ->
             with(updatedPhoto) {
                 description = "new description"
-                type = PhotoType.values().first { type -> type != initialPhotos[index].type }
+                type = com.openclassrooms.realestatemanager.models.property.PhotoType.values().first { type -> type != initialPhotos[index].type }
             }
         }
         photoRemoteDataSource.updatePhotos(updatedPhotos).blockingAwait()

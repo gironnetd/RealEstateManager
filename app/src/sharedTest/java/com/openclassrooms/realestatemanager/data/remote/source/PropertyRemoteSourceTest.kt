@@ -8,8 +8,8 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.data.remote.data.PropertyRemoteDataSource
-import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.models.PropertyType
+import com.openclassrooms.realestatemanager.models.property.Property
+import com.openclassrooms.realestatemanager.models.property.PropertyType
 import com.openclassrooms.realestatemanager.util.ConstantsTest.FIREBASE_EMULATOR_HOST
 import com.openclassrooms.realestatemanager.util.ConstantsTest.FIREBASE_FIRESTORE_PORT
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
@@ -142,7 +142,7 @@ class PropertyRemoteSourceTest : TestCase() {
         updatedProperties.forEachIndexed { index,  updatedProperty ->
             with(updatedProperty) {
                 description = "new description"
-                type = com.openclassrooms.realestatemanager.models.PropertyType.values().first { type -> type != initialProperties[index].type }
+                type = PropertyType.values().first { type -> type != initialProperties[index].type }
             }
         }
         updatedProperties = updatedProperties.sortedBy { it.id }

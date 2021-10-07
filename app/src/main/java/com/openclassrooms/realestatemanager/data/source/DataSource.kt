@@ -6,8 +6,8 @@ import com.openclassrooms.realestatemanager.data.remote.source.PhotoRemoteSource
 import com.openclassrooms.realestatemanager.data.remote.source.PropertyRemoteSource
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoSource
 import com.openclassrooms.realestatemanager.data.source.property.PropertySource
-import com.openclassrooms.realestatemanager.models.Photo
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Photo
+import com.openclassrooms.realestatemanager.models.property.Property
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single

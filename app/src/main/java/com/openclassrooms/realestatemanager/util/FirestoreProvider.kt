@@ -4,7 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.openclassrooms.realestatemanager.models.*
+import com.openclassrooms.realestatemanager.models.property.*
 import com.openclassrooms.realestatemanager.util.Constants.PHOTOS_COLLECTION
 import com.openclassrooms.realestatemanager.util.Constants.PROPERTIES_COLLECTION
 import net.andreinc.mockneat.MockNeat

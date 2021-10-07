@@ -3,7 +3,7 @@ package com.openclassrooms.realestatemanager.data.remote.source
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoDataSource
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoSource
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoStorageSource
-import com.openclassrooms.realestatemanager.models.Photo
+import com.openclassrooms.realestatemanager.models.property.Photo
 import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable
 import io.reactivex.Observable

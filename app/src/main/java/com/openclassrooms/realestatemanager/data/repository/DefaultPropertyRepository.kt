@@ -7,8 +7,8 @@ import com.openclassrooms.realestatemanager.data.remote.source.PropertyRemoteSou
 import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository.CreateOrUpdate.CREATE
 import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository.CreateOrUpdate.UPDATE
 import com.openclassrooms.realestatemanager.data.source.DataSource
-import com.openclassrooms.realestatemanager.models.Photo
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Photo
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.util.NetworkConnectionLiveData
 import io.reactivex.Completable
 import io.reactivex.Completable.complete
@@ -77,7 +77,8 @@ class DefaultPropertyRepository
     }
 
     override fun findProperty(propertyId: String): Observable<Property> {
-        return findCompleteProperty(propertyId).startWith(cacheDataSource.findById(Property::class,
+        return findCompleteProperty(propertyId).startWith(cacheDataSource.findById(
+            Property::class,
             propertyId).toObservable())
     }
 
@@ -115,7 +116,8 @@ class DefaultPropertyRepository
         return remoteDataSource.update(Property::class, updatedProperty)
             .andThen(
                 if(updatedProperty.photos.any { photo -> photo.locallyUpdated }) {
-                    remoteDataSource.update(Photo::class, updatedProperty.photos
+                    remoteDataSource.update(
+                        Photo::class, updatedProperty.photos
                         .filter { photo -> photo.locallyUpdated })
                 } else { complete() }
             ).andThen(
@@ -130,19 +132,22 @@ class DefaultPropertyRepository
             .andThen(cacheDataSource.update(Property::class, updatedProperty.apply { locallyUpdated = false }))
             .andThen(
                 if(updatedProperty.photos.any { photo -> photo.locallyUpdated }) {
-                    cacheDataSource.update(Photo::class, updatedProperty.photos
+                    cacheDataSource.update(
+                        Photo::class, updatedProperty.photos
                         .filter { photo -> photo.locallyUpdated }
                         .onEach { photo -> photo.locallyUpdated = false })
                 } else { complete() }
             ).andThen(
                 if(updatedProperty.photos.any { photo -> photo.locallyCreated }) {
-                    cacheDataSource.save(Photo::class, updatedProperty.photos
+                    cacheDataSource.save(
+                        Photo::class, updatedProperty.photos
                         .filter { photo -> photo.locallyCreated }
                         .onEach { photo -> photo.locallyCreated = false })
                 } else { complete() }
             ).andThen(
                 if(updatedProperty.photos.any { photo -> photo.locallyDeleted }) {
-                    cacheDataSource.delete(Photo::class, updatedProperty.photos
+                    cacheDataSource.delete(
+                        Photo::class, updatedProperty.photos
                         .filter { photo -> photo.locallyDeleted }
                         .onEach { photo -> photo.locallyDeleted = false }
                         .also { updatedProperty.photos.removeAll(it) }

@@ -13,31 +13,31 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.data.cache.provider.PropertyContract.Companion.CONTENT_AUTHORITY
 import com.openclassrooms.realestatemanager.data.cache.provider.PropertyContract.PropertyEntry.Companion.CONTENT_URI
-import com.openclassrooms.realestatemanager.models.*
-import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_CITY
-import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_COUNTRY
-import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_LATITUDE
-import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_LONGITUDE
-import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_POSTAL_CODE
-import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_STATE
-import com.openclassrooms.realestatemanager.models.Address.Companion.COLUMN_ADDRESS_STREET
-import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_PHOTO_DESCRIPTION
-import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_PHOTO_PROPERTY_ID
-import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_PHOTO_TYPE
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_AGENT_ID
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_BATHROOMS
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_BEDROOMS
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_DESCRIPTION
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_ENTRY_DATE
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_ID
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_INTEREST_POINTS
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_LOCALLY_CREATED
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_LOCALLY_UPDATED
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_PRICE
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_PROPERTY_TYPE
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_ROOMS
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_SOLD_DATE
-import com.openclassrooms.realestatemanager.models.Property.Companion.COLUMN_SURFACE
+import com.openclassrooms.realestatemanager.models.property.*
+import com.openclassrooms.realestatemanager.models.property.Address.Companion.COLUMN_ADDRESS_CITY
+import com.openclassrooms.realestatemanager.models.property.Address.Companion.COLUMN_ADDRESS_COUNTRY
+import com.openclassrooms.realestatemanager.models.property.Address.Companion.COLUMN_ADDRESS_LATITUDE
+import com.openclassrooms.realestatemanager.models.property.Address.Companion.COLUMN_ADDRESS_LONGITUDE
+import com.openclassrooms.realestatemanager.models.property.Address.Companion.COLUMN_ADDRESS_POSTAL_CODE
+import com.openclassrooms.realestatemanager.models.property.Address.Companion.COLUMN_ADDRESS_STATE
+import com.openclassrooms.realestatemanager.models.property.Address.Companion.COLUMN_ADDRESS_STREET
+import com.openclassrooms.realestatemanager.models.property.Photo.Companion.COLUMN_PHOTO_DESCRIPTION
+import com.openclassrooms.realestatemanager.models.property.Photo.Companion.COLUMN_PHOTO_PROPERTY_ID
+import com.openclassrooms.realestatemanager.models.property.Photo.Companion.COLUMN_PHOTO_TYPE
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_AGENT_ID
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_BATHROOMS
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_BEDROOMS
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_DESCRIPTION
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_ENTRY_DATE
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_ID
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_INTEREST_POINTS
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_LOCALLY_CREATED
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_LOCALLY_UPDATED
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_PRICE
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_PROPERTY_TYPE
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_ROOMS
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_SOLD_DATE
+import com.openclassrooms.realestatemanager.models.property.Property.Companion.COLUMN_SURFACE
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PHOTOS_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
@@ -215,13 +215,13 @@ class AppContentProviderTest : TestCase() {
         values.put(COLUMN_BEDROOMS, fakeProperty.bedRooms)
         values.put(COLUMN_INTEREST_POINTS, InterestPointConverter().interestPointsToString(fakeProperty.interestPoints))
         values.put(COLUMN_SURFACE, fakeProperty.surface)
-        values.put(COLUMN_ADDRESS_STREET, fakeProperty.address!!.street)
-        values.put(COLUMN_ADDRESS_CITY, fakeProperty.address!!.city)
-        values.put(COLUMN_ADDRESS_POSTAL_CODE, fakeProperty.address!!.postalCode)
-        values.put(COLUMN_ADDRESS_COUNTRY, fakeProperty.address!!.country)
-        values.put(COLUMN_ADDRESS_STATE, fakeProperty.address!!.state)
-        values.put(COLUMN_ADDRESS_LATITUDE, fakeProperty.address!!.latitude)
-        values.put(COLUMN_ADDRESS_LONGITUDE, fakeProperty.address!!.longitude)
+        values.put(COLUMN_ADDRESS_STREET, fakeProperty.address.street)
+        values.put(COLUMN_ADDRESS_CITY, fakeProperty.address.city)
+        values.put(COLUMN_ADDRESS_POSTAL_CODE, fakeProperty.address.postalCode)
+        values.put(COLUMN_ADDRESS_COUNTRY, fakeProperty.address.country)
+        values.put(COLUMN_ADDRESS_STATE, fakeProperty.address.state)
+        values.put(COLUMN_ADDRESS_LATITUDE, fakeProperty.address.latitude)
+        values.put(COLUMN_ADDRESS_LONGITUDE, fakeProperty.address.longitude)
         values.put(COLUMN_AGENT_ID, fakeProperty.agentId)
         values.put(COLUMN_ENTRY_DATE, DateConverter().dateToTimestamp(fakeProperty.entryDate))
         values.put(COLUMN_SOLD_DATE, DateConverter().dateToTimestamp(fakeProperty.soldDate))
@@ -251,7 +251,8 @@ class AppContentProviderTest : TestCase() {
             photo(fakePhotos[0]))
         assertThat(itemUri).isNotNull()
         val cursor = mContentResolver.query(PropertyContract.PhotoEntry.CONTENT_URI,
-                arrayOf(Photo.COLUMN_ID,
+                arrayOf(
+                    Photo.COLUMN_ID,
                         COLUMN_PHOTO_PROPERTY_ID,
                         COLUMN_PHOTO_DESCRIPTION,
                         COLUMN_PHOTO_TYPE
@@ -328,7 +329,8 @@ class AppContentProviderTest : TestCase() {
 
         // Then returned query result is equal to photos batched
         val cursor = mContentResolver.query(PropertyContract.PhotoEntry.CONTENT_URI,
-                arrayOf(Photo.COLUMN_ID,
+                arrayOf(
+                    Photo.COLUMN_ID,
                         COLUMN_PHOTO_PROPERTY_ID,
                         COLUMN_PHOTO_DESCRIPTION,
                         COLUMN_PHOTO_TYPE
@@ -356,7 +358,8 @@ class AppContentProviderTest : TestCase() {
 
         // Then returned query result is equal to photos bulked
         val cursor = mContentResolver.query(PropertyContract.PhotoEntry.CONTENT_URI,
-                arrayOf(Photo.COLUMN_ID,
+                arrayOf(
+                    Photo.COLUMN_ID,
                         COLUMN_PHOTO_PROPERTY_ID,
                         COLUMN_PHOTO_DESCRIPTION,
                         COLUMN_PHOTO_TYPE
@@ -385,12 +388,16 @@ class AppContentProviderTest : TestCase() {
             when (valueCursor.getType(idx)) {
                 Cursor.FIELD_TYPE_FLOAT -> assertEquals(value, valueCursor.getDouble(idx))
                 Cursor.FIELD_TYPE_INTEGER ->  {
-                    if(value.toString() == "false") {
-                        assertEquals(0, valueCursor.getInt(idx))
-                    } else if(value.toString() == "true") {
-                        assertEquals(1, valueCursor.getInt(idx))
-                    } else {
-                        assertEquals(value.toString().toInt(), valueCursor.getInt(idx))
+                    when {
+                        value.toString() == "false" -> {
+                            assertEquals(0, valueCursor.getInt(idx))
+                        }
+                        value.toString() == "true" -> {
+                            assertEquals(1, valueCursor.getInt(idx))
+                        }
+                        else -> {
+                            assertEquals(value.toString().toInt(), valueCursor.getInt(idx))
+                        }
                     }
                 }
                 Cursor.FIELD_TYPE_STRING -> assertEquals(value, valueCursor.getString(idx))

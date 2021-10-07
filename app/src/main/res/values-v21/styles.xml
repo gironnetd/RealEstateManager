@@ -1,6 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlayAlertDialog</item>
+        <item name="snackbarStyle">@style/SnackBarStyle</item>
+        <item name="snackbarTextViewStyle">@style/SnackBarStyle.TextViewStyle</item>
+        <item name="textInputStyle">@style/TextInputLayoutStyle</item>
+        <item name="chipStyle">@style/ChipStyle</item>
+        <item name="actionBarStyle">@style/ActionBarStyle</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="toolbarStyle">@style/ToolbarStyle</item>
+        <item name="actionMenuTextAppearance">@style/ToolbarStyle.MenuItem.TextAppearance</item>
+        <!--<item name="android:actionMenuTextAppearance">@style/ToolbarStyle.MenuItem.TextAppearance</item>
+        <item name="android:actionMenuTextColor">@android:color/white</item>-->
+        <item name="android:scrollbarStyle">insideOverlay</item>
+        <item name="android:scrollbarThumbVertical">@drawable/scroll_bar_background</item>
+        <item name="progressBarStyle">@style/ProgressBarStyle</item>
+        <item name="android:checkboxStyle">@style/CheckBoxStyle</item>
+        <item name="checkboxStyle">@style/CheckBoxStyle</item>
+        <item name="radioButtonStyle">@style/RadioButtonStyle</item>
+        <item name="android:radioButtonStyle">@style/RadioButtonStyle</item>
+        <item name="searchViewStyle">@style/SearchViewStyle</item>
+        <item name="android:searchViewStyle">@style/SearchViewStyle</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerDialogStyle</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="colorSurface">@android:color/transparent</item>
+        <item name="colorControlHighlight">@android:color/transparent</item>
+        <item name="colorControlNormal">@color/colorGrayDark</item>
+    </style>
+
     <style name="CheckBoxStyle" parent="@style/Widget.MaterialComponents.CompoundButton.CheckBox">
         <item name="android:fontFamily">@font/roboto_slab</item>
         <item name="fontFamily">@font/roboto_slab</item>
@@ -19,35 +50,6 @@
         <item name="android:buttonTint">@color/button_color_hint</item>
     </style>
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="materialAlertDialogTheme">@style/ThemeOverlayAlertDialog</item>
-        <item name="snackbarStyle">@style/SnackBarStyle</item>
-        <item name="snackbarTextViewStyle">@style/SnackBarStyle.TextViewStyle</item>
-        <item name="textInputStyle">@style/TextInputLayoutStyle</item>
-        <item name="chipStyle">@style/ChipStyle</item>
-        <item name="actionBarStyle">@style/ActionBarStyle</item>
-        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="toolbarStyle">@style/ToolbarStyle</item>
-        <item name="actionMenuTextAppearance">@style/ToolbarStyle.MenuItem.TextAppearance</item>
-        <item name="android:actionMenuTextAppearance">@style/ToolbarStyle.MenuItem.TextAppearance</item>
-        <item name="android:actionMenuTextColor">@android:color/white</item>
-        <item name="android:scrollbarStyle">insideOverlay</item>
-        <item name="android:scrollbarThumbVertical">@drawable/scroll_bar_background</item>
-        <item name="progressBarStyle">@style/ProgressBarStyle</item>
-        <item name="android:checkboxStyle">@style/CheckBoxStyle</item>
-        <item name="checkboxStyle">@style/CheckBoxStyle</item>
-        <item name="radioButtonStyle">@style/RadioButtonStyle</item>
-        <item name="android:radioButtonStyle">@style/RadioButtonStyle</item>
-        <item name="android:datePickerDialogTheme">@style/DatePickerDialogStyle</item>
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="colorSurface">@android:color/transparent</item>
-        <item name="colorControlHighlight">@android:color/transparent</item>
-        <item name="colorControlNormal">@color/colorGrayDark</item>
-    </style>
-
     <style name="DatePickerDialogStyle" parent="ThemeOverlay.MaterialComponents.Dialog">
         <item name="colorAccent">?attr/colorPrimaryDark</item>                      <!--header background-->
         <item name="android:windowBackground">@android:color/white</item>           <!--calendar background-->
@@ -55,5 +57,16 @@
         <item name="android:colorControlActivated">?attr/colorPrimary</item>
         <item name="android:textColorPrimary">?attr/colorPrimaryDark</item>         <!--days of the month-->
         <item name="android:textColorSecondary">?attr/colorPrimary</item>           <!--days of the week-->
+    </style>
+
+    <style name="ToolbarStyle.MenuItem.TextAppearance" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Menu">
+        <item name="android:textSize">21sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/roboto_slab_bold</item>
+        <item name="fontFamily">@font/roboto_slab_bold</item>
+        <item name="background">@drawable/menu_item_toolbar_background</item>
+        <item name="android:background">@drawable/menu_item_toolbar_background</item>
+        <item name="android:backgroundTint">@drawable/menu_item_toolbar_background</item>
+        <item name="backgroundTint">@drawable/menu_item_toolbar_background</item>
     </style>
 </resources>

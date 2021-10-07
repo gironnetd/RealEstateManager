@@ -20,16 +20,14 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository
 import com.openclassrooms.realestatemanager.di.TestAppComponent
-import com.openclassrooms.realestatemanager.models.InterestPoint
-import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.models.PropertyStatus
+import com.openclassrooms.realestatemanager.models.property.InterestPoint
+import com.openclassrooms.realestatemanager.models.property.Property
+import com.openclassrooms.realestatemanager.models.property.PropertyStatus
 import com.openclassrooms.realestatemanager.ui.BaseFragmentTests
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.util.EnterPropertyUtil.update_property
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
-import com.openclassrooms.realestatemanager.ui.property.shared.map.BaseMapFragment.Companion.INITIAL_ZOOM_LEVEL
-import com.openclassrooms.realestatemanager.ui.property.shared.map.BaseMapFragment.Companion.defaultLocation
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil.switchAllNetworks
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil.waitInternetStateChange
 import com.openclassrooms.realestatemanager.util.Constants
@@ -94,8 +92,6 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
         // Given Update fragment
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -123,8 +119,6 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
         // Given Update fragment
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -161,8 +155,6 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
         // Given Update fragment
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -199,8 +191,6 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
 
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -257,8 +247,6 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
     fun given_update_when_on_back_pressed_then_confirm_dialog_is_shown() {
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -280,8 +268,6 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
     fun given_update_when_on_back_pressed_and_click_confirm_then_return_to_detail_fragment() {
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -331,8 +317,6 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
             .blockingAwait().let {
                 BaseFragment.properties.value = fakeProperties as MutableList<Property>
                 launch(MainActivity::class.java).onActivity {
-                    INITIAL_ZOOM_LEVEL = 17f
-                    defaultLocation = leChesnay
                     mainActivity = it
                     browseFragment = BrowseFragment()
                     it.setFragment(browseFragment)
@@ -367,8 +351,6 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
 
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -392,10 +374,10 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
                 testApplication.resources.getString(fakeProperties[itemPosition].status.status))))
         } else {
             onView(allOf(withId(R.id.sold_date_text_input_layout),
-                withParent(allOf(withId(R.id.layout_entry_date), isDisplayed()))))
+                withParent(allOf(withId(R.id.container), isDisplayed()))))
                 .check(matches(withEffectiveVisibility(Visibility.GONE)))
         }
-        onView(allOf(withId(R.id.layout_interest_points), withEffectiveVisibility(VISIBLE))).perform(scrollTo())
+        onView(allOf(withId(R.id.interest_points_chip_group), withEffectiveVisibility(VISIBLE))).perform(scrollTo())
 
         InterestPoint.values().filter { interestPoint ->  interestPoint != InterestPoint.NONE }.forEachIndexed { index, interestPoint ->
             val chip: Chip = propertyUpdateFragment.binding.interestPointsChipGroup.getChildAt(index) as Chip
@@ -437,8 +419,6 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
 
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -459,8 +439,6 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
 
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -481,8 +459,6 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
 
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -504,8 +480,6 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
 
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)

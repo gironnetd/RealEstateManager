@@ -19,13 +19,11 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository
 import com.openclassrooms.realestatemanager.di.TestAppComponent
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.ui.BaseFragmentTests
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
-import com.openclassrooms.realestatemanager.ui.property.shared.map.BaseMapFragment.Companion.INITIAL_ZOOM_LEVEL
-import com.openclassrooms.realestatemanager.ui.property.shared.map.BaseMapFragment.Companion.defaultLocation
 import com.openclassrooms.realestatemanager.util.Utils
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.core.StringContains.containsString
@@ -69,8 +67,6 @@ class PropertyDetailFragmentIntegrationTest : BaseFragmentTests() {
         // Given Detail fragment
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -91,8 +87,6 @@ class PropertyDetailFragmentIntegrationTest : BaseFragmentTests() {
         // Given Detail fragment
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -112,8 +106,6 @@ class PropertyDetailFragmentIntegrationTest : BaseFragmentTests() {
         // Given Detail fragment
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -135,8 +127,6 @@ class PropertyDetailFragmentIntegrationTest : BaseFragmentTests() {
         // Given Detail fragment
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -149,18 +139,18 @@ class PropertyDetailFragmentIntegrationTest : BaseFragmentTests() {
 
         onView(withId(R.id.photos_recycler_view)).check(isPartiallyBelow(withId(R.id.label_media)))
 
-        onView(withId(R.id.description_text_input_layout)).check(isCompletelyBelow(withId(R.id.layout_media)))
+        onView(withId(R.id.description_text_input_layout)).check(isCompletelyBelow(withId(R.id.photos_recycler_view)))
 
         onView(withId(R.id.entry_date_text_input_layout)).check(isCompletelyBelow(withId(R.id.description_text_input_layout)))
         onView(withId(R.id.status_text_input_layout)).check(isCompletelyBelow(withId(R.id.description_text_input_layout)))
 
-        onView(withId(R.id.layout_interest_points)).check(isCompletelyBelow(withId(R.id.entry_date_text_input_layout)))
-        onView(withId(R.id.layout_interest_points)).check(isCompletelyBelow(withId(R.id.status_text_input_layout)))
+        onView(withId(R.id.interest_points_chip_group)).check(isCompletelyBelow(withId(R.id.entry_date_text_input_layout)))
+        onView(withId(R.id.interest_points_chip_group)).check(isCompletelyBelow(withId(R.id.status_text_input_layout)))
 
-        onView(withId(R.id.price_text_input_layout)).check(isCompletelyBelow(withId(R.id.layout_interest_points)))
+        onView(withId(R.id.price_text_input_layout)).check(isCompletelyBelow(withId(R.id.interest_points_chip_group)))
         onView(withId(R.id.price_text_input_layout)).check(isCompletelyLeftOf(withId(R.id.type_text_input_layout)))
 
-        onView(withId(R.id.type_text_input_layout)).check(isCompletelyBelow(withId(R.id.layout_interest_points)))
+        onView(withId(R.id.type_text_input_layout)).check(isCompletelyBelow(withId(R.id.interest_points_chip_group)))
         onView(withId(R.id.type_text_input_layout)).check(isCompletelyRightOf(withId(R.id.price_text_input_layout)))
 
         onView(withId(R.id.surface_text_input_layout)).check(isCompletelyBelow(withId(R.id.price_text_input_layout)))
@@ -175,50 +165,26 @@ class PropertyDetailFragmentIntegrationTest : BaseFragmentTests() {
         onView(withId(R.id.bedrooms_text_input_layout)).check(isCompletelyBelow(withId(R.id.rooms_text_input_layout)))
         onView(withId(R.id.bedrooms_text_input_layout)).check(isCompletelyRightOf(withId(R.id.bathrooms_text_input_layout)))
 
-        onView(withId(R.id.layout_location))
+        onView(withId(R.id.location_layout))
             .check(isCompletelyBelow(withId(R.id.bathrooms_text_input_layout)))
             .check(isCompletelyBelow(withId(R.id.bedrooms_text_input_layout)))
 
+        onView(withId(R.id.street_text_input_layout))
+            .check(isCompletelyAbove(withId(R.id.city_text_input_layout)))
+            .check(isCompletelyAbove(withId(R.id.postal_code_text_input_layout)))
 
-        when(isMasterDetail) {
-            true -> {
-                onView(withId(R.id.layout_property_address)).check(isCompletelyLeftOf(withId(R.id.map_detail_fragment)))
-                onView(withId(R.id.map_detail_fragment)).check(isCompletelyRightOf(withId(R.id.layout_property_address)))
+        onView(withId(R.id.city_text_input_layout)).check(isCompletelyLeftOf(withId(R.id.postal_code_text_input_layout)))
+        onView(withId(R.id.postal_code_text_input_layout)).check(isCompletelyRightOf(withId(R.id.city_text_input_layout)))
 
-                onView(withId(R.id.street_text_input_layout)).check(isCompletelyAbove(withId(R.id.city_text_input_layout)))
-                onView(withId(R.id.city_text_input_layout)).check(isCompletelyBelow(withId(R.id.street_text_input_layout)))
+        onView(withId(R.id.country_text_input_layout))
+            .check(isCompletelyBelow(withId(R.id.city_text_input_layout)))
+            .check(isCompletelyLeftOf(withId(R.id.state_text_input_layout)))
+            .check(isCompletelyLeftOf(withId(R.id.postal_code_text_input_layout)))
 
-                onView(withId(R.id.city_text_input_layout)).check(isCompletelyAbove(withId(R.id.postal_code_text_input_layout)))
-                onView(withId(R.id.postal_code_text_input_layout)).check(isCompletelyBelow(withId(R.id.city_text_input_layout)))
-
-                onView(withId(R.id.postal_code_text_input_layout)).check(isCompletelyAbove(withId(R.id.country_text_input_layout)))
-                onView(withId(R.id.country_text_input_layout)).check(isCompletelyBelow(withId(R.id.postal_code_text_input_layout)))
-
-                onView(withId(R.id.country_text_input_layout)).check(isCompletelyAbove(withId(R.id.state_text_input_layout)))
-                onView(withId(R.id.state_text_input_layout)).check(isCompletelyBelow(withId(R.id.country_text_input_layout)))
-            }
-            false -> {
-                onView(withId(R.id.layout_property_address)).check(isCompletelyAbove(withId(R.id.map_detail_fragment)))
-                onView(withId(R.id.map_detail_fragment)).check(isCompletelyBelow(withId(R.id.layout_property_address)))
-
-                onView(withId(R.id.street_text_input_layout))
-                    .check(isCompletelyAbove(withId(R.id.city_text_input_layout)))
-                    .check(isCompletelyAbove(withId(R.id.postal_code_text_input_layout)))
-
-                onView(withId(R.id.city_text_input_layout)).check(isCompletelyLeftOf(withId(R.id.postal_code_text_input_layout)))
-                onView(withId(R.id.postal_code_text_input_layout)).check(isCompletelyRightOf(withId(R.id.city_text_input_layout)))
-
-                onView(withId(R.id.country_text_input_layout))
-                    .check(isCompletelyBelow(withId(R.id.city_text_input_layout)))
-                    .check(isCompletelyLeftOf(withId(R.id.state_text_input_layout)))
-                    .check(isCompletelyLeftOf(withId(R.id.postal_code_text_input_layout)))
-
-                onView(withId(R.id.state_text_input_layout))
-                    .check(isCompletelyBelow(withId(R.id.postal_code_text_input_layout)))
-                    .check(isCompletelyRightOf(withId(R.id.country_text_input_layout)))
-                    .check(isCompletelyRightOf(withId(R.id.city_text_input_layout)))
-            }
-        }
+        onView(withId(R.id.state_text_input_layout))
+            .check(isCompletelyBelow(withId(R.id.postal_code_text_input_layout)))
+            .check(isCompletelyRightOf(withId(R.id.country_text_input_layout)))
+            .check(isCompletelyRightOf(withId(R.id.city_text_input_layout)))
     }
 
     @Test
@@ -226,8 +192,6 @@ class PropertyDetailFragmentIntegrationTest : BaseFragmentTests() {
         // Given Detail fragment
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -247,8 +211,6 @@ class PropertyDetailFragmentIntegrationTest : BaseFragmentTests() {
     fun given_detail_when_switching_between_properties_then_content_view_are_correct() {
         // Given Detail fragment
         val scenario = launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -292,8 +254,6 @@ class PropertyDetailFragmentIntegrationTest : BaseFragmentTests() {
     fun given_detail_when_navigate_in_edit_fragment_then_right_property_is_selected() {
         // Given Detail fragment
         launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -314,8 +274,6 @@ class PropertyDetailFragmentIntegrationTest : BaseFragmentTests() {
     fun given_detail_when_click_on_menu_item_then_is_navigate_to_edit() {
         // Given Detail fragment
         launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -334,8 +292,6 @@ class PropertyDetailFragmentIntegrationTest : BaseFragmentTests() {
     fun given_edit_when_click_on_navigation_tool_bar_then_return_on_detail_fragment() {
         // Given Edit fragment
         launch(MainActivity::class.java).onActivity {
-            INITIAL_ZOOM_LEVEL = 17f
-            defaultLocation = leChesnay
             mainActivity = it
             browseFragment = BrowseFragment()
             it.setFragment(browseFragment)
@@ -370,7 +326,7 @@ class PropertyDetailFragmentIntegrationTest : BaseFragmentTests() {
             onView(withId(R.id.sold_date)).check(matches(withEffectiveVisibility(Visibility.GONE)))
         }
 
-        onView(withId(R.id.layout_interest_points)).perform(scrollTo())
+        onView(withId(R.id.interest_points_chip_group)).perform(scrollTo())
 
         assertThat(propertyDetailFragment.binding.interestPointsChipGroup.size)
             .isEqualTo(fakeProperties[itemPosition].interestPoints.size)

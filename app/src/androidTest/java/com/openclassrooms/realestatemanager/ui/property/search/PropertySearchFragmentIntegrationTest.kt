@@ -21,10 +21,10 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.TestBaseApplication
 import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository
 import com.openclassrooms.realestatemanager.di.TestAppComponent
-import com.openclassrooms.realestatemanager.models.InterestPoint.*
-import com.openclassrooms.realestatemanager.models.PropertyStatus.*
-import com.openclassrooms.realestatemanager.models.PropertyType.*
-import com.openclassrooms.realestatemanager.models.PropertyType.NONE
+import com.openclassrooms.realestatemanager.models.property.InterestPoint.*
+import com.openclassrooms.realestatemanager.models.property.PropertyStatus.*
+import com.openclassrooms.realestatemanager.models.property.PropertyType.*
+import com.openclassrooms.realestatemanager.models.property.PropertyType.NONE
 import com.openclassrooms.realestatemanager.ui.BaseFragmentTests
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment

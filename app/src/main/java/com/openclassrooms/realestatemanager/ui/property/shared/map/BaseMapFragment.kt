@@ -22,8 +22,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.clustering.ClusterManager
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentMapBinding
-import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.models.storageLocalDatabase
+import com.openclassrooms.realestatemanager.models.property.Property
+import com.openclassrooms.realestatemanager.models.property.storageLocalDatabase
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragment
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseBrowseFragment

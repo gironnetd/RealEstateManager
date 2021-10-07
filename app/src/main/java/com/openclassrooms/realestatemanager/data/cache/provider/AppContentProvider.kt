@@ -5,8 +5,8 @@ import android.database.Cursor
 import android.net.Uri
 import com.openclassrooms.realestatemanager.BaseApplication
 import com.openclassrooms.realestatemanager.data.cache.AppDatabase
-import com.openclassrooms.realestatemanager.models.Photo
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Photo
+import com.openclassrooms.realestatemanager.models.property.Property
 import java.util.*
 import java.util.concurrent.Callable
 import javax.inject.Inject
@@ -32,7 +32,7 @@ class AppContentProvider : ContentProvider() {
     @Inject
     lateinit var database: AppDatabase
 
-    override fun getType(uri: Uri): String? {
+    override fun getType(uri: Uri): String {
         return when (sUriMatcher.match(uri)) {
             PROPERTY -> PropertyContract.PropertyEntry.CONTENT_TYPE
             PROPERTY_ID -> PropertyContract.PropertyEntry.CONTENT_ITEM_TYPE
@@ -42,23 +42,22 @@ class AppContentProvider : ContentProvider() {
         }
     }
 
-    override fun query(uri: Uri, projection: Array<String>?, selection: String?, selectionArgs: Array<String>?, sortOrder: String?): Cursor? {
-        val retCursor: Cursor
+    override fun query(uri: Uri, projection: Array<String>?, selection: String?, selectionArgs: Array<String>?, sortOrder: String?): Cursor {
         if(!::database.isInitialized) {
             (context as BaseApplication).appComponent.inject(this)
         }
 
-        when (sUriMatcher.match(uri)) {
-            PROPERTY -> retCursor = database.propertyDao().findAllProperties()
+        val retCursor: Cursor = when (sUriMatcher.match(uri)) {
+            PROPERTY -> database.propertyDao().findAllProperties()
 
             PROPERTY_ID -> {
-                val _id = ContentUris.parseId(uri)
-                retCursor = database.propertyDao().findPropertyById(_id)
+                val id = ContentUris.parseId(uri)
+                database.propertyDao().findPropertyById(id)
             }
-            PHOTO -> retCursor = database.photoDao().findAllPhotos()
+            PHOTO -> database.photoDao().findAllPhotos()
             PHOTO_ID -> {
-                val _id = ContentUris.parseId(uri)
-                retCursor = database.photoDao().findPhotoById(_id)
+                val id = ContentUris.parseId(uri)
+                database.photoDao().findPhotoById(id)
             }
             else -> throw UnsupportedOperationException("Unknown uri: $uri")
         }
@@ -71,8 +70,8 @@ class AppContentProvider : ContentProvider() {
         return retCursor
     }
 
-    override fun insert(uri: Uri, values: ContentValues?): Uri? {
-        val _id: Long
+    override fun insert(uri: Uri, values: ContentValues?): Uri {
+        val id: Long
         val returnUri: Uri
 
         if(!::database.isInitialized) {
@@ -80,17 +79,17 @@ class AppContentProvider : ContentProvider() {
         }
         when (sUriMatcher.match(uri)) {
             PROPERTY -> {
-                _id = database.propertyDao().saveProperty(Property.fromContentValues(values))
-                returnUri = if (_id > 0) {
-                    PropertyContract.PropertyEntry.buildPropertyUri(_id)
+                id = database.propertyDao().saveProperty(Property.fromContentValues(values))
+                returnUri = if (id > 0) {
+                    PropertyContract.PropertyEntry.buildPropertyUri(id)
                 } else {
                     throw UnsupportedOperationException("Unable to insert rows into: $uri")
                 }
             }
             PHOTO -> {
-                _id = database.photoDao().savePhoto(Photo.fromContentValues(values))
-                returnUri = if (_id > 0) {
-                    PropertyContract.PhotoEntry.buildPhotoUri(_id)
+                id = database.photoDao().savePhoto(Photo.fromContentValues(values))
+                returnUri = if (id > 0) {
+                    PropertyContract.PhotoEntry.buildPhotoUri(id)
                 } else {
                     throw UnsupportedOperationException("Unable to insert rows into: $uri")
                 }
@@ -207,7 +206,7 @@ class AppContentProvider : ContentProvider() {
         /**
          * Builds a UriMatcher that is used to determine witch database request is being made.
          */
-        private fun buildUriMatcher(): UriMatcher {
+        internal fun buildUriMatcher(): UriMatcher {
             val content: String = PropertyContract.CONTENT_AUTHORITY
 
             // All paths to the UriMatcher have a corresponding code to return

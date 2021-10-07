@@ -6,12 +6,12 @@
     <item
         android:id="@+id/navigation_browse"
         android:title="@string/real_estate"
-        android:icon="@drawable/ic_baseline_real_estate_not_selected_24"
+        android:icon="@drawable/ic_outline_home_work_24"
         />
     <item
         android:id="@+id/navigation_create"
         android:title="@string/create_property"
-        android:icon="@drawable/ic_baseline_add_real_estate_not_selected_24"
+        android:icon="@drawable/ic_outline_add_business_24"
         />
     <item
         android:id="@+id/navigation_main_search"

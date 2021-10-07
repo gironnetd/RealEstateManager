@@ -2,10 +2,10 @@ package com.openclassrooms.realestatemanager.ui.property.edit
 
 import android.app.DatePickerDialog
 import android.graphics.Color
-import android.os.Bundle
 import android.text.InputType.TYPE_CLASS_TEXT
 import android.util.TypedValue
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.ScrollView
@@ -19,13 +19,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentEditBinding
-import com.openclassrooms.realestatemanager.models.InterestPoint
-import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.models.PropertyStatus
-import com.openclassrooms.realestatemanager.models.PropertyType
+import com.openclassrooms.realestatemanager.models.property.InterestPoint
+import com.openclassrooms.realestatemanager.models.property.Property
+import com.openclassrooms.realestatemanager.models.property.PropertyStatus
+import com.openclassrooms.realestatemanager.models.property.PropertyType
+import com.openclassrooms.realestatemanager.ui.property.edit.dialog.photo.add.AddPhotoDialogFragment
+import com.openclassrooms.realestatemanager.ui.property.edit.dialog.photo.update.UpdatePhotoDialogFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PhotoUpdateAdapter
-import com.openclassrooms.realestatemanager.ui.property.edit.view.add.AddPhotoDialogFragment
-import com.openclassrooms.realestatemanager.ui.property.edit.view.update.PhotoUpdateDialogFragment
 import com.openclassrooms.realestatemanager.ui.property.setting.Currency.DOLLARS
 import com.openclassrooms.realestatemanager.ui.property.setting.Currency.EUROS
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseBrowseFragment
@@ -45,7 +45,7 @@ constructor(var registry: ActivityResultRegistry?)
     lateinit var onBackPressedCallback: OnBackPressedCallback
 
     lateinit var addPhotoAlertDialog: AddPhotoDialogFragment
-    lateinit var updatePhotoAlertDialog: PhotoUpdateDialogFragment
+    lateinit var updatePhotoAlertDialog: UpdatePhotoDialogFragment
 
     var newProperty: Property = Property()
 
@@ -59,18 +59,25 @@ constructor(var registry: ActivityResultRegistry?)
 
     abstract override fun initializeToolbar()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    /*override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         super.onCreateView(inflater, container, savedInstanceState)
 
+        return binding.root
+    }*/
+
+    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // configureView()
         setHasOptionsMenu(true)
         onBackPressedCallback()
         initPriceWithDefaultCurrency()
-        return binding.root
-    }
+    }*/
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        configureView()
+    override fun onResume() {
+        super.onResume()
+        setHasOptionsMenu(true)
+        onBackPressedCallback()
+        initPriceWithDefaultCurrency()
     }
 
     private fun initPriceWithDefaultCurrency() {
@@ -137,7 +144,7 @@ constructor(var registry: ActivityResultRegistry?)
 
     open fun configureView() {
         with(binding) {
-            binding.addAPhoto.setOnClickListener {
+            binding.addAPhoto!!.setOnClickListener {
                 addPhotoAlertDialog = AddPhotoDialogFragment().also {
                     it.registry = registry ?: requireActivity().activityResultRegistry
                     it.tmpPhoto.propertyId = newProperty.id
@@ -328,13 +335,6 @@ constructor(var registry: ActivityResultRegistry?)
                 })
                 setOnFocusChangeListener(onFocusChangeListener)
             }
-
-            PhotoUpdateAdapter().apply {
-                if(newProperty.photos.isNotEmpty()) { noPhotos.visibility = GONE }
-                binding.photosRecyclerView.adapter = this
-                setOnItemClickListener(this@PropertyEditFragment)
-                submitList(newProperty.photos)
-            }
         }
     }
 
@@ -464,11 +464,11 @@ constructor(var registry: ActivityResultRegistry?)
     }
 
     override fun clickOnPhotoAtPosition(photoId: String) {
-        updatePhotoAlertDialog = PhotoUpdateDialogFragment().also {
+        updatePhotoAlertDialog = UpdatePhotoDialogFragment().also {
             it.photo = newProperty.photos.singleOrNull { photo -> photo.id == photoId }
             it.registry = registry ?: requireActivity().activityResultRegistry
         }
-        updatePhotoAlertDialog.show(childFragmentManager, PhotoUpdateDialogFragment.TAG)
+        updatePhotoAlertDialog.show(childFragmentManager, UpdatePhotoDialogFragment.TAG)
     }
 
     override fun onDestroyView() {

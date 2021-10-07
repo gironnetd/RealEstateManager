@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.openclassrooms.realestatemanager.R
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.ui.property.setting.Currency
 import com.openclassrooms.realestatemanager.ui.property.setting.Currency.EUROS
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
@@ -101,8 +101,6 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.PropertyViewHolder>() {
                     }
                 }
             }
-
-
 
             itemView.setOnClickListener {
                 callBack?.onItemClick(item.id)

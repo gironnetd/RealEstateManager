@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.ui.property.propertydetail
 
+import android.content.Context
 import android.view.LayoutInflater.from
 import android.view.View
 import android.view.ViewGroup
@@ -9,12 +10,12 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.openclassrooms.realestatemanager.R
-import com.openclassrooms.realestatemanager.models.Photo
-import com.openclassrooms.realestatemanager.models.PhotoType
+import com.openclassrooms.realestatemanager.models.property.Photo
+import com.openclassrooms.realestatemanager.models.property.PhotoType
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PhotoDetailAdapter.PhotoViewHolder
 import java.util.*
 
-class PhotoDetailAdapter : RecyclerView.Adapter<PhotoViewHolder>() {
+class PhotoDetailAdapter(val context: Context) : RecyclerView.Adapter<PhotoViewHolder>() {
 
     interface OnItemClickListener {
         fun clickOnPhotoAtPosition(photoId: String)
@@ -38,7 +39,7 @@ class PhotoDetailAdapter : RecyclerView.Adapter<PhotoViewHolder>() {
     private val differ = AsyncListDiffer(this, diffCallback)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
-        return PhotoViewHolder(from(parent.context).inflate(R.layout.layout_photo_list_item,
+        return PhotoViewHolder(from(context).inflate(R.layout.layout_photo_list_item,
             parent,
             false),
             callBack
@@ -71,6 +72,10 @@ class PhotoDetailAdapter : RecyclerView.Adapter<PhotoViewHolder>() {
                 if(photo.bitmap != null) {
                     this@PhotoViewHolder.photo.setImageBitmap(photo.bitmap)
                     this@PhotoViewHolder.photo.setPadding(0,0,0,0)
+                } else {
+                    this@PhotoViewHolder.photo.setImageBitmap(null)
+                    this@PhotoViewHolder.photo.setPadding(32,32,32,32)
+                    this@PhotoViewHolder.photo.setImageResource(R.drawable.ic_baseline_no_photography_24)
                 }
 
                 if(photo.mainPhoto) {

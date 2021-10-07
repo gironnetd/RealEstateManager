@@ -14,11 +14,11 @@ import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragmentTes
 import com.openclassrooms.realestatemanager.ui.property.browse.list.BrowseListFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.browse.map.BrowseMapFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.edit.create.PropertyCreateFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.edit.dialog.photo.add.AddPhotoDialogFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.edit.dialog.photo.update.UpdatePhotoDialogFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragmentIntegrationTest
-import com.openclassrooms.realestatemanager.ui.property.edit.view.add.AddPhotoDialogFragmentIntegrationTest
-import com.openclassrooms.realestatemanager.ui.property.edit.view.update.PhotoUpdateDialogFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragmentIntegrationTest
-import com.openclassrooms.realestatemanager.ui.property.propertydetail.view.PhotoDetailDialogFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.propertydetail.dialog.DetailPhotoDialogFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.search.PropertySearchFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.setting.PropertyCurrencySettingIntegrationTest
 import org.junit.runner.RunWith
@@ -34,10 +34,10 @@ import org.junit.runners.Suite
         MainNavigationTest::class,
         MainRotationTest::class,
         PropertyDetailFragmentIntegrationTest::class,
-        PhotoDetailDialogFragmentIntegrationTest::class,
+        DetailPhotoDialogFragmentIntegrationTest::class,
         PropertyUpdateFragmentIntegrationTest::class,
         AddPhotoDialogFragmentIntegrationTest::class,
-        PhotoUpdateDialogFragmentIntegrationTest::class,
+        UpdatePhotoDialogFragmentIntegrationTest::class,
         PropertyCreateFragmentIntegrationTest::class,
         PropertySearchFragmentIntegrationTest::class,
         PropertyCurrencySettingIntegrationTest::class,

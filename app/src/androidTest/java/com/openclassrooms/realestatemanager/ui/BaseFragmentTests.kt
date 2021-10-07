@@ -62,10 +62,6 @@ open class BaseFragmentTests: BaseMainActivityTests() {
         NavigationHelper.wait_until_map_is_finished_loading(uiDevice)
     }
 
-    open fun wait_until_detail_map_is_finished_loading() {
-        NavigationHelper.wait_until_detail_map_is_finished_loading(uiDevice)
-    }
-
     fun click_on_navigate_up_button() {
         onView(allOf(withContentDescription(R.string.abc_action_bar_up_description),
                 isDisplayed())

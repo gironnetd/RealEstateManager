@@ -3,7 +3,7 @@ package com.openclassrooms.realestatemanager.data
 import android.graphics.BitmapFactory.decodeResource
 import androidx.test.platform.app.InstrumentationRegistry
 import com.openclassrooms.realestatemanager.R
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Property
 import net.andreinc.mockneat.MockNeat
 import net.andreinc.mockneat.types.enums.StringType
 

@@ -1,7 +1,7 @@
 package com.openclassrooms.realestatemanager.data.source.photo
 
 import android.graphics.Bitmap
-import com.openclassrooms.realestatemanager.models.Photo
+import com.openclassrooms.realestatemanager.models.property.Photo
 import io.reactivex.Completable
 import io.reactivex.Single
 

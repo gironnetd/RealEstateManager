@@ -2,12 +2,12 @@ package com.openclassrooms.realestatemanager.data.cache.dao
 
 import android.database.Cursor
 import androidx.room.*
-import com.openclassrooms.realestatemanager.models.Photo
-import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_ID
-import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_LOCALLY_CREATED
-import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_LOCALLY_UPDATED
-import com.openclassrooms.realestatemanager.models.Photo.Companion.COLUMN_PHOTO_PROPERTY_ID
-import com.openclassrooms.realestatemanager.models.Photo.Companion.TABLE_NAME
+import com.openclassrooms.realestatemanager.models.property.Photo
+import com.openclassrooms.realestatemanager.models.property.Photo.Companion.COLUMN_ID
+import com.openclassrooms.realestatemanager.models.property.Photo.Companion.COLUMN_LOCALLY_CREATED
+import com.openclassrooms.realestatemanager.models.property.Photo.Companion.COLUMN_LOCALLY_UPDATED
+import com.openclassrooms.realestatemanager.models.property.Photo.Companion.COLUMN_PHOTO_PROPERTY_ID
+import com.openclassrooms.realestatemanager.models.property.Photo.Companion.TABLE_NAME
 
 @Dao
 interface PhotoDao {

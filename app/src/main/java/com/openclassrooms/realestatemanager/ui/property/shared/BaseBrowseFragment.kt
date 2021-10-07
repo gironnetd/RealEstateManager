@@ -71,13 +71,15 @@ abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
                 callBack?.onItemClick(propertyId = propertyId)
             }
         } else {
-
             (mainActivity as? MainActivity)?.let { mainActivity ->
                 mainActivity.binding.toolBar.visibility = GONE
             }
             binding.toolBar.visibility = VISIBLE
             detail.requireView().visibility = VISIBLE
             master.requireView().visibility = GONE
+            binding.resultListFragment.visibility = GONE
+            binding.resultDetailNavFragment.visibility = VISIBLE
+            binding.resultDetailNavFragment.bringToFront()
             binding.segmentedcontrol.buttonContainer.visibility = GONE
 
             val bundle = bundleOf(
@@ -111,7 +113,11 @@ abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
                     binding.segmentedcontrol.mapViewButton.isSelected = false
 
                     master.requireView().visibility = VISIBLE
+                    binding.resultListFragment.visibility = VISIBLE
+                    binding.resultListFragment.bringToFront()
+                    binding.segmentedcontrol.root.bringToFront()
                     detail.requireView().visibility = GONE
+                    binding.resultDetailNavFragment.visibility = GONE
                     setDetailFragmentSelected(false)
                 }
             }
@@ -126,7 +132,11 @@ abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
 
                     detail.navController.navigate(R.id.navigation_map)
                     detail.requireView().visibility = VISIBLE
+                    binding.resultDetailNavFragment.visibility = VISIBLE
+                    binding.resultDetailNavFragment.bringToFront()
+                    binding.segmentedcontrol.root.bringToFront()
                     master.requireView().visibility = GONE
+                    binding.resultListFragment.visibility = GONE
                     setDetailFragmentSelected(true)
                 }
             }
@@ -180,6 +190,11 @@ abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
             if(detail.childFragmentManager.primaryNavigationFragment is SplashFragment) {
                 detail.navController.navigate(R.id.navigation_map)
             }
+
+            master.requireView().visibility = VISIBLE
+            binding.resultListFragment.visibility = VISIBLE
+            detail.requireView().visibility = VISIBLE
+            binding.resultDetailNavFragment.visibility = VISIBLE
         } else if (!resources.getBoolean(R.bool.isMasterDetail)) {
 
             detail.requireView().apply {
@@ -199,12 +214,18 @@ abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
 
                 if(binding.segmentedcontrol.listViewButton.isSelected) {
                     master.requireView().visibility = VISIBLE
+                    binding.resultListFragment.visibility = VISIBLE
+                    binding.resultListFragment.bringToFront()
                     detail.requireView().visibility = GONE
+                    binding.resultDetailNavFragment.visibility = GONE
                 }
 
                 if(binding.segmentedcontrol.mapViewButton.isSelected) {
                     master.requireView().visibility = GONE
+                    binding.resultListFragment.visibility = GONE
                     detail.requireView().visibility = VISIBLE
+                    binding.resultDetailNavFragment.visibility = VISIBLE
+                    binding.resultDetailNavFragment.bringToFront()
                     if(detail.childFragmentManager.primaryNavigationFragment !is BaseMapFragment) {
                         detail.navController.navigate(R.id.navigation_map)
                     }

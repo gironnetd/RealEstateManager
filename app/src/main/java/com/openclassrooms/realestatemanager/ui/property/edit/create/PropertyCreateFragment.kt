@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultRegistry
 import androidx.appcompat.app.AlertDialog
@@ -12,8 +14,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentEditBinding
-import com.openclassrooms.realestatemanager.models.Photo
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Photo
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.mvibase.MviView
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditFragment
@@ -53,13 +55,33 @@ class PropertyCreateFragment
 
     override fun configureView() {
         super.configureView()
-        binding.description.minLines = 4
-        binding.mapDetailFragment.visibility = GONE
+        with(binding) {
+            description.minLines = 4
+            mapViewButton!!.setImageResource(R.drawable.ic_baseline_add_location_36)
+        }
+        //binding.mapDetailFragment.visibility = GONE
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         createItem = menu.findItem(R.id.navigation_create)
         createItem.isVisible = true
+
+        // getting Linear Layout from custom layout
+        val createItemLayout = createItem.actionView as LinearLayout
+
+        createItemLayout.apply {
+            //findViewById<ImageView>(R.id.menu_item_icon).setImageResource(null)
+            findViewById<TextView>(R.id.menu_item_title).text = resources.getString(R.string.create)
+        }
+
+        createItemLayout.setOnClickListener {
+            populateChanges()
+            if(newProperty != Property() || newProperty.photos.isNotEmpty()) {
+                confirmSaveChanges()
+            } else {
+                showMessage(resources.getString(R.string.no_changes))
+            }
+        }
 
         searchItem = menu.findItem(R.id.navigation_main_search)
         searchItem.isVisible = false
@@ -89,6 +111,7 @@ class PropertyCreateFragment
         super.onResume()
         compositeDisposable.add(propertyCreateViewModel.states().subscribe(this::render))
         propertyCreateViewModel.processIntents(intents())
+        configureView()
     }
 
     override fun initializeToolbar() {

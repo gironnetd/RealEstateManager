@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.LinearLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.navigation.fragment.NavHostFragment
@@ -17,10 +18,10 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.textfield.TextInputEditText
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentSearchBinding
-import com.openclassrooms.realestatemanager.models.InterestPoint
-import com.openclassrooms.realestatemanager.models.Property
-import com.openclassrooms.realestatemanager.models.PropertyStatus
-import com.openclassrooms.realestatemanager.models.PropertyType
+import com.openclassrooms.realestatemanager.models.property.InterestPoint
+import com.openclassrooms.realestatemanager.models.property.Property
+import com.openclassrooms.realestatemanager.models.property.PropertyStatus
+import com.openclassrooms.realestatemanager.models.property.PropertyType
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.search.result.BrowseResultFragment
 import com.openclassrooms.realestatemanager.ui.property.setting.Currency
@@ -76,9 +77,8 @@ class PropertySearchFragment : BaseFragment(R.layout.fragment_search) {
     }
 
     fun initResultMenuItem() {
-        mainActivity.binding.toolBar.menu.findItem(R.id.navigation_result_search).setOnMenuItemClickListener {
+        (mainActivity.binding.toolBar.menu.findItem(R.id.navigation_result_search).actionView as LinearLayout).setOnClickListener {
             findProperties()
-            true
         }
     }
 

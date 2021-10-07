@@ -5,7 +5,7 @@
     <string name="real_estate">All Properties</string>
     <string name="add_real_estate">Add real estate</string>
     <string name="create_property">Create Property</string>
-    <string name="create">&#160;&#160;CREATE</string>
+    <string name="create">&#160;&#160;CREATE&#160;&#160;</string>
     <string name="update">&#160;&#160;UPDATE&#160;&#160;</string>
     <string name="map">Real estate Map</string>
     <string name="list">Real estate List</string>
@@ -125,4 +125,7 @@
     <string name="default_currency">Default Currency</string>
     <string name="choose_default_currency">Choose default currency</string>
     <string name="settings">Settings</string>
+    <string name="update_location">Update Location</string>
+    <string name="search_location_hint">Search by address, street, city, postal code or country</string>
+    <string name="search_result">Search Results</string>
 </resources>

@@ -3,7 +3,7 @@ package com.openclassrooms.realestatemanager.data.cache.source
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoDataSource
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoSource
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoStorageSource
-import com.openclassrooms.realestatemanager.models.Photo
+import com.openclassrooms.realestatemanager.models.property.Photo
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single

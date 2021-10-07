@@ -8,8 +8,7 @@ import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.data.cache.AppDatabase
-import com.openclassrooms.realestatemanager.models.Photo
-import com.openclassrooms.realestatemanager.models.PhotoType
+import com.openclassrooms.realestatemanager.models.property.Photo
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PHOTOS_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import junit.framework.TestCase
@@ -138,7 +137,7 @@ class PhotoCacheDataSourceTest : TestCase() {
         val updatedPhoto = initialPhoto.copy()
         with(updatedPhoto) {
             description = "new description"
-            type = PhotoType.values().first { type -> type != initialPhoto.type }
+            type = com.openclassrooms.realestatemanager.models.property.PhotoType.values().first { type -> type != initialPhoto.type }
         }
         cacheDataSource.updatePhoto(updatedPhoto).blockingAwait()
 
@@ -156,7 +155,7 @@ class PhotoCacheDataSourceTest : TestCase() {
         updatedPhotos.forEachIndexed { index,  updatedPhoto ->
             with(updatedPhoto) {
                 description = "new description"
-                type = PhotoType.values().first { type -> type != initialPhotos[index].type }
+                type = com.openclassrooms.realestatemanager.models.property.PhotoType.values().first { type -> type != initialPhotos[index].type }
             }
         }
         updatedPhotos = updatedPhotos.sortedBy { it.id }

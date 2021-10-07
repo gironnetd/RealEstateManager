@@ -18,7 +18,7 @@ import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepos
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
 import com.openclassrooms.realestatemanager.data.source.DataSource
 import com.openclassrooms.realestatemanager.di.TestAppComponent
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.ui.BaseMainActivityTests.ScreenSize.*
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import junit.framework.TestCase

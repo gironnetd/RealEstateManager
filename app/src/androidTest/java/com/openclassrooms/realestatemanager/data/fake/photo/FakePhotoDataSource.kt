@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.openclassrooms.realestatemanager.data.source.photo.PhotoDataSource
 import com.openclassrooms.realestatemanager.di.property.browse.BrowseScope
-import com.openclassrooms.realestatemanager.models.Photo
+import com.openclassrooms.realestatemanager.models.property.Photo
 import com.openclassrooms.realestatemanager.util.ConstantsTest
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import io.reactivex.Completable
@@ -16,7 +16,7 @@ import javax.inject.Inject
 class FakePhotoDataSource
 @Inject constructor(var jsonUtil: JsonUtil?): PhotoDataSource {
 
-    var photosJsonFileName: String = ConstantsTest.PHOTOS_DATA_FILENAME
+    private var photosJsonFileName: String = ConstantsTest.PHOTOS_DATA_FILENAME
     var photos: ArrayList<Photo> = arrayListOf()
 
     init {

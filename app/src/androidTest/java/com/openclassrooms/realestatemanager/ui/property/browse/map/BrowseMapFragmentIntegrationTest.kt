@@ -118,7 +118,7 @@ class BrowseMapFragmentIntegrationTest : BaseFragmentTests() {
 
         assertThat(obtainDetailFragment().property).isEqualTo(fakeProperties[itemPosition])
 
-        wait_until_detail_map_is_finished_loading()
+        // wait_until_detail_map_is_finished_loading()
 
         click_on_navigate_up_button()
         uiDevice.wait(Until.hasObject(By.res(mainActivity.packageName,
@@ -177,7 +177,7 @@ class BrowseMapFragmentIntegrationTest : BaseFragmentTests() {
         }
 
         navigate_to_detail_fragment()
-        wait_until_detail_map_is_finished_loading()
+        //wait_until_detail_map_is_finished_loading()
 
         // When click on Navigate Up Home icon
         click_on_navigate_up_button()

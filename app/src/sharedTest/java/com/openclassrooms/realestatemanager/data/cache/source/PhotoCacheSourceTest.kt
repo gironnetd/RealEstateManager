@@ -15,8 +15,7 @@ import com.openclassrooms.realestatemanager.data.cache.AppDatabase
 import com.openclassrooms.realestatemanager.data.cache.data.PhotoCacheDataSource
 import com.openclassrooms.realestatemanager.data.cache.storage.PhotoCacheStorageSource
 import com.openclassrooms.realestatemanager.data.cache.storage.PhotoCacheStorageSourceTest
-import com.openclassrooms.realestatemanager.models.Photo
-import com.openclassrooms.realestatemanager.models.PhotoType
+import com.openclassrooms.realestatemanager.models.property.Photo
 import com.openclassrooms.realestatemanager.util.BitmapUtil
 import com.openclassrooms.realestatemanager.util.ConstantsTest
 import com.openclassrooms.realestatemanager.util.JsonUtil
@@ -175,7 +174,7 @@ class PhotoCacheSourceTest : TestCase() {
         val updatedPhoto = initialPhoto.copy()
         with(updatedPhoto) {
             description = "new description"
-            type = PhotoType.values().first { type -> type != initialPhoto.type }
+            type = com.openclassrooms.realestatemanager.models.property.PhotoType.values().first { type -> type != initialPhoto.type }
             bitmap = BitmapFactory.decodeResource(resources, R.drawable.default_image)
         }
         cacheSource.updatePhoto(updatedPhoto).blockingAwait()
@@ -194,7 +193,7 @@ class PhotoCacheSourceTest : TestCase() {
         updatedPhotos.forEachIndexed { index,  updatedPhoto ->
             with(updatedPhoto) {
                 description = "new description"
-                type = PhotoType.values().first { type -> type != initialPhotos[index].type }
+                type = com.openclassrooms.realestatemanager.models.property.PhotoType.values().first { type -> type != initialPhotos[index].type }
                 bitmap = BitmapFactory.decodeResource(resources, R.drawable.default_image)
             }
         }

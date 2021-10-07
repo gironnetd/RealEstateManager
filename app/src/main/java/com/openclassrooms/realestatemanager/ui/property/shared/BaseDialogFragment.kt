@@ -11,8 +11,11 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.NonNull
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
+import com.openclassrooms.realestatemanager.R
 
 open class BaseDialogFragment constructor(@LayoutRes private val layoutRes: Int): DialogFragment(layoutRes) {
+
+    protected val none by lazy { resources.getString(R.string.none) }
 
     fun applyDialogDimension() {
         if(resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {

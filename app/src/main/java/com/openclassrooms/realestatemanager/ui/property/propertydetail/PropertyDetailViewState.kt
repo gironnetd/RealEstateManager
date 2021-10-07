@@ -1,6 +1,6 @@
 package com.openclassrooms.realestatemanager.ui.property.propertydetail
 
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.ui.mvibase.MviViewState
 
 data class PropertyDetailViewState(

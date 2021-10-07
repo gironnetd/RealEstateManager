@@ -5,7 +5,7 @@ import com.google.gson.reflect.TypeToken
 import com.nhaarman.mockito_kotlin.mock
 import com.openclassrooms.realestatemanager.data.repository.DefaultPropertyRepository.CreateOrUpdate.CREATE
 import com.openclassrooms.realestatemanager.data.repository.PropertyRepository
-import com.openclassrooms.realestatemanager.models.Property
+import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.util.ConstantsTest.PROPERTIES_DATA_FILENAME
 import com.openclassrooms.realestatemanager.util.JsonUtil
 import com.openclassrooms.realestatemanager.util.schedulers.BaseSchedulerProvider

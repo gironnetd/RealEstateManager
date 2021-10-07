@@ -106,10 +106,10 @@ class BrowseFragmentTest : BaseMainActivityTests() {
             onView(withId(R.id.properties_recycler_view))
                     .check(isCompletelyLeftOf(
                             anyOf(withId(R.id.map_fragment),
-                                    withId(R.id.detail_fragment))))
+                                    withId(R.id.edit_fragment))))
 
             onView(anyOf(withId(R.id.map_fragment),
-                    withId(R.id.detail_fragment)))
+                    withId(R.id.edit_fragment)))
                     .check(matches(isDisplayed()))
         }
 
@@ -119,10 +119,10 @@ class BrowseFragmentTest : BaseMainActivityTests() {
             onView(withId(R.id.properties_recycler_view))
                     .check(isCompletelyLeftOf(
                             anyOf(withId(R.id.map_fragment),
-                                    withId(R.id.detail_fragment))))
+                                    withId(R.id.edit_fragment))))
 
             onView(anyOf(withId(R.id.map_fragment),
-                    withId(R.id.detail_fragment)))
+                    withId(R.id.edit_fragment)))
                     .check(matches(isDisplayed()))
         }
 
@@ -132,10 +132,10 @@ class BrowseFragmentTest : BaseMainActivityTests() {
             onView(withId(R.id.properties_recycler_view))
                     .check(isCompletelyLeftOf(
                             anyOf(withId(R.id.map_fragment),
-                                    withId(R.id.detail_fragment))))
+                                    withId(R.id.edit_fragment))))
 
             onView(anyOf(withId(R.id.map_fragment),
-                    withId(R.id.detail_fragment)))
+                    withId(R.id.edit_fragment)))
                     .check(matches(isDisplayed()))
         }
     }
