@@ -123,4 +123,5 @@
     <string name="update_location">Update Location</string>
     <string name="search_location_hint">Search by address, street, city, postal code or country</string>
     <string name="search_result">Search Results</string>
+    <string name="create_location">Create Location</string>
 </resources>

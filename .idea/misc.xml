@@ -83,6 +83,7 @@
         <entry key="app/src/main/res/layout-land/fragment_list.xml" value="0.21" />
         <entry key="app/src/main/res/layout-sw600dp-land-v26/fragment_dialog_add_photo.xml" value="0.5" />
         <entry key="app/src/main/res/layout-sw600dp-land-v26/fragment_dialog_detail_photo.xml" value="0.5" />
+        <entry key="app/src/main/res/layout-sw600dp-land-v26/fragment_dialog_edit_location.xml" value="0.376953125" />
         <entry key="app/src/main/res/layout-sw600dp-land-v26/fragment_dialog_update_location.xml" value="0.501953125" />
         <entry key="app/src/main/res/layout-sw600dp-land-v26/fragment_dialog_update_photo.xml" value="0.5" />
         <entry key="app/src/main/res/layout-sw600dp-land/activity_main.xml" value="0.5" />
@@ -124,6 +125,7 @@
         <entry key="app/src/main/res/layout-sw720dp/fragment_list.xml" value="0.18701171875" />
         <entry key="app/src/main/res/layout-v21/fragment_dialog_add_photo.xml" value="0.5" />
         <entry key="app/src/main/res/layout-v21/fragment_dialog_detail_photo.xml" value="0.67" />
+        <entry key="app/src/main/res/layout-v21/fragment_dialog_edit_location.xml" value="0.31910946196660483" />
         <entry key="app/src/main/res/layout-v21/fragment_dialog_update_location.xml" value="0.67" />
         <entry key="app/src/main/res/layout-v21/fragment_dialog_update_photo.xml" value="0.5" />
         <entry key="app/src/main/res/layout-v23/fragment_dialog_update_location.xml" value="0.67" />
@@ -142,6 +144,7 @@
         <entry key="app/src/main/res/layout/fragment_dialog_detail_location.xml" value="0.3291015625" />
         <entry key="app/src/main/res/layout/fragment_dialog_detail_map.xml" value="0.46073717948717946" />
         <entry key="app/src/main/res/layout/fragment_dialog_detail_photo.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/fragment_dialog_edit_location.xml" value="0.31910946196660483" />
         <entry key="app/src/main/res/layout/fragment_dialog_update_location.xml" value="0.4880636604774536" />
         <entry key="app/src/main/res/layout/fragment_dialog_update_photo.xml" value="0.67" />
         <entry key="app/src/main/res/layout/fragment_edit.xml" value="0.33" />

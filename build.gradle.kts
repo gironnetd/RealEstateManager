@@ -21,11 +21,11 @@ buildscript {
 }
 
 plugins {
-    id("io.gitlab.arturbosch.detekt").version("1.18.1")
+    id("io.gitlab.arturbosch.detekt").version(Versions.detekt)
 }
 
 detekt {
-    toolVersion = "1.18.1"
+    toolVersion = Versions.detekt
     buildUponDefaultConfig = true // preconfigure defaults
     allRules = true // activate all available (even unstable) rules.
     config = files("$projectDir/config/detekt.yml") // point to your custom config defining rules to run, overwriting default behavior
@@ -56,7 +56,7 @@ tasks.withType<Detekt>().configureEach {
 }
 
 dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.18.1")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}")
 }
 
 allprojects {
@@ -67,8 +67,8 @@ allprojects {
     configurations.all {
         resolutionStrategy {
             //force 'asm:asm-all:3.3.1', 'commons-io:commons-io:1.4'
-            force("org.objenesis:objenesis:2.6")
-            force("androidx.test:monitor:1.4.0")
+            force("org.objenesis:objenesis:${Versions.objenesis}")
+            force("androidx.test:monitor:${Versions.testMonitor}")
         }
     }
 }

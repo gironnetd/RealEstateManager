@@ -12,6 +12,7 @@ import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragmentTes
 import com.openclassrooms.realestatemanager.ui.property.browse.list.BrowseListFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.browse.map.BrowseMapFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.edit.create.PropertyCreateFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.edit.dialog.location.add.AddLocationDialogFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.edit.dialog.location.update.UpdateLocationDialogFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.edit.dialog.photo.add.AddPhotoDialogFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.edit.dialog.photo.update.UpdatePhotoDialogFragmentIntegrationTest
@@ -56,6 +57,7 @@ interface TestAppComponent : AppComponent {
     fun inject(searchFragmentIntegrationTest: PropertySearchFragmentIntegrationTest)
     fun inject(propertyCurrencySettingIntegrationTest: PropertyCurrencySettingIntegrationTest)
     fun inject(updateLocationDialogFragmentIntegrationTest: UpdateLocationDialogFragmentIntegrationTest)
+    fun inject(addLocationDialogFragmentIntegrationTest: AddLocationDialogFragmentIntegrationTest)
     fun inject(mainActivityTest: MainActivityTest)
     fun inject(mainNavigationTest: MainNavigationTest)
     fun inject(mainRotationTest: MainRotationTest)

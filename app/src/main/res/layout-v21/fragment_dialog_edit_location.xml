@@ -1,46 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/update_location_dialog_fragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginBottom="8dp">-->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/update_location_dialog_fragment"
+    android:id="@+id/edit_location_dialog_fragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_marginBottom="8dp">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map_update_dialog_fragment"
         android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layerType="hardware"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/street_text_input_layout"
-        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintDimensionRatio="16:14"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/street_text_input_layout"/>
 
     <LinearLayout
         android:background="@drawable/edit_location_filled_border"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@+id/map_update_dialog_fragment"
-        app:layout_constraintEnd_toEndOf="@+id/map_update_dialog_fragment"
-        app:layout_constraintTop_toTopOf="@+id/map_update_dialog_fragment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginEnd="12dp"
         android:layout_marginTop="16dp"
         android:layout_marginStart="12dp"
-        android:orientation="vertical"
-        android:padding="1dp">
+        android:padding="1dp"
+        android:elevation="5dp"
+        android:orientation="vertical">
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/location_search_view"
@@ -56,19 +48,19 @@
             android:nestedScrollingEnabled="false"
             android:padding="8dp"
             tools:listitem="@layout/layout_search_location_item"
-            android:visibility="gone" />
+            android:visibility="gone"
+            />
     </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/street_text_input_layout"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
-        app:layout_constraintHorizontal_weight="0.5"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/map_update_dialog_fragment"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/map_update_dialog_fragment"
         android:layout_marginTop="8dp">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -85,10 +77,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        app:layout_constraintStart_toEndOf="@+id/map_update_dialog_fragment"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/postal_code_text_input_layout"
         app:layout_constraintTop_toBottomOf="@+id/street_text_input_layout">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -104,12 +96,12 @@
         android:id="@+id/postal_code_text_input_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:paddingStart="12dp"
         android:paddingEnd="12dp"
-        app:layout_constraintStart_toEndOf="@+id/map_update_dialog_fragment"
+        app:layout_constraintStart_toEndOf="@+id/city_text_input_layout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/city_text_input_layout">
+        app:layout_constraintTop_toBottomOf="@+id/street_text_input_layout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/postal_code"
@@ -125,12 +117,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/map_update_dialog_fragment"
-        app:layout_constraintTop_toBottomOf="@+id/postal_code_text_input_layout">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/state_text_input_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/city_text_input_layout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/country"
@@ -145,15 +138,14 @@
         android:id="@+id/state_text_input_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"
-        android:paddingStart="12dp"
         android:paddingEnd="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/map_update_dialog_fragment"
-        app:layout_constraintTop_toBottomOf="@+id/country_text_input_layout"
-        >
+        app:layout_constraintStart_toEndOf="@+id/country_text_input_layout"
+        app:layout_constraintTop_toBottomOf="@+id/postal_code_text_input_layout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/state"
@@ -164,4 +156,3 @@
             android:inputType="textNoSuggestions" />
     </com.google.android.material.textfield.TextInputLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
-<!--</ScrollView>-->

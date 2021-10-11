@@ -417,7 +417,7 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
     @VisibleForTesting
     fun setFragment(testFragment: Fragment) {
         for (fragment in navHostFragment.childFragmentManager.fragments) {
-            navHostFragment.childFragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss()
+            navHostFragment.childFragmentManager.beginTransaction().remove(fragment).commitNow()
         }
         val transaction = navHostFragment.childFragmentManager.beginTransaction()
         transaction.add(R.id.nav_host_fragment, testFragment)

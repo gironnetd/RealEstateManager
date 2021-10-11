@@ -31,7 +31,7 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.openclassrooms.realestatemanager.R
-import com.openclassrooms.realestatemanager.databinding.FragmentDialogUpdateLocationBinding
+import com.openclassrooms.realestatemanager.databinding.FragmentDialogEditLocationBinding
 import com.openclassrooms.realestatemanager.extensions.setHeightPercent
 import com.openclassrooms.realestatemanager.extensions.setWidthPercent
 import com.openclassrooms.realestatemanager.models.property.Address
@@ -45,10 +45,10 @@ import com.openclassrooms.realestatemanager.util.EspressoIdlingResource
 import timber.log.Timber
 import java.util.*
 
-class UpdateLocationDialogFragment(private val innerContext: Context, initialAddress: Address) : BaseDialogFragment(R.layout.fragment_dialog_update_location),
+class UpdateLocationDialogFragment(private val innerContext: Context, initialAddress: Address) : BaseDialogFragment(R.layout.fragment_dialog_edit_location),
     OnMapReadyCallback, OnMapLoadedCallback, SearchLocationAdapter.SearchListener {
 
-    private var _binding: FragmentDialogUpdateLocationBinding? = null
+    private var _binding: FragmentDialogEditLocationBinding? = null
     val binding get() = _binding!!
 
     lateinit var alertDialog: AlertDialog
@@ -80,7 +80,7 @@ class UpdateLocationDialogFragment(private val innerContext: Context, initialAdd
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        _binding = FragmentDialogUpdateLocationBinding.inflate(LayoutInflater.from(innerContext))
+        _binding = FragmentDialogEditLocationBinding.inflate(LayoutInflater.from(innerContext))
 
         alertDialog = activity?.let {
             MaterialAlertDialogBuilder(requireContext()).run {

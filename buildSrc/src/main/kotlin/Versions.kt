@@ -3,6 +3,7 @@ object Versions {
     //app level
     const val gradle = "7.0.2"
     const val kotlin = "1.5.31"
+    const val detekt = "1.18.1"
     const val google_services = "4.3.10"
     const val secrets_gradle_plugin= "2.0.0"
     const val navigation_safe_args_gradle_plugin = "2.3.5"
@@ -19,8 +20,10 @@ object Versions {
     const val ext_junit = "1.1.3"
 
     const val mockito_kotlin = "1.6.0"
-
     const val mockito_android = "3.12.4"
+
+    const val objenesis = "2.6"
+    const val testMonitor = "1.4.0"
 
     const val fragment_testing = "1.3.6"
     const val androidx_espresso_core = "3.4.0"

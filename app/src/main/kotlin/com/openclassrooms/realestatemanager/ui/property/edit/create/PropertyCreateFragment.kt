@@ -23,6 +23,7 @@ import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditIntent
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditIntent.PropertyCreateIntent.CreatePropertyIntent
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditIntent.PropertyCreateIntent.InitialIntent
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditViewState
+import com.openclassrooms.realestatemanager.ui.property.edit.dialog.location.add.AddLocationDialogFragment
 import com.openclassrooms.realestatemanager.util.AppNotificationManager
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -45,6 +46,8 @@ class PropertyCreateFragment
     private lateinit var innerInflater: LayoutInflater
 
     private val createPropertyIntentPublisher = PublishSubject.create<CreatePropertyIntent>()
+
+    lateinit var addLocationAlertDialog: AddLocationDialogFragment
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         innerInflater = inflater.cloneInContext(ContextThemeWrapper(activity, R.style.AppTheme_Secondary))
