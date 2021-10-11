@@ -34,7 +34,8 @@ import javax.inject.Inject
  */
 class PropertyCreateFragment
 @Inject constructor(viewModelFactory: ViewModelProvider.Factory, registry: ActivityResultRegistry?) : PropertyEditFragment(registry),
-    MviView<PropertyEditIntent.PropertyCreateIntent, PropertyEditViewState> {
+    MviView<PropertyEditIntent.PropertyCreateIntent, PropertyEditViewState>
+    ,  AddLocationDialogFragment.AddLocationListener {
 
     private val propertyCreateViewModel: PropertyCreateViewModel by viewModels { viewModelFactory }
 
@@ -61,6 +62,23 @@ class PropertyCreateFragment
         with(binding) {
             description.minLines = 4
             mapViewButton!!.setImageResource(R.drawable.ic_baseline_add_location_36)
+
+            mapViewButton.setOnClickListener {
+                if(!::addLocationAlertDialog.isInitialized) {
+                    addLocationAlertDialog = AddLocationDialogFragment(innerContext = innerInflater.context)
+                    addLocationAlertDialog.show(childFragmentManager, AddLocationDialogFragment.TAG)
+                    addLocationAlertDialog.setCallBack(this@PropertyCreateFragment)
+                } else {
+                    addLocationAlertDialog.address = newProperty.address
+                    addLocationAlertDialog.alertDialog.show()
+                }
+            }
+
+            street.onFocusChangeListener = null
+            city.onFocusChangeListener = null
+            postalCode.onFocusChangeListener = null
+            country.onFocusChangeListener = null
+            state.onFocusChangeListener = null
         }
         //binding.mapDetailFragment.visibility = GONE
     }
@@ -217,5 +235,15 @@ class PropertyCreateFragment
 
     override fun layoutInflater(): LayoutInflater {
         return innerInflater
+    }
+
+    override fun onAddLocationClick() {
+        with(binding) {
+            street.setText(newProperty.address.street)
+            city.setText(newProperty.address.city)
+            postalCode.setText(newProperty.address.postalCode)
+            country.setText(newProperty.address.country)
+            state.setText(newProperty.address.state)
+        }
     }
 }
