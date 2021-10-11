@@ -36,7 +36,7 @@ import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.fragments.MainNavHostFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.create.PropertyCreateFragment
-import com.openclassrooms.realestatemanager.ui.property.edit.dialog.location.add.AddLocationDialogFragment.Companion.ADD_LOCATION_MAP_FINISH_LOADING
+import com.openclassrooms.realestatemanager.ui.property.edit.dialog.location.EditLocationDialogFragment.Companion.EDIT_LOCATION_MAP_FINISH_LOADING
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
 import com.openclassrooms.realestatemanager.util.ConstantsTest
 import com.openclassrooms.realestatemanager.util.EspressoIdlingResourceRule
@@ -142,7 +142,7 @@ class AddLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
             .perform(scrollTo(), click())
 
         uiDevice.wait(
-            Until.hasObject(By.desc(ADD_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -175,7 +175,7 @@ class AddLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
             .perform(scrollTo(), click())
 
         uiDevice.wait(
-            Until.hasObject(By.desc(ADD_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -202,7 +202,7 @@ class AddLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
             .perform(scrollTo(), click())
 
         val addLocationMapFinishLoading = uiDevice.wait(
-            Until.hasObject(By.desc(ADD_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -223,7 +223,7 @@ class AddLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
             .perform(scrollTo(), click())
 
         uiDevice.wait(
-            Until.hasObject(By.desc(ADD_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -248,7 +248,7 @@ class AddLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
             .perform(scrollTo(), click())
 
         uiDevice.wait(
-            Until.hasObject(By.desc(ADD_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -275,7 +275,7 @@ class AddLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
             .perform(scrollTo(), click())
 
         uiDevice.wait(
-            Until.hasObject(By.desc(ADD_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -361,7 +361,7 @@ class AddLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
         ).perform(scrollTo(), click())
 
         uiDevice.wait(
-            Until.hasObject(By.desc(ADD_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -447,7 +447,7 @@ class AddLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
         ).perform(scrollTo(), click())
 
         uiDevice.wait(
-            Until.hasObject(By.desc(ADD_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -535,7 +535,7 @@ class AddLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
         ).perform(scrollTo(), click())
 
         uiDevice.wait(
-            Until.hasObject(By.desc(ADD_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 

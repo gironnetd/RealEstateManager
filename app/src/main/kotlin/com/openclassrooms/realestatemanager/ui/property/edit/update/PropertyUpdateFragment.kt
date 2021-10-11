@@ -25,6 +25,7 @@ import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditIntent.
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditViewState
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditViewState.UiNotification.PROPERTIES_FULLY_UPDATED
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditViewState.UiNotification.PROPERTY_LOCALLY_UPDATED
+import com.openclassrooms.realestatemanager.ui.property.edit.dialog.location.EditLocationDialogFragment.Companion.TAG
 import com.openclassrooms.realestatemanager.ui.property.edit.dialog.location.update.UpdateLocationDialogFragment
 import com.openclassrooms.realestatemanager.ui.property.search.result.BrowseResultFragment
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
@@ -180,7 +181,7 @@ class PropertyUpdateFragment
             mapViewButton.setOnClickListener {
                 if(!::updateLocationAlertDialog.isInitialized) {
                     updateLocationAlertDialog = UpdateLocationDialogFragment(innerContext = innerInflater.context, newProperty.address)
-                    updateLocationAlertDialog.show(childFragmentManager, UpdateLocationDialogFragment.TAG)
+                    updateLocationAlertDialog.show(childFragmentManager, TAG)
                     updateLocationAlertDialog.setCallBack(this@PropertyUpdateFragment)
                 } else {
                     updateLocationAlertDialog.address = newProperty.address

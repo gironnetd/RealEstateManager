@@ -23,6 +23,7 @@ import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditIntent
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditIntent.PropertyCreateIntent.CreatePropertyIntent
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditIntent.PropertyCreateIntent.InitialIntent
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditViewState
+import com.openclassrooms.realestatemanager.ui.property.edit.dialog.location.EditLocationDialogFragment.Companion.TAG
 import com.openclassrooms.realestatemanager.ui.property.edit.dialog.location.add.AddLocationDialogFragment
 import com.openclassrooms.realestatemanager.util.AppNotificationManager
 import io.reactivex.Observable
@@ -66,7 +67,7 @@ class PropertyCreateFragment
             mapViewButton.setOnClickListener {
                 if(!::addLocationAlertDialog.isInitialized) {
                     addLocationAlertDialog = AddLocationDialogFragment(innerContext = innerInflater.context)
-                    addLocationAlertDialog.show(childFragmentManager, AddLocationDialogFragment.TAG)
+                    addLocationAlertDialog.show(childFragmentManager, TAG)
                     addLocationAlertDialog.setCallBack(this@PropertyCreateFragment)
                 } else {
                     addLocationAlertDialog.address = newProperty.address

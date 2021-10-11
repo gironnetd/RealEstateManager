@@ -31,6 +31,7 @@ import com.openclassrooms.realestatemanager.models.property.storageLocalDatabase
 import com.openclassrooms.realestatemanager.ui.BaseFragmentTests
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
+import com.openclassrooms.realestatemanager.ui.property.edit.dialog.location.EditLocationDialogFragment.Companion.EDIT_LOCATION_MAP_FINISH_LOADING
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragment
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
 import com.openclassrooms.realestatemanager.util.ConstantsTest
@@ -140,7 +141,7 @@ class UpdateLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
         )
 
         uiDevice.wait(
-            Until.hasObject(By.desc(UpdateLocationDialogFragment.UPDATE_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -175,7 +176,7 @@ class UpdateLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
         )
 
         uiDevice.wait(
-            Until.hasObject(By.desc(UpdateLocationDialogFragment.UPDATE_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -203,7 +204,7 @@ class UpdateLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
         )
 
         val updateLocationMapFinishLoading = uiDevice.wait(
-            Until.hasObject(By.desc(UpdateLocationDialogFragment.UPDATE_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -227,7 +228,7 @@ class UpdateLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
         )
 
         uiDevice.wait(
-            Until.hasObject(By.desc(UpdateLocationDialogFragment.UPDATE_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -253,7 +254,7 @@ class UpdateLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
         )
 
         uiDevice.wait(
-            Until.hasObject(By.desc(UpdateLocationDialogFragment.UPDATE_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -279,7 +280,7 @@ class UpdateLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
         )
 
         uiDevice.wait(
-            Until.hasObject(By.desc(UpdateLocationDialogFragment.UPDATE_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -305,7 +306,7 @@ class UpdateLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
             .perform(scrollTo(), click())
 
         uiDevice.wait(
-            Until.hasObject(By.desc(UpdateLocationDialogFragment.UPDATE_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -384,7 +385,7 @@ class UpdateLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
             .perform(scrollTo(), click())
 
         uiDevice.wait(
-            Until.hasObject(By.desc(UpdateLocationDialogFragment.UPDATE_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -463,7 +464,7 @@ class UpdateLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
             .perform(scrollTo(), click())
 
         uiDevice.wait(
-            Until.hasObject(By.desc(UpdateLocationDialogFragment.UPDATE_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
@@ -544,7 +545,7 @@ class UpdateLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
             .perform(scrollTo(), click())
 
         uiDevice.wait(
-            Until.hasObject(By.desc(UpdateLocationDialogFragment.UPDATE_LOCATION_MAP_FINISH_LOADING)),
+            Until.hasObject(By.desc(EDIT_LOCATION_MAP_FINISH_LOADING)),
             20000
         )
 
