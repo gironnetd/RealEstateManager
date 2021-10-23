@@ -3,11 +3,8 @@
     android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/white"
-    tools:context="com.openclassrooms.realestatemanager.ui.MainActivity">
+    android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,7 +29,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="0.8">
 
-                <fragment
+                <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/nav_host_fragment"
                     android:name="com.openclassrooms.realestatemanager.ui.fragments.MainNavHostFragment"
                     android:layout_width="match_parent"
@@ -73,10 +70,14 @@
         </LinearLayout>
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_view"
+        style="@style/NavigationViewStyle"
+        android:fitsSystemWindows="true"
+        android:background="@android:color/white"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:itemTextAppearance="@style/NavigationViewTextAppearance"
         app:itemTextColor="?attr/colorControlNormal"
+        app:headerLayout="@layout/nav_header"
         app:menu="@menu/menu_navigation" />
 </androidx.drawerlayout.widget.DrawerLayout>

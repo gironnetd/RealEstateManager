@@ -5,6 +5,7 @@
     <item android:id="@+id/navigation_edit"
         android:title="@string/edit"
         android:visible="false"
+        app:actionLayout="@layout/layout_tool_bar_menu_item"
         android:icon="@drawable/ic_baseline_edit_24"
         android:contentDescription="@string/edit"
         app:showAsAction="always|withText"/>
@@ -12,6 +13,7 @@
     <item android:id="@+id/navigation_update"
         android:title="@string/update"
         android:visible="false"
+        app:actionLayout="@layout/layout_tool_bar_menu_item"
         android:icon="@drawable/ic_baseline_update_24"
         android:contentDescription="@string/update"
         app:showAsAction="always|withText"/>
@@ -19,6 +21,7 @@
     <item android:id="@+id/navigation_create"
         android:title="@string/create"
         android:visible="false"
+        app:actionLayout="@layout/layout_tool_bar_menu_item"
         android:contentDescription="@string/create"
         app:showAsAction="ifRoom|withText"/>
 
@@ -31,6 +34,7 @@
     <item android:id="@+id/navigation_result_search"
         android:title="@string/search"
         android:visible="false"
+        app:actionLayout="@layout/layout_tool_bar_menu_item"
         android:contentDescription="@string/search"
         app:showAsAction="ifRoom|withText"/>
 </menu>

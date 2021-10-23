@@ -29,10 +29,10 @@
     <browse_detail_fragment
         android:id="@+id/navigation_detail"
         android:name="com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragment"
-        tools:layout="@layout/fragment_detail">
+        tools:layout="@layout/fragment_edit">
 
-        <action android:id="@+id/navigation_edit_action"
-            app:destination="@id/navigation_edit"
+        <action android:id="@+id/navigation_update_action"
+            app:destination="@id/navigation_update"
             app:popUpTo="@id/navigation_detail"/>
 
         <argument
@@ -49,7 +49,7 @@
     </browse_detail_fragment>
 
     <browse_detail_fragment
-        android:id="@+id/navigation_edit"
+        android:id="@+id/navigation_update"
         android:name="com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragment"
         tools:layout="@layout/fragment_edit">
 

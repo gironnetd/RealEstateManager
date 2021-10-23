@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/browse_fragment"
-    android:orientation="vertical"
-    tools:context=".ui.property.shared.BaseBrowseFragment">
+    android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/tool_bar"
@@ -19,17 +17,19 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-                <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/result_detail_nav_fragment"
-                    android:name="androidx.navigation.fragment.NavHostFragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:defaultNavHost="false" />
 
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/result_list_fragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/result_detail_nav_fragment"
+                    android:name="androidx.navigation.fragment.NavHostFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="end"
+                    app:defaultNavHost="false" />
 
                 <include
                     android:id="@+id/segmentedcontrol"

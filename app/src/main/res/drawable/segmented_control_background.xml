@@ -2,14 +2,14 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_selected="true">
         <layer-list>
-            <item>
+            <!--<item>
                 <shape android:shape="rectangle">
                     <stroke
                         android:width="1dp"
                         android:color="?attr/colorPrimary"/>
                 </shape>
-            </item>
-            <item android:top="1dp" android:right="1dp" android:bottom="1dp" android:left="1dp">
+            </item>-->
+            <item>
                 <shape android:shape="rectangle">
                     <solid android:color="?attr/colorPrimary"/>
                 </shape>
@@ -19,6 +19,11 @@
 
     <item android:state_selected="false">
         <layer-list>
+            <!--<item android:top="1dp" android:right="1dp" android:bottom="1dp" android:left="1dp">
+                <shape android:shape="rectangle">
+                    <solid android:color="@android:color/transparent"/>
+                </shape>
+            </item>-->
             <item>
                 <shape android:shape="rectangle">
                     <stroke
@@ -26,12 +31,6 @@
                         android:color="?attr/colorPrimary"/>
                 </shape>
             </item>
-            <item android:top="1dp" android:right="1dp" android:bottom="1dp" android:left="1dp">
-                <shape android:shape="rectangle">
-                    <solid android:color="@android:color/white"/>
-                </shape>
-            </item>
         </layer-list>
     </item>
-
 </selector>

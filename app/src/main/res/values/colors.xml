@@ -15,7 +15,7 @@
     <color name="colorSecondaryDark">#194B5D</color>
     <color name="colorSecondary">#1E5B70</color>
     <color name="colorSecondaryLight">#6CBCD8</color>
-    <color name="colorSecondaryScrollbar">#661E5B70</color>
+    <color name="colorSecondaryScrollbar">#801E5B70</color>
     <color name="colorSecondaryRipple">#1A1E5B70</color>
 
     <color name="colorSecondaryAccentDark">#985C1F</color>
@@ -36,4 +36,5 @@
 
     <color name="colorGrayDark">#606368</color>
     <color name="colorGrayLight">#33606368</color>
+    <color name="opacity_">#50000000</color>
 </resources>

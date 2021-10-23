@@ -1,0 +1,46 @@
+{
+  "address_components" : [
+    {
+      "long_name" : "France Avenue South",
+      "short_name" : "France Ave S",
+      "types" : [ "route" ]
+    },
+    {
+      "long_name" : "Edina",
+      "short_name" : "Edina",
+      "types" : [ "locality", "political" ]
+    },
+    {
+      "long_name" : "Hennepin County",
+      "short_name" : "Hennepin County",
+      "types" : [ "administrative_area_level_2", "political" ]
+    },
+    {
+      "long_name" : "Minnesota",
+      "short_name" : "MN",
+      "types" : [ "administrative_area_level_1", "political" ]
+    },
+    {
+      "long_name" : "United States",
+      "short_name" : "US",
+      "types" : [ "country", "political" ]
+    }
+  ],
+  "geometry" : {
+    "location" : {
+      "lat" : 44.895279,
+      "lng" : -93.328971
+    },
+    "viewport" : {
+      "northeast" : {
+        "lat" : 44.8966279802915,
+        "lng" : -93.3276220197085
+      },
+      "southwest" : {
+        "lat" : 44.8939300197085,
+        "lng" : -93.33031998029151
+      }
+    }
+  },
+  "place_id" : "EhxGcmFuY2UgQXZlIFMsIEVkaW5hLCBNTiwgVVNBIi4qLAoUChIJlXw4KqYm9ocRZJumiyX-LIQSFAoSCTmgVc46IfaHEXkn-pY3nK_N"
+}
