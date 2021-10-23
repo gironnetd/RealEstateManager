@@ -19,6 +19,8 @@ import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.fragments.browsedetail.BrowseDetailNavHostFragment
 import com.openclassrooms.realestatemanager.ui.navigation.browsedetail.BrowseDetailFragmentNavigator
 import com.openclassrooms.realestatemanager.ui.property.browse.list.BrowseListFragment
+import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragment
+import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragment
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseBrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.shared.map.BaseMapFragment
 
@@ -40,7 +42,10 @@ class BrowseFragment : BaseBrowseFragment() {
             replace(R.id.result_detail_nav_fragment, BrowseDetailNavHostFragment())
         }
         detail = childFragmentManager.findFragmentById(R.id.result_detail_nav_fragment) as NavHostFragment
-        val detailNavigator = BrowseDetailFragmentNavigator(requireContext(), detail.childFragmentManager, R.id.result_detail_nav_fragment)
+        val detailNavigator = BrowseDetailFragmentNavigator(
+            requireContext(),
+            detail.childFragmentManager, R.id.result_detail_nav_fragment
+        )
 
         detail.apply {
             navController.navigatorProvider.addNavigator(detailNavigator)
@@ -48,26 +53,29 @@ class BrowseFragment : BaseBrowseFragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         val contextThemeWrapper: Context = ContextThemeWrapper(activity, R.style.AppTheme_Primary)
         val localInflater = inflater.cloneInContext(contextThemeWrapper)
 
-        _binding = FragmentBrowseBinding.inflate(localInflater, container, false)
+        browseBinding = FragmentBrowseBinding.inflate(localInflater, container, false)
         super.onCreateView(localInflater, container, savedInstanceState)
         return binding.root
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        if(!hidden) {
+        if (!hidden) {
             (mainActivity as? MainActivity)?.let { mainActivity ->
-                mainActivity.binding.toolBar.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
-                mainActivity.binding.statusbar.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorPrimaryDark, null))
-                if(resources.configuration.orientation == ORIENTATION_PORTRAIT) {
-                    if(detail.requireView().visibility == VISIBLE) {
-                        if(detail.childFragmentManager.primaryNavigationFragment is BaseMapFragment) {
+                with(mainActivity.binding) {
+                    toolBar.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
+                    statusbar.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorPrimaryDark, null))
+                }
+                if (resources.configuration.orientation == ORIENTATION_PORTRAIT) {
+                    if (detail.requireView().visibility == VISIBLE) {
+                        if (detail.childFragmentManager.primaryNavigationFragment is BaseMapFragment) {
                             mainActivity.binding.toolBar.visibility = VISIBLE
                         } else {
                             mainActivity.binding.toolBar.visibility = GONE
@@ -77,13 +85,46 @@ class BrowseFragment : BaseBrowseFragment() {
                     }
                 }
 
-                if(resources.configuration.orientation == ORIENTATION_LANDSCAPE) {
-                    if(detail.childFragmentManager.primaryNavigationFragment is BaseMapFragment) {
+                if (resources.configuration.orientation == ORIENTATION_LANDSCAPE) {
+                    if (detail.childFragmentManager.primaryNavigationFragment is BaseMapFragment) {
                         mainActivity.binding.toolBar.visibility = VISIBLE
                     } else {
                         mainActivity.binding.toolBar.visibility = GONE
                         binding.toolBar.visibility = VISIBLE
                     }
+                }
+
+                detail.childFragmentManager.primaryNavigationFragment?.let { primaryNavigationFragment ->
+                    when (primaryNavigationFragment::class.java) {
+                        PropertyDetailFragment::class.java -> {
+                            (primaryNavigationFragment as PropertyDetailFragment)
+                                .onBackPressedCallback.isEnabled = true
+                        }
+                        PropertyUpdateFragment::class.java -> {
+                            (primaryNavigationFragment as PropertyUpdateFragment)
+                                .onBackPressedCallback.isEnabled = true
+                        }
+                        else -> { mainActivity.onBackPressedCallback.isEnabled = true }
+                    }
+                }
+            }
+        } else {
+            detail.childFragmentManager.primaryNavigationFragment?.let { primaryNavigationFragment ->
+                when (primaryNavigationFragment::class.java) {
+                    PropertyDetailFragment::class.java -> {
+                        (primaryNavigationFragment as PropertyDetailFragment)
+                            .onBackPressedCallback.isEnabled = false
+                        if ((requireActivity() as MainActivity).onBackPressedCallback.isEnabled) {
+                            (requireActivity() as MainActivity).onBackPressedCallback.isEnabled = false
+                        }
+                    }
+                    PropertyUpdateFragment::class.java -> {
+                        (primaryNavigationFragment as PropertyUpdateFragment)
+                            .onBackPressedCallback.isEnabled = false
+                        if ((requireActivity() as MainActivity).onBackPressedCallback.isEnabled) {
+                            (requireActivity() as MainActivity).onBackPressedCallback.isEnabled = false
+                        }
+                    } else -> { (requireActivity() as MainActivity).onBackPressedCallback.isEnabled = false }
                 }
             }
         }

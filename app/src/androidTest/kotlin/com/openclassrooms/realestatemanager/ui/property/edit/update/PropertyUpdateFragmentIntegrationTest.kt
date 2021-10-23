@@ -12,7 +12,6 @@ import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.google.android.material.chip.Chip
 import com.google.common.truth.Truth.assertThat
@@ -25,15 +24,13 @@ import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.models.property.PropertyStatus
 import com.openclassrooms.realestatemanager.ui.BaseFragmentTests
 import com.openclassrooms.realestatemanager.ui.MainActivity
+import com.openclassrooms.realestatemanager.ui.fragments.MainNavHostFragment
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.util.EnterPropertyUtil.update_property
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
+import com.openclassrooms.realestatemanager.util.*
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil.switchAllNetworks
 import com.openclassrooms.realestatemanager.util.ConnectivityUtil.waitInternetStateChange
-import com.openclassrooms.realestatemanager.util.Constants
-import com.openclassrooms.realestatemanager.util.RxImmediateSchedulerRule
-import com.openclassrooms.realestatemanager.util.ToastMatcher
-import com.openclassrooms.realestatemanager.util.Utils
 import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable.concatArray
 import io.reactivex.Single
@@ -49,7 +46,7 @@ import org.junit.runner.RunWith
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-@RunWith(AndroidJUnit4::class)
+@RunWith(OrderedRunner::class)
 @MediumTest
 class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
 
@@ -87,53 +84,70 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
             }.subscribeOn(SchedulerProvider.io()).blockingGet()
     }
 
+    @Order(1)
     @Test
-    fun given_update_when_click_sold_in_alert_dialog_then_sold_date_view_is_shown() {
-        // Given Update fragment
+    fun given_update_when_entry_date_picker_dialog_shown_then_initialize_with_corresponding_date() {
+
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
             mainActivity = it
-            browseFragment = BrowseFragment()
-            it.setFragment(browseFragment)
         }
         isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
         navigate_to_update_fragment()
 
         scenario.onActivity {
+            browseFragment = (mainActivity.supportFragmentManager.primaryNavigationFragment
+                    as MainNavHostFragment)
+                .childFragmentManager.primaryNavigationFragment as BrowseFragment
+
             propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
         }
 
-        onView(allOf(withId(R.id.status), withEffectiveVisibility(VISIBLE))).perform(scrollTo(), click())
+        onView(allOf(withId(R.id.entry_date), withEffectiveVisibility(VISIBLE))).perform(scrollTo(), click())
 
-        onView(withText(testApplication.resources.getString(PropertyStatus.SOLD.status)))
-            .perform(click())
+        val calendar = Calendar.getInstance()
+        val entryDate: Date = Utils.fromStringToDate(propertyUpdateFragment.binding.entryDate.text.toString())
+        calendar.time = entryDate
 
-        onView(withText(R.string.change_property_status)).perform(click())
+        onView(withClassName(equalTo(DatePicker::class.java.name)))
+            .check(
+                matches(
+                    object : BoundedMatcher<View, DatePicker>(DatePicker::class.java) {
+                        override fun describeTo(description: Description?) {}
 
-        onView(allOf(withId(R.id.sold_date), isDisplayed())).check(matches(isDisplayed()))
+                        override fun matchesSafely(item: DatePicker?): Boolean {
+                            return ( calendar[Calendar.YEAR] == item?.year && calendar[Calendar.MONTH] == item.month && calendar[Calendar.DAY_OF_MONTH] == item.dayOfMonth)
+                        }
+                    })
+            )
     }
 
+    @Order(2)
     @Test
     fun given_update_when_click_for_rent_in_alert_dialog_then_sold_date_view_is_not_shown() {
         // Given Update fragment
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
             mainActivity = it
-            browseFragment = BrowseFragment()
-            it.setFragment(browseFragment)
         }
         isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
         navigate_to_update_fragment()
 
         scenario.onActivity {
+            browseFragment = (mainActivity.supportFragmentManager.primaryNavigationFragment
+                    as MainNavHostFragment)
+                .childFragmentManager.primaryNavigationFragment as BrowseFragment
+
             propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
         }
 
-        onView(allOf(withId(R.id.status), withEffectiveVisibility(VISIBLE))).perform(scrollTo(), click())
+        onView(allOf(withId(R.id.interest_points_chip_group), withEffectiveVisibility(VISIBLE))).perform(scrollTo())
+        onView(allOf(withId(R.id.status), withEffectiveVisibility(VISIBLE))).perform(click())
 
         onView(withText(testApplication.resources.getString(PropertyStatus.SOLD.status)))
+            .inRoot(isDialog())
             .perform(click())
 
         onView(withText(R.string.change_property_status)).perform(click())
@@ -143,6 +157,7 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
         onView(allOf(withId(R.id.status), isDisplayed())).perform(click())
 
         onView(withText(testApplication.resources.getString(PropertyStatus.FOR_RENT.status)))
+            .inRoot(isDialog())
             .perform(click())
 
         onView(withText(R.string.change_property_status)).perform(click())
@@ -150,26 +165,31 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
         onView(allOf(withId(R.id.sold_date), isDisplayed())).check(doesNotExist())
     }
 
+    @Order(3)
     @Test
     fun given_update_when_click_on_in_sale_in_alert_dialog_then_sold_date_view_is_not_shown() {
         // Given Update fragment
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
             mainActivity = it
-            browseFragment = BrowseFragment()
-            it.setFragment(browseFragment)
         }
         isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
         navigate_to_update_fragment()
 
         scenario.onActivity {
+            browseFragment = (mainActivity.supportFragmentManager.primaryNavigationFragment
+                    as MainNavHostFragment)
+                .childFragmentManager.primaryNavigationFragment as BrowseFragment
+
             propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
         }
 
-        onView(allOf(withId(R.id.status), withEffectiveVisibility(VISIBLE))).perform(scrollTo(), click())
+        onView(allOf(withId(R.id.interest_points_chip_group), withEffectiveVisibility(VISIBLE))).perform(scrollTo())
+        onView(allOf(withId(R.id.status), withEffectiveVisibility(VISIBLE))).perform(click())
 
         onView(withText(testApplication.resources.getString(PropertyStatus.SOLD.status)))
+            .inRoot(isDialog())
             .perform(click())
 
         onView(withText(R.string.change_property_status)).perform(click())
@@ -179,6 +199,7 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
         onView(allOf(withId(R.id.status), isDisplayed())).perform(click())
 
         onView(withText(testApplication.resources.getString(PropertyStatus.IN_SALE.status)))
+            .inRoot(isDialog())
             .perform(click())
 
         onView(withText(R.string.change_property_status)).perform(click())
@@ -186,29 +207,58 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
         onView(allOf(withId(R.id.sold_date), isDisplayed())).check(doesNotExist())
     }
 
+    @Order(4)
+    @Test
+    fun given_update_when_click_sold_in_alert_dialog_then_sold_date_view_is_shown() {
+        // Given Update fragment
+        BaseFragment.properties.value = fakeProperties as MutableList<Property>
+        val scenario = launch(MainActivity::class.java).onActivity {
+            mainActivity = it
+        }
+        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
+
+        navigate_to_update_fragment()
+
+        scenario.onActivity {
+            browseFragment = (mainActivity.supportFragmentManager.primaryNavigationFragment
+                    as MainNavHostFragment)
+                .childFragmentManager.primaryNavigationFragment as BrowseFragment
+
+            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
+        }
+
+        onView(allOf(withId(R.id.interest_points_chip_group), withEffectiveVisibility(VISIBLE))).perform(scrollTo())
+        onView(allOf(withId(R.id.status), withEffectiveVisibility(VISIBLE))).perform(click())
+
+        onView(withText(testApplication.resources.getString(PropertyStatus.SOLD.status)))
+            .perform(click())
+
+        onView(withText(R.string.change_property_status)).perform(click())
+
+        onView(allOf(withId(R.id.sold_date), isDisplayed())).check(matches(isDisplayed()))
+    }
+
+    @Order(5)
     @Test
     fun given_update_when_navigate_on_update_fragment_then_update_menu_item_is_shown() {
 
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         launch(MainActivity::class.java).onActivity {
             mainActivity = it
-            browseFragment = BrowseFragment()
-            it.setFragment(browseFragment)
         }
         isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
         navigate_to_update_fragment()
 
-        onView(withId(R.id.navigation_update)).check(matches(isDisplayed()))
+        onView(allOf(withId(R.id.menu_item_container), withEffectiveVisibility(VISIBLE))).check(matches(isDisplayed()))
     }
 
+    @Order(6)
     @Test
     fun given_update_when_property_is_updated_then_return_on_detail_fragment() {
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         launch(MainActivity::class.java).onActivity {
             mainActivity = it
-            browseFragment = BrowseFragment()
-            it.setFragment(browseFragment)
         }
         isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
@@ -216,7 +266,7 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
 
         update_property(testApplication = testApplication)
 
-        onView(withId(R.id.navigation_update)).perform(click())
+        onView(allOf(withId(R.id.menu_item_container), withEffectiveVisibility(VISIBLE))).perform(click())
         onView(withText(R.string.confirm_save_changes)).perform(click())
         onView(allOf(withId(R.id.edit_fragment), isDisplayed())).check(matches(isDisplayed()))
     }
@@ -226,8 +276,6 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         launch(MainActivity::class.java).onActivity {
             mainActivity = it
-            browseFragment = BrowseFragment()
-            it.setFragment(browseFragment)
         }
         isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
@@ -235,7 +283,7 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
 
         update_property(testApplication = testApplication)
 
-        onView(withId(R.id.navigation_update)).perform(click())
+        onView(allOf(withId(R.id.menu_item_container), withEffectiveVisibility(VISIBLE))).perform(click())
         onView(withText(R.string.confirm_save_changes)).perform(click())
         onView(allOf(withId(R.id.edit_fragment), isDisplayed())).check(matches(isDisplayed()))
 
@@ -243,13 +291,12 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
             BaseFragment.properties.value!!.find { property -> property.id == obtainDetailFragment().property.id })
     }
 
+    @Order(7)
     @Test
     fun given_update_when_on_back_pressed_then_confirm_dialog_is_shown() {
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         launch(MainActivity::class.java).onActivity {
             mainActivity = it
-            browseFragment = BrowseFragment()
-            it.setFragment(browseFragment)
         }
         isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
@@ -264,13 +311,12 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
             .check(matches(isDisplayed()))
     }
 
+    @Order(8)
     @Test
     fun given_update_when_on_back_pressed_and_click_confirm_then_return_to_detail_fragment() {
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         launch(MainActivity::class.java).onActivity {
             mainActivity = it
-            browseFragment = BrowseFragment()
-            it.setFragment(browseFragment)
         }
         isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
@@ -284,6 +330,7 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
         onView(allOf(withId(R.id.edit_fragment), isDisplayed())).check(matches(isDisplayed()))
     }
 
+    @Order(9)
     @Test
     fun given_update_when_has_no_internet_a_message_indicating_property_is_updated_and_saved_only_on_local_storage_is_shown() {
 
@@ -292,15 +339,13 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
                 BaseFragment.properties.value = fakeProperties as MutableList<Property>
                 launch(MainActivity::class.java).onActivity {
                     mainActivity = it
-                    browseFragment = BrowseFragment()
-                    it.setFragment(browseFragment)
                 }
                 isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
                 navigate_to_update_fragment()
                 update_property(testApplication = testApplication)
 
-                onView(withId(R.id.navigation_update)).perform(click())
+                onView(allOf(withId(R.id.menu_item_container), withEffectiveVisibility(VISIBLE))).perform(click())
                 onView(withText(R.string.confirm_save_changes)).perform(click())
 
                 onView(withText(R.string.property_update_locally))
@@ -310,6 +355,7 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
             }
     }
 
+    @Order(10)
     @Test
     fun given_update_when_has_no_internet_and_property_updated_when_has_internet_then_a_message_indicating_property_is_totally_saved_is_shown() {
 
@@ -318,15 +364,13 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
                 BaseFragment.properties.value = fakeProperties as MutableList<Property>
                 launch(MainActivity::class.java).onActivity {
                     mainActivity = it
-                    browseFragment = BrowseFragment()
-                    it.setFragment(browseFragment)
                 }
                 isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
                 navigate_to_update_fragment()
                 update_property(testApplication = testApplication)
 
-                onView(withId(R.id.navigation_update)).perform(click())
+                onView(allOf(withId(R.id.menu_item_container), withEffectiveVisibility(VISIBLE))).perform(click())
                 onView(withText(R.string.confirm_save_changes)).perform(click())
 
                 onView(withText(R.string.property_update_locally))
@@ -346,20 +390,22 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
             }
     }
 
+    @Order(11)
     @Test
     fun given_update_when_is_shown_then_data_is_successfully_displayed_in_fragment() {
 
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
             mainActivity = it
-            browseFragment = BrowseFragment()
-            it.setFragment(browseFragment)
         }
         isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
         navigate_to_update_fragment()
 
         scenario.onActivity {
+            browseFragment = (mainActivity.supportFragmentManager.primaryNavigationFragment
+                    as MainNavHostFragment)
+                .childFragmentManager.primaryNavigationFragment as BrowseFragment
             propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
         }
 
@@ -414,101 +460,71 @@ class PropertyUpdateFragmentIntegrationTest : BaseFragmentTests() {
         onView(allOf(withId(R.id.state), isDisplayed())).check(matches(withText(fakeProperties[itemPosition].address.state)))
     }
 
+    @Order(12)
     @Test
     fun given_update_when_is_shown_then_photo_recycler_view_adapter_is_not_null() {
 
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
             mainActivity = it
-            browseFragment = BrowseFragment()
-            it.setFragment(browseFragment)
         }
         isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
         navigate_to_update_fragment()
 
         scenario.onActivity {
+            browseFragment = (mainActivity.supportFragmentManager.primaryNavigationFragment
+                    as MainNavHostFragment)
+                .childFragmentManager.primaryNavigationFragment as BrowseFragment
             propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
         }
 
         assertThat(propertyUpdateFragment.binding.photosRecyclerView.adapter).isNotNull()
     }
 
+    @Order(13)
     @Test
     fun given_update_when_is_shown_then_photo_recycler_view_is_not_empty() {
 
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
             mainActivity = it
-            browseFragment = BrowseFragment()
-            it.setFragment(browseFragment)
         }
         isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
         navigate_to_update_fragment()
 
         scenario.onActivity {
+            browseFragment = (mainActivity.supportFragmentManager.primaryNavigationFragment
+                    as MainNavHostFragment)
+                .childFragmentManager.primaryNavigationFragment as BrowseFragment
             propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
         }
 
         assertThat(propertyUpdateFragment.binding.photosRecyclerView.adapter!!.itemCount).isNotEqualTo(0)
     }
 
+    @Order(14)
     @Test
     fun given_update_when_is_shown_then_photo_recycler_view_count_is_equal_to_property_photo_count() {
 
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
         val scenario = launch(MainActivity::class.java).onActivity {
             mainActivity = it
-            browseFragment = BrowseFragment()
-            it.setFragment(browseFragment)
         }
         isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
 
         navigate_to_update_fragment()
 
         scenario.onActivity {
+            browseFragment = (mainActivity.supportFragmentManager.primaryNavigationFragment
+                    as MainNavHostFragment)
+                .childFragmentManager.primaryNavigationFragment as BrowseFragment
             propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
         }
 
         assertThat(propertyUpdateFragment.binding.photosRecyclerView.adapter!!.itemCount)
             .isEqualTo(fakeProperties[itemPosition].photos.size)
-    }
-
-    @Test
-    fun given_update_when_entry_date_picker_dialog_shown_then_initialize_with_corresponding_date() {
-
-        BaseFragment.properties.value = fakeProperties as MutableList<Property>
-        val scenario = launch(MainActivity::class.java).onActivity {
-            mainActivity = it
-            browseFragment = BrowseFragment()
-            it.setFragment(browseFragment)
-        }
-        isMasterDetail = testApplication.resources.getBoolean(R.bool.isMasterDetail)
-
-        navigate_to_update_fragment()
-
-        scenario.onActivity {
-            propertyUpdateFragment = browseFragment.detail.childFragmentManager.primaryNavigationFragment as PropertyUpdateFragment
-        }
-
-        onView(allOf(withId(R.id.entry_date_text_input_layout), withEffectiveVisibility(VISIBLE))).perform(scrollTo(), click())
-
-        val calendar = Calendar.getInstance()
-        val entryDate: Date = Utils.fromStringToDate(propertyUpdateFragment.binding.entryDate.text.toString())
-        calendar.time = entryDate
-
-        onView(withClassName(equalTo(DatePicker::class.java.name)))
-            .check(
-                matches(
-                    object : BoundedMatcher<View, DatePicker>(DatePicker::class.java) {
-                        override fun describeTo(description: Description?) {}
-
-                        override fun matchesSafely(item: DatePicker?): Boolean {
-                            return ( calendar[Calendar.YEAR] == item?.year && calendar[Calendar.MONTH] == item.month && calendar[Calendar.DAY_OF_MONTH] == item.dayOfMonth)
-                        }
-                    })
-            )
     }
 
     override fun navigate_to_update_fragment() {

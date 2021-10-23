@@ -32,12 +32,27 @@ complexity:
     ignoreStringsRegex: '$^'
   ComplexInterface:
     active: true
-    threshold: 10
+    threshold: 19
     includeStaticDeclarations: false
     includePrivateDeclarations: false
   ComplexMethod:
     active: true
+    threshold: 61
     ignoreSingleWhenExpression: true
+  NestedBlockDepth:
+    active: true
+    threshold: 7
+  LongMethod:
+    active: true
+    threshold: 200
+  LongParameterList:
+    active: true
+    functionThreshold: 19
+  TooManyFunctions:
+    active: true
+    thresholdInInterfaces: 19
+    thresholdInClasses: 21
+    thresholdInObjects: 14
   LargeClass:
     active: true
     excludes: ['**/test/**', '**/*.Test.kt', '**/*.Spec.kt']
@@ -182,6 +197,7 @@ style:
       - '0'
       - '1'
       - '2'
+      - '10f'
       - '100'
       - '1000'
   MandatoryBracesLoops:

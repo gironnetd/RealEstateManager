@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.ui.property.propertydetail
 
+import android.content.res.Configuration
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.core.view.size
 import androidx.test.core.app.ActivityScenario.launch
@@ -147,44 +148,87 @@ class PropertyDetailFragmentIntegrationTest : BaseFragmentTests() {
         onView(withId(R.id.interest_points_chip_group)).check(isCompletelyBelow(withId(R.id.entry_date_text_input_layout)))
         onView(withId(R.id.interest_points_chip_group)).check(isCompletelyBelow(withId(R.id.status_text_input_layout)))
 
-        onView(withId(R.id.price_text_input_layout)).check(isCompletelyBelow(withId(R.id.interest_points_chip_group)))
-        onView(withId(R.id.price_text_input_layout)).check(isCompletelyLeftOf(withId(R.id.type_text_input_layout)))
+        if (testApplication.resources.configuration.screenLayout and
+            Configuration.SCREENLAYOUT_SIZE_MASK ==
+            Configuration.SCREENLAYOUT_SIZE_NORMAL
+        ) {
+            onView(withId(R.id.price_text_input_layout)).check(isCompletelyBelow(withId(R.id.interest_points_chip_group)))
+            onView(withId(R.id.price_text_input_layout)).check(isCompletelyAbove(withId(R.id.type_text_input_layout)))
 
-        onView(withId(R.id.type_text_input_layout)).check(isCompletelyBelow(withId(R.id.interest_points_chip_group)))
-        onView(withId(R.id.type_text_input_layout)).check(isCompletelyRightOf(withId(R.id.price_text_input_layout)))
+            onView(withId(R.id.type_text_input_layout)).check(isCompletelyBelow(withId(R.id.price_text_input_layout)))
+            onView(withId(R.id.type_text_input_layout)).check(isCompletelyAbove(withId(R.id.surface_text_input_layout)))
 
-        onView(withId(R.id.surface_text_input_layout)).check(isCompletelyBelow(withId(R.id.price_text_input_layout)))
-        onView(withId(R.id.surface_text_input_layout)).check(isCompletelyLeftOf(withId(R.id.rooms_text_input_layout)))
+            onView(withId(R.id.surface_text_input_layout)).check(isCompletelyBelow(withId(R.id.type_text_input_layout)))
+            onView(withId(R.id.surface_text_input_layout)).check(isCompletelyAbove(withId(R.id.rooms_text_input_layout)))
 
-        onView(withId(R.id.rooms_text_input_layout)).check(isCompletelyBelow(withId(R.id.type_text_input_layout)))
-        onView(withId(R.id.rooms_text_input_layout)).check(isCompletelyRightOf(withId(R.id.surface_text_input_layout)))
+            onView(withId(R.id.rooms_text_input_layout)).check(isCompletelyBelow(withId(R.id.surface_text_input_layout)))
+            onView(withId(R.id.rooms_text_input_layout)).check(isCompletelyAbove(withId(R.id.bathrooms_text_input_layout)))
 
-        onView(withId(R.id.bathrooms_text_input_layout)).check(isCompletelyBelow(withId(R.id.surface_text_input_layout)))
-        onView(withId(R.id.bathrooms_text_input_layout)).check(isCompletelyLeftOf(withId(R.id.bedrooms_text_input_layout)))
+            onView(withId(R.id.bathrooms_text_input_layout)).check(isCompletelyBelow(withId(R.id.rooms_text_input_layout)))
+            onView(withId(R.id.bathrooms_text_input_layout)).check(isCompletelyAbove(withId(R.id.bedrooms_text_input_layout)))
 
-        onView(withId(R.id.bedrooms_text_input_layout)).check(isCompletelyBelow(withId(R.id.rooms_text_input_layout)))
-        onView(withId(R.id.bedrooms_text_input_layout)).check(isCompletelyRightOf(withId(R.id.bathrooms_text_input_layout)))
+            onView(withId(R.id.bedrooms_text_input_layout)).check(isCompletelyBelow(withId(R.id.bathrooms_text_input_layout)))
+        }
+
+        if (testApplication.resources.configuration.screenLayout and
+            Configuration.SCREENLAYOUT_SIZE_MASK ==
+            (Configuration.SCREENLAYOUT_SIZE_LARGE or Configuration.SCREENLAYOUT_SIZE_XLARGE)
+        ) {
+            onView(withId(R.id.price_text_input_layout)).check(isCompletelyBelow(withId(R.id.interest_points_chip_group)))
+            onView(withId(R.id.price_text_input_layout)).check(isCompletelyLeftOf(withId(R.id.type_text_input_layout)))
+
+            onView(withId(R.id.type_text_input_layout)).check(isCompletelyBelow(withId(R.id.interest_points_chip_group)))
+            onView(withId(R.id.type_text_input_layout)).check(isCompletelyRightOf(withId(R.id.price_text_input_layout)))
+
+            onView(withId(R.id.surface_text_input_layout)).check(isCompletelyBelow(withId(R.id.price_text_input_layout)))
+            onView(withId(R.id.surface_text_input_layout)).check(isCompletelyLeftOf(withId(R.id.rooms_text_input_layout)))
+
+            onView(withId(R.id.rooms_text_input_layout)).check(isCompletelyBelow(withId(R.id.type_text_input_layout)))
+            onView(withId(R.id.rooms_text_input_layout)).check(isCompletelyRightOf(withId(R.id.surface_text_input_layout)))
+
+            onView(withId(R.id.bathrooms_text_input_layout)).check(isCompletelyBelow(withId(R.id.surface_text_input_layout)))
+            onView(withId(R.id.bathrooms_text_input_layout)).check(isCompletelyLeftOf(withId(R.id.bedrooms_text_input_layout)))
+
+            onView(withId(R.id.bedrooms_text_input_layout)).check(isCompletelyBelow(withId(R.id.rooms_text_input_layout)))
+            onView(withId(R.id.bedrooms_text_input_layout)).check(isCompletelyRightOf(withId(R.id.bathrooms_text_input_layout)))
+        }
 
         onView(withId(R.id.location_layout))
             .check(isCompletelyBelow(withId(R.id.bathrooms_text_input_layout)))
             .check(isCompletelyBelow(withId(R.id.bedrooms_text_input_layout)))
 
-        onView(withId(R.id.street_text_input_layout))
-            .check(isCompletelyAbove(withId(R.id.city_text_input_layout)))
-            .check(isCompletelyAbove(withId(R.id.postal_code_text_input_layout)))
+        if (testApplication.resources.configuration.screenLayout and
+            Configuration.SCREENLAYOUT_SIZE_MASK ==
+            Configuration.SCREENLAYOUT_SIZE_NORMAL
+        ) {
+            onView(withId(R.id.street_text_input_layout)).check(isCompletelyAbove(withId(R.id.city_text_input_layout)))
+            onView(withId(R.id.city_text_input_layout)).check(isCompletelyAbove(withId(R.id.postal_code_text_input_layout)))
+            onView(withId(R.id.postal_code_text_input_layout)).check(isCompletelyBelow(withId(R.id.city_text_input_layout)))
+            onView(withId(R.id.country_text_input_layout)).check(isCompletelyBelow(withId(R.id.postal_code_text_input_layout)))
+            onView(withId(R.id.state_text_input_layout)).check(isCompletelyBelow(withId(R.id.country_text_input_layout)))
+        }
 
-        onView(withId(R.id.city_text_input_layout)).check(isCompletelyLeftOf(withId(R.id.postal_code_text_input_layout)))
-        onView(withId(R.id.postal_code_text_input_layout)).check(isCompletelyRightOf(withId(R.id.city_text_input_layout)))
+        if (testApplication.resources.configuration.screenLayout and
+            Configuration.SCREENLAYOUT_SIZE_MASK ==
+            (Configuration.SCREENLAYOUT_SIZE_LARGE or Configuration.SCREENLAYOUT_SIZE_XLARGE)
+        ) {
+            onView(withId(R.id.street_text_input_layout))
+                .check(isCompletelyAbove(withId(R.id.city_text_input_layout)))
+                .check(isCompletelyAbove(withId(R.id.postal_code_text_input_layout)))
 
-        onView(withId(R.id.country_text_input_layout))
-            .check(isCompletelyBelow(withId(R.id.city_text_input_layout)))
-            .check(isCompletelyLeftOf(withId(R.id.state_text_input_layout)))
-            .check(isCompletelyLeftOf(withId(R.id.postal_code_text_input_layout)))
+            onView(withId(R.id.city_text_input_layout)).check(isCompletelyLeftOf(withId(R.id.postal_code_text_input_layout)))
+            onView(withId(R.id.postal_code_text_input_layout)).check(isCompletelyRightOf(withId(R.id.city_text_input_layout)))
 
-        onView(withId(R.id.state_text_input_layout))
-            .check(isCompletelyBelow(withId(R.id.postal_code_text_input_layout)))
-            .check(isCompletelyRightOf(withId(R.id.country_text_input_layout)))
-            .check(isCompletelyRightOf(withId(R.id.city_text_input_layout)))
+            onView(withId(R.id.country_text_input_layout))
+                .check(isCompletelyBelow(withId(R.id.city_text_input_layout)))
+                .check(isCompletelyLeftOf(withId(R.id.state_text_input_layout)))
+                .check(isCompletelyLeftOf(withId(R.id.postal_code_text_input_layout)))
+
+            onView(withId(R.id.state_text_input_layout))
+                .check(isCompletelyBelow(withId(R.id.postal_code_text_input_layout)))
+                .check(isCompletelyRightOf(withId(R.id.country_text_input_layout)))
+                .check(isCompletelyRightOf(withId(R.id.city_text_input_layout)))
+        }
     }
 
     @Test

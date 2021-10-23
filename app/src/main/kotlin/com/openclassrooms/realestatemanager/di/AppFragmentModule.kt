@@ -13,6 +13,7 @@ object AppFragmentModule {
     @JvmStatic
     @Singleton
     @Provides
-    fun provideMainFragmentFactory(viewModelFactory: ViewModelProvider.Factory): FragmentFactory
-    = MainFragmentFactory(viewModelFactory = viewModelFactory, registry = null)
+    fun provideMainFragmentFactory(viewModelFactory: ViewModelProvider.Factory): FragmentFactory {
+        return MainFragmentFactory(viewModelFactory = viewModelFactory, registry = null)
+    }
 }

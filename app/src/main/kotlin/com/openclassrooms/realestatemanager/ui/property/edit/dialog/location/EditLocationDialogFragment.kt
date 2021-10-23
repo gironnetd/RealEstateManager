@@ -16,11 +16,13 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.maps.*
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMapOptions
+import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
-import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
@@ -34,44 +36,36 @@ import com.openclassrooms.realestatemanager.extensions.setWidthPercent
 import com.openclassrooms.realestatemanager.models.property.Address
 import com.openclassrooms.realestatemanager.ui.MainActivity
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseDialogFragment
-import com.openclassrooms.realestatemanager.ui.property.shared.map.BaseMapFragment
 import com.openclassrooms.realestatemanager.util.BitmapUtil
 import com.openclassrooms.realestatemanager.util.EspressoIdlingResource
 import timber.log.Timber
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.MutableList
+import kotlin.collections.listOf
+import kotlin.collections.onEach
 
-open class EditLocationDialogFragment(private val innerContext: Context)
-    : BaseDialogFragment(R.layout.fragment_dialog_edit_location), OnMapReadyCallback,
-    GoogleMap.OnMapLoadedCallback, SearchLocationAdapter.SearchListener {
+open class EditLocationDialogFragment(private val innerContext: Context) :
+    BaseDialogFragment(R.layout.fragment_dialog_edit_location),
+    OnMapReadyCallback,
+    GoogleMap.OnMapLoadedCallback,
+    SearchLocationAdapter.SearchListener {
 
-    var _binding: FragmentDialogEditLocationBinding? = null
-    val binding get() = _binding!!
+    var locationBinding: FragmentDialogEditLocationBinding? = null
+    val binding get() = locationBinding!!
 
     lateinit var alertDialog: AlertDialog
     private lateinit var mMap: GoogleMap
 
-    interface AddLocationListener {
-        fun onAddLocationClick()
-    }
-
-    private var callBack: AddLocationListener? = null
-
-    fun setCallBack(listener: AddLocationListener) { callBack = listener }
-
-    private var supportMapFragment: SupportMapFragment? = null
-
     open lateinit var address: Address
     open lateinit var tmpAddress: Address
 
-    private val token: AutocompleteSessionToken by lazy {
-        AutocompleteSessionToken.newInstance()
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         setWidthPercent(100)
 
-        if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             setHeightPercent(100)
         }
         // Get the SearchView and set the searchable configuration
@@ -161,7 +155,6 @@ open class EditLocationDialogFragment(private val innerContext: Context)
         super.onViewStateRestored(savedInstanceState)
         savedInstanceState?.let {
             tmpAddress = it.getParcelable(ADDRESS)!!
-            //address = tmpAddress
             showAddress(tmpAddress)
         }
     }
@@ -170,8 +163,7 @@ open class EditLocationDialogFragment(private val innerContext: Context)
         mMap.clear()
 
         address?.let {
-            if(!it.latitude.equals(0.0) && !it.longitude.equals(0.0)) {
-
+            if (!it.latitude.equals(0.0) && !it.longitude.equals(0.0)) {
                 mMap.addMarker(
                     MarkerOptions()
                         .position(LatLng(it.latitude, it.longitude))
@@ -181,18 +173,18 @@ open class EditLocationDialogFragment(private val innerContext: Context)
 
                 val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
                     LatLng(it.latitude, it.longitude),
-                    (BaseMapFragment.DEFAULT_ZOOM + 3)
+                    (DEFAULT_ZOOM)
                 )
 
                 mMap.moveCamera(cameraUpdate)
             }
 
             with(binding) {
-                if(it.street.isNotEmpty()) { street.setText(it.street) }
-                if(it.city.isNotEmpty()) { city.setText(it.city) }
-                if(it.postalCode.isNotEmpty()) { postalCode.setText(it.postalCode) }
-                if(it.country.isNotEmpty()) { country.setText(it.country) }
-                if(it.state.isNotEmpty()) { state.setText(it.state) }
+                if (it.street.isNotEmpty()) { street.setText(it.street) }
+                if (it.city.isNotEmpty()) { city.setText(it.city) }
+                if (it.postalCode.isNotEmpty()) { postalCode.setText(it.postalCode) }
+                if (it.country.isNotEmpty()) { country.setText(it.country) }
+                if (it.state.isNotEmpty()) { state.setText(it.state) }
             }
         }
     }
@@ -225,7 +217,12 @@ open class EditLocationDialogFragment(private val innerContext: Context)
         binding.resultSearchLocation.visibility = View.GONE
 
         EspressoIdlingResource.increment()
-        val placeFields = listOf(Place.Field.ID, Place.Field.LAT_LNG, Place.Field.ADDRESS, Place.Field.ADDRESS_COMPONENTS )
+        val placeFields = listOf(
+            Place.Field.ID,
+            Place.Field.LAT_LNG,
+            Place.Field.ADDRESS,
+            Place.Field.ADDRESS_COMPONENTS
+        )
 
         // Construct a request object, passing the place ID and fields array.
         val request = FetchPlaceRequest.newInstance(placeId, placeFields)
@@ -233,7 +230,7 @@ open class EditLocationDialogFragment(private val innerContext: Context)
         (requireActivity() as MainActivity).placesClient.fetchPlace(request)
             .addOnSuccessListener { response: FetchPlaceResponse ->
                 val place = response.place
-                //Log.i(TAG, "Place found: ${place.name}")
+                // Log.i(TAG, "Place found: ${place.name}")
 
                 with(place) {
                     latLng?.let { latLng ->
@@ -243,11 +240,18 @@ open class EditLocationDialogFragment(private val innerContext: Context)
                             MarkerOptions()
                                 .position(
                                     LatLng(latLng.latitude, latLng.longitude)
-                                ).icon(BitmapUtil.bitmapDescriptorFromVector(innerContext, R.drawable.ic_marker_selected))
+                                )
+                                .icon(
+                                    BitmapUtil.bitmapDescriptorFromVector(
+                                        innerContext,
+                                        R.drawable.ic_marker_selected
+                                    )
+                                )
                         )
 
                         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                            LatLng(latLng.latitude, latLng.longitude), 18f)
+                            LatLng(latLng.latitude, latLng.longitude), DEFAULT_ZOOM
+                        )
 
                         mMap.animateCamera(cameraUpdate)
 
@@ -267,40 +271,52 @@ open class EditLocationDialogFragment(private val innerContext: Context)
                                 when {
                                     addressComponent.types.contains(
                                         Place.Type.COUNTRY.name.lowercase(
-                                            Locale.getDefault()))
+                                            Locale.getDefault()
+                                        )
+                                    )
                                     -> {
                                         binding.country.setText(addressComponent.name)
                                     }
 
                                     addressComponent.types.contains(
                                         Place.Type.LOCALITY.name.lowercase(
-                                            Locale.getDefault()))
+                                            Locale.getDefault()
+                                        )
+                                    )
                                     -> {
                                         binding.city.setText(addressComponent.name)
                                     }
 
                                     addressComponent.types.contains(
                                         Place.Type.POSTAL_CODE.name.lowercase(
-                                            Locale.getDefault())) ||
-                                            addressComponent.types.contains(
-                                                Place.Type.POSTAL_CODE_PREFIX.name.lowercase(
-                                                    Locale.getDefault()))
+                                            Locale.getDefault()
+                                        )
+                                    ) ||
+                                        addressComponent.types.contains(
+                                            Place.Type.POSTAL_CODE_PREFIX.name.lowercase(
+                                                Locale.getDefault()
+                                            )
+                                        )
                                     -> {
                                         binding.postalCode.setText(addressComponent.shortName)
                                     }
 
                                     addressComponent.types.contains(
                                         Place.Type.POSTAL_TOWN.name.lowercase(
-                                            Locale.getDefault()))
+                                            Locale.getDefault()
+                                        )
+                                    )
                                     -> {
                                         binding.city.setText(addressComponent.name)
                                     }
 
                                     addressComponent.types.contains(
                                         Place.Type.STREET_ADDRESS.name.lowercase(
-                                            Locale.getDefault()))
+                                            Locale.getDefault()
+                                        )
+                                    )
                                     -> {
-                                        if(binding.street.text.toString() == none) {
+                                        if (binding.street.text.toString() == none) {
                                             binding.street.text?.clear()
                                         }
                                         binding.street.setText(addressComponent.name)
@@ -308,9 +324,11 @@ open class EditLocationDialogFragment(private val innerContext: Context)
 
                                     addressComponent.types.contains(
                                         Place.Type.ROUTE.name.lowercase(
-                                            Locale.getDefault()))
+                                            Locale.getDefault()
+                                        )
+                                    )
                                     -> {
-                                        if(binding.street.text.toString() == none) {
+                                        if (binding.street.text.toString() == none) {
                                             binding.street.text?.clear()
                                         }
                                         binding.street.append(addressComponent.name)
@@ -318,9 +336,11 @@ open class EditLocationDialogFragment(private val innerContext: Context)
 
                                     addressComponent.types.contains(
                                         Place.Type.STREET_NUMBER.name.lowercase(
-                                            Locale.getDefault()))
+                                            Locale.getDefault()
+                                        )
+                                    )
                                     -> {
-                                        if(binding.street.text.toString() == none) {
+                                        if (binding.street.text.toString() == none) {
                                             binding.street.text?.clear()
                                         }
                                         binding.street.setText(addressComponent.name + " ")
@@ -328,7 +348,9 @@ open class EditLocationDialogFragment(private val innerContext: Context)
 
                                     addressComponent.types.contains(
                                         Place.Type.ADMINISTRATIVE_AREA_LEVEL_1.name.lowercase(
-                                            Locale.getDefault())) -> {
+                                            Locale.getDefault()
+                                        )
+                                    ) -> {
                                         binding.state.setText(addressComponent.name)
                                         binding.postalCode.setText(addressComponent.shortName)
                                     }
@@ -354,6 +376,8 @@ open class EditLocationDialogFragment(private val innerContext: Context)
     companion object {
         const val TAG = "LocationEditDialog"
         const val ADDRESS = "address"
+
+        const val DEFAULT_ZOOM = 18f
 
         // constant variable to perform ui automator testing
         const val EDIT_LOCATION_MAP_NOT_FINISH_LOADING = "edit_location_map_not_finish_loading"

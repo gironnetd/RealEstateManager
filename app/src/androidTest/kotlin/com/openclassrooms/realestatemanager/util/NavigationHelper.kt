@@ -82,7 +82,7 @@ object NavigationHelper {
 
         if(!isMapFinishLoading) {
             isMapFinishLoading = uiDevice.wait(Until.hasObject(By.desc(MAP_FINISH_LOADING)),
-                50000)
+                200000)
             assertThat(isMapFinishLoading).isTrue()
         }
     }

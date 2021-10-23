@@ -23,10 +23,10 @@ class BrowseMapFragment : BaseMapFragment(), OnMapReadyCallback, OnMapLoadedCall
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         innerInflater = inflater.cloneInContext(ContextThemeWrapper(activity, R.style.AppTheme_Primary))
-        _binding = FragmentMapBinding.inflate(innerInflater, container, false)
+        mapBinding = FragmentMapBinding.inflate(innerInflater, container, false)
         super.onCreateView(innerInflater, container, savedInstanceState)
         properties.observe(viewLifecycleOwner) { properties ->
-            if(properties.isNotEmpty() && !isMapInitialized) {
+            if (properties.isNotEmpty() && !isMapInitialized) {
                 initializeMap()
             }
         }

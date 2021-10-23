@@ -5,7 +5,9 @@ import com.openclassrooms.realestatemanager.ui.mvibase.MviIntent
 import com.openclassrooms.realestatemanager.ui.mvibase.MviViewModel
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditAction
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditIntent.PropertyCreateIntent
-import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditResult
+import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditIntent.PropertyCreateIntent.CreatePropertyIntent
+import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditIntent.PropertyCreateIntent.InitialIntent
+import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditResult.CreatePropertyResult
 import com.openclassrooms.realestatemanager.ui.property.edit.PropertyEditViewState
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
@@ -15,21 +17,17 @@ import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
 class PropertyCreateViewModel
-@Inject internal constructor(private val propertyCreateActionProcessor: PropertyCreateActionProcessor)
-    : ViewModel(), MviViewModel<PropertyCreateIntent, PropertyEditViewState> {
+@Inject internal constructor(private val propertyCreateActionProcessor: PropertyCreateActionProcessor) :
+    ViewModel(), MviViewModel<PropertyCreateIntent, PropertyEditViewState> {
 
     private var intentsSubject: PublishSubject<PropertyCreateIntent> = PublishSubject.create()
     private val statesSubject: Observable<PropertyEditViewState> = compose()
     private val disposables = CompositeDisposable()
 
-    /**
-     * take only the first ever InitialIntent and all intents of other types
-     * to avoid reloading data on config changes
-     */
     private val intentFilter: ObservableTransformer<PropertyCreateIntent, PropertyCreateIntent>
         get() = ObservableTransformer { intents ->
             intents.publish { shared ->
-                shared.filter { intent -> intent !is PropertyCreateIntent.InitialIntent }
+                shared.filter { intent -> intent !is InitialIntent }
             }
         }
 
@@ -51,8 +49,8 @@ class PropertyCreateViewModel
 
     private fun actionFromIntent(intent: MviIntent): PropertyEditAction {
         return when (intent) {
-            is PropertyCreateIntent.CreatePropertyIntent -> PropertyEditAction.CreatePropertyAction.CreateAction(intent.property)
-            else -> throw UnsupportedOperationException("Oops, that looks like an unknown intent: " + intent)
+            is CreatePropertyIntent -> PropertyEditAction.CreatePropertyAction.CreateAction(intent.property)
+            else -> throw UnsupportedOperationException("Oops, that looks like an unknown intent: $intent")
         }
     }
 
@@ -61,10 +59,10 @@ class PropertyCreateViewModel
     }
 
     companion object {
-        private val reducer = BiFunction { previousState: PropertyEditViewState, result: PropertyEditResult.CreatePropertyResult ->
+        private val reducer = BiFunction { previousState: PropertyEditViewState, result: CreatePropertyResult ->
             when (result) {
-                is PropertyEditResult.CreatePropertyResult.Created -> {
-                    if(result.fullyCreated) {
+                is CreatePropertyResult.Created -> {
+                    if (result.fullyCreated) {
                         previousState.copy(
                             inProgress = false,
                             isSaved = true,
@@ -78,7 +76,7 @@ class PropertyCreateViewModel
                         )
                     }
                 }
-                is PropertyEditResult.CreatePropertyResult.Failure -> {
+                is CreatePropertyResult.Failure -> {
                     previousState.copy(
                         inProgress = false,
                         isSaved = false,
@@ -86,7 +84,7 @@ class PropertyCreateViewModel
                         uiNotification = null
                     )
                 }
-                is PropertyEditResult.CreatePropertyResult.InFlight -> {
+                is CreatePropertyResult.InFlight -> {
                     previousState.copy(
                         inProgress = true,
                         isSaved = false,

@@ -39,10 +39,10 @@ import javax.inject.Inject
  * Fragment to edit and update a real estate.
  */
 class PropertyUpdateFragment
-@Inject constructor(viewModelFactory: ViewModelProvider.Factory, registry: ActivityResultRegistry?)
-    : PropertyEditFragment(registry), MviView<PropertyUpdateIntent, PropertyEditViewState>,
-    UpdateLocationDialogFragment.UpdateLocationListener
-{
+@Inject constructor(viewModelFactory: ViewModelProvider.Factory, registry: ActivityResultRegistry?) :
+    PropertyEditFragment(registry),
+    MviView<PropertyUpdateIntent, PropertyEditViewState>,
+    UpdateLocationDialogFragment.UpdateLocationListener {
 
     private val propertyUpdateViewModel: PropertyUpdateViewModel by viewModels { viewModelFactory }
 
@@ -65,8 +65,8 @@ class PropertyUpdateFragment
         applyDisposition()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View {
-        when(baseBrowseFragment::class.java) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        when (baseBrowseFragment::class.java) {
             BrowseResultFragment::class.java -> {
                 innerInflater = inflater.cloneInContext(ContextThemeWrapper(activity, R.style.AppTheme_Tertiary))
             }
@@ -74,9 +74,8 @@ class PropertyUpdateFragment
                 innerInflater = inflater.cloneInContext(ContextThemeWrapper(activity, R.style.AppTheme_Primary))
             }
         }
-        _binding = FragmentEditBinding.inflate(innerInflater, container, false)
-        super.onCreateView(innerInflater, container, savedInstanceState)
-        //binding.mapDetailFragment.visibility = View.GONE
+        editBinding = FragmentEditBinding.inflate(innerInflater, container, false)
+        initializeToolbar()
         return binding.root
     }
 
@@ -94,7 +93,7 @@ class PropertyUpdateFragment
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        if(!::updateItem.isInitialized) {
+        if (!::updateItem.isInitialized) {
             updateItem = baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_update)
         }
         updateItem.isVisible = true
@@ -109,14 +108,14 @@ class PropertyUpdateFragment
 
         updateItemLayout.setOnClickListener {
             populateChanges()
-            if(newProperty != property || newProperty.photos != property.photos) {
+            if (newProperty != property || newProperty.photos != property.photos) {
                 confirmSaveChanges()
             } else {
                 showMessage(resources.getString(R.string.no_changes))
             }
         }
 
-        if(!::searchItem.isInitialized) {
+        if (!::searchItem.isInitialized) {
             searchItem = baseBrowseFragment.binding.toolBar.menu.findItem(R.id.navigation_main_search)
         }
         searchItem.isVisible = false
@@ -136,13 +135,13 @@ class PropertyUpdateFragment
     }
 
     override fun render(state: PropertyEditViewState) {
-        if(state.isSaved) {
+        if (state.isSaved) {
             state.uiNotification?.let { uiNotification ->
-                if(uiNotification == PROPERTIES_FULLY_UPDATED) {
+                if (uiNotification == PROPERTIES_FULLY_UPDATED) {
                     showMessage(resources.getString(R.string.property_update_totally))
                 }
 
-                if(uiNotification == PROPERTY_LOCALLY_UPDATED) {
+                if (uiNotification == PROPERTY_LOCALLY_UPDATED) {
                     showMessage(resources.getString(R.string.property_update_locally))
                 }
             }
@@ -170,17 +169,20 @@ class PropertyUpdateFragment
         super.configureView()
         with(binding) {
             PhotoUpdateAdapter(layoutInflater().context).apply {
-                if(newProperty.photos.isNotEmpty()) { noPhotos.visibility = android.view.View.GONE
+                if (newProperty.photos.isNotEmpty()) {
+                    noPhotos.visibility = View.GONE
                 }
                 photosRecyclerView.adapter = this
                 setOnItemClickListener(this@PropertyUpdateFragment)
                 submitList(newProperty.photos)
             }
-            mapViewButton!!.setImageResource(R.drawable.ic_baseline_edit_location_36)
+            mapViewButton.setImageResource(R.drawable.ic_baseline_edit_location_36)
 
             mapViewButton.setOnClickListener {
-                if(!::updateLocationAlertDialog.isInitialized) {
-                    updateLocationAlertDialog = UpdateLocationDialogFragment(innerContext = innerInflater.context, newProperty.address)
+                if (!::updateLocationAlertDialog.isInitialized) {
+                    updateLocationAlertDialog = UpdateLocationDialogFragment(
+                        innerContext = innerInflater.context, newProperty.address
+                    )
                     updateLocationAlertDialog.show(childFragmentManager, TAG)
                     updateLocationAlertDialog.setCallBack(this@PropertyUpdateFragment)
                 } else {
@@ -206,9 +208,9 @@ class PropertyUpdateFragment
     override fun onBackPressedCallback() {
         onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if(!isHidden) {
+                if (!isHidden) {
                     populateChanges()
-                    if(newProperty != property || newProperty.photos != property.photos) {
+                    if (newProperty != property || newProperty.photos != property.photos) {
                         confirmSaveChanges()
                     } else {
                         onBackPressed()
@@ -223,12 +225,12 @@ class PropertyUpdateFragment
         return innerInflater
     }
 
-    override fun confirmSaveChanges() {
+    fun confirmSaveChanges() {
         val builder = AlertDialog.Builder(innerInflater.context)
         with(builder) {
             setTitle(getString(R.string.confirm_save_changes_dialog_title))
             setMessage(getString(R.string.confirm_save_changes_dialog_message))
-            setPositiveButton(getString(R.string.confirm_save_changes))  { _, _ ->
+            setPositiveButton(getString(R.string.confirm_save_changes)) { _, _ ->
                 updatePropertyIntentPublisher.onNext(UpdatePropertyIntent(newProperty))
             }
             setNegativeButton(getString(R.string.no)) { _, _ -> onBackPressed() }
@@ -242,7 +244,7 @@ class PropertyUpdateFragment
     }
 
     private fun applyDisposition() {
-        if(!resources.getBoolean(R.bool.isMasterDetail)) {
+        if (!resources.getBoolean(R.bool.isMasterDetail)) {
             baseBrowseFragment.detail.requireView().layoutParams.apply {
                 width = ViewGroup.LayoutParams.MATCH_PARENT
                 height = ViewGroup.LayoutParams.MATCH_PARENT
@@ -256,7 +258,7 @@ class PropertyUpdateFragment
             title = property.titleInToolbar(resources)
             setNavigationOnClickListener {
                 populateChanges()
-                if(newProperty != property || newProperty.photos != property.photos) {
+                if (newProperty != property || newProperty.photos != property.photos) {
                     confirmSaveChanges()
                 } else {
                     onBackPressed()
@@ -269,8 +271,11 @@ class PropertyUpdateFragment
         updateItem.isVisible = false
         onBackPressedCallback.isEnabled = false
         baseBrowseFragment.detail.navController.navigate(
-            R.id.navigation_detail, bundleOf(FROM to arguments?.getString(FROM),
-                PROPERTY_ID to property.id)
+            R.id.navigation_detail,
+            bundleOf(
+                FROM to arguments?.getString(FROM),
+                PROPERTY_ID to property.id
+            )
         )
     }
 
@@ -284,4 +289,3 @@ class PropertyUpdateFragment
         }
     }
 }
-

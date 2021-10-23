@@ -25,19 +25,19 @@ class SearchMapFragment : BaseMapFragment(), OnMapReadyCallback, OnMapLoadedCall
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         innerInflater = inflater.cloneInContext(ContextThemeWrapper(activity, R.style.AppTheme_Tertiary))
-        _binding = FragmentMapBinding.inflate(innerInflater, container, false)
+        mapBinding = FragmentMapBinding.inflate(innerInflater, container, false)
         super.onCreateView(innerInflater, container, savedInstanceState)
         searchedProperties.observe(viewLifecycleOwner) { properties ->
 
-            if(properties.isNotEmpty() && binding.mapFragment.contentDescription != MAP_FINISH_LOADING) {
+            if (properties.isNotEmpty() && binding.mapFragment.contentDescription != MAP_FINISH_LOADING) {
                 initializeMap()
             }
 
-            if(properties.isNotEmpty() && binding.mapFragment.contentDescription == MAP_FINISH_LOADING) {
+            if (properties.isNotEmpty() && binding.mapFragment.contentDescription == MAP_FINISH_LOADING) {
                 super.onMapReady(mMap)
             }
 
-            if(properties.isEmpty()) {
+            if (properties.isEmpty()) {
                 mMap.clear()
                 selectedItem = null
                 items.clear()
@@ -48,5 +48,4 @@ class SearchMapFragment : BaseMapFragment(), OnMapReadyCallback, OnMapLoadedCall
         }
         return binding.root
     }
-
 }

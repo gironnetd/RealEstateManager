@@ -5,9 +5,9 @@ import com.openclassrooms.realestatemanager.data.cache.dao.PropertyDaoTest
 import com.openclassrooms.realestatemanager.data.cache.provider.AppContentProviderTest
 import com.openclassrooms.realestatemanager.data.repository.*
 import com.openclassrooms.realestatemanager.di.property.TestBrowseComponent
-import com.openclassrooms.realestatemanager.ui.MainActivityTest
-import com.openclassrooms.realestatemanager.ui.MainNavigationTest
-import com.openclassrooms.realestatemanager.ui.MainRotationTest
+import com.openclassrooms.realestatemanager.ui.main.MainActivityTest
+import com.openclassrooms.realestatemanager.ui.main.MainNavigationTest
+import com.openclassrooms.realestatemanager.ui.main.MainRotationTest
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragmentTest
 import com.openclassrooms.realestatemanager.ui.property.browse.list.BrowseListFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.browse.map.BrowseMapFragmentIntegrationTest
@@ -19,6 +19,7 @@ import com.openclassrooms.realestatemanager.ui.property.edit.dialog.photo.update
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PropertyUpdateFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.PropertyDetailFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.propertydetail.dialog.DetailPhotoDialogFragmentIntegrationTest
+import com.openclassrooms.realestatemanager.ui.property.search.MainSearchFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.search.PropertySearchFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.setting.PropertyCurrencySettingIntegrationTest
 import dagger.BindsInstance
@@ -55,6 +56,7 @@ interface TestAppComponent : AppComponent {
     fun inject(addPhotoDialogFragmentIntegrationTest: AddPhotoDialogFragmentIntegrationTest)
     fun inject(photoUpdateDialogFragmentIntegrationTest: UpdatePhotoDialogFragmentIntegrationTest)
     fun inject(searchFragmentIntegrationTest: PropertySearchFragmentIntegrationTest)
+    fun inject(mainSearchFragmentIntegrationTest: MainSearchFragmentIntegrationTest)
     fun inject(propertyCurrencySettingIntegrationTest: PropertyCurrencySettingIntegrationTest)
     fun inject(updateLocationDialogFragmentIntegrationTest: UpdateLocationDialogFragmentIntegrationTest)
     fun inject(addLocationDialogFragmentIntegrationTest: AddLocationDialogFragmentIntegrationTest)

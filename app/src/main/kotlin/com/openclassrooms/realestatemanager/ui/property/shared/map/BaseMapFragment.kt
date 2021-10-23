@@ -30,10 +30,14 @@ import com.openclassrooms.realestatemanager.ui.property.shared.BaseBrowseFragmen
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
 import com.openclassrooms.realestatemanager.util.BitmapUtil.bitmapDescriptorFromVector
 import com.openclassrooms.realestatemanager.util.Constants
+import timber.log.Timber
 import java.io.File
-import java.util.*
+import kotlin.coroutines.cancellation.CancellationException
 
-abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReadyCallback, GoogleMap.OnMapLoadedCallback {
+abstract class BaseMapFragment :
+    BaseFragment(R.layout.fragment_map),
+    OnMapReadyCallback,
+    GoogleMap.OnMapLoadedCallback {
 
     lateinit var mMap: GoogleMap
     var isMapInitialized = ::mMap.isInitialized
@@ -43,10 +47,10 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
     var selectedItem: CustomClusterItem? = null
 
     lateinit var items: LinkedHashMap<CustomClusterItem, Boolean>
-    var markers : MutableList<Marker> = mutableListOf()
+    var markers: MutableList<Marker> = mutableListOf()
 
-    protected var _binding: FragmentMapBinding? = null
-    val binding get() = _binding!!
+    protected var mapBinding: FragmentMapBinding? = null
+    val binding get() = mapBinding!!
 
     lateinit var innerInflater: LayoutInflater
 
@@ -63,12 +67,10 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
     }
 
     private fun applyDisposition() {
-
         this.parentFragment?.let {
             val detailFragment = this.parentFragment as NavHostFragment
 
-            if(resources.getBoolean(R.bool.isMasterDetail)) {
-
+            if (resources.getBoolean(R.bool.isMasterDetail)) {
                 screenWidth = screenWidth(requireActivity())
 
                 binding.mapFragment.apply {
@@ -79,7 +81,7 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
                 }
             }
 
-            if(!resources.getBoolean(R.bool.isMasterDetail)) {
+            if (!resources.getBoolean(R.bool.isMasterDetail)) {
                 val detailLayoutParams =
                     FrameLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT)
                         .apply {
@@ -106,7 +108,6 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-
         val location = CameraUpdateFactory.newLatLngZoom(defaultLocation, INITIAL_ZOOM_LEVEL)
         googleMap.moveCamera(location)
         mMap = googleMap
@@ -114,7 +115,7 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
         clusterManager = ClusterManager(context, mMap)
         mMap.setOnCameraIdleListener(clusterManager)
 
-        clusterManager.renderer = object: CustomClusterRenderer(requireContext(), mMap, clusterManager) {
+        clusterManager.renderer = object : CustomClusterRenderer(requireContext(), mMap, clusterManager) {
 
             override fun getColor(clusterSize: Int): Int {
                 return TypedValue().apply {
@@ -128,18 +129,28 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
             }
 
             override fun onClusterItemRendered(clusterItem: CustomClusterItem, marker: Marker) {
-                if(!markers.contains(marker)) {
+                if (!markers.contains(marker)) {
                     markers.add(marker)
 
                     selectedItem?.let { selectedItem ->
-                        if(marker.title == selectedItem.title) {
-                            if(!items[selectedItem]!!) {
-                                marker.setIcon(bitmapDescriptorFromVector(innerInflater.context, R.drawable.ic_marker_selected))
+                        if (marker.title == selectedItem.title) {
+                            if (!items[selectedItem]!!) {
+                                marker.setIcon(
+                                    bitmapDescriptorFromVector(
+                                        innerInflater.context,
+                                        R.drawable.ic_marker_selected
+                                    )
+                                )
                                 marker.showInfoWindow()
                                 items[selectedItem] = true
                                 mMap.setContentDescription(INFO_WINDOW_SHOWN)
                             } else {
-                                marker.setIcon(bitmapDescriptorFromVector(innerInflater.context, R.drawable.ic_marker_not_selected))
+                                marker.setIcon(
+                                    bitmapDescriptorFromVector(
+                                        innerInflater.context,
+                                        R.drawable.ic_marker_not_selected
+                                    )
+                                )
                                 marker.hideInfoWindow()
                                 items[selectedItem] = false
                                 mMap.setContentDescription(NO_INFO_WINDOW_SHOWN)
@@ -157,17 +168,20 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
         items = linkedMapOf()
 
         properties().forEach { property ->
-            val item = CustomClusterItem(property.address.latitude, property.address.longitude,
-                property.address.street, "", property.id)
+            val item = CustomClusterItem(
+                property.address.latitude, property.address.longitude,
+                property.address.street, "", property.id
+            )
             items[item] = false
             clusterManager.addItem(item)
         }
         clusterManager.cluster()
 
         mMap.setOnMapClickListener {
-            if(mMap.cameraPosition.zoom != 10f) {
+            if (mMap.cameraPosition.zoom != 10f) {
                 val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                    it, DEFAULT_ZOOM + 1.5f)
+                    it, (DEFAULT_ZOOM + markerLevelZoomWithoutInfoShown)
+                )
                 mMap.animateCamera(cameraUpdate)
             }
 
@@ -189,23 +203,39 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
             true
         }
 
-        clusterManager.setOnClusterClickListener { item  ->
+        clusterManager.setOnClusterClickListener { item ->
             var cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                LatLng(item.position.latitude, item.position.longitude), (DEFAULT_ZOOM + 1.5f))
+                LatLng(
+                    item.position.latitude,
+                    item.position.longitude
+                ),
+                (DEFAULT_ZOOM + markerLevelZoomWithoutInfoShown)
+            )
 
-            if(mMap.cameraPosition.zoom == 10f) {
+            if (mMap.cameraPosition.zoom == 10f) {
                 cameraUpdate = CameraUpdateFactory.newLatLng(
-                    LatLng(item.position.latitude, item.position.longitude))
+                    LatLng(item.position.latitude, item.position.longitude)
+                )
 
-                mMap.animateCamera(cameraUpdate, object : GoogleMap.CancelableCallback {
-                    override fun onCancel() {}
-                    override fun onFinish() {
-                        cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                            LatLng(item.position.latitude, item.position.longitude), DEFAULT_ZOOM + 1.5f)
+                mMap.animateCamera(
+                    cameraUpdate,
+                    object : GoogleMap.CancelableCallback {
+                        override fun onCancel() {
+                            Timber.e(Throwable(CancellationException()))
+                        }
+                        override fun onFinish() {
+                            cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                                LatLng(
+                                    item.position.latitude,
+                                    item.position.longitude
+                                ),
+                                (DEFAULT_ZOOM + markerLevelZoomWithoutInfoShown)
+                            )
 
-                        mMap.animateCamera(cameraUpdate, 2500, null)
+                            mMap.animateCamera(cameraUpdate, durationAnimationCamera, null)
+                        }
                     }
-                })
+                )
             } else {
                 mMap.animateCamera(cameraUpdate)
             }
@@ -215,9 +245,9 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
         this.parentFragment?.parentFragment?.let { parentFragment ->
             (parentFragment as BaseBrowseFragment?)?.let { masterDetailFragment ->
                 clusterManager.setOnClusterItemInfoWindowClickListener { item ->
-                    val bundle: Bundle = if(masterDetailFragment.detail.childFragmentManager
-                            .findFragmentByTag(R.id.navigation_detail.toString()) != null) {
-
+                    val bundle: Bundle = if (masterDetailFragment.detail.childFragmentManager
+                        .findFragmentByTag(R.id.navigation_detail.toString()) != null
+                    ) {
                         val detailFragment: PropertyDetailFragment = masterDetailFragment.detail.childFragmentManager
                             .findFragmentByTag(R.id.navigation_detail.toString()) as PropertyDetailFragment
 
@@ -272,27 +302,43 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
 
     fun zoomOnMarkerPosition(propertyId: String) {
         val property = properties().single { property -> property.id == propertyId }
-        selectedItem  = items.keys.single { item -> item.getTag() == property.id }
+        selectedItem = items.keys.single { item -> item.getTag() == property.id }
 
         selectedItem?.let { selectedItem ->
-            if(mMap.cameraPosition.zoom == 10f) {
+            if (mMap.cameraPosition.zoom == 10f) {
                 var cameraUpdate = CameraUpdateFactory.newLatLng(
-                    LatLng(selectedItem.position.latitude, selectedItem.position.longitude))
+                    LatLng(selectedItem.position.latitude, selectedItem.position.longitude)
+                )
 
-                mMap.animateCamera(cameraUpdate, object : GoogleMap.CancelableCallback {
-                    override fun onCancel() {}
-                    override fun onFinish() {
-                        cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                            LatLng(selectedItem.position.latitude, selectedItem.position.longitude), DEFAULT_ZOOM + 1.5f)
+                mMap.animateCamera(
+                    cameraUpdate,
+                    object : GoogleMap.CancelableCallback {
+                        override fun onCancel() {
+                            Timber.e(Throwable(CancellationException()))
+                        }
+                        override fun onFinish() {
+                            cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                                LatLng(
+                                    selectedItem.position.latitude,
+                                    selectedItem.position.longitude
+                                ),
+                                (DEFAULT_ZOOM + markerLevelZoomWithoutInfoShown)
+                            )
 
-                        mMap.animateCamera(cameraUpdate, 2500, object : GoogleMap.CancelableCallback {
-                            override fun onCancel() {}
-                            override fun onFinish() {
-                                showOrHideInfoWindow()
-                            }
-                        })
+                            mMap.animateCamera(
+                                cameraUpdate, durationAnimationCamera,
+                                object : GoogleMap.CancelableCallback {
+                                    override fun onCancel() {
+                                        Timber.e(Throwable(CancellationException()))
+                                    }
+                                    override fun onFinish() {
+                                        showOrHideInfoWindow()
+                                    }
+                                }
+                            )
+                        }
                     }
-                })
+                )
             } else {
                 showOrHideInfoWindow()
             }
@@ -304,66 +350,112 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
 
         for ((item, _) in items) {
             items[item] = false
-            markers.forEach { marker -> marker.setIcon(bitmapDescriptorFromVector(innerInflater.context, R.drawable.ic_marker_not_selected)) }
+            markers.forEach { marker ->
+                marker.setIcon(
+                    bitmapDescriptorFromVector(
+                        innerInflater.context,
+                        R.drawable.ic_marker_not_selected
+                    )
+                )
+            }
         }
 
         var cameraUpdate: CameraUpdate
-        if(!isInfoWindowShown) {
+        if (!isInfoWindowShown) {
             selectedItem?.let { selectedItem ->
-                cameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(selectedItem.position.latitude,
-                    selectedItem.position.longitude), (DEFAULT_ZOOM + 3))
+                cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                    LatLng(
+                        selectedItem.position.latitude,
+                        selectedItem.position.longitude
+                    ),
+                    (DEFAULT_ZOOM + markerLevelZoomWithInfoShown)
+                )
 
-                if(mMap.cameraPosition.zoom == 10f) {
+                if (mMap.cameraPosition.zoom == 10f) {
                     cameraUpdate = CameraUpdateFactory.newLatLng(
-                        LatLng(selectedItem.position.latitude, selectedItem.position.longitude))
+                        LatLng(selectedItem.position.latitude, selectedItem.position.longitude)
+                    )
 
-                    mMap.animateCamera(cameraUpdate, object: GoogleMap.CancelableCallback {
-                        override fun onCancel() {}
-                        override fun onFinish() {
-                            cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                                LatLng(selectedItem.position.latitude, selectedItem.position.longitude), DEFAULT_ZOOM + 1.5f)
+                    mMap.animateCamera(
+                        cameraUpdate,
+                        object : GoogleMap.CancelableCallback {
+                            override fun onCancel() {
+                                Timber.e(Throwable(CancellationException()))
+                            }
+                            override fun onFinish() {
+                                cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                                    LatLng(
+                                        selectedItem.position.latitude,
+                                        selectedItem.position.longitude
+                                    ),
+                                    (DEFAULT_ZOOM + markerLevelZoomWithoutInfoShown)
+                                )
 
-                            mMap.animateCamera(cameraUpdate, 2500, null)
+                                mMap.animateCamera(cameraUpdate, durationAnimationCamera, null)
+                            }
                         }
-                    })
+                    )
                 } else {
-                    mMap.animateCamera(cameraUpdate, object : GoogleMap.CancelableCallback {
-                        override fun onCancel() {}
-                        override fun onFinish() {
-                            val marker = markers.find { marker -> marker.title == selectedItem.title }
-                            marker?.let {
-                                if (!items[selectedItem]!!) {
-                                    marker.setIcon(bitmapDescriptorFromVector(innerInflater.context, R.drawable.ic_marker_selected))
-                                    it.showInfoWindow()
-                                    items[selectedItem] = true
-                                    mMap.setContentDescription(INFO_WINDOW_SHOWN)
+                    mMap.animateCamera(
+                        cameraUpdate,
+                        object : GoogleMap.CancelableCallback {
+                            override fun onCancel() {
+                                Timber.e(Throwable(CancellationException()))
+                            }
+                            override fun onFinish() {
+                                val marker = markers.find { marker -> marker.title == selectedItem.title }
+                                marker?.let {
+                                    if (!items[selectedItem]!!) {
+                                        marker.setIcon(
+                                            bitmapDescriptorFromVector(
+                                                innerInflater.context,
+                                                R.drawable.ic_marker_selected
+                                            )
+                                        )
+                                        it.showInfoWindow()
+                                        items[selectedItem] = true
+                                        mMap.setContentDescription(INFO_WINDOW_SHOWN)
+                                    }
                                 }
                             }
                         }
-                    })
+                    )
                 }
             }
         } else {
             selectedItem?.let { selectedItem ->
-                cameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(selectedItem.position.latitude,
-                    selectedItem.position.longitude), DEFAULT_ZOOM + 1.5f)
-                mMap.animateCamera(cameraUpdate, object : GoogleMap.CancelableCallback {
-                    override fun onCancel() {}
-                    override fun onFinish() {
-                        val marker = markers.find { marker -> marker.title == selectedItem.title }
-                        marker?.let {
-                            marker.setIcon(bitmapDescriptorFromVector(innerInflater.context, R.drawable.ic_marker_not_selected))
-                            marker.hideInfoWindow()
-                            items[selectedItem] = false
-                            mMap.setContentDescription(NO_INFO_WINDOW_SHOWN)
+                cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                    LatLng(
+                        selectedItem.position.latitude,
+                        selectedItem.position.longitude
+                    ),
+                    (DEFAULT_ZOOM + markerLevelZoomWithoutInfoShown)
+                )
+                mMap.animateCamera(
+                    cameraUpdate,
+                    object : GoogleMap.CancelableCallback {
+                        override fun onCancel() {
+                            Timber.e(Throwable(CancellationException()))
+                        }
+                        override fun onFinish() {
+                            val marker = markers.find { marker -> marker.title == selectedItem.title }
+                            marker?.let {
+                                marker.setIcon(
+                                    bitmapDescriptorFromVector(
+                                        innerInflater.context,
+                                        R.drawable.ic_marker_not_selected
+                                    )
+                                )
+                                marker.hideInfoWindow()
+                                items[selectedItem] = false
+                                mMap.setContentDescription(NO_INFO_WINDOW_SHOWN)
+                            }
                         }
                     }
-                })
+                )
             }
         }
     }
-
-    override fun initializeToolbar() {}
 
     companion object {
         var DEFAULT_ZOOM: Float = 15f
@@ -371,6 +463,10 @@ abstract class BaseMapFragment : BaseFragment(R.layout.fragment_map), OnMapReady
 
         private var paris = LatLng(48.862725, 2.287592)
         var defaultLocation = paris
+
+        const val durationAnimationCamera = 2500
+        const val markerLevelZoomWithoutInfoShown = 1.5f
+        const val markerLevelZoomWithInfoShown = 3
 
         // constant variable to perform ui automator testing
         const val MAP_NOT_FINISH_LOADING = "map_not_finish_loading"

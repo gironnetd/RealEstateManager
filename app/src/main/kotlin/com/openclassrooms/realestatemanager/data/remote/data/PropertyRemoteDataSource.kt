@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 @Singleton
 class PropertyRemoteDataSource
-@Inject constructor(private var firestore: FirebaseFirestore): PropertyDataSource {
+@Inject constructor(private var firestore: FirebaseFirestore) : PropertyDataSource {
 
     override fun count(): Single<Int> {
         return Single.create { emitter ->
@@ -63,12 +63,16 @@ class PropertyRemoteDataSource
             firestore.collection(Constants.PROPERTIES_COLLECTION).document(id).get()
                 .addOnSuccessListener { result ->
                     val property = result.toObject(Property::class.java)
-                    if(property != null) {
+                    if (property != null) {
                         emitter.onSuccess(property)
                     } else {
-                        emitter.onError(FirebaseFirestoreException("Property by id: $id not found ", FirebaseFirestoreException.Code.NOT_FOUND))
+                        emitter.onError(
+                            FirebaseFirestoreException(
+                                "Property by id: $id not found ",
+                                FirebaseFirestoreException.Code.NOT_FOUND
+                            )
+                        )
                     }
-
                 }.addOnFailureListener {
                     emitter.onError(it)
                 }
@@ -84,7 +88,7 @@ class PropertyRemoteDataSource
                         result.toObject(Property::class.java)?.let { property ->
                             properties.add(property)
                         }
-                        if(id == ids.last()) {
+                        if (id == ids.last()) {
                             emitter.onSuccess(properties)
                         }
                     }
@@ -97,16 +101,21 @@ class PropertyRemoteDataSource
             firestore.collection(Constants.PROPERTIES_COLLECTION)
                 .orderBy(Property.COLUMN_PROPERTY_ID, Query.Direction.ASCENDING)
                 .get().addOnCompleteListener { task ->
-                    if(task.isComplete &&  task.isSuccessful) {
+                    if (task.isComplete && task.isSuccessful) {
                         task.result?.let { result ->
-                            if(result.documents.isNotEmpty()) {
+                            if (result.documents.isNotEmpty()) {
                                 emitter.onSuccess(result.toObjects(Property::class.java))
                             } else {
                                 emitter.onSuccess(emptyList())
                             }
                         } ?: emitter.onSuccess(emptyList())
                     } else {
-                        emitter.onError(FirebaseFirestoreException("Find All Properties Aborted", FirebaseFirestoreException.Code.ABORTED))
+                        emitter.onError(
+                            FirebaseFirestoreException(
+                                "Find All Properties Aborted",
+                                FirebaseFirestoreException.Code.ABORTED
+                            )
+                        )
                     }
                 }.addOnFailureListener { exception -> emitter.onError(exception) }
         }
@@ -119,10 +128,15 @@ class PropertyRemoteDataSource
                 transaction.set(documentRef, property)
                 null
             }.addOnCompleteListener { task ->
-                if(task.isComplete &&  task.isSuccessful) {
+                if (task.isComplete && task.isSuccessful) {
                     emitter.onComplete()
                 } else {
-                    emitter.onError(FirebaseFirestoreException("Property: ${property.id} Update Aborted", FirebaseFirestoreException.Code.ABORTED))
+                    emitter.onError(
+                        FirebaseFirestoreException(
+                            "Property: ${property.id} Update Aborted",
+                            FirebaseFirestoreException.Code.ABORTED
+                        )
+                    )
                 }
             }.addOnFailureListener { exception -> emitter.onError(exception) }
         }
@@ -132,7 +146,7 @@ class PropertyRemoteDataSource
         return Completable.create { emitter ->
             properties.forEach { property ->
                 firestore.collection(Constants.PROPERTIES_COLLECTION).document(property.id).set(property)
-                if(property.id == properties.last().id) { emitter.onComplete() }
+                if (property.id == properties.last().id) { emitter.onComplete() }
             }
         }
     }
@@ -141,7 +155,7 @@ class PropertyRemoteDataSource
         return Completable.create { emitter ->
             ids.forEach { id ->
                 firestore.collection(Constants.PROPERTIES_COLLECTION).document(id).delete()
-                if(id == ids.last()) { emitter.onComplete() }
+                if (id == ids.last()) { emitter.onComplete() }
             }
         }
     }
@@ -163,7 +177,7 @@ class PropertyRemoteDataSource
     override fun deletePropertyById(id: String): Completable {
         return Completable.create { emitter ->
             firestore.collection(Constants.PROPERTIES_COLLECTION).document(id).delete().addOnCompleteListener { task ->
-                if(task.isComplete && task.isSuccessful) {
+                if (task.isComplete && task.isSuccessful) {
                     emitter.onComplete()
                 }
             }.addOnFailureListener {

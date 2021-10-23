@@ -35,7 +35,7 @@ class PropertyCacheDataSource
         return Single.fromCallable {
             propertyDao.findPropertyById(id).toList { Property(it) }.single()
         }.subscribeOn(SchedulerProvider.io()).flatMap { property ->
-           Single.just(property)
+            Single.just(property)
         }
     }
 
@@ -43,7 +43,7 @@ class PropertyCacheDataSource
         return Single.fromCallable { propertyDao.findPropertiesByIds(ids) }.subscribeOn(SchedulerProvider.io())
             .flatMap { Single.just(it) }
     }
-    
+
     override fun findAllProperties(): Single<List<Property>> {
         return Single.fromCallable {
             propertyDao.findAllProperties().toList { Property(it) }
@@ -58,8 +58,11 @@ class PropertyCacheDataSource
     }
 
     override fun updateProperties(properties: List<Property>): Completable {
-        return Completable.fromAction { propertyDao.updateProperties(*properties.toTypedArray()) }
-            .subscribeOn(SchedulerProvider.io())
+        return Completable.fromAction {
+            properties.forEach { property ->
+                propertyDao.updateProperty(property)
+            }
+        }.subscribeOn(SchedulerProvider.io())
     }
 
     override fun deletePropertiesByIds(ids: List<String>): Completable {
@@ -68,8 +71,11 @@ class PropertyCacheDataSource
     }
 
     override fun deleteProperties(properties: List<Property>): Completable {
-        return Completable.fromAction { propertyDao.deleteProperties(*properties.toTypedArray()) }
-            .subscribeOn(SchedulerProvider.io())
+        return Completable.fromAction {
+            properties.forEach { property ->
+                propertyDao.deletePropertyById(property.id)
+            }
+        }.subscribeOn(SchedulerProvider.io())
     }
     override fun deleteAllProperties(): Completable {
         return Completable.fromAction { propertyDao.deleteAllProperties() }

@@ -18,40 +18,40 @@ import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.models.property.Property
 import kotlin.properties.Delegates
 
-abstract class BaseFragment
-constructor(@LayoutRes private val layoutRes: Int): Fragment(layoutRes) {
+open class BaseFragment
+constructor(@LayoutRes private val layoutRes: Int) : Fragment(layoutRes) {
 
-        protected val none by lazy { resources.getString(R.string.none) }
-        protected val colorPrimary by lazy { ContextCompat.getColor(requireContext(), R.color.colorPrimary) }
+    protected val none by lazy { resources.getString(R.string.none) }
+    protected val colorPrimary by lazy { ContextCompat.getColor(requireContext(), R.color.colorPrimary) }
 
-        var screenWidth by Delegates.notNull<Int>()
-        val masterWidthWeight = TypedValue()
-        val detailWidthWeight = TypedValue()
+    var screenWidth by Delegates.notNull<Int>()
+    val masterWidthWeight = TypedValue()
+    val detailWidthWeight = TypedValue()
 
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-                initializeToolbar()
-                return super.onCreateView(inflater, container, savedInstanceState)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        initializeToolbar()
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
+    open fun initializeToolbar() {}
+
+    fun screenWidth(@NonNull activity: Activity): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val windowMetrics = activity.windowManager.currentWindowMetrics
+            val insets: Insets = windowMetrics.windowInsets
+                .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
+            windowMetrics.bounds.width() - insets.left - insets.right
+        } else {
+            val displayManager = requireContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
+            val display = displayManager.getDisplay(Display.DEFAULT_DISPLAY)
+            val displayMetrics = DisplayMetrics()
+            display.getRealMetrics(displayMetrics)
+            displayMetrics.widthPixels
         }
+    }
 
-        abstract fun initializeToolbar()
-
-        fun screenWidth(@NonNull activity: Activity): Int {
-                return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        val windowMetrics = activity.windowManager.currentWindowMetrics
-                        val insets: Insets = windowMetrics.windowInsets
-                                .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-                        windowMetrics.bounds.width() - insets.left - insets.right
-                } else {
-                        val displayManager = requireContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
-                        val display = displayManager.getDisplay(Display.DEFAULT_DISPLAY)
-                        val displayMetrics = DisplayMetrics()
-                        display.getRealMetrics(displayMetrics)
-                        displayMetrics.widthPixels
-                }
-        }
-
-        companion object {
-                val properties: MutableLiveData<MutableList<Property>> = MutableLiveData<MutableList<Property>>()
-                val defaultCurrency: MutableLiveData<String> = MutableLiveData()
-        }
+    companion object {
+        val properties: MutableLiveData<MutableList<Property>> = MutableLiveData<MutableList<Property>>()
+        val defaultCurrency: MutableLiveData<String> = MutableLiveData()
+    }
 }

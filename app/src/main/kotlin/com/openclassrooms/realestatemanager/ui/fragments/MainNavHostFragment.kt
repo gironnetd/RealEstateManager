@@ -15,7 +15,7 @@ class MainNavHostFragment : NavHostFragment() {
 
     override fun onAttach(context: Context) {
         (activity?.application as BaseApplication).appComponent
-                .inject(this)
+            .inject(this)
         childFragmentManager.fragmentFactory = mainFragmentFactory
         super.onAttach(context)
     }

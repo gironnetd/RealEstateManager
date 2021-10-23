@@ -24,10 +24,6 @@ class SearchLocationAdapter(val context: Context) : RecyclerView.Adapter<SearchL
         fun onSearchItemClick(placeId: String)
     }
 
-    private var callBack: SearchListener? = null
-
-    fun setCallBack(listener: SearchListener) { callBack = listener }
-
     private val diffCallback = object : DiffUtil.ItemCallback<AutocompletePrediction>() {
 
         override fun areItemsTheSame(oldItem: AutocompletePrediction, newItem: AutocompletePrediction): Boolean {
@@ -41,9 +37,18 @@ class SearchLocationAdapter(val context: Context) : RecyclerView.Adapter<SearchL
 
     val differ = AsyncListDiffer(this, diffCallback)
 
+    private var callBack: SearchListener? = null
+
+    fun setCallBack(listener: SearchListener) { callBack = listener }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocationViewHolder {
-        return LocationViewHolder(from(context).inflate(R.layout.layout_search_location_item,
-            parent, false), callBack)
+        return LocationViewHolder(
+            from(context).inflate(
+                R.layout.layout_search_location_item,
+                parent, false
+            ),
+            callBack
+        )
     }
 
     override fun onBindViewHolder(holder: LocationViewHolder, position: Int) {
@@ -76,12 +81,12 @@ class SearchLocationAdapter(val context: Context) : RecyclerView.Adapter<SearchL
                 primaryText.setSpan(StyleSpan(BOLD), 0, primaryText.length, 0)
                 stringBuilder.append(primaryText)
 
-                if(prediction.getSecondaryText(null).toString().isNotEmpty()) {
+                if (prediction.getSecondaryText(null).toString().isNotEmpty()) {
                     stringBuilder.append(", ")
 
                     val secondaryText = SpannableString(prediction.getSecondaryText(null))
                     secondaryText.setSpan(StyleSpan(NORMAL), 0, secondaryText.length, 0)
-                    secondaryText.setSpan(ForegroundColorSpan(Color.DKGRAY),0, secondaryText.length, 0 )
+                    secondaryText.setSpan(ForegroundColorSpan(Color.DKGRAY), 0, secondaryText.length, 0)
                     stringBuilder.append(secondaryText)
                 }
 

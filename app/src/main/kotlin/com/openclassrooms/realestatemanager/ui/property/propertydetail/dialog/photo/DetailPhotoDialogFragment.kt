@@ -32,10 +32,11 @@ class DetailPhotoDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_de
                 setView(binding.root)
                 create()
             }
-        } ?: throw IllegalStateException("Activity cannot be null")
+        } ?: throw error("Activity cannot be null")
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         applyDialogDimension()
         displayDetail()
@@ -63,22 +64,23 @@ class DetailPhotoDialogFragment : BaseDialogFragment(R.layout.fragment_dialog_de
 
     private fun displayDetail() {
         photo?.let { photo ->
-            if(photo.id.isNotEmpty() && photo.propertyId.isNotEmpty() ) {
-                if(photo.bitmap != null) {
+            if (photo.id.isNotEmpty() && photo.propertyId.isNotEmpty()) {
+                if (photo.bitmap != null) {
                     binding.photoImageView.setImageBitmap(photo.bitmap)
                 } else {
                     val localFile = File(photo.storageLocalDatabase(requireContext().cacheDir, true))
-                    if(localFile.exists()) {  binding.photoImageView.setImageURI(localFile.toUri()) }
+                    if (localFile.exists()) { binding.photoImageView.setImageURI(localFile.toUri()) }
                 }
             }
 
-            if(photo.type != PhotoType.NONE) {
+            if (photo.type != PhotoType.NONE) {
                 binding.labelPhotoImage.text = resources.getString(photo.type.type)
                     .replaceFirstChar {
-                        if (it.isLowerCase())
+                        if (it.isLowerCase()) {
                             it.titlecase(Locale.getDefault())
-                        else
+                        } else {
                             it.toString()
+                        }
                     }
             }
             binding.description.setText(photo.description)

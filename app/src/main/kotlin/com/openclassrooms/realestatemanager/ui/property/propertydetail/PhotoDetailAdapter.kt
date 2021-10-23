@@ -17,14 +17,6 @@ import java.util.*
 
 class PhotoDetailAdapter(val context: Context) : RecyclerView.Adapter<PhotoViewHolder>() {
 
-    interface OnItemClickListener {
-        fun clickOnPhotoAtPosition(photoId: String)
-    }
-
-    private var callBack: OnItemClickListener? = null
-
-    fun setOnItemClickListener(listener: OnItemClickListener) { callBack = listener }
-
     private val diffCallback = object : DiffUtil.ItemCallback<Photo>() {
 
         override fun areItemsTheSame(oldItem: Photo, newItem: Photo): Boolean {
@@ -34,14 +26,24 @@ class PhotoDetailAdapter(val context: Context) : RecyclerView.Adapter<PhotoViewH
         override fun areContentsTheSame(oldItem: Photo, newItem: Photo): Boolean {
             return oldItem == newItem
         }
-
     }
     private val differ = AsyncListDiffer(this, diffCallback)
 
+    interface OnItemClickListener {
+        fun clickOnPhotoAtPosition(photoId: String)
+    }
+
+    private var callBack: OnItemClickListener? = null
+
+    fun setOnItemClickListener(listener: OnItemClickListener) { callBack = listener }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
-        return PhotoViewHolder(from(context).inflate(R.layout.layout_photo_list_item,
-            parent,
-            false),
+        return PhotoViewHolder(
+            from(context).inflate(
+                R.layout.layout_photo_list_item,
+                parent,
+                false
+            ),
             callBack
         )
     }
@@ -69,18 +71,23 @@ class PhotoDetailAdapter(val context: Context) : RecyclerView.Adapter<PhotoViewH
 
         fun bind(item: Photo) = with(itemView) {
             item.let { photo ->
-                if(photo.bitmap != null) {
+                if (photo.bitmap != null) {
                     this@PhotoViewHolder.photo.setImageBitmap(photo.bitmap)
-                    this@PhotoViewHolder.photo.setPadding(0,0,0,0)
+                    this@PhotoViewHolder.photo.setPadding(0, 0, 0, 0)
                 } else {
                     this@PhotoViewHolder.photo.setImageBitmap(null)
-                    this@PhotoViewHolder.photo.setPadding(32,32,32,32)
+                    this@PhotoViewHolder.photo.setPadding(
+                        emptyPhotoPadding,
+                        emptyPhotoPadding,
+                        emptyPhotoPadding,
+                        emptyPhotoPadding
+                    )
                     this@PhotoViewHolder.photo.setImageResource(R.drawable.ic_baseline_no_photography_24)
                 }
 
-                if(photo.mainPhoto) {
-                    type.text =  resources.getString(PhotoType.MAIN.type).uppercase(Locale.getDefault())
-                } else if(photo.type != PhotoType.NONE) {
+                if (photo.mainPhoto) {
+                    type.text = resources.getString(PhotoType.MAIN.type).uppercase(Locale.getDefault())
+                } else if (photo.type != PhotoType.NONE) {
                     type.text = resources.getString(photo.type.type).uppercase(Locale.getDefault())
                 }
 
@@ -89,5 +96,9 @@ class PhotoDetailAdapter(val context: Context) : RecyclerView.Adapter<PhotoViewH
                 }
             }
         }
+    }
+
+    companion object {
+        const val emptyPhotoPadding = 32
     }
 }

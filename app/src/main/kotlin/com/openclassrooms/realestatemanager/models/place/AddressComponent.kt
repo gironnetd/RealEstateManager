@@ -2,7 +2,7 @@ package com.openclassrooms.realestatemanager.models.place
 
 import com.google.gson.annotations.SerializedName
 
-data class AddressComponent (
+data class AddressComponent(
     @SerializedName(value = "long_name")
     val longName: String,
 

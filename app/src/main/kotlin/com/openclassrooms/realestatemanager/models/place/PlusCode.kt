@@ -2,7 +2,7 @@ package com.openclassrooms.realestatemanager.models.place
 
 import com.google.gson.annotations.SerializedName
 
-data class PlusCode (
+data class PlusCode(
     @SerializedName(value = "compound_code")
     val compoundCode: String,
 

@@ -64,9 +64,9 @@ class DetailPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
 
         fakeProperties[itemPosition].photos.forEach { photo ->
-            val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext.cacheDir,true))
+            val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext.cacheDir, true))
 
-            if(!photoFile.exists()) {
+            if (!photoFile.exists()) {
                 val defaultImage = testApplication.resources.getDrawable(R.drawable.default_image, null)
 
                 val outputStream = FileOutputStream(photoFile, true)
@@ -81,10 +81,10 @@ class DetailPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
     @After
     public override fun tearDown() {
         fakeProperties[itemPosition].photos.forEach { photo ->
-            val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext.cacheDir,true))
-            if(photoFile.exists()) { photoFile.delete() }
+            val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext.cacheDir, true))
+            if (photoFile.exists()) { photoFile.delete() }
         }
-        if(BaseFragment.properties.value != null) { BaseFragment.properties.value!!.clear() }
+        if (BaseFragment.properties.value != null) { BaseFragment.properties.value!!.clear() }
         (propertiesRepository as DefaultPropertyRepository).cachedProperties.clear()
         super.tearDown()
     }
@@ -144,10 +144,10 @@ class DetailPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
 
         // Then Update fragment rotate
         val orientation = mainActivity.applicationContext.resources.configuration.orientation
-        if(orientation == Configuration.ORIENTATION_PORTRAIT) {
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             onView(isRoot()).perform(orientationLandscape(mainActivity))
         }
-        if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             onView(isRoot()).perform(orientationPortrait(mainActivity))
         }
 
@@ -180,26 +180,31 @@ class DetailPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
 
         // Then Update fragment rotate
         val orientation = mainActivity.applicationContext.resources.configuration.orientation
-        if(orientation == Configuration.ORIENTATION_PORTRAIT) {
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             onView(isRoot()).perform(orientationLandscape(mainActivity))
         }
-        if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             onView(isRoot()).perform(orientationPortrait(mainActivity))
         }
         onView(withId(R.id.photo_detail_dialog_fragment))
             .check(matches(isDisplayed()))
 
         onView(allOf(withId(R.id.label_photo_image), isDisplayed()))
-            .check(matches(withText(
-                testApplication.resources.getString(
-                    fakeProperties[itemPosition].photos[photoDetailPosition].type.type
-                ).replaceFirstChar {
-                    if (it.isLowerCase())
-                        it.titlecase(Locale.getDefault())
-                    else
-                        it.toString()
-                }
-            )))
+            .check(
+                matches(
+                    withText(
+                        testApplication.resources.getString(
+                            fakeProperties[itemPosition].photos[photoDetailPosition].type.type
+                        ).replaceFirstChar {
+                            if (it.isLowerCase()) {
+                                it.titlecase(Locale.getDefault())
+                            } else {
+                                it.toString()
+                            }
+                        }
+                    )
+                )
+            )
 
         onView(allOf(withId(R.id.description), isDisplayed()))
             .check(matches(withText(fakeProperties[itemPosition].photos[photoDetailPosition].description)))
@@ -228,7 +233,7 @@ class DetailPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
         }
 
         var photoTypeResId: Int = -1
-        when(fakeProperties[itemPosition].photos[photoDetailPosition].type) {
+        when (fakeProperties[itemPosition].photos[photoDetailPosition].type) {
             PhotoType.LOUNGE -> { photoTypeResId = PhotoType.LOUNGE.type }
             PhotoType.FACADE -> { photoTypeResId = PhotoType.FACADE.type }
             PhotoType.KITCHEN -> { photoTypeResId = PhotoType.KITCHEN.type }
@@ -243,10 +248,11 @@ class DetailPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
                     withText(
                         testApplication.resources.getString(photoTypeResId)
                             .replaceFirstChar {
-                                if (it.isLowerCase())
+                                if (it.isLowerCase()) {
                                     it.titlecase(Locale.getDefault())
-                                else
+                                } else {
                                     it.toString()
+                                }
                             }
                     )
                 )
@@ -262,8 +268,9 @@ class DetailPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
 
         val viewHolderPhotoBitmap = (viewHolder.photo.drawable as BitmapDrawable).bitmap
 
-        val updateDialogPhotoBitmap = (propertyDetailFragment.detailPhotoAlertDialog.binding.
-        photoImageView.drawable as BitmapDrawable).bitmap
+        val updateDialogPhotoBitmap = (
+            propertyDetailFragment.detailPhotoAlertDialog.binding.photoImageView.drawable as BitmapDrawable
+            ).bitmap
 
         assertThat(sameAs(viewHolderPhotoBitmap, updateDialogPhotoBitmap)).isTrue()
     }

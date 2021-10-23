@@ -19,25 +19,26 @@ import javax.inject.Singleton
 
 @Singleton
 class PhotoRemoteDataSource
-@Inject constructor(private val firestore: FirebaseFirestore): PhotoDataSource {
+@Inject constructor(private val firestore: FirebaseFirestore) : PhotoDataSource {
 
     override fun count(): Single<Int> {
         return Single.create { emitter ->
             firestore.collection(Constants.PROPERTIES_COLLECTION).get().addOnCompleteListener { task ->
                 task.result?.let { result ->
-                    if(result.documents.isNotEmpty()) {
+                    if (result.documents.isNotEmpty()) {
                         var photosCount = 0
                         result.documents.forEach { document ->
-                            document.reference.collection(Constants.PHOTOS_COLLECTION).get().addOnCompleteListener { task ->
-                                if(task.isSuccessful) {
-                                    task.result?.let { result ->
-                                        photosCount += result.count()
+                            document.reference.collection(Constants.PHOTOS_COLLECTION).get()
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        task.result?.let { result ->
+                                            photosCount += result.count()
+                                        }
+                                    }
+                                    if (document.id == result.documents.last().id) {
+                                        emitter.onSuccess(photosCount)
                                     }
                                 }
-                                if(document.id == result.documents.last().id) {
-                                    emitter.onSuccess(photosCount)
-                                }
-                            }
                         }
                     } else {
                         emitter.onSuccess(0)
@@ -91,9 +92,11 @@ class PhotoRemoteDataSource
     }
 
     override fun findPhotoById(id: String): Single<Photo> {
-        return findAllPhotos().map { photos -> photos.single { photo ->
-            photo.id == id
-        } }
+        return findAllPhotos().map { photos ->
+            photos.single { photo ->
+                photo.id == id
+            }
+        }
     }
 
     override fun findPhotosByIds(ids: List<String>): Single<List<Photo>> {
@@ -105,18 +108,22 @@ class PhotoRemoteDataSource
     override fun findPhotosByPropertyId(propertyId: String): Single<List<Photo>> {
         return Single.create { emitter ->
             try {
-                Tasks.await(firestore.collection(Constants.PROPERTIES_COLLECTION).document(propertyId)
-                    .collection(Constants.PHOTOS_COLLECTION).get()
-                    .addOnCompleteListener { task ->
-                        task.result?.let { result ->
-                            val photosByPropertyId = result.toObjects(Photo::class.java)
-                            photosByPropertyId.forEach { photo -> photo.propertyId = propertyId }
-                            emitter.onSuccess(photosByPropertyId)
-                        } ?: emitter.onError(java.lang.NullPointerException("No Photos Found for property: $propertyId"))
-                    }.addOnFailureListener { exception ->
-                        emitter.onError(exception)
-                    })
-            }   catch (e: ExecutionException) {
+                Tasks.await(
+                    firestore.collection(Constants.PROPERTIES_COLLECTION).document(propertyId)
+                        .collection(Constants.PHOTOS_COLLECTION).get()
+                        .addOnCompleteListener { task ->
+                            task.result?.let { result ->
+                                val photosByPropertyId = result.toObjects(Photo::class.java)
+                                photosByPropertyId.forEach { photo -> photo.propertyId = propertyId }
+                                emitter.onSuccess(photosByPropertyId)
+                            } ?: emitter.onError(
+                                NullPointerException("No Photos Found for property: $propertyId")
+                            )
+                        }.addOnFailureListener { exception ->
+                            emitter.onError(exception)
+                        }
+                )
+            } catch (e: ExecutionException) {
                 e.printStackTrace()
             } catch (e: InterruptedException) {
                 e.printStackTrace()
@@ -125,17 +132,19 @@ class PhotoRemoteDataSource
     }
 
     override fun findAllPhotos(): Single<List<Photo>> {
-        return Single.create( SingleOnSubscribe<List<Property>> { emitter ->
-            firestore.collection(Constants.PROPERTIES_COLLECTION)
-                .orderBy(Property.COLUMN_PROPERTY_ID, Query.Direction.ASCENDING).get()
-                .addOnSuccessListener { result ->
-                    emitter.onSuccess(result.toObjects(Property::class.java))
-                }
-        }).flatMap { properties ->
+        return Single.create(
+            SingleOnSubscribe<List<Property>> { emitter ->
+                firestore.collection(Constants.PROPERTIES_COLLECTION)
+                    .orderBy(Property.COLUMN_PROPERTY_ID, Query.Direction.ASCENDING).get()
+                    .addOnSuccessListener { result ->
+                        emitter.onSuccess(result.toObjects(Property::class.java))
+                    }
+            }
+        ).flatMap { properties ->
             Observable.fromIterable(properties).flatMapSingle { property ->
                 findPhotosByPropertyId(property.id)
             }.subscribeOn(SchedulerProvider.io()).toList().flatMap {
-                val photos: List<Photo> = listOf(*it.toTypedArray()).flatten()
+                val photos: List<Photo> = it.flatten()
                 Single.just(photos)
             }
         }
@@ -203,22 +212,25 @@ class PhotoRemoteDataSource
         return Completable.create { emitter ->
             firestore.collection(Constants.PROPERTIES_COLLECTION).get().addOnSuccessListener {
                 it?.let { result ->
-                    if(result.documents.isNotEmpty()) {
+                    if (result.documents.isNotEmpty()) {
                         result.documents.forEach { document ->
-                            document.reference.collection(Constants.PHOTOS_COLLECTION).get().addOnCompleteListener { task ->
-                                if(task.isSuccessful) {
-                                    task.result?.let { result ->
-                                        if(result.documents.isNotEmpty()) {
-                                            result.documents.forEach { document ->
-                                                document.reference.delete()
+                            document.reference.collection(Constants.PHOTOS_COLLECTION).get()
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        task.result?.let { result ->
+                                            if (result.documents.isNotEmpty()) {
+                                                result.documents.forEach { document ->
+                                                    document.reference.delete()
+                                                }
                                             }
-                                        }
-                                    } ?: emitter.onError(NullPointerException("No Photos for Property: ${document.id}"))
+                                        } ?: emitter.onError(
+                                            NullPointerException("No Photos for Property: ${document.id}")
+                                        )
+                                    }
+                                    if (document.id == result.documents.last().id) {
+                                        emitter.onComplete()
+                                    }
                                 }
-                                if(document.id == result.documents.last().id) {
-                                    emitter.onComplete()
-                                }
-                            }
                         }
                     } else { emitter.onComplete() }
                 }

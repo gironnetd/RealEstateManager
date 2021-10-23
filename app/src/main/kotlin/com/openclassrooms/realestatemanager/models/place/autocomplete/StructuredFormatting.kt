@@ -2,7 +2,7 @@ package com.openclassrooms.realestatemanager.models.place.autocomplete
 
 import com.google.gson.annotations.SerializedName
 
-data class StructuredFormatting (
+data class StructuredFormatting(
     @SerializedName(value = "main_text")
     val mainText: String,
 

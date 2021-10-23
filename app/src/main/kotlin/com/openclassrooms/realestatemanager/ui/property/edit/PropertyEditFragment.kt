@@ -3,7 +3,6 @@ package com.openclassrooms.realestatemanager.ui.property.edit
 import android.app.DatePickerDialog
 import android.graphics.Color
 import android.text.InputType.TYPE_CLASS_TEXT
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -23,6 +22,7 @@ import com.openclassrooms.realestatemanager.models.property.InterestPoint
 import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.models.property.PropertyStatus
 import com.openclassrooms.realestatemanager.models.property.PropertyType
+import com.openclassrooms.realestatemanager.ui.property.edit.dialog.photo.EditPhotoDialogFragment.Companion.TAG
 import com.openclassrooms.realestatemanager.ui.property.edit.dialog.photo.add.AddPhotoDialogFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.dialog.photo.update.UpdatePhotoDialogFragment
 import com.openclassrooms.realestatemanager.ui.property.edit.update.PhotoUpdateAdapter
@@ -38,8 +38,8 @@ abstract class PropertyEditFragment
 constructor(var registry: ActivityResultRegistry?) :
     BaseFragment(R.layout.fragment_edit), PhotoUpdateAdapter.OnItemClickListener {
 
-    var _binding: FragmentEditBinding? = null
-    val binding get() = _binding!!
+    var editBinding: FragmentEditBinding? = null
+    val binding get() = editBinding!!
 
     lateinit var onBackPressedCallback: OnBackPressedCallback
 
@@ -52,25 +52,8 @@ constructor(var registry: ActivityResultRegistry?) :
 
     val baseBrowseFragment by lazy { requireParentFragment().parentFragment as BaseBrowseFragment }
 
-    abstract fun confirmSaveChanges()
     abstract fun onBackPressedCallback()
     abstract fun layoutInflater(): LayoutInflater
-
-    abstract override fun initializeToolbar()
-
-    /*override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        super.onCreateView(inflater, container, savedInstanceState)
-
-        return binding.root
-    }*/
-
-    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        // configureView()
-        setHasOptionsMenu(true)
-        onBackPressedCallback()
-        initPriceWithDefaultCurrency()
-    }*/
 
     override fun onResume() {
         super.onResume()
@@ -84,13 +67,19 @@ constructor(var registry: ActivityResultRegistry?) :
             with(binding) {
                 when (defaultCurrency) {
                     EUROS.currency -> {
-                        priceTextInputLayout.endIconDrawable = ResourcesCompat.getDrawable(resources, R.drawable.ic_baseline_euro_24, null)
+                        priceTextInputLayout.endIconDrawable = ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.ic_baseline_euro_24, null
+                        )
                         if (price.text.toString() != none && newProperty.price != 0) {
                             price.setText(newProperty.price.toString())
                         }
                     }
                     DOLLARS.currency -> {
-                        priceTextInputLayout.endIconDrawable = ResourcesCompat.getDrawable(resources, R.drawable.ic_baseline_dollar_24, null)
+                        priceTextInputLayout.endIconDrawable = ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.ic_baseline_dollar_24, null
+                        )
                         if (price.text.toString() != none && newProperty.price != 0) {
                             price.setText(Utils.convertEuroToDollar(newProperty.price).toString())
                         }
@@ -102,9 +91,13 @@ constructor(var registry: ActivityResultRegistry?) :
 
     fun populateChanges() {
         with(binding) {
-            newProperty.description = if (description.text.toString() != none) { description.text.toString() } else { "" }
+            newProperty.description = if (description.text.toString() != none) {
+                description.text.toString()
+            } else { "" }
 
-            newProperty.price = if (price.text.toString() != none) { price.text.toString().toInt() } else { 0 }
+            newProperty.price = if (price.text.toString() != none &&
+                price.text.toString().isNotEmpty()
+            ) { price.text.toString().toInt() } else { 0 }
 
             defaultCurrency.value?.let { defaultCurrency ->
                 if (defaultCurrency == DOLLARS.currency && price.text.toString() != none && newProperty.price != 0) {
@@ -112,10 +105,18 @@ constructor(var registry: ActivityResultRegistry?) :
                 }
             }
 
-            newProperty.surface = if (surface.text.toString() != none) { surface.text.toString().toInt() } else { 0 }
-            newProperty.rooms = if (rooms.text.toString() != none) { rooms.text.toString().toInt() } else { 0 }
-            newProperty.bathRooms = if (bathrooms.text.toString() != none) { bathrooms.text.toString().toInt() } else { 0 }
-            newProperty.bedRooms = if (bedrooms.text.toString() != none) { bedrooms.text.toString().toInt() } else { 0 }
+            newProperty.surface = if (surface.text.toString() != none &&
+                surface.text.toString().isNotEmpty()
+            ) { surface.text.toString().toInt() } else { 0 }
+            newProperty.rooms = if (rooms.text.toString() != none &&
+                rooms.text.toString().isNotEmpty()
+            ) { rooms.text.toString().toInt() } else { 0 }
+            newProperty.bathRooms = if (bathrooms.text.toString() != none && bathrooms.text.toString().isNotEmpty()) {
+                bathrooms.text.toString().toInt()
+            } else { 0 }
+            newProperty.bedRooms = if (bedrooms.text.toString() != none &&
+                bedrooms.text.toString().isNotEmpty()
+            ) { bedrooms.text.toString().toInt() } else { 0 }
 
             newProperty.address.let { address ->
                 address.street = if (street.text.toString() != none) { street.text.toString() } else { "" }
@@ -136,19 +137,19 @@ constructor(var registry: ActivityResultRegistry?) :
             photosRecyclerView.adapter?.let {
                 (photosRecyclerView.adapter as PhotoUpdateAdapter).clear()
             }
-            initInterestPoints()
+            interestPointsChipGroup.removeAllViewsInLayout()
             noPhotos.visibility = VISIBLE
         }
     }
 
     open fun configureView() {
         with(binding) {
-            binding.addAPhoto!!.setOnClickListener {
-                addPhotoAlertDialog = AddPhotoDialogFragment().also {
+            binding.addAPhoto.setOnClickListener {
+                addPhotoAlertDialog = AddPhotoDialogFragment(layoutInflater().context).also {
                     it.registry = registry ?: requireActivity().activityResultRegistry
                     it.tmpPhoto.propertyId = newProperty.id
                 }
-                addPhotoAlertDialog.show(childFragmentManager, AddPhotoDialogFragment.TAG)
+                addPhotoAlertDialog.show(childFragmentManager, TAG)
             }
 
             entryDate.setOnClickListener { showEntryDateAlertDialog() }
@@ -209,7 +210,6 @@ constructor(var registry: ActivityResultRegistry?) :
 
             initInterestPoints()
 
-            // price.filters = arrayOf<InputFilter>(InputFilterMinMax(0, 99999999999999999))
             with(price) {
                 setText(
                     run {
@@ -235,7 +235,6 @@ constructor(var registry: ActivityResultRegistry?) :
                 }
             }
 
-            // surface.filters = arrayOf<InputFilter>(InputFilterMinMax(0, 99999999999999999))
             with(surface) {
                 setText(
                     run {
@@ -385,8 +384,6 @@ constructor(var registry: ActivityResultRegistry?) :
 
                     if (newProperty.interestPoints.contains(interestPoint)) { newChip.isChecked = true }
 
-                    newChip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
-
                     newChip.setOnClickListener {
                         val chip = it as Chip
                         val interestPointFromChip = InterestPoint.values().singleOrNull { interestPoint ->
@@ -456,7 +453,9 @@ constructor(var registry: ActivityResultRegistry?) :
     }
 
     private fun showEntryDateAlertDialog() {
-        val entryDate = if (binding.entryDate.text!!.isNotEmpty()) { Utils.fromStringToDate(binding.entryDate.text.toString()) } else { null }
+        val entryDate = if (binding.entryDate.text!!.isNotEmpty()) {
+            Utils.fromStringToDate(binding.entryDate.text.toString())
+        } else { null }
         val calendar = Calendar.getInstance()
         calendar.time = entryDate ?: calendar.time
 
@@ -491,11 +490,13 @@ constructor(var registry: ActivityResultRegistry?) :
     }
 
     override fun clickOnPhotoAtPosition(photoId: String) {
-        updatePhotoAlertDialog = UpdatePhotoDialogFragment().also {
-            it.photo = newProperty.photos.singleOrNull { photo -> photo.id == photoId }
+        updatePhotoAlertDialog = UpdatePhotoDialogFragment(
+            layoutInflater().context,
+            initialPhoto = newProperty.photos.single { photo -> photo.id == photoId }
+        ).also {
             it.registry = registry ?: requireActivity().activityResultRegistry
         }
-        updatePhotoAlertDialog.show(childFragmentManager, UpdatePhotoDialogFragment.TAG)
+        updatePhotoAlertDialog.show(childFragmentManager, TAG)
     }
 
     override fun onDestroyView() {

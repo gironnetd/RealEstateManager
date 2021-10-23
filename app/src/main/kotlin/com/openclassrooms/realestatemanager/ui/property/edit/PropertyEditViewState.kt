@@ -7,7 +7,7 @@ data class PropertyEditViewState(
     val inProgress: Boolean = false,
     val error: Throwable? = null,
     val uiNotification: UiNotification? = null
-): MviViewState {
+) : MviViewState {
     enum class UiNotification {
         PROPERTY_LOCALLY_UPDATED,
         PROPERTIES_FULLY_UPDATED,

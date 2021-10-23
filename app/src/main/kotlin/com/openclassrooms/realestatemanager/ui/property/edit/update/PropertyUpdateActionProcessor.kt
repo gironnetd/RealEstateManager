@@ -10,8 +10,10 @@ import io.reactivex.ObservableTransformer
 import javax.inject.Inject
 
 class PropertyUpdateActionProcessor
-@Inject constructor(private val propertyRepository: PropertyRepository,
-                    private val schedulerProvider: BaseSchedulerProvider) {
+@Inject constructor(
+    private val propertyRepository: PropertyRepository,
+    private val schedulerProvider: BaseSchedulerProvider
+) {
 
     private val updatePropertyProcessor = ObservableTransformer<UpdateAction, UpdatePropertyResult> { actions ->
         actions.flatMap { action ->

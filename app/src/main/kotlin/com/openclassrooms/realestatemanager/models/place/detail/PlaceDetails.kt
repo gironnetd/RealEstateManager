@@ -5,7 +5,7 @@ import com.openclassrooms.realestatemanager.models.place.AddressComponent
 import com.openclassrooms.realestatemanager.models.place.Geometry
 import com.openclassrooms.realestatemanager.models.place.PlusCode
 
-data class PlaceDetails (
+data class PlaceDetails(
     @SerializedName(value = "address_components")
     val addressComponents: List<AddressComponent>,
 

@@ -20,7 +20,7 @@ open class BaseListFragment : BaseFragment(R.layout.fragment_list) {
 
     private lateinit var recyclerAdapter: ListAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentListBinding.inflate(inflater, container, false)
         applyDisposition()
         initRecyclerView()
@@ -82,6 +82,4 @@ open class BaseListFragment : BaseFragment(R.layout.fragment_list) {
     fun setUpScreenForLoadingState() {
         binding.propertiesRecyclerView.visibility = View.GONE
     }
-
-    override fun initializeToolbar() {}
 }

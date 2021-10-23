@@ -13,7 +13,7 @@ import com.openclassrooms.realestatemanager.di.property.search.SearchComponent
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 
-open class BaseApplication: MultiDexApplication() {
+open class BaseApplication : MultiDexApplication() {
 
     lateinit var appComponent: AppComponent
 
@@ -49,8 +49,8 @@ open class BaseApplication: MultiDexApplication() {
 
     open fun initAppComponent() {
         appComponent = DaggerAppComponent.builder()
-                .application(this)
-                .build()
+            .application(this)
+            .build()
     }
 
     open fun releaseBrowseComponent() {

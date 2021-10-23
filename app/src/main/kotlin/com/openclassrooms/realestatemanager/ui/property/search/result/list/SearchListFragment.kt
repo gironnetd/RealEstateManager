@@ -17,7 +17,7 @@ class SearchListFragment : BaseListFragment() {
         super.onCreateView(inflater, container, savedInstanceState)
         searchedProperties.observe(viewLifecycleOwner) { properties ->
 
-            if(properties.isNotEmpty()) {
+            if (properties.isNotEmpty()) {
                 setUpScreenForSuccess(properties)
             } else {
                 setUpScreenForSuccess(emptyList())

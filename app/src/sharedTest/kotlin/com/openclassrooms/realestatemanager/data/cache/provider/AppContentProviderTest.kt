@@ -48,7 +48,6 @@ import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
-import java.util.*
 
 @RunWith(AndroidJUnit4::class)
 @SmallTest
@@ -70,15 +69,15 @@ class AppContentProviderTest : TestCase() {
 
         var rawJson = jsonUtil.readJSONFromAsset(PROPERTIES_DATA_FILENAME)
         fakeProperties = Gson().fromJson(
-                rawJson,
-                object : TypeToken<List<Property>>() {}.type
+            rawJson,
+            object : TypeToken<List<Property>>() {}.type
         )
 
-        rawJson =  jsonUtil.readJSONFromAsset(PHOTOS_DATA_FILENAME)
+        rawJson = jsonUtil.readJSONFromAsset(PHOTOS_DATA_FILENAME)
 
         fakePhotos = Gson().fromJson(
-                rawJson,
-                object : TypeToken<List<Photo>>() {}.type
+            rawJson,
+            object : TypeToken<List<Photo>>() {}.type
         )
     }
 
@@ -92,8 +91,10 @@ class AppContentProviderTest : TestCase() {
     fun given_properties_empty_when_query_all_then_return_empty_result() {
         // Given properties list
         // When properties list is empty
-        val cursor = mContentResolver.query(CONTENT_URI,
-                arrayOf(COLUMN_ID), null, null, null)
+        val cursor = mContentResolver.query(
+            CONTENT_URI,
+            arrayOf(COLUMN_ID), null, null, null
+        )
 
         // Then returned query result is equal to zero
         assertThat(cursor).isNotNull()
@@ -105,8 +106,10 @@ class AppContentProviderTest : TestCase() {
     fun given_property_when_saved_then_query_return_property() {
         // Given property
         // When property is saved
-        val itemUri = mContentResolver.insert(CONTENT_URI,
-                property(fakeProperties[0]))
+        val itemUri = mContentResolver.insert(
+            CONTENT_URI,
+            property(fakeProperties[0])
+        )
         assertThat(itemUri).isNotNull()
 
         // Then returned query result is equal to property saved
@@ -115,7 +118,7 @@ class AppContentProviderTest : TestCase() {
         assertThat(cursor!!.count).isEqualTo(1)
         assertThat(cursor.moveToFirst()).isTrue()
         assertThat(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)))
-                .isEqualTo(fakeProperties[0].description)
+            .isEqualTo(fakeProperties[0].description)
         cursor.close()
     }
 
@@ -132,18 +135,19 @@ class AppContentProviderTest : TestCase() {
 
         // When property is updated
         mContentResolver.update(
-                CONTENT_URI,
-                updatedContentValues,
-                "$COLUMN_ID = ?",
-                arrayOf(updatedContentValues.getAsString(COLUMN_ID))
+            CONTENT_URI,
+            updatedContentValues,
+            "$COLUMN_ID = ?",
+            arrayOf(updatedContentValues.getAsString(COLUMN_ID))
         )
 
-        val returnedValue =  mContentResolver.query(
-                CONTENT_URI,
-                null,
-                null,
-                null,
-                null)
+        val returnedValue = mContentResolver.query(
+            CONTENT_URI,
+            null,
+            null,
+            null,
+            null
+        )
 
         // Then returned query result is equal to property updated
         validateCursor(returnedValue!!, updatedContentValues)
@@ -153,27 +157,36 @@ class AppContentProviderTest : TestCase() {
     fun given_properties_when_apply_batch_then_query_return_properties() {
         // Given properties
         val operations = ArrayList<ContentProviderOperation>()
-        operations.add(ContentProviderOperation
+        operations.add(
+            ContentProviderOperation
                 .newInsert(CONTENT_URI)
                 .withValues(property(fakeProperties[0]))
-                .build())
-        operations.add(ContentProviderOperation
+                .build()
+        )
+        operations.add(
+            ContentProviderOperation
                 .newInsert(CONTENT_URI)
                 .withValues(property(fakeProperties[1]))
-                .build())
-        operations.add(ContentProviderOperation
+                .build()
+        )
+        operations.add(
+            ContentProviderOperation
                 .newInsert(CONTENT_URI)
                 .withValues(property(fakeProperties[2]))
-                .build())
+                .build()
+        )
 
         // When apply batch on properties
         val results = mContentResolver.applyBatch(
-                CONTENT_AUTHORITY, operations)
+            CONTENT_AUTHORITY, operations
+        )
         assertThat(results.size).isEqualTo(3)
 
         // Then returned query result is equal to properties batched
-        val cursor = mContentResolver.query(CONTENT_URI, arrayOf(COLUMN_DESCRIPTION),
-                null, null, null)
+        val cursor = mContentResolver.query(
+            CONTENT_URI, arrayOf(COLUMN_DESCRIPTION),
+            null, null, null
+        )
         assertThat(cursor).isNotNull()
         assertThat(cursor!!.count).isEqualTo(3)
         assertThat(cursor.moveToFirst()).isTrue()
@@ -184,26 +197,29 @@ class AppContentProviderTest : TestCase() {
     fun given_properties_when_bulk_insert_then_query_return_properties() {
         // Given properties
         // When bulk insert on properties
-        val count = mContentResolver.bulkInsert(CONTENT_URI,
-                arrayOf(
-                        property(fakeProperties[0]),
-                        property(fakeProperties[1]),
-                        property(fakeProperties[2]))
+        val count = mContentResolver.bulkInsert(
+            CONTENT_URI,
+            arrayOf(
+                property(fakeProperties[0]),
+                property(fakeProperties[1]),
+                property(fakeProperties[2])
+            )
         )
         assertThat(count).isEqualTo(3)
 
         // Then returned query result is equal to properties bulked
-        val cursor = mContentResolver.query(CONTENT_URI,
-                arrayOf(COLUMN_DESCRIPTION), null,
-                null,
-                null)
+        val cursor = mContentResolver.query(
+            CONTENT_URI,
+            arrayOf(COLUMN_DESCRIPTION), null,
+            null,
+            null
+        )
         assertThat(cursor).isNotNull()
         assertThat(cursor!!.count).isEqualTo(3)
         cursor.close()
     }
 
     private fun property(fakeProperty: Property): ContentValues {
-
         val values = ContentValues()
         values.put(COLUMN_ID, fakeProperty.id)
         values.put(COLUMN_PROPERTY_TYPE, fakeProperty.type.name)
@@ -234,8 +250,10 @@ class AppContentProviderTest : TestCase() {
     fun given_photos_empty_when_query_all_then_return_empty_result() {
         // Given photos list
         // When photos list is empty
-        val cursor = mContentResolver.query(PropertyContract.PhotoEntry.CONTENT_URI,
-                arrayOf(Photo.COLUMN_ID), null, null, null)
+        val cursor = mContentResolver.query(
+            PropertyContract.PhotoEntry.CONTENT_URI,
+            arrayOf(Photo.COLUMN_ID), null, null, null
+        )
 
         // Then returned query result is equal to zero
         assertThat(cursor).isNotNull()
@@ -247,31 +265,36 @@ class AppContentProviderTest : TestCase() {
     fun given_photo_when_saved_then_query_return_photo() {
         // Given photo
         // When photo  is saved
-        val itemUri = mContentResolver.insert(PropertyContract.PhotoEntry.CONTENT_URI,
-            photo(fakePhotos[0]))
+        val itemUri = mContentResolver.insert(
+            PropertyContract.PhotoEntry.CONTENT_URI,
+            photo(fakePhotos[0])
+        )
         assertThat(itemUri).isNotNull()
-        val cursor = mContentResolver.query(PropertyContract.PhotoEntry.CONTENT_URI,
-                arrayOf(
-                    Photo.COLUMN_ID,
-                        COLUMN_PHOTO_PROPERTY_ID,
-                        COLUMN_PHOTO_DESCRIPTION,
-                        COLUMN_PHOTO_TYPE
-                ), null,
-                null,
-                null)
+        val cursor = mContentResolver.query(
+            PropertyContract.PhotoEntry.CONTENT_URI,
+            arrayOf(
+                Photo.COLUMN_ID,
+                COLUMN_PHOTO_PROPERTY_ID,
+                COLUMN_PHOTO_DESCRIPTION,
+                COLUMN_PHOTO_TYPE
+            ),
+            null,
+            null,
+            null
+        )
 
         // Then returned query result is equal to property saved
         assertThat(cursor).isNotNull()
         assertThat(cursor!!.count).isEqualTo(1)
         assertThat(cursor.moveToFirst()).isTrue()
         assertThat(cursor.getString(cursor.getColumnIndexOrThrow(Photo.COLUMN_ID)))
-                .isEqualTo(fakePhotos[0].id)
+            .isEqualTo(fakePhotos[0].id)
         assertThat(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHOTO_PROPERTY_ID)))
-                .isEqualTo(fakePhotos[0].propertyId)
+            .isEqualTo(fakePhotos[0].propertyId)
         assertThat(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHOTO_DESCRIPTION)))
-                .isEqualTo(fakePhotos[0].description)
+            .isEqualTo(fakePhotos[0].description)
         assertThat(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHOTO_TYPE)))
-                .isEqualTo(fakePhotos[0].type.name)
+            .isEqualTo(fakePhotos[0].type.name)
         cursor.close()
     }
 
@@ -288,18 +311,19 @@ class AppContentProviderTest : TestCase() {
 
         // When photo is updated
         mContentResolver.update(
-                PropertyContract.PhotoEntry.CONTENT_URI,
-                updatedContentValues,
-                "$Photo.COLUMN_ID = ?",
-                arrayOf(updatedContentValues.getAsString(Photo.COLUMN_ID))
+            PropertyContract.PhotoEntry.CONTENT_URI,
+            updatedContentValues,
+            "$Photo.COLUMN_ID = ?",
+            arrayOf(updatedContentValues.getAsString(Photo.COLUMN_ID))
         )
 
-        val returnedValue =  mContentResolver.query(
-                PropertyContract.PhotoEntry.CONTENT_URI,
-                null,
-                null,
-                null,
-                null)
+        val returnedValue = mContentResolver.query(
+            PropertyContract.PhotoEntry.CONTENT_URI,
+            null,
+            null,
+            null,
+            null
+        )
 
         // Then returned query result is equal to photo updated
         validateCursor(returnedValue!!, updatedContentValues)
@@ -309,35 +333,44 @@ class AppContentProviderTest : TestCase() {
     fun given_photos_when_apply_batch_then_query_return_photos() {
         // Given photos
         val operations = ArrayList<ContentProviderOperation>()
-        operations.add(ContentProviderOperation
+        operations.add(
+            ContentProviderOperation
                 .newInsert(PropertyContract.PhotoEntry.CONTENT_URI)
                 .withValues(photo(fakePhotos[0]))
-                .build())
-        operations.add(ContentProviderOperation
+                .build()
+        )
+        operations.add(
+            ContentProviderOperation
                 .newInsert(PropertyContract.PhotoEntry.CONTENT_URI)
                 .withValues(photo(fakePhotos[1]))
-                .build())
-        operations.add(ContentProviderOperation
+                .build()
+        )
+        operations.add(
+            ContentProviderOperation
                 .newInsert(PropertyContract.PhotoEntry.CONTENT_URI)
                 .withValues(photo(fakePhotos[2]))
-                .build())
+                .build()
+        )
 
         // When apply batch on photos
         val results = mContentResolver.applyBatch(
-                CONTENT_AUTHORITY, operations)
+            CONTENT_AUTHORITY, operations
+        )
         assertThat(results.size).isEqualTo(3)
 
         // Then returned query result is equal to photos batched
-        val cursor = mContentResolver.query(PropertyContract.PhotoEntry.CONTENT_URI,
-                arrayOf(
-                    Photo.COLUMN_ID,
-                        COLUMN_PHOTO_PROPERTY_ID,
-                        COLUMN_PHOTO_DESCRIPTION,
-                        COLUMN_PHOTO_TYPE
-                ),
-                null,
-                null,
-                null)
+        val cursor = mContentResolver.query(
+            PropertyContract.PhotoEntry.CONTENT_URI,
+            arrayOf(
+                Photo.COLUMN_ID,
+                COLUMN_PHOTO_PROPERTY_ID,
+                COLUMN_PHOTO_DESCRIPTION,
+                COLUMN_PHOTO_TYPE
+            ),
+            null,
+            null,
+            null
+        )
         assertThat(cursor).isNotNull()
         assertThat(cursor!!.count).isEqualTo(3)
         assertThat(cursor.moveToFirst()).isTrue()
@@ -348,22 +381,27 @@ class AppContentProviderTest : TestCase() {
     fun given_photos_when_bulk_insert_then_query_return_photos() {
         // Given photos
         // When bulk insert on photos
-        val count = mContentResolver.bulkInsert(PropertyContract.PhotoEntry.CONTENT_URI,
-                arrayOf(
-                    photo(fakePhotos[0]),
-                    photo(fakePhotos[1]),
-                    photo(fakePhotos[2]))
+        val count = mContentResolver.bulkInsert(
+            PropertyContract.PhotoEntry.CONTENT_URI,
+            arrayOf(
+                photo(fakePhotos[0]),
+                photo(fakePhotos[1]),
+                photo(fakePhotos[2])
+            )
         )
         assertThat(count).isEqualTo(3)
 
         // Then returned query result is equal to photos bulked
-        val cursor = mContentResolver.query(PropertyContract.PhotoEntry.CONTENT_URI,
-                arrayOf(
-                    Photo.COLUMN_ID,
-                        COLUMN_PHOTO_PROPERTY_ID,
-                        COLUMN_PHOTO_DESCRIPTION,
-                        COLUMN_PHOTO_TYPE
-                ), null, null, null)
+        val cursor = mContentResolver.query(
+            PropertyContract.PhotoEntry.CONTENT_URI,
+            arrayOf(
+                Photo.COLUMN_ID,
+                COLUMN_PHOTO_PROPERTY_ID,
+                COLUMN_PHOTO_DESCRIPTION,
+                COLUMN_PHOTO_TYPE
+            ),
+            null, null, null
+        )
         assertThat(cursor).isNotNull()
         assertThat(cursor!!.count).isEqualTo(3)
         cursor.close()
@@ -387,7 +425,7 @@ class AppContentProviderTest : TestCase() {
             assertFalse(idx == -1)
             when (valueCursor.getType(idx)) {
                 Cursor.FIELD_TYPE_FLOAT -> assertEquals(value, valueCursor.getDouble(idx))
-                Cursor.FIELD_TYPE_INTEGER ->  {
+                Cursor.FIELD_TYPE_INTEGER -> {
                     when {
                         value.toString() == "false" -> {
                             assertEquals(0, valueCursor.getInt(idx))

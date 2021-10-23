@@ -24,9 +24,9 @@ import javax.inject.Singleton
 
 @Singleton
 class PhotoRemoteStorageSource
-@Inject constructor(private val storage: FirebaseStorage): PhotoStorageSource {
+@Inject constructor(private val storage: FirebaseStorage) : PhotoStorageSource {
 
-    var cachePhotos: MutableMap<String, Bitmap>? = null
+    private var cachePhotos: MutableMap<String, Bitmap>? = null
 
     override fun count(): Single<Int> {
         return cachePhotos?.let { Single.just(it.size) }
@@ -35,9 +35,11 @@ class PhotoRemoteStorageSource
 
     override fun count(propertyId: String): Single<Int> {
         return cachePhotos?.let { cachePhotos ->
-            Single.just(cachePhotos.filter { cachePhoto ->
-                cachePhoto.key.contains(propertyId)
-            }.values.size)
+            Single.just(
+                cachePhotos.filter { cachePhoto ->
+                    cachePhoto.key.contains(propertyId)
+                }.values.size
+            )
         } ?: findPhotosByPropertyId(propertyId).map { photos -> photos.size }
     }
 
@@ -51,17 +53,19 @@ class PhotoRemoteStorageSource
                     outputStream.close()
                 }
 
-                val storageReference = storage.getReferenceFromUrl(photo.storageUrl(
-                    storage.reference.bucket,
-                    true)
+                val storageReference = storage.getReferenceFromUrl(
+                    photo.storageUrl(
+                        storage.reference.bucket,
+                        true
+                    )
                 )
 
                 storageReference.putFile(file.toUri(), storageMetadata { contentType = "image/jpeg" })
                     .addOnCompleteListener { task ->
-                        if(task.isSuccessful && task.isComplete) { emitter.onComplete() }
+                        if (task.isSuccessful && task.isComplete) { emitter.onComplete() }
                     }.addOnFailureListener { emitter.onError(it) }
                     .also {
-                        if(cachePhotos == null) { cachePhotos = ConcurrentHashMap() }
+                        if (cachePhotos == null) { cachePhotos = ConcurrentHashMap() }
                         cachePhotos!![storageReference.path] = BitmapFactory.decodeFile(file.toString())
                         file.delete()
                     }
@@ -76,11 +80,10 @@ class PhotoRemoteStorageSource
     }
 
     override fun findPhotoById(propertyId: String, id: String): Single<Bitmap> {
-        if(cachePhotos != null &&
-            cachePhotos!!.keys.singleOrNull { key -> key.contains(id) } != null) {
-            cachePhotos?.let { cachePhotos ->
-                return Single.just(cachePhotos[cachePhotos.keys.single { key -> key.contains(id) }])
-            } ?: return Single.error(java.lang.NullPointerException("Photo Not Found for propertyId: $propertyId and photoId: $id"))
+        if (cachePhotos != null &&
+            cachePhotos!!.keys.singleOrNull { key -> key.contains(id) } != null
+        ) {
+            return Single.just(cachePhotos!![cachePhotos!!.keys.single { key -> key.contains(id) }])
         } else {
             return Single.create { emitter ->
                 val file = File.createTempFile("tmp_file_", ".png").apply {
@@ -90,7 +93,8 @@ class PhotoRemoteStorageSource
                 val storageReference = storage.getReferenceFromUrl(
                     Photo(id = id, propertyId = propertyId).storageUrl(
                         storage.reference.bucket,
-                        true)
+                        true
+                    )
                 )
 
                 storageReference.getFile(file.toUri()).addOnCompleteListener { task ->
@@ -110,21 +114,23 @@ class PhotoRemoteStorageSource
 
     override fun findPhotosByIds(ids: List<String>): Single<List<Bitmap>> {
         return cachePhotos?.let { cachePhotos ->
-            val photos = cachePhotos.toSortedMap().filter { cachePhoto -> ids.any { id -> cachePhoto.key.contains(id) } }
+            val photos = cachePhotos.toSortedMap().filter {
+                cachePhoto ->
+                ids.any { id -> cachePhoto.key.contains(id) }
+            }
             Single.just(photos.toSortedMap().values.toList())
         } ?: findAllPropertiesPrefixes().flatMap { propertiesPrefixes ->
             Observable.fromIterable(propertiesPrefixes).flatMap { propertyPrefix ->
                 findPhotosPrefixesByProperty(propertyPrefix)
-            }.toList().flatMap {
-                val photosPrefixes = listOf(*it.toTypedArray()).flatten()
+            }.toList().flatMap { storageReference ->
+                val photosPrefixes = storageReference.flatten()
                 Observable.fromIterable(photosPrefixes).flatMap { photoPrefix ->
                     findPhotosByPrefix(photoPrefix)
                 }.toList().flatMap {
-                    val photosItems = listOf(*it.toTypedArray()).flatten()
+                    val photosItems = storageReference.flatten()
                     Observable.fromIterable(photosItems).flatMap { photoItem ->
                         val match = ids.filter { it in photoItem.path }
-                        if(match.isNotEmpty()) { findPhotoByItem(photoItem) }
-                        else { Observable.empty() }
+                        if (match.isNotEmpty()) { findPhotoByItem(photoItem) } else { Observable.empty() }
                     }.toList().flatMap { bitmaps ->
                         Single.just(bitmaps)
                     }.subscribeOn(SchedulerProvider.io())
@@ -137,13 +143,15 @@ class PhotoRemoteStorageSource
         return Single.create { emitter ->
             val propertiesRef = storage.reference.child(Constants.PROPERTIES_COLLECTION)
             try {
-                Tasks.await(propertiesRef.listAll().addOnCompleteListener { propertiesTask ->
-                    if (propertiesTask.isSuccessful && propertiesTask.isComplete) {
-                        propertiesTask.result?.let { propertiesResult ->
-                            emitter.onSuccess(propertiesResult.prefixes)
-                        } ?: emitter.onError(NullPointerException("PropertiesTask Result is null"))
+                Tasks.await(
+                    propertiesRef.listAll().addOnCompleteListener { propertiesTask ->
+                        if (propertiesTask.isSuccessful && propertiesTask.isComplete) {
+                            propertiesTask.result?.let { propertiesResult ->
+                                emitter.onSuccess(propertiesResult.prefixes)
+                            } ?: emitter.onError(NullPointerException("PropertiesTask Result is null"))
+                        }
                     }
-                })
+                )
             } catch (e: ExecutionException) {
                 e.printStackTrace()
             } catch (e: InterruptedException) {
@@ -156,17 +164,19 @@ class PhotoRemoteStorageSource
         return Observable.create { emitter ->
             val photosRef = propertyPrefix.child(Constants.PHOTOS_COLLECTION)
             try {
-                Tasks.await(photosRef.listAll().addOnCompleteListener { photosTask ->
-                    if (photosTask.isSuccessful && photosTask.isComplete) {
-                        photosTask.result?.let { photosResult ->
-                            if(photosResult.prefixes.isNotEmpty()) {
-                                emitter.onNext(photosResult.prefixes)
+                Tasks.await(
+                    photosRef.listAll().addOnCompleteListener { photosTask ->
+                        if (photosTask.isSuccessful && photosTask.isComplete) {
+                            photosTask.result?.let { photosResult ->
+                                if (photosResult.prefixes.isNotEmpty()) {
+                                    emitter.onNext(photosResult.prefixes)
+                                }
+                                emitter.onComplete()
                             }
-                            emitter.onComplete()
                         }
-                    }
-                }.addOnFailureListener { emitter.onError(it) })
-            }  catch (e: ExecutionException) {
+                    }.addOnFailureListener { emitter.onError(it) }
+                )
+            } catch (e: ExecutionException) {
                 e.printStackTrace()
             } catch (e: InterruptedException) {
                 e.printStackTrace()
@@ -177,17 +187,19 @@ class PhotoRemoteStorageSource
     private fun findPhotosByPrefix(photoPrefix: StorageReference): Observable<List<StorageReference>> {
         return Observable.create { emitter ->
             try {
-                Tasks.await(photoPrefix.listAll().addOnCompleteListener { photosTask ->
-                    if (photosTask.isSuccessful && photosTask.isComplete) {
-                        photosTask.result?.let { photosResult ->
-                            if(photosResult.items.isNotEmpty()) {
-                                emitter.onNext(photosResult.items)
+                Tasks.await(
+                    photoPrefix.listAll().addOnCompleteListener { photosTask ->
+                        if (photosTask.isSuccessful && photosTask.isComplete) {
+                            photosTask.result?.let { photosResult ->
+                                if (photosResult.items.isNotEmpty()) {
+                                    emitter.onNext(photosResult.items)
+                                }
+                                emitter.onComplete()
                             }
-                            emitter.onComplete()
                         }
-                    }
-                }.addOnFailureListener { emitter.onError(it) })
-            }  catch (e: ExecutionException) {
+                    }.addOnFailureListener { emitter.onError(it) }
+                )
+            } catch (e: ExecutionException) {
                 e.printStackTrace()
             } catch (e: InterruptedException) {
                 e.printStackTrace()
@@ -199,17 +211,19 @@ class PhotoRemoteStorageSource
         return Observable.create { emitter ->
             try {
                 File.createTempFile("images", ".jpg").let { localFile ->
-                    Tasks.await(item.getFile(localFile).addOnCompleteListener { task ->
-                        if (task.isSuccessful && task.isComplete) {
-                            BitmapFactory.decodeFile(localFile.toString()).also { bitmap ->
-                                localFile.delete()
-                                emitter.onNext(bitmap)
-                                emitter.onComplete()
+                    Tasks.await(
+                        item.getFile(localFile).addOnCompleteListener { task ->
+                            if (task.isSuccessful && task.isComplete) {
+                                BitmapFactory.decodeFile(localFile.toString()).also { bitmap ->
+                                    localFile.delete()
+                                    emitter.onNext(bitmap)
+                                    emitter.onComplete()
+                                }
                             }
-                        }
-                    }.addOnFailureListener { emitter.onError(it) })
+                        }.addOnFailureListener { emitter.onError(it) }
+                    )
                 }
-            }  catch (e: ExecutionException) {
+            } catch (e: ExecutionException) {
                 e.printStackTrace()
             } catch (e: InterruptedException) {
                 e.printStackTrace()
@@ -220,30 +234,30 @@ class PhotoRemoteStorageSource
     override fun findAllPhotos(): Single<List<Bitmap>> {
         return cachePhotos?.let { cachePhotos ->
             Single.just(cachePhotos.toSortedMap().values.toList())
-        } ?:
-        findAllPropertiesPrefixes().flatMap { propertiesPrefixes ->
-            Observable.fromIterable(propertiesPrefixes).flatMap { propertyPrefix ->
-                findPhotosPrefixesByProperty(propertyPrefix)
-            }.toList().flatMap {
-                val photosPrefixes = listOf(*it.toTypedArray()).flatten()
-                Observable.fromIterable(photosPrefixes).flatMap { photoPrefix ->
-                    findPhotosByPrefix(photoPrefix)
+        }
+            ?: findAllPropertiesPrefixes().flatMap { propertiesPrefixes ->
+                Observable.fromIterable(propertiesPrefixes).flatMap { propertyPrefix ->
+                    findPhotosPrefixesByProperty(propertyPrefix)
                 }.toList().flatMap {
-                    val photosItems = listOf(*it.toTypedArray()).flatten()
-                    if(cachePhotos == null) { cachePhotos = ConcurrentHashMap() }
-                    Observable.fromIterable(photosItems).flatMap { photoItem ->
-                        findPhotoByItem(photoItem).flatMap { bitmap ->
-                            if(!cachePhotos!!.containsKey(photoItem.path)) {
-                                cachePhotos!![photoItem.path] = bitmap
+                    val photosPrefixes = it.flatten()
+                    Observable.fromIterable(photosPrefixes).flatMap { photoPrefix ->
+                        findPhotosByPrefix(photoPrefix)
+                    }.toList().flatMap { storageReference ->
+                        val photosItems = storageReference.flatten()
+                        if (cachePhotos == null) { cachePhotos = ConcurrentHashMap() }
+                        Observable.fromIterable(photosItems).flatMap { photoItem ->
+                            findPhotoByItem(photoItem).flatMap { bitmap ->
+                                if (!cachePhotos!!.containsKey(photoItem.path)) {
+                                    cachePhotos!![photoItem.path] = bitmap
+                                }
+                                Observable.just(bitmap)
                             }
-                            Observable.just(bitmap)
-                        }
-                    }.toList().flatMap { bitmaps ->
-                        Single.just(bitmaps)
+                        }.toList().flatMap { bitmaps ->
+                            Single.just(bitmaps)
+                        }.subscribeOn(SchedulerProvider.io())
                     }.subscribeOn(SchedulerProvider.io())
                 }.subscribeOn(SchedulerProvider.io())
             }.subscribeOn(SchedulerProvider.io())
-        }.subscribeOn(SchedulerProvider.io())
     }
 
     private fun findPropertyPrefixById(propertyId: String): Single<StorageReference> {
@@ -255,25 +269,27 @@ class PhotoRemoteStorageSource
 
     override fun findPhotosByPropertyId(propertyId: String): Single<List<Bitmap>> {
         return cachePhotos?.let { cachePhotos ->
-            Single.just(cachePhotos.filter { cachePhoto ->
-                cachePhoto.key.contains(propertyId)
-            }.values.toList())
-        } ?:
-        findPropertyPrefixById(propertyId).flatMap { propertyPrefix ->
-            findPhotosPrefixesByProperty(propertyPrefix).toList().subscribeOn(SchedulerProvider.io())
-        }.flatMap {
-            val photosPrefixes = listOf(*it.toTypedArray()).flatten()
-            Observable.fromIterable(photosPrefixes).flatMap { photoPrefix ->
-                findPhotosByPrefix(photoPrefix)
-            }.toList().flatMap {
-                val photosItems = listOf(*it.toTypedArray()).flatten()
-                Observable.fromIterable(photosItems).flatMap { photoItem ->
-                    findPhotoByItem(photoItem)
-                }.toList().flatMap {
-                    Single.just(it)
+            Single.just(
+                cachePhotos.filter { cachePhoto ->
+                    cachePhoto.key.contains(propertyId)
+                }.values.toList()
+            )
+        }
+            ?: findPropertyPrefixById(propertyId).flatMap { propertyPrefix ->
+                findPhotosPrefixesByProperty(propertyPrefix).toList().subscribeOn(SchedulerProvider.io())
+            }.flatMap {
+                val photosPrefixes = it.flatten()
+                Observable.fromIterable(photosPrefixes).flatMap { photoPrefix ->
+                    findPhotosByPrefix(photoPrefix)
+                }.toList().flatMap { storageReference ->
+                    val photosItems = storageReference.flatten()
+                    Observable.fromIterable(photosItems).flatMap { photoItem ->
+                        findPhotoByItem(photoItem)
+                    }.toList().flatMap { bitmaps ->
+                        Single.just(bitmaps)
+                    }.subscribeOn(SchedulerProvider.io())
                 }.subscribeOn(SchedulerProvider.io())
             }.subscribeOn(SchedulerProvider.io())
-        }.subscribeOn(SchedulerProvider.io())
     }
 
     override fun updatePhoto(photo: Photo): Completable {
@@ -286,14 +302,16 @@ class PhotoRemoteStorageSource
                     outputStream.close()
                 }
 
-                val storageReference = storage.getReferenceFromUrl(photo.storageUrl(
-                    storage.reference.bucket,
-                    true)
+                val storageReference = storage.getReferenceFromUrl(
+                    photo.storageUrl(
+                        storage.reference.bucket,
+                        true
+                    )
                 )
 
                 storageReference.putFile(file.toUri(), storageMetadata { contentType = "image/jpeg" })
                     .addOnCompleteListener { task ->
-                        if(task.isSuccessful && task.isComplete) { emitter.onComplete() }
+                        if (task.isSuccessful && task.isComplete) { emitter.onComplete() }
                     }.addOnFailureListener { emitter.onError(it) }
                     .also {
                         cachePhotos!!.remove(photo.id)
@@ -328,19 +346,21 @@ class PhotoRemoteStorageSource
         }.toList().flatMapCompletable { photosRef ->
             Observable.fromIterable(photosRef).flatMapCompletable { photoItem ->
                 deletePhotoByItem(photoItem)
-            }.subscribeOn(SchedulerProvider.io())
+            }.also { cachePhotos!!.clear() }.subscribeOn(SchedulerProvider.io())
         }
     }
 
     private fun deletePhotoByItem(item: StorageReference): Completable {
         return Completable.create { emitter ->
             try {
-                Tasks.await(item.delete().addOnCompleteListener { task ->
-                    if (task.isSuccessful && task.isComplete) {
-                        emitter.onComplete()
-                    } else { task.exception?.let { exception -> emitter.onError(exception) } }
-                }.addOnFailureListener { emitter.onError(it) })
-            }  catch (e: ExecutionException) {
+                Tasks.await(
+                    item.delete().addOnCompleteListener { task ->
+                        if (task.isSuccessful && task.isComplete) {
+                            emitter.onComplete()
+                        } else { task.exception?.let { exception -> emitter.onError(exception) } }
+                    }.addOnFailureListener { emitter.onError(it) }
+                )
+            } catch (e: ExecutionException) {
                 e.printStackTrace()
             } catch (e: InterruptedException) {
                 e.printStackTrace()

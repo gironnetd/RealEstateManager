@@ -41,9 +41,9 @@ object AppModule {
     @Provides
     fun provideAppDb(app: Application): AppDatabase {
         return Room
-                .databaseBuilder(app, AppDatabase::class.java, DATABASE_NAME)
-                .fallbackToDestructiveMigration() // get correct db version if schema changed
-                .build()
+            .databaseBuilder(app, AppDatabase::class.java, DATABASE_NAME)
+            .fallbackToDestructiveMigration() // get correct db version if schema changed
+            .build()
     }
 
     @JvmStatic
@@ -59,8 +59,8 @@ object AppModule {
     @JvmStatic
     @Singleton
     @Provides
-    fun provideGlideRequestManager(application: Application ): GlideManager =
-         GlideRequestManager(Glide.with(application))
+    fun provideGlideRequestManager(application: Application): GlideManager =
+        GlideRequestManager(Glide.with(application))
 
     @JvmStatic
     @Singleton
@@ -71,12 +71,11 @@ object AppModule {
     @Singleton
     @Provides
     fun provideNetworkConnectionLiveData(context: Context): LiveData<Boolean> =
-         NetworkConnectionLiveData(context = context)
-
+        NetworkConnectionLiveData(context = context)
 
     @JvmStatic
     @Singleton
     @Provides
     fun provideSharedPreferences(application: Application): SharedPreferences =
-            application.getSharedPreferences(SHARED_PREFERENCES_SETTINGS, MODE_PRIVATE)
+        application.getSharedPreferences(SHARED_PREFERENCES_SETTINGS, MODE_PRIVATE)
 }

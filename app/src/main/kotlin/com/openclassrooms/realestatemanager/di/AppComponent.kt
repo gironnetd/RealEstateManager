@@ -12,13 +12,14 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(
-        modules = [
-            AppModule::class,
-            AppFragmentModule::class,
-            SubComponentsModule::class,
-            RepositoryModule::class,
-            ViewModelModule::class
-        ])
+    modules = [
+        AppModule::class,
+        AppFragmentModule::class,
+        SubComponentsModule::class,
+        RepositoryModule::class,
+        ViewModelModule::class
+    ]
+)
 interface AppComponent {
 
     @Component.Builder

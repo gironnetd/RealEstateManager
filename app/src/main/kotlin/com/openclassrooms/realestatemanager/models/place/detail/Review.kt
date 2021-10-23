@@ -2,7 +2,7 @@ package com.openclassrooms.realestatemanager.models.place.detail
 
 import com.google.gson.annotations.SerializedName
 
-data class Review (
+data class Review(
     @SerializedName(value = "author_name")
     val authorName: String,
 

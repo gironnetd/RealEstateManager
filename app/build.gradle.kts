@@ -21,6 +21,11 @@ android {
         testInstrumentationRunner = DefaultConfiguration.androidTestInstrumentation
         multiDexEnabled = true
         vectorDrawables.useSupportLibrary = true
+
+        // The following argument makes the Android Test Orchestrator run its
+        // "pm clear" command after each test invocation. This command ensures
+        // that the app's state is completely cleared between tests.
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
     }
 
     buildTypes {
@@ -47,7 +52,7 @@ android {
     }
 
     testOptions {
-//        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
         unitTests.isIncludeAndroidResources = true
     }
 
@@ -119,6 +124,7 @@ dependencies {
     kaptAndroidTest(Dependencies.kaptAndroidTestLibraries)
     testImplementation(Dependencies.testLibraries)
     androidTestImplementation(Dependencies.androidTestLibraries)
+    androidTestUtil(Dependencies.testOrchestrator)
 
     androidTestImplementation (Dependencies.espressoContrib) {
         exclude(module = "protobuf-lite")

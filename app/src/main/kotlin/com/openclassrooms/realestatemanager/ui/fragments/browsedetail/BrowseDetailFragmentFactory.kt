@@ -12,22 +12,22 @@ import javax.inject.Inject
 @BrowseScope
 class BrowseDetailFragmentFactory
 @Inject constructor(
-        private val viewModelFactory: ViewModelProvider.Factory,
-        private val registry: ActivityResultRegistry?
+    private val viewModelFactory: ViewModelProvider.Factory,
+    private val registry: ActivityResultRegistry?
 ) : FragmentFactory() {
 
     override fun instantiate(classLoader: ClassLoader, className: String) =
 
-            when (className) {
-                BrowseMapFragment::class.java.name -> { BrowseMapFragment() }
+        when (className) {
+            BrowseMapFragment::class.java.name -> { BrowseMapFragment() }
 
-                PropertyDetailFragment::class.java.name -> {
-                    PropertyDetailFragment(viewModelFactory = viewModelFactory, registry = registry)
-                }
-
-                PropertyUpdateFragment::class.java.name -> {
-                    PropertyUpdateFragment(viewModelFactory = viewModelFactory, registry = registry)
-                }
-                else -> super.instantiate(classLoader, className)
+            PropertyDetailFragment::class.java.name -> {
+                PropertyDetailFragment(viewModelFactory = viewModelFactory, registry = registry)
             }
+
+            PropertyUpdateFragment::class.java.name -> {
+                PropertyUpdateFragment(viewModelFactory = viewModelFactory, registry = registry)
+            }
+            else -> super.instantiate(classLoader, className)
+        }
 }

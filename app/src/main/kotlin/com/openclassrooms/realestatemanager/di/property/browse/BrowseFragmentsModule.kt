@@ -15,7 +15,7 @@ object BrowseFragmentsModule {
     @Named("BrowseDetailFragmentFactory")
     @Provides
     fun provideMasterDetailFragmentFactory(
-            viewModelFactory: ViewModelProvider.Factory,
+        viewModelFactory: ViewModelProvider.Factory,
     ): FragmentFactory {
         return BrowseDetailFragmentFactory(viewModelFactory = viewModelFactory, registry = null)
     }

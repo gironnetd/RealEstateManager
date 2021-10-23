@@ -19,8 +19,10 @@ class MainFragmentFactory
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment =
         when (className) {
             PropertyCreateFragment::class.java.name -> {
-                val fragment = PropertyCreateFragment(viewModelFactory = viewModelFactory,
-                    registry = registry)
+                val fragment = PropertyCreateFragment(
+                    viewModelFactory = viewModelFactory,
+                    registry = registry
+                )
                 fragment
             }
 

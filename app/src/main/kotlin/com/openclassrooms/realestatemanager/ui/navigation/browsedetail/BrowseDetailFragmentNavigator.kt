@@ -13,15 +13,17 @@ import java.util.*
 
 @Navigator.Name("browse_detail_fragment")
 class BrowseDetailFragmentNavigator(
-        private val mContext: Context,
-        private val mFragmentManager: FragmentManager,
-        private val mContainerId: Int,
+    private val mContext: Context,
+    private val mFragmentManager: FragmentManager,
+    private val mContainerId: Int,
 ) : FragmentNavigator(mContext, mFragmentManager, mContainerId) {
 
     private val mBackStack = ArrayDeque<Int>()
 
-    override fun navigate(destination: Destination, args: Bundle?, navOptions: NavOptions?, navigatorExtras: Navigator.Extras?): NavDestination? {
-
+    override fun navigate(
+        destination: Destination, args: Bundle?, navOptions: NavOptions?,
+        navigatorExtras: Navigator.Extras?
+    ): NavDestination? {
         if (mFragmentManager.isStateSaved) {
             Timber.tag(TAG).i("Ignoring navigate() call: FragmentManager has already saved its state")
             return null
@@ -30,12 +32,10 @@ class BrowseDetailFragmentNavigator(
         if (className[0] == '.') {
             className = mContext.packageName + className
         }
-
         val ft = mFragmentManager.beginTransaction()
         val tag = destination.id.toString()
 
         val currentFragment = mFragmentManager.primaryNavigationFragment
-
         if (currentFragment != null) {
             ft.hide(currentFragment)
         }
@@ -58,10 +58,11 @@ class BrowseDetailFragmentNavigator(
 
         @IdRes val destId = destination.id
         val initialNavigation = mBackStack.isEmpty()
-        // TODO Build first class singleTop behavior for fragments
-        val isSingleTopReplacement = (navOptions != null && !initialNavigation
-                && navOptions.shouldLaunchSingleTop()
-                && mBackStack.peekLast() == destId)
+        val isSingleTopReplacement = (
+            navOptions != null && !initialNavigation &&
+                navOptions.shouldLaunchSingleTop() &&
+                mBackStack.peekLast() == destId
+            )
 
         val isAdded: Boolean = when {
             initialNavigation -> {
@@ -76,7 +77,8 @@ class BrowseDetailFragmentNavigator(
                     // on the back stack in its place
                     mFragmentManager.popBackStack(
                         generateBackStackName(mBackStack.size, mBackStack.peekLast()!!),
-                        FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        FragmentManager.POP_BACK_STACK_INCLUSIVE
+                    )
                     ft.addToBackStack(generateBackStackName(mBackStack.size, destId))
                 }
                 false

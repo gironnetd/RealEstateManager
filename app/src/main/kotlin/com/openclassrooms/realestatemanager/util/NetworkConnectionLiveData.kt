@@ -1,11 +1,8 @@
 package com.openclassrooms.realestatemanager.util
 
 import android.annotation.TargetApi
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
-import android.content.Intent
-import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -25,18 +22,32 @@ class NetworkConnectionLiveData
 constructor(val context: Context) : MutableLiveData<Boolean>() {
 
     private var connectivityManager: ConnectivityManager =
-            context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
 
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
 
     init {
-        if(value == null) {
-            compositeDisposable.add(Completable.fromCallable {
-                postValue(isInternetAvailable())
-            }.subscribeOn(Schedulers.io()).subscribe())
+        if (value == null) {
+            compositeDisposable.add(
+                Completable.fromCallable {
+                    postValue(isInternetAvailable())
+                }.subscribeOn(Schedulers.io()).subscribe()
+            )
         }
     }
+
+    /*@Suppress("DEPRECATION")
+    private val networkReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val activeNetworkInfo = connectivityManager.activeNetworkInfo
+            if (activeNetworkInfo != null && activeNetworkInfo.isConnected) {
+                if (value != true) value = true
+            } else {
+                if (value != false) value = false
+            }
+        }
+    }*/
 
     override fun onActive() {
         super.onActive()
@@ -44,12 +55,8 @@ constructor(val context: Context) : MutableLiveData<Boolean>() {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ->
                 connectivityManager.registerDefaultNetworkCallback(createNetworkCallback())
 
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> lollipopNetworkAvailableRequest()
-
             else -> {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                    context.registerReceiver(networkReceiver, IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"))
-                }
+                lollipopNetworkAvailableRequest()
             }
         }
     }
@@ -57,18 +64,14 @@ constructor(val context: Context) : MutableLiveData<Boolean>() {
     override fun onInactive() {
         super.onInactive()
         compositeDisposable.clear()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            connectivityManager.unregisterNetworkCallback(networkCallback);
-        } else {
-            context.unregisterReceiver(networkReceiver);
-        }
+        connectivityManager.unregisterNetworkCallback(networkCallback)
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private fun lollipopNetworkAvailableRequest() {
         val builder = NetworkRequest.Builder()
-                .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
         connectivityManager.registerNetworkCallback(builder.build(), createNetworkCallback())
     }
 
@@ -77,20 +80,23 @@ constructor(val context: Context) : MutableLiveData<Boolean>() {
             object : ConnectivityManager.NetworkCallback() {
                 override fun onAvailable(network: Network) {
                     val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
-                    val hasInternetCapability = networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    val hasInternetCapability = networkCapabilities?.hasCapability(
+                        NetworkCapabilities.NET_CAPABILITY_INTERNET
+                    )
 
-                    if (hasInternetCapability == true && value == false
-                            && connectivityManager.allNetworks.size == 1) {
+                    if (hasInternetCapability == true && value == false &&
+                        connectivityManager.allNetworks.size == 1
+                    ) {
                         hasInternetConnection()
                     }
 
-                    if(hasInternetCapability == true && value == null) {
+                    if (hasInternetCapability == true && value == null) {
                         hasInternetConnection()
                     }
                 }
 
                 override fun onLost(network: Network) {
-                    if(connectivityManager.allNetworks.size <= 1 && value == true) {
+                    if (connectivityManager.allNetworks.size <= 1 && value == true) {
                         hasInternetConnection()
                     }
                 }
@@ -101,25 +107,15 @@ constructor(val context: Context) : MutableLiveData<Boolean>() {
         }
     }
 
-    @Suppress("DEPRECATION")
-    private val networkReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val activeNetworkInfo = connectivityManager.activeNetworkInfo
-            if(activeNetworkInfo != null && activeNetworkInfo.isConnected) {
-                if(value != true) value = true
-            } else {
-                if(value != false) value = false
-            }
-        }
-    }
-
     private fun hasInternetConnection() {
-            if(value == null) {
-                compositeDisposable.add(Completable.fromCallable {
+        if (value == null) {
+            compositeDisposable.add(
+                Completable.fromCallable {
                     postValue(isInternetAvailable())
-                }.subscribeOn(Schedulers.io()).subscribe())
-            } else {
-                postValue(!value!!)
-            }
+                }.subscribeOn(Schedulers.io()).subscribe()
+            )
+        } else {
+            postValue(!value!!)
+        }
     }
 }

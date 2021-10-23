@@ -7,12 +7,11 @@ import com.openclassrooms.realestatemanager.BaseApplication
 import com.openclassrooms.realestatemanager.data.cache.AppDatabase
 import com.openclassrooms.realestatemanager.models.property.Photo
 import com.openclassrooms.realestatemanager.models.property.Property
-import java.util.*
 import java.util.concurrent.Callable
 import javax.inject.Inject
 import javax.inject.Singleton
 
-fun <T> Cursor.toList(block: (Cursor) -> T) : List<T> {
+fun <T> Cursor.toList(block: (Cursor) -> T): List<T> {
     return mutableListOf<T>().also { list ->
         if (moveToFirst()) {
             do {
@@ -25,12 +24,11 @@ fun <T> Cursor.toList(block: (Cursor) -> T) : List<T> {
 @Singleton
 class AppContentProvider : ContentProvider() {
 
+    @Inject lateinit var database: AppDatabase
+
     override fun onCreate(): Boolean {
         return true
     }
-
-    @Inject
-    lateinit var database: AppDatabase
 
     override fun getType(uri: Uri): String {
         return when (sUriMatcher.match(uri)) {
@@ -38,12 +36,15 @@ class AppContentProvider : ContentProvider() {
             PROPERTY_ID -> PropertyContract.PropertyEntry.CONTENT_ITEM_TYPE
             PHOTO -> PropertyContract.PhotoEntry.CONTENT_TYPE
             PHOTO_ID -> PropertyContract.PhotoEntry.CONTENT_ITEM_TYPE
-            else -> throw UnsupportedOperationException("Unknown uri: $uri")
+            else -> throw UnsupportedOperationException(unknownUri(uri))
         }
     }
 
-    override fun query(uri: Uri, projection: Array<String>?, selection: String?, selectionArgs: Array<String>?, sortOrder: String?): Cursor {
-        if(!::database.isInitialized) {
+    override fun query(
+        uri: Uri, projection: Array<String>?, selection: String?,
+        selectionArgs: Array<String>?, sortOrder: String?
+    ): Cursor {
+        if (!::database.isInitialized) {
             (context as BaseApplication).appComponent.inject(this)
         }
 
@@ -59,7 +60,7 @@ class AppContentProvider : ContentProvider() {
                 val id = ContentUris.parseId(uri)
                 database.photoDao().findPhotoById(id)
             }
-            else -> throw UnsupportedOperationException("Unknown uri: $uri")
+            else -> throw UnsupportedOperationException(unknownUri(uri))
         }
 
         // Set the notification URI for the cursor to the one passed into the function. This
@@ -74,7 +75,7 @@ class AppContentProvider : ContentProvider() {
         val id: Long
         val returnUri: Uri
 
-        if(!::database.isInitialized) {
+        if (!::database.isInitialized) {
             (context as BaseApplication).appComponent.inject(this)
         }
         when (sUriMatcher.match(uri)) {
@@ -94,7 +95,7 @@ class AppContentProvider : ContentProvider() {
                     throw UnsupportedOperationException("Unable to insert rows into: $uri")
                 }
             }
-            else -> throw UnsupportedOperationException("Unknown uri: $uri")
+            else -> throw UnsupportedOperationException(unknownUri(uri))
         }
 
         // Use this on the URI passed into the function to notify any observers that the uri has
@@ -122,7 +123,7 @@ class AppContentProvider : ContentProvider() {
             PHOTO_ID -> {
                 database.photoDao().deletePhotoById(ContentUris.parseId(uri))
             }
-            else -> throw UnsupportedOperationException("Unknown uri: $uri")
+            else -> throw UnsupportedOperationException(unknownUri(uri))
         }
         if (rows != 0) {
             context.contentResolver.notifyChange(uri, null)
@@ -145,7 +146,7 @@ class AppContentProvider : ContentProvider() {
                 val photo: Photo = Photo.fromContentValues(values)
                 database.photoDao().updatePhoto(photo)
             }
-            else -> throw UnsupportedOperationException("Unknown uri: $uri")
+            else -> throw UnsupportedOperationException(unknownUri(uri))
         }
         if (rows != 0) {
             context.contentResolver.notifyChange(uri, null)
@@ -154,13 +155,14 @@ class AppContentProvider : ContentProvider() {
     }
 
     override fun applyBatch(operations: ArrayList<ContentProviderOperation>): Array<out ContentProviderResult> {
-
         val context = context ?: return arrayOf()
-        if(!::database.isInitialized) {
+        if (!::database.isInitialized) {
             (context as BaseApplication).appComponent.inject(this)
         }
-        return database.runInTransaction(Callable<Array<ContentProviderResult>>
-        { super@AppContentProvider.applyBatch(operations) })
+        return database.runInTransaction(
+            Callable<Array<ContentProviderResult>>
+            { super@AppContentProvider.applyBatch(operations) }
+        )
     }
 
     override fun bulkInsert(uri: Uri, valuesArray: Array<out ContentValues>): Int {
@@ -174,7 +176,8 @@ class AppContentProvider : ContentProvider() {
                 for (i in valuesArray.indices) {
                     properties[i] = Property.fromContentValues(valuesArray[i])
                 }
-                database.propertyDao().saveProperties(*properties.toList().toTypedArray()).size
+                properties.toList().forEach { property -> database.propertyDao().saveProperty(property) }
+                properties.size
             }
             PROPERTY_ID -> {
                 val property: Property = Property.fromContentValues(valuesArray[0])
@@ -185,7 +188,8 @@ class AppContentProvider : ContentProvider() {
                 for (i in valuesArray.indices) {
                     photos[i] = Photo.fromContentValues(valuesArray[i])
                 }
-                database.photoDao().savePhotos(*photos.toList().toTypedArray()).size
+                photos.toList().forEach { photo -> database.photoDao().savePhoto(photo) }
+                photos.size
             }
             PHOTO_ID -> {
                 val photo: Photo = Photo.fromContentValues(valuesArray[0])
@@ -202,6 +206,10 @@ class AppContentProvider : ContentProvider() {
         private const val PHOTO = 200
         private const val PHOTO_ID = 201
         private val sUriMatcher = buildUriMatcher()
+
+        fun unknownUri(uri: Uri): String {
+            return "Unknown uri: $uri"
+        }
 
         /**
          * Builds a UriMatcher that is used to determine witch database request is being made.

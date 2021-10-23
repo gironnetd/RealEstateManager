@@ -14,28 +14,32 @@ import javax.inject.Singleton
 
 @Singleton
 class PhotoRemoteSource
-@Inject constructor(var remoteData: PhotoDataSource, var remoteStorage: PhotoStorageSource): PhotoSource {
+@Inject constructor(var remoteData: PhotoDataSource, var remoteStorage: PhotoStorageSource) : PhotoSource {
 
     override fun count(): Single<Int> {
-        return Single.zip(remoteData.count(), remoteStorage.count(),
+        return Single.zip(
+            remoteData.count(), remoteStorage.count(),
             BiFunction { dataCount, storageCount ->
-                if(dataCount == storageCount) {
+                if (dataCount == storageCount) {
                     return@BiFunction dataCount
                 } else {
                     return@BiFunction -1
                 }
-            })
+            }
+        )
     }
 
     override fun count(propertyId: String): Single<Int> {
-        return Single.zip(remoteData.count(propertyId), remoteStorage.count(propertyId),
+        return Single.zip(
+            remoteData.count(propertyId), remoteStorage.count(propertyId),
             BiFunction { dataCount, storageCount ->
-                if(dataCount == storageCount) {
+                if (dataCount == storageCount) {
                     return@BiFunction dataCount
                 } else {
                     return@BiFunction -1
                 }
-            })
+            }
+        )
     }
 
     override fun savePhoto(photo: Photo): Completable {

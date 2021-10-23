@@ -55,7 +55,7 @@
             android:layout_gravity="center"
             android:theme="@style/ProgressBarStyle"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/no_photos"
+            app:layout_constraintBottom_toBottomOf="@+id/photos_recycler_view"
             app:layout_constraintEnd_toEndOf="@+id/photos_recycler_view"
             app:layout_constraintStart_toStartOf="@+id/photos_recycler_view"
             app:layout_constraintTop_toTopOf="@+id/photos_recycler_view" />
@@ -120,6 +120,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"
+                android:focusableInTouchMode="true"
                 android:hint="@string/property_entry_date"
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -139,6 +140,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"
+                android:focusableInTouchMode="true"
                 android:hint="@string/property_status"
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -160,6 +162,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"
+                android:focusableInTouchMode="true"
                 android:hint="@string/property_sold_date"
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -208,7 +211,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:focusable="false"
+                android:focusable="true"
                 android:hint="@string/property_price"
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -250,7 +253,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:focusable="false"
+                android:focusable="true"
                 android:hint="@string/surface"
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -270,7 +273,7 @@
                 android:id="@+id/rooms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false"
+                android:focusable="true"
                 android:hint="@string/number_of_rooms"
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -292,7 +295,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:focusable="false"
+                android:focusable="true"
                 android:hint="@string/number_of_bathrooms"
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -313,7 +316,7 @@
                 android:id="@+id/bedrooms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false"
+                android:focusable="true"
                 android:hint="@string/number_of_bedrooms"
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -338,7 +341,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="22dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/street"

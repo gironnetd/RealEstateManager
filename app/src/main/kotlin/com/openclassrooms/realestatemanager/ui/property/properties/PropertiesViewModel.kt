@@ -14,17 +14,13 @@ import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
 class PropertiesViewModel
-@Inject internal constructor(private val propertiesProcessor: PropertiesActionProcessor)
-    : ViewModel(), MviViewModel<PropertiesIntent, PropertiesViewState> {
+@Inject internal constructor(private val propertiesProcessor: PropertiesActionProcessor) :
+    ViewModel(), MviViewModel<PropertiesIntent, PropertiesViewState> {
 
     private var intentsSubject: PublishSubject<PropertiesIntent> = PublishSubject.create()
     private val statesSubject: Observable<PropertiesViewState> = compose()
     private val disposables = CompositeDisposable()
 
-    /**
-     * take only the first ever InitialIntent and all intents of other types
-     * to avoid reloading data on config changes
-     */
     private val intentFilter: ObservableTransformer<PropertiesIntent, PropertiesIntent>
         get() = ObservableTransformer { intents ->
             intents.publish { shared ->
@@ -64,35 +60,35 @@ class PropertiesViewModel
     companion object {
         private val reducer = BiFunction { previousState: PropertiesViewState, result: PropertiesResult ->
             when (result) {
-                is LoadPropertiesResult -> when(result) {
+                is LoadPropertiesResult -> when (result) {
                     is LoadPropertiesResult.Success -> {
                         result.properties?.let { properties ->
-                             if(properties.isEmpty()) {
-                                 if(previousState.inProgress == true && previousState.properties == null) {
-                                     previousState.copy(
-                                         inProgress = true,
-                                         properties = properties,
-                                         error = null,
-                                         uiNotification = null
-                                     )
-                                 } else if(previousState.inProgress == true && previousState.properties!!.isEmpty()){
-                                     previousState.copy(
-                                         inProgress = null,
-                                         properties = null,
-                                         error = null,
-                                         uiNotification = null
-                                     )
-                                 } else {
-                                     previousState
-                                 }
-                             } else {
-                                 previousState.copy(
-                                     inProgress = false,
-                                     properties = properties,
-                                     error = null,
-                                     uiNotification = null
-                                 )
-                             }
+                            if (properties.isEmpty()) {
+                                if (previousState.inProgress == true && previousState.properties == null) {
+                                    previousState.copy(
+                                        inProgress = true,
+                                        properties = properties,
+                                        error = null,
+                                        uiNotification = null
+                                    )
+                                } else if (previousState.inProgress == true && previousState.properties!!.isEmpty()) {
+                                    previousState.copy(
+                                        inProgress = null,
+                                        properties = null,
+                                        error = null,
+                                        uiNotification = null
+                                    )
+                                } else {
+                                    previousState
+                                }
+                            } else {
+                                previousState.copy(
+                                    inProgress = false,
+                                    properties = properties,
+                                    error = null,
+                                    uiNotification = null
+                                )
+                            }
                         } ?: previousState.copy(
                             inProgress = true,
                             properties = null,
@@ -111,7 +107,7 @@ class PropertiesViewModel
                         )
                     }
                 }
-                is CreatePropertyResult -> when(result) {
+                is CreatePropertyResult -> when (result) {
                     is CreatePropertyResult.Created -> {
                         previousState.copy(
                             inProgress = false,
@@ -132,7 +128,7 @@ class PropertiesViewModel
                         )
                     }
                 }
-                is UpdatePropertyResult -> when(result) {
+                is UpdatePropertyResult -> when (result) {
                     is UpdatePropertyResult.Updated -> {
                         previousState.copy(
                             inProgress = false,
@@ -155,4 +151,3 @@ class PropertiesViewModel
         }
     }
 }
-

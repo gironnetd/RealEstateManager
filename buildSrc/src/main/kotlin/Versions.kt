@@ -37,6 +37,8 @@ object Versions {
 
     const val androidx_test_core = "1.4.0"
 
+    const val androidx_test_orchestrator = "1.4.0"
+
     const val arch_testing = "2.1.0"
 
     const val robolectric = "4.4"
@@ -51,7 +53,7 @@ object Versions {
 
     const val dagger = "2.38.1"
 
-    const val firebase_bom = "28.4.1"
+    const val firebase_bom = "28.4.2"
 
     const val grpc_okhttp = "1.32.2"
     

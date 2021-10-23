@@ -14,10 +14,6 @@ class PropertyContract {
          */
         const val CONTENT_AUTHORITY = "com.openclassrooms.realestatemanager.provider"
 
-        /**
-         * The content authority is used to create the base of all URIs which apps will use to
-         * contact this content provider.
-         */
         private val BASE_CONTENT_URI = Uri.parse("content://$CONTENT_AUTHORITY")
 
         /**

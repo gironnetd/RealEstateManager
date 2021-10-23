@@ -12,7 +12,7 @@ import javax.inject.Singleton
 
 @Singleton
 class PhotoCacheDataSource
-@Inject constructor(private val photoDao: PhotoDao): PhotoDataSource {
+@Inject constructor(private val photoDao: PhotoDao) : PhotoDataSource {
 
     override fun count(): Single<Int> {
         return Single.fromCallable { photoDao.count() }
@@ -32,7 +32,7 @@ class PhotoCacheDataSource
 
     override fun savePhotos(photos: List<Photo>): Completable {
         return Completable.fromAction {
-            photoDao.savePhotos(*photos.toTypedArray())
+            photos.forEach { photo -> photoDao.savePhoto(photo) }
         }.subscribeOn(SchedulerProvider.io())
     }
 
@@ -67,8 +67,9 @@ class PhotoCacheDataSource
     }
 
     override fun updatePhotos(photos: List<Photo>): Completable {
-        return Completable.fromAction { photoDao.updatePhotos(*photos.toTypedArray()) }
-            .subscribeOn(SchedulerProvider.io())
+        return Completable.fromAction {
+            photos.forEach { photo -> photoDao.updatePhoto(photo) }
+        }.subscribeOn(SchedulerProvider.io())
     }
 
     override fun deletePhotosByIds(ids: List<String>): Completable {
@@ -77,8 +78,9 @@ class PhotoCacheDataSource
     }
 
     override fun deletePhotos(photos: List<Photo>): Completable {
-        return Completable.fromAction { photoDao.deletePhotos(*photos.toTypedArray()) }
-            .subscribeOn(SchedulerProvider.io())
+        return Completable.fromAction {
+            photos.forEach { photo -> photoDao.deletePhotoById(photo.id) }
+        }.subscribeOn(SchedulerProvider.io())
     }
 
     override fun deleteAllPhotos(): Completable {

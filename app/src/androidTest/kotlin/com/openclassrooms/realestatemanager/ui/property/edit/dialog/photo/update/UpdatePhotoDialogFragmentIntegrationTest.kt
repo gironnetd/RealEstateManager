@@ -1,7 +1,6 @@
 package com.openclassrooms.realestatemanager.ui.property.edit.dialog.photo.update
 
 import android.content.res.Configuration
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.VectorDrawable
@@ -52,7 +51,6 @@ import org.junit.*
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
 import java.io.File
-import java.io.FileOutputStream
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
@@ -78,19 +76,6 @@ class UpdatePhotoDialogFragmentIntegrationTest  : BaseFragmentTests() {
 
         BrowseFragment.WHEN_NORMAL_MODE_IS_DETAIL_FRAGMENT_SELECTED = false
         BaseFragment.properties.value = fakeProperties as MutableList<Property>
-
-        fakeProperties[itemPosition].photos.forEach { photo ->
-            val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext.cacheDir,true))
-
-            if(!photoFile.exists()) {
-                val defaultImage = testApplication.resources.getDrawable(R.drawable.default_image, null)
-
-                val outputStream = FileOutputStream(photoFile, true)
-
-                (defaultImage as BitmapDrawable).bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                outputStream.close()
-            }
-        }
     }
 
     @After
@@ -130,7 +115,7 @@ class UpdatePhotoDialogFragmentIntegrationTest  : BaseFragmentTests() {
             perform(actionOnItemAtPosition<PhotoDetailAdapter.PhotoViewHolder>(photoUpdatePosition, click()))
         }
 
-        onView(withId(R.id.update_photo_dialog_fragment)).inRoot(isDialog()).check(matches(isDisplayed()))
+        onView(withId(R.id.edit_photo_dialog_fragment)).inRoot(isDialog()).check(matches(isDisplayed()))
     }
 
     @Test
@@ -290,7 +275,7 @@ class UpdatePhotoDialogFragmentIntegrationTest  : BaseFragmentTests() {
             onView(isRoot())
                 .perform(OrientationChangeAction.orientationPortrait(mainActivity))
         }
-        onView(withId(R.id.update_photo_dialog_fragment)).check(matches(isDisplayed()))
+        onView(withId(R.id.edit_photo_dialog_fragment)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -349,8 +334,7 @@ class UpdatePhotoDialogFragmentIntegrationTest  : BaseFragmentTests() {
                 .perform(OrientationChangeAction.orientationPortrait(mainActivity))
         }
 
-        onView(withId(R.id.radio_button_kitchen))
-            .check(matches(isChecked()))
+        onView(withId(R.id.radio_button_kitchen)).check(matches(isChecked()))
 
         onView(allOf(withId(R.id.description_edit_text), isDisplayed()))
             .check(matches(withText(DESCRIPTION_TEXT)))
@@ -651,7 +635,7 @@ class UpdatePhotoDialogFragmentIntegrationTest  : BaseFragmentTests() {
 
         onView(withText(R.string.update_photo_detail)).perform(click())
 
-        val localFile = File(propertyUpdateFragment.updatePhotoAlertDialog.photo!!
+        val localFile = File(propertyUpdateFragment.updatePhotoAlertDialog.photo
             .storageLocalDatabase(testApplication.applicationContext.cacheDir, true))
 
         assertThat(localFile).isNotNull()
@@ -712,7 +696,6 @@ class UpdatePhotoDialogFragmentIntegrationTest  : BaseFragmentTests() {
         onView(withId(R.id.delete_photo)).check(matches(isDisplayed()))
         onView(withId(R.id.photo_imageview)).check(matches(isDisplayed()))
     }
-
 
     @Test
     fun given_update_photo_dialog_when_click_on_delete_photo_button_then_photo_deleted_in_photo_recycler_view() {

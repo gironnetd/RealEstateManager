@@ -11,8 +11,10 @@ import javax.inject.Singleton
 
 @Singleton
 class PropertyDetailActionProcessor
-@Inject constructor(private val propertyRepository: PropertyRepository,
-                    private val schedulerProvider: BaseSchedulerProvider) {
+@Inject constructor(
+    private val propertyRepository: PropertyRepository,
+    private val schedulerProvider: BaseSchedulerProvider
+) {
 
     private val populatePropertyProcessor =
         ObservableTransformer<PopulatePropertyAction, PopulatePropertyResult> { actions ->
@@ -28,13 +30,13 @@ class PropertyDetailActionProcessor
 
     var actionProcessor = ObservableTransformer<PropertyDetailAction, PropertyDetailResult> { actions ->
         actions.publish { shared ->
-                shared.ofType(PopulatePropertyAction::class.java).compose(populatePropertyProcessor)
-                    .cast(PropertyDetailResult::class.java)
-                    .mergeWith(
-                        shared.filter { v -> v !is PopulatePropertyAction }.flatMap { w ->
-                            Observable.error(IllegalArgumentException("Unknown Action type: $w"))
-                        }
-                    )
+            shared.ofType(PopulatePropertyAction::class.java).compose(populatePropertyProcessor)
+                .cast(PropertyDetailResult::class.java)
+                .mergeWith(
+                    shared.filter { v -> v !is PopulatePropertyAction }.flatMap { w ->
+                        Observable.error(IllegalArgumentException("Unknown Action type: $w"))
+                    }
+                )
         }
     }
 }

@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.drawable.RippleDrawable
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -14,6 +12,7 @@ import android.text.style.ForegroundColorSpan
 import android.view.Menu
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
@@ -69,10 +68,13 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
     private val compositeDisposable = CompositeDisposable()
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+
     @Inject lateinit var sharedPreferences: SharedPreferences
 
+    lateinit var onBackPressedCallback: OnBackPressedCallback
+
     val placesClient: PlacesClient by lazy {
-        if(!Places.isInitialized()) {
+        if (!Places.isInitialized()) {
             Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY)
         }
         Places.createClient(this)
@@ -94,7 +96,7 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
         initDefaultCurrency()
 
         navHostFragment = supportFragmentManager
-                .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 
         navController = navHostFragment.navController
 
@@ -106,199 +108,99 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
         }
 
         appBarConfiguration = AppBarConfiguration.Builder(
-                R.id.navigation_browse, R.id.navigation_create, R.id.navigation_main_search)
-                .setOpenableLayout(binding.drawerLayout)
-                .build()
+            R.id.navigation_browse, R.id.navigation_create, R.id.navigation_main_search
+        )
+            .setOpenableLayout(binding.drawerLayout)
+            .build()
+
+        initNavigationView()
+        initBottomNavigationView()
+        initNavController()
+        onBackPressedCallback()
 
         with(binding) {
             toolBar.setupWithNavController(navController, appBarConfiguration)
-            navigationView.setupWithNavController(navController)
-            navigationView.itemIconTintList = null
-            bottomNavigationView.setupWithNavController(navController)
-            bottomNavigationView.itemIconTintList = null
-
-            if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-                val states = arrayOf(intArrayOf(android.R.attr.state_enabled))
-                var colors: IntArray = intArrayOf()
-
-                (bottomNavigationView.getChildAt(0) as BottomNavigationMenuView)
-                        .children.iterator().forEach { bottomNavigationItemView ->
-                            when (bottomNavigationItemView.id) {
-                                R.id.navigation_browse -> {
-                                    colors = intArrayOf(ResourcesCompat.getColor(resources, R.color.colorPrimaryRipple, null))
-                                }
-                                R.id.navigation_create -> {
-                                    colors = intArrayOf(ResourcesCompat.getColor(resources, R.color.colorSecondaryRipple, null))
-                                }
-                                R.id.navigation_main_search -> {
-                                    colors = intArrayOf(ResourcesCompat.getColor(resources, R.color.colorTertiaryRipple, null))
-                                }
-                            }
-                            (bottomNavigationItemView as BottomNavigationItemView)
-                                    .setItemBackground(
-                                            RippleDrawable(
-                                                    RippleUtils.convertToRippleDrawableColor(ColorStateList(states, colors)),
-                                                    null,
-                                                    null
-                                            )
-                                    )
-                        }
-            }
-
-            navigationView.menu.children.iterator().forEach { menuItem ->
-                when(menuItem.itemId) {
-                    R.id.navigation_browse -> {
-
-                        menuItem.setIcon(R.drawable.ic_baseline_home_work_24)
-                        SpannableString(menuItem.title.toSpannable()).apply {
-                            setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorPrimary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                            menuItem.title = this
-                        }
-
-                        navigationView.itemBackground = ResourcesCompat.getDrawable(
-                                resources,
-                                R.drawable.navigation_view_all_properties_menu_item_background_color_state,
-                                null
-                        )
-
-                        menuItem.setOnMenuItemClickListener {
-                            menuItem.setIcon(R.drawable.ic_baseline_home_work_24)
-                            SpannableString(menuItem.title.toSpannable()).apply {
-                                setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorPrimary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                                menuItem.title = this
-                            }
-                            navigationView.itemBackground = ResourcesCompat.getDrawable(
-                                    resources,
-                                    R.drawable.navigation_view_all_properties_menu_item_background_color_state,
-                                    null
-                            )
-                            binding.drawerLayout.closeDrawer(START)
-                            navController.navigate(R.id.navigation_browse)
-                            true
-                        }
-                    }
-                    R.id.navigation_create -> {
-
-                        menuItem.setOnMenuItemClickListener {
-                            menuItem.setIcon(R.drawable.ic_baseline_add_business_24)
-                            SpannableString(menuItem.title.toSpannable()).apply {
-                                setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorSecondary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                                menuItem.title = this
-                            }
-
-                            navigationView.itemBackground = ResourcesCompat.getDrawable(
-                                    resources,
-                                    R.drawable.navigation_view_create_property_menu_item_background_color_state,
-                                    null
-                            )
-                            binding.drawerLayout.closeDrawer(START)
-                            navController.navigate(R.id.navigation_create)
-                            true
-                        }
-                    }
-
-                    R.id.navigation_main_search -> {
-                        menuItem.setOnMenuItemClickListener {
-                            MenuItemCompat.setIconTintList(menuItem, ColorStateList.valueOf(ResourcesCompat.getColor(resources, R.color.colorTertiary, null)))
-                            menuItem.setIcon(R.drawable.ic_baseline_search_selected_24)
-                            SpannableString(menuItem.title.toSpannable()).apply {
-                                setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorTertiary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                                menuItem.title = this
-                            }
-                            navigationView.itemBackground = ResourcesCompat.getDrawable(
-                                    resources,
-                                    R.drawable.navigation_view_search_properties_menu_item_background_color_state,
-                                    null
-                            )
-                            binding.drawerLayout.closeDrawer(START)
-                            navController.navigate(R.id.navigation_main_search)
-                            true
-                        }
-                    }
-                    R.id.euros_choice -> {
-                        navigationView.itemBackground = ResourcesCompat.getDrawable(
-                                resources,
-                                R.drawable.navigation_view_choose_default_currency_menu_item_background_color_state,
-                                null
-                        )
-                    }
-                    R.id.dollars_choice -> {
-                        navigationView.itemBackground = ResourcesCompat.getDrawable(
-                                resources,
-                                R.drawable.navigation_view_choose_default_currency_menu_item_background_color_state,
-                                null
-                        )
-                    }
+            statusbar.setOnApplyWindowInsetsListener { view, insets ->
+                statusbar.layoutParams.apply {
+                    height = insets.systemWindowInsetTop
+                }.also {
+                    statusbar.layoutParams = it
                 }
+                insets
             }
+        }
+    }
 
-            navigationView.setNavigationItemSelectedListener { menuItem ->
-                when(menuItem.itemId) {
-                    R.id.euros_choice -> {
-                        (menuItem.actionView as MaterialRadioButton).isChecked = true
-                        sharedPreferences.edit().putString(DEFAULT_CURRENCY, EUROS.currency).apply().let {
-                            BaseFragment.defaultCurrency.value = EUROS.currency
-                        }
-                        (navigationView.menu.findItem(R.id.dollars_choice).actionView as MaterialRadioButton).isChecked = false
-                        binding.drawerLayout.closeDrawer(START)
-                    }
-                    R.id.dollars_choice -> {
-                        (menuItem.actionView as MaterialRadioButton).isChecked = true
-                        sharedPreferences.edit().putString(DEFAULT_CURRENCY, DOLLARS.currency).apply().let {
-                            BaseFragment.defaultCurrency.value = DOLLARS.currency
-                        }
-                        (navigationView.menu.findItem(R.id.euros_choice).actionView as MaterialRadioButton).isChecked = false
-                        binding.drawerLayout.closeDrawer(START)
-                    }
-                }
-                true
-            }
-
+    private fun initNavController() {
+        with(binding) {
             navController.addOnDestinationChangedListener { _, destination, _ ->
 
                 navigationView.menu.children.iterator().forEach { menuItem ->
-                    if(menuItem.itemId == destination.id) {
-                        when(menuItem.itemId) {
+                    if (menuItem.itemId == destination.id) {
+                        when (menuItem.itemId) {
                             R.id.navigation_browse -> {
                                 navigationView.itemBackground = ResourcesCompat.getDrawable(
-                                        resources,
-                                        R.drawable.navigation_view_all_properties_menu_item_background_color_state,
-                                        null
+                                    resources,
+                                    R.drawable.navigation_view_all_properties_menu_item_background_color_state,
+                                    null
                                 )
                                 menuItem.setIcon(R.drawable.ic_baseline_home_work_24)
                                 SpannableString(menuItem.title.toSpannable()).apply {
-                                    setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorPrimary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                                    setSpan(
+                                        ForegroundColorSpan(
+                                            ResourcesCompat.getColor(resources, R.color.colorPrimary, null)
+                                        ),
+                                        0,
+                                        this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                                    )
                                     menuItem.title = this
                                 }
                             }
                             R.id.navigation_create -> {
                                 navigationView.itemBackground = ResourcesCompat.getDrawable(
-                                        resources,
-                                        R.drawable.navigation_view_create_property_menu_item_background_color_state,
-                                        null
+                                    resources,
+                                    R.drawable.navigation_view_create_property_menu_item_background_color_state,
+                                    null
                                 )
                                 menuItem.setIcon(R.drawable.ic_baseline_add_business_24)
                                 SpannableString(menuItem.title.toSpannable()).apply {
-                                    setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorSecondary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                                    setSpan(
+                                        ForegroundColorSpan(
+                                            ResourcesCompat.getColor(resources, R.color.colorSecondary, null)
+                                        ),
+                                        0,
+                                        this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                                    )
                                     menuItem.title = this
                                 }
                             }
                             R.id.navigation_main_search -> {
                                 navigationView.itemBackground = ResourcesCompat.getDrawable(
-                                        resources,
-                                        R.drawable.navigation_view_search_properties_menu_item_background_color_state,
-                                        null
+                                    resources,
+                                    R.drawable.navigation_view_search_properties_menu_item_background_color_state,
+                                    null
                                 )
-                                MenuItemCompat.setIconTintList(menuItem, ColorStateList.valueOf(ResourcesCompat.getColor(resources, R.color.colorTertiary, null)))
+                                MenuItemCompat.setIconTintList(
+                                    menuItem,
+                                    ColorStateList.valueOf(
+                                        ResourcesCompat.getColor(resources, R.color.colorTertiary, null)
+                                    )
+                                )
                                 menuItem.setIcon(R.drawable.ic_baseline_search_selected_24)
                                 SpannableString(menuItem.title.toSpannable()).apply {
-                                    setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorTertiary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                                    setSpan(
+                                        ForegroundColorSpan(
+                                            ResourcesCompat.getColor(resources, R.color.colorTertiary, null)
+                                        ),
+                                        0,
+                                        this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                                    )
                                     menuItem.title = this
                                 }
                             }
                         }
                     } else {
-                        when(menuItem.itemId) {
+                        when (menuItem.itemId) {
                             R.id.navigation_browse -> {
                                 menuItem.setIcon(R.drawable.ic_outline_home_work_24)
                             }
@@ -321,39 +223,65 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
                 }
 
                 bottomNavigationView.menu.children.iterator().forEach { menuItem ->
-                    if(menuItem.itemId == destination.id) {
-                        when(menuItem.itemId) {
+                    if (menuItem.itemId == destination.id) {
+                        when (menuItem.itemId) {
                             R.id.navigation_browse -> {
                                 menuItem.setIcon(R.drawable.ic_baseline_home_work_24)
-                                if(bottomNavigationView.labelVisibilityMode == LABEL_VISIBILITY_LABELED) {
+                                if (bottomNavigationView.labelVisibilityMode == LABEL_VISIBILITY_LABELED) {
                                     SpannableString(menuItem.title.toSpannable()).apply {
-                                        setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorPrimary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                                        setSpan(
+                                            ForegroundColorSpan(
+                                                ResourcesCompat.getColor(resources, R.color.colorPrimary, null)
+                                            ),
+                                            0,
+                                            this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                                        )
                                         menuItem.title = this
                                     }
                                 }
                             }
                             R.id.navigation_create -> {
                                 menuItem.setIcon(R.drawable.ic_baseline_add_business_24)
-                                if(bottomNavigationView.labelVisibilityMode == LABEL_VISIBILITY_LABELED) {
+                                if (bottomNavigationView.labelVisibilityMode == LABEL_VISIBILITY_LABELED) {
                                     SpannableString(menuItem.title.toSpannable()).apply {
-                                        setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorSecondary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                                        setSpan(
+                                            ForegroundColorSpan(
+                                                ResourcesCompat.getColor(resources, R.color.colorSecondary, null)
+                                            ),
+                                            0,
+                                            this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                                        )
                                         menuItem.title = this
                                     }
                                 }
                             }
                             R.id.navigation_main_search -> {
-                                MenuItemCompat.setIconTintList(menuItem, ColorStateList.valueOf(ResourcesCompat.getColor(resources, R.color.colorTertiary, null)))
+                                MenuItemCompat.setIconTintList(
+                                    menuItem,
+                                    ColorStateList.valueOf(
+                                        ResourcesCompat.getColor(
+                                            resources,
+                                            R.color.colorTertiary, null
+                                        )
+                                    )
+                                )
                                 menuItem.setIcon(R.drawable.ic_baseline_search_selected_24)
-                                if(bottomNavigationView.labelVisibilityMode == LABEL_VISIBILITY_LABELED) {
+                                if (bottomNavigationView.labelVisibilityMode == LABEL_VISIBILITY_LABELED) {
                                     SpannableString(menuItem.title.toSpannable()).apply {
-                                        setSpan(ForegroundColorSpan(ResourcesCompat.getColor(resources, R.color.colorTertiary, null)), 0, this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                                        setSpan(
+                                            ForegroundColorSpan(
+                                                ResourcesCompat.getColor(resources, R.color.colorTertiary, null)
+                                            ),
+                                            0,
+                                            this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                                        )
                                         menuItem.title = this
                                     }
                                 }
                             }
                         }
                     } else {
-                        when(menuItem.itemId) {
+                        when (menuItem.itemId) {
                             R.id.navigation_browse -> {
                                 menuItem.setIcon(R.drawable.ic_outline_home_work_24)
                             }
@@ -378,17 +306,203 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
         }
     }
 
+    private fun initNavigationView() {
+        with(binding) {
+            navigationView.setupWithNavController(navController)
+            navigationView.itemIconTintList = null
+
+            navigationView.menu.children.iterator().forEach { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.navigation_browse -> {
+                        menuItem.setIcon(R.drawable.ic_baseline_home_work_24)
+                        SpannableString(menuItem.title.toSpannable()).apply {
+                            setSpan(
+                                ForegroundColorSpan(
+                                    ResourcesCompat.getColor(resources, R.color.colorPrimary, null)
+                                ),
+                                0,
+                                this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                            menuItem.title = this
+                        }
+
+                        navigationView.itemBackground = ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.navigation_view_all_properties_menu_item_background_color_state,
+                            null
+                        )
+
+                        menuItem.setOnMenuItemClickListener {
+                            menuItem.setIcon(R.drawable.ic_baseline_home_work_24)
+                            SpannableString(menuItem.title.toSpannable()).apply {
+                                setSpan(
+                                    ForegroundColorSpan(
+                                        ResourcesCompat.getColor(resources, R.color.colorPrimary, null)
+                                    ),
+                                    0,
+                                    this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                                )
+                                menuItem.title = this
+                            }
+                            navigationView.itemBackground = ResourcesCompat.getDrawable(
+                                resources,
+                                R.drawable.navigation_view_all_properties_menu_item_background_color_state,
+                                null
+                            )
+                            binding.drawerLayout.closeDrawer(START)
+                            navController.navigate(R.id.navigation_browse)
+                            true
+                        }
+                    }
+                    R.id.navigation_create -> {
+                        menuItem.setOnMenuItemClickListener {
+                            menuItem.setIcon(R.drawable.ic_baseline_add_business_24)
+                            SpannableString(menuItem.title.toSpannable()).apply {
+                                setSpan(
+                                    ForegroundColorSpan(
+                                        ResourcesCompat.getColor(resources, R.color.colorSecondary, null)
+                                    ),
+                                    0,
+                                    this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                                )
+                                menuItem.title = this
+                            }
+
+                            navigationView.itemBackground = ResourcesCompat.getDrawable(
+                                resources,
+                                R.drawable.navigation_view_create_property_menu_item_background_color_state,
+                                null
+                            )
+                            binding.drawerLayout.closeDrawer(START)
+                            navController.navigate(R.id.navigation_create)
+                            true
+                        }
+                    }
+
+                    R.id.navigation_main_search -> {
+                        menuItem.setOnMenuItemClickListener {
+                            MenuItemCompat.setIconTintList(
+                                menuItem,
+                                ColorStateList.valueOf(
+                                    ResourcesCompat.getColor(resources, R.color.colorTertiary, null)
+                                )
+                            )
+                            menuItem.setIcon(R.drawable.ic_baseline_search_selected_24)
+                            SpannableString(menuItem.title.toSpannable()).apply {
+                                setSpan(
+                                    ForegroundColorSpan(
+                                        ResourcesCompat.getColor(resources, R.color.colorTertiary, null)
+                                    ),
+                                    0,
+                                    this.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                                )
+                                menuItem.title = this
+                            }
+                            navigationView.itemBackground = ResourcesCompat.getDrawable(
+                                resources,
+                                R.drawable.navigation_view_search_properties_menu_item_background_color_state,
+                                null
+                            )
+                            binding.drawerLayout.closeDrawer(START)
+                            navController.navigate(R.id.navigation_main_search)
+                            true
+                        }
+                    }
+                    R.id.euros_choice -> {
+                        navigationView.itemBackground = ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.navigation_view_choose_default_currency_menu_item_background_color_state,
+                            null
+                        )
+                    }
+                    R.id.dollars_choice -> {
+                        navigationView.itemBackground = ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.navigation_view_choose_default_currency_menu_item_background_color_state,
+                            null
+                        )
+                    }
+                }
+            }
+
+            navigationView.setNavigationItemSelectedListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.euros_choice -> {
+                        (menuItem.actionView as MaterialRadioButton).isChecked = true
+                        sharedPreferences.edit().putString(DEFAULT_CURRENCY, EUROS.currency).apply().let {
+                            BaseFragment.defaultCurrency.value = EUROS.currency
+                        }
+                        (navigationView.menu.findItem(R.id.dollars_choice).actionView as MaterialRadioButton)
+                            .isChecked = false
+                        binding.drawerLayout.closeDrawer(START)
+                    }
+                    R.id.dollars_choice -> {
+                        (menuItem.actionView as MaterialRadioButton).isChecked = true
+                        sharedPreferences.edit().putString(DEFAULT_CURRENCY, DOLLARS.currency).apply().let {
+                            BaseFragment.defaultCurrency.value = DOLLARS.currency
+                        }
+                        (navigationView.menu.findItem(R.id.euros_choice).actionView as MaterialRadioButton)
+                            .isChecked = false
+                        binding.drawerLayout.closeDrawer(START)
+                    }
+                }
+                true
+            }
+        }
+    }
+
+    private fun initBottomNavigationView() {
+        with(binding) {
+            bottomNavigationView.setupWithNavController(navController)
+            bottomNavigationView.itemIconTintList = null
+
+            val states = arrayOf(intArrayOf(android.R.attr.state_enabled))
+            var colors: IntArray = intArrayOf()
+
+            (bottomNavigationView.getChildAt(0) as BottomNavigationMenuView)
+                .children.iterator().forEach { bottomNavigationItemView ->
+                    when (bottomNavigationItemView.id) {
+                        R.id.navigation_browse -> {
+                            colors = intArrayOf(
+                                ResourcesCompat.getColor(resources, R.color.colorPrimaryRipple, null)
+                            )
+                        }
+                        R.id.navigation_create -> {
+                            colors = intArrayOf(
+                                ResourcesCompat.getColor(resources, R.color.colorSecondaryRipple, null)
+                            )
+                        }
+                        R.id.navigation_main_search -> {
+                            colors = intArrayOf(
+                                ResourcesCompat.getColor(resources, R.color.colorTertiaryRipple, null)
+                            )
+                        }
+                    }
+                    (bottomNavigationItemView as BottomNavigationItemView)
+                        .setItemBackground(
+                            RippleDrawable(
+                                RippleUtils.convertToRippleDrawableColor(ColorStateList(states, colors)),
+                                null,
+                                null
+                            )
+                        )
+                }
+        }
+    }
+
     private fun initDefaultCurrency() {
         val defaultCurrency = sharedPreferences.getString(DEFAULT_CURRENCY, EUROS.currency)
 
         with(binding) {
-            when(defaultCurrency) {
+            when (defaultCurrency) {
                 EUROS.currency -> {
-                    (navigationView.menu.findItem(R.id.euros_choice).actionView as MaterialRadioButton).isChecked = true
+                    (navigationView.menu.findItem(R.id.euros_choice).actionView as MaterialRadioButton)
+                        .isChecked = true
                     BaseFragment.defaultCurrency.value = EUROS.currency
                 }
                 DOLLARS.currency -> {
-                    (navigationView.menu.findItem(R.id.dollars_choice).actionView as MaterialRadioButton).isChecked = true
+                    (navigationView.menu.findItem(R.id.dollars_choice).actionView as MaterialRadioButton)
+                        .isChecked = true
                     BaseFragment.defaultCurrency.value = DOLLARS.currency
                 }
             }
@@ -437,10 +551,10 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
     }
 
     override fun render(state: PropertiesViewState) {
-        if(state.inProgress != null) {
-            if(state.inProgress) {
+        if (state.inProgress != null) {
+            if (state.inProgress) {
                 BaseFragment.properties.value?.let { properties ->
-                    if(properties.isNotEmpty()) {
+                    if (properties.isNotEmpty()) {
                         binding.loadingProperties.visibility = GONE
                     }
                 }
@@ -455,25 +569,21 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
         }
 
         state.properties?.let { properties ->
-            if(properties.isNotEmpty()) {
-                if(properties != BaseFragment.properties.value) {
-                    if(binding.noData.visibility == VISIBLE) {
-                        binding.noData.visibility = GONE
-                    }
-                    if(binding.loadingProperties.visibility == VISIBLE) {
-                        binding.loadingProperties.visibility = GONE
-                    }
-                    BaseFragment.properties.value = state.properties.toMutableList()
+            if (properties.isNotEmpty() && properties != BaseFragment.properties.value) {
+                if (binding.noData.visibility == VISIBLE) binding.noData.visibility = GONE
+                if (binding.loadingProperties.visibility == VISIBLE) {
+                    binding.loadingProperties.visibility = GONE
                 }
+                BaseFragment.properties.value = state.properties.toMutableList()
             }
         }
 
         state.uiNotification?.let { uiNotification ->
-            if(uiNotification == PROPERTIES_FULLY_UPDATED) {
+            if (uiNotification == PROPERTIES_FULLY_UPDATED) {
                 showMessage(this, resources.getString(R.string.property_update_totally))
             }
 
-            if(uiNotification == PROPERTIES_FULLY_CREATED) {
+            if (uiNotification == PROPERTIES_FULLY_CREATED) {
                 val mNotificationManager = AppNotificationManager(this)
                 mNotificationManager.showNotification(null, resources.getString(R.string.property_create_totally))
             }
@@ -487,5 +597,15 @@ class MainActivity : AppCompatActivity(), MviView<PropertiesIntent, PropertiesVi
     override fun onDestroy() {
         super.onDestroy()
         compositeDisposable.dispose()
+    }
+
+    private fun onBackPressedCallback() {
+        onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                this@MainActivity.finish()
+                isEnabled = false
+            }
+        }
+        this.onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     }
 }

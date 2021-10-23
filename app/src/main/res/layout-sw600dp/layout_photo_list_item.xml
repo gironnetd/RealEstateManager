@@ -19,11 +19,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="?attr/colorPrimaryScrollbar"
+        android:gravity="center"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
-        android:gravity="center"
         android:textColor="@android:color/white"
         android:textIsSelectable="false"
-        android:textStyle="bold"
-        />
+        android:textSize="@dimen/text_size"
+        android:textStyle="bold" />
 </FrameLayout>

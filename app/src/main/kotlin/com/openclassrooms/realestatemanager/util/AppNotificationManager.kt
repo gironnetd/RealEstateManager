@@ -11,23 +11,28 @@ import androidx.core.app.NotificationCompat.Builder
 import androidx.core.app.NotificationManagerCompat
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.models.property.Property
-import java.util.*
 
 class AppNotificationManager(var mContext: Context) {
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channels: MutableList<NotificationChannel> = ArrayList()
-            channels.add(createAppNotificationChanel(
-                PROPERTIES_CHANEL_ID,
-                mContext.getString(R.string.notification_channel_properties_name),
-                mContext.getString(R.string.notification_channel_properties_description),
-                NotificationManagerCompat.IMPORTANCE_HIGH))
-            channels.add(createAppNotificationChanel(
-                APP_CHANEL_ID,
-                mContext.getString(R.string.notification_channel_app_name),
-                mContext.getString(R.string.notification_channel_app_description),
-                NotificationManagerCompat.IMPORTANCE_DEFAULT))
+            channels.add(
+                createAppNotificationChanel(
+                    PROPERTIES_CHANEL_ID,
+                    mContext.getString(R.string.notification_channel_properties_name),
+                    mContext.getString(R.string.notification_channel_properties_description),
+                    NotificationManagerCompat.IMPORTANCE_HIGH
+                )
+            )
+            channels.add(
+                createAppNotificationChanel(
+                    APP_CHANEL_ID,
+                    mContext.getString(R.string.notification_channel_app_name),
+                    mContext.getString(R.string.notification_channel_app_description),
+                    NotificationManagerCompat.IMPORTANCE_DEFAULT
+                )
+            )
             val notificationManager = mContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannels(channels)
         }
@@ -38,7 +43,7 @@ class AppNotificationManager(var mContext: Context) {
         notificationManager.notify(notificationId, notification)
     }
 
-    private fun createCustomNotification(message: String, ): Notification {
+    private fun createCustomNotification(message: String,): Notification {
         return Builder(mContext, PROPERTIES_CHANEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(mContext.getString(R.string.notification_title))
@@ -73,6 +78,4 @@ class AppNotificationManager(var mContext: Context) {
         private const val GROUP_KEY_PROPERTIES = "$APP_CHANEL_ID.CITIES_GROUP"
         private const val BASE_NOTIFICATION_ID = 100L
     }
-
 }
-

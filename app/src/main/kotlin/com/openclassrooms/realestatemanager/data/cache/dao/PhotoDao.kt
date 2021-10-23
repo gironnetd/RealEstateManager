@@ -22,7 +22,7 @@ interface PhotoDao {
     fun savePhoto(photo: Photo): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun savePhotos(vararg  photos: Photo): LongArray
+    fun savePhotos(vararg photos: Photo): LongArray
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $COLUMN_PHOTO_PROPERTY_ID = :propertyId")
     fun findPhotosByPropertyId(propertyId: String): Cursor

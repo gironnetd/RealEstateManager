@@ -2,7 +2,7 @@ package com.openclassrooms.realestatemanager.models.place.autocomplete
 
 import com.google.gson.annotations.SerializedName
 
-data class Prediction (
+data class Prediction(
     val description: String,
 
     @SerializedName(value = "matched_substrings")

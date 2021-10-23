@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Singleton
 class PropertyCacheSource
-@Inject constructor(var cacheData: PropertyDataSource): PropertySource {
+@Inject constructor(var cacheData: PropertyDataSource) : PropertySource {
 
     override fun count(): Single<Int> {
         return cacheData.count()

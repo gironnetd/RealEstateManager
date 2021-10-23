@@ -2,7 +2,7 @@ package com.openclassrooms.realestatemanager.models.place.detail
 
 import com.google.gson.annotations.SerializedName
 
-data class OpeningHours (
+data class OpeningHours(
     @SerializedName(value = "open_now")
     val openNow: Boolean,
 

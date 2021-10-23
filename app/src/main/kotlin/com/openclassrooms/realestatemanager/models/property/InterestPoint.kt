@@ -17,15 +17,19 @@ enum class InterestPoint constructor(@StringRes val place: Int) {
     NONE(R.string.interest_point_none)
 }
 
+fun InterestPoint.deepCopy(
+    place: Int = this.place
+): InterestPoint = InterestPoint.values().find { interestPoint -> interestPoint.place == place }!!
+
 class InterestPointConverter {
 
     @TypeConverter
     fun interestPointsToString(interestPoints: MutableList<InterestPoint>?): String? =
-            interestPoints?.joinToString(separator = SEPARATOR) { it.name }
+        interestPoints?.joinToString(separator = SEPARATOR) { it.name }
 
     @TypeConverter
     fun stringToInterestPoints(interestPoints: String?): MutableList<InterestPoint>? =
-            interestPoints?.split(SEPARATOR)?.map { InterestPoint.valueOf(it) }?.toMutableList()
+        interestPoints?.split(SEPARATOR)?.map { InterestPoint.valueOf(it) }?.toMutableList()
 
     companion object {
         private const val SEPARATOR: String = ";"

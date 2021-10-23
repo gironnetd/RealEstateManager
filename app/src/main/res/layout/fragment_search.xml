@@ -5,336 +5,426 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/search_fragment">
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:orientation="vertical"
-        android:layout_margin="16dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp"
+        android:paddingTop="8dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_property_type"
+            android:id="@+id/property_type_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/edit_location_border"
+            android:minHeight="60dp"
+            android:orientation="vertical"
+            android:paddingTop="12dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="12dp"
+            android:paddingBottom="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layout_entry_date">
+            app:layout_constraintTop_toTopOf="parent">
 
-            <FrameLayout
+            <CheckBox
+                android:id="@+id/flat_checkbox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/townhouse_checkbox"
+                app:layout_constraintHorizontal_weight="0.5"
+                android:text="@string/property_type_flat" />
 
-                <LinearLayout
-                    android:id="@+id/property_type_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/edit_location_border"
-                    android:minHeight="60dp"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+            <CheckBox
+                android:id="@+id/townhouse_checkbox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/flat_checkbox"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintHorizontal_weight="0.5"
+                android:text="@string/property_type_townhouse" />
+            <CheckBox
+                android:id="@+id/penthouse_checkbox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toStartOf="@+id/house_checkbox"
+                app:layout_constraintTop_toBottomOf="@+id/flat_checkbox"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintHorizontal_weight="0.5"
+                android:text="@string/property_type_penthouse" />
 
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/label_property_type"
-                    style="@style/LabelTextAppearance"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/property_type"
-                    app:layout_constraintEnd_toEndOf="@+id/linearLayout"
-                    app:layout_constraintStart_toStartOf="@+id/linearLayout"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </FrameLayout>
+            <CheckBox
+                android:id="@+id/house_checkbox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@+id/penthouse_checkbox"
+                app:layout_constraintTop_toBottomOf="@+id/townhouse_checkbox"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="0.5"
+                android:text="@string/property_type_house" />
+            <CheckBox
+                android:id="@+id/duplex_checkbox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toStartOf="@+id/none_checkbox"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/penthouse_checkbox"
+                app:layout_constraintHorizontal_weight="0.5"
+                android:text="@string/property_type_duplex" />
+            <CheckBox
+                android:id="@+id/none_checkbox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/penthouse_checkbox"
+                app:layout_constraintStart_toEndOf="@+id/duplex_checkbox"
+                app:layout_constraintHorizontal_weight="0.5"
+                android:text="@string/property_type_none" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_property_status"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/label_property_type"
+            style="@style/LabelTextAppearance"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/property_type"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <CheckBox
+            android:id="@+id/all_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:translationY="-6dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="end"
+            android:background="@android:color/white"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="@string/all_property_type"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <LinearLayout
+            android:id="@+id/property_status_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="16dp"
+            android:paddingBottom="8dp"
+            android:background="@drawable/edit_location_border"
+            android:minHeight="60dp"
+            android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layout_entry_date">
+            app:layout_constraintTop_toBottomOf="@+id/property_type_layout">
 
-            <FrameLayout
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/status_radiogroup"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/property_status_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/edit_location_border"
-                    android:minHeight="60dp"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/label_property_status"
-                    style="@style/LabelTextAppearance"
+                <RadioButton
+                    android:id="@+id/in_sale_radio_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/property_status"
-                    app:layout_constraintEnd_toEndOf="@+id/linearLayout"
-                    app:layout_constraintStart_toStartOf="@+id/linearLayout"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </FrameLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:paddingEnd="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/property_status_in_sale" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_min_price"
+                <RadioButton
+                    android:id="@+id/for_rent_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/property_status_for_rent" />
+
+                <RadioButton
+                    android:id="@+id/sold_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="16dp"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/property_status_sold" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@id/layout_type"
-                app:layout_constraintHorizontal_weight="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_interest_points">
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="vertical">
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/min_price_text_input_layout"
+                    android:id="@+id/in_sale_text_input_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:enabled="false"
                     android:layout_marginTop="8dp"
-                    android:gravity="end"
-                    app:endIconDrawable="@drawable/ic_baseline_euro_24"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:endIconMode="custom"
+                    app:endIconDrawable="@drawable/ic_baseline_date_range_24">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/min_price"
+                        android:id="@+id/in_sale_text_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:focusable="true"
-                        android:hint="@string/property_min_price"
-                        android:inputType="number"
-                        />
+                        android:focusable="false"
+                        android:hint="@string/property_entry_date"
+                        android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_max_price"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@id/layout_type"
-                app:layout_constraintHorizontal_weight="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_interest_points">
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/max_price_text_input_layout"
+                    android:id="@+id/for_rent_text_input_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:gravity="end"
-                    app:endIconDrawable="@drawable/ic_baseline_euro_24"
+                    android:enabled="false"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:endIconMode="custom"
+                    app:endIconDrawable="@drawable/ic_baseline_date_range_24">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/max_price"
+                        android:id="@+id/for_rent_text_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:focusable="true"
-                        android:hint="@string/property_max_price"
+                        android:focusable="false"
+                        android:hint="@string/property_entry_date"
                         android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_min_surface"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@id/layout_rooms"
-                app:layout_constraintHorizontal_weight="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_price">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/min_surface_text_input_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:gravity="end"
-                    app:endIconDrawable="@drawable/ic_baseline_square_meter_24"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/min_surface"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/sold_entry_date_text_input_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:focusable="true"
-                        android:hint="@string/min_surface"
-                        android:inputType="number" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                        android:layout_marginTop="8dp"
+                        android:enabled="false"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:endIconMode="custom"
+                        app:endIconDrawable="@drawable/ic_baseline_date_range_24">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_max_surface"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@id/layout_rooms"
-                app:layout_constraintHorizontal_weight="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_price">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/sold_entry_date_text_edit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:focusable="false"
+                            android:hint="@string/property_entry_date"
+                            android:inputType="number" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/max_surface_text_input_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:gravity="end"
-                    app:endIconDrawable="@drawable/ic_baseline_square_meter_24"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/max_surface"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/sold_date_text_input_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:focusable="true"
-                        android:hint="@string/max_surface"
-                        android:inputType="number"
-                        />
-                </com.google.android.material.textfield.TextInputLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                        android:layout_marginTop="8dp"
+                        android:enabled="false"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:endIconMode="custom"
+                        app:endIconDrawable="@drawable/ic_baseline_date_range_24">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_min_rooms"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_weight="0.5"
-                app:layout_constraintStart_toEndOf="@id/layout_surface"
-                app:layout_constraintTop_toBottomOf="@id/layout_type">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/min_rooms_text_input_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:startIconDrawable="@drawable/ic_baseline_home_24"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/min_rooms"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusable="true"
-                        android:hint="@string/min_rooms"
-                        android:inputType="number" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_max_rooms"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_weight="0.5"
-                app:layout_constraintStart_toEndOf="@id/layout_surface"
-                app:layout_constraintTop_toBottomOf="@id/layout_type">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/max_rooms_text_input_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:startIconDrawable="@drawable/ic_baseline_home_24"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/max_rooms"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusable="true"
-                        android:hint="@string/max_rooms"
-                        android:inputType="number"
-                        />
-                </com.google.android.material.textfield.TextInputLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_nearby"
-            android:layout_width="match_parent"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/sold_date_text_edit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:focusable="false"
+                            android:hint="@string/property_sold_date"
+                            android:inputType="number" />
+                    </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/label_property_status"
+            style="@style/LabelTextAppearance"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/property_status"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/property_type_layout" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/min_price_text_input_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+
+            android:layout_weight="0.5"
+            app:endIconDrawable="@drawable/ic_baseline_euro_24"
+            app:endIconMode="custom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layout_entry_date">
+            app:layout_constraintTop_toBottomOf="@+id/property_status_layout">
 
-            <FrameLayout
-                android:layout_width="0dp"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/min_price"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_alignParentEnd="true"
+                android:focusable="true"
+                android:hint="@string/property_min_price"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-                <LinearLayout
-                    android:id="@+id/nearby_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/edit_location_border"
-                    android:minHeight="60dp"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/max_price_text_input_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="0.5"
+            app:endIconDrawable="@drawable/ic_baseline_euro_24"
+            app:endIconMode="custom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/min_price_text_input_layout">
 
-                    <com.google.android.material.chip.ChipGroup
-                        android:id="@+id/interest_points_chip_group"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="24dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginEnd="24dp"
-                        android:layout_marginBottom="8dp" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/max_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:focusable="true"
+                android:hint="@string/property_max_price"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-                </LinearLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/min_surface_text_input_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="0.5"
+            app:endIconDrawable="@drawable/ic_baseline_square_meter_24"
+            app:endIconMode="custom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/max_price_text_input_layout">
 
-                <TextView
-                    android:id="@+id/label_nearby"
-                    style="@style/LabelTextAppearance"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/nearby"
-                    app:layout_constraintEnd_toEndOf="@+id/linearLayout"
-                    app:layout_constraintStart_toStartOf="@+id/linearLayout"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </FrameLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/min_surface"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:focusable="true"
+                android:hint="@string/min_surface"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/max_surface_text_input_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="0.5"
+            app:endIconDrawable="@drawable/ic_baseline_square_meter_24"
+            app:endIconMode="custom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/min_surface_text_input_layout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/max_surface"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:focusable="true"
+                android:hint="@string/max_surface"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/min_rooms_text_input_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="0.5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/max_surface_text_input_layout"
+            app:startIconDrawable="@drawable/ic_baseline_home_24">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/min_rooms"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:hint="@string/min_rooms"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/max_rooms_text_input_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="0.5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/min_rooms_text_input_layout"
+            app:startIconDrawable="@drawable/ic_baseline_home_24">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/max_rooms"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:hint="@string/max_rooms"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/interest_points_chip_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_location_border"
+            android:minHeight="60dp"
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/max_rooms_text_input_layout" />
+
+        <TextView
+            android:id="@+id/label_nearby"
+            style="@style/LabelTextAppearance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nearby"
+            android:labelFor="@id/interest_points_chip_group"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/max_rooms_text_input_layout" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

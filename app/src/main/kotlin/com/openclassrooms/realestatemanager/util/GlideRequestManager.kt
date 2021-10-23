@@ -24,8 +24,8 @@ constructor(private val requestManager: RequestManager) : GlideManager {
             .into(imageView)
     }
 
-    override fun setImage(storageReference: StorageReference, imageView: ImageView, synchronized: Boolean ) {
-        if(synchronized) {
+    override fun setImage(storageReference: StorageReference, imageView: ImageView, synchronized: Boolean) {
+        if (synchronized) {
             val futureBitmap = Glide.with(imageView.context)
                 .asBitmap()
                 .load(storageReference)

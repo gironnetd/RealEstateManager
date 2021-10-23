@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.android.gms.tasks.Tasks
 import com.google.common.truth.Truth.assertThat
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
@@ -24,7 +25,9 @@ import com.openclassrooms.realestatemanager.util.ConstantsTest.FIREBASE_FIRESTOR
 import com.openclassrooms.realestatemanager.util.ConstantsTest.FIREBASE_STORAGE_DEFAULT_BUCKET
 import com.openclassrooms.realestatemanager.util.ConstantsTest.FIREBASE_STORAGE_PORT
 import com.openclassrooms.realestatemanager.util.JsonUtil
+import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable
+import io.reactivex.Observable
 import junit.framework.TestCase
 import org.junit.After
 import org.junit.Before
@@ -107,14 +110,17 @@ class PhotoRemoteSourceTest : TestCase() {
             firestore.collection(PROPERTIES_COLLECTION).get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     task.result?.let { result ->
-                        result.documents.forEach { document ->
-                            document.reference.delete()
-
-                            if (document.id == result.documents.last().id) {
-                                emitter.onComplete()
-                            }
+                        if(result.documents.isEmpty()) {
+                            emitter.onComplete()
                         }
-                    }
+
+                        Observable.fromIterable(result.documents).flatMapCompletable { document ->
+                            Tasks.await(document.reference.delete())
+                            Completable.complete()
+                        }.subscribeOn(SchedulerProvider.io()).blockingAwait().let {
+                            emitter.onComplete()
+                        }
+                    }?: emitter.onComplete()
                 }
             }
         }.blockingAwait()
@@ -237,9 +243,11 @@ class PhotoRemoteSourceTest : TestCase() {
         remoteSource.updatePhotos(updatedPhotos).blockingAwait()
 
         val ids = initialPhotos.map { photo -> photo.id }
-        val finalPhotos = remoteSource.findAllPhotos().blockingGet().filter {
+        var finalPhotos = remoteSource.findAllPhotos().blockingGet().filter {
                 photo -> ids.contains(photo.id)
         }
+
+        finalPhotos = finalPhotos.sortedBy { it.id }
 
         updatedPhotos.forEachIndexed { index, photo ->
             assertSameAs(actual = photo, expected = finalPhotos[index])

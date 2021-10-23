@@ -13,12 +13,12 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
 import com.openclassrooms.realestatemanager.R
 
-open class BaseDialogFragment constructor(@LayoutRes private val layoutRes: Int): DialogFragment(layoutRes) {
+open class BaseDialogFragment constructor(@LayoutRes private val layoutRes: Int) : DialogFragment(layoutRes) {
 
     protected val none by lazy { resources.getString(R.string.none) }
 
     fun applyDialogDimension() {
-        if(resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
             dialog!!.window!!.attributes.apply {
                 width = ConstraintLayout.LayoutParams.MATCH_PARENT
             }.also {
@@ -26,9 +26,9 @@ open class BaseDialogFragment constructor(@LayoutRes private val layoutRes: Int)
             }
         }
 
-        if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             dialog!!.window!!.attributes.apply {
-                width = (screenWidth(requireActivity()) * 0.8).toInt()
+                (screenWidth(requireActivity()) * landscapeWidthPercent).toInt().also { width = it }
             }.also {
                 dialog!!.window!!.attributes = it as WindowManager.LayoutParams
             }
@@ -46,5 +46,9 @@ open class BaseDialogFragment constructor(@LayoutRes private val layoutRes: Int)
             activity.windowManager.defaultDisplay.getMetrics(displayMetrics)
             displayMetrics.widthPixels
         }
+    }
+
+    companion object {
+        const val landscapeWidthPercent = 0.8
     }
 }

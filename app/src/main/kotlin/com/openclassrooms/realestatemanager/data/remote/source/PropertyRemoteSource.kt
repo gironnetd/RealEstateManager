@@ -10,10 +10,10 @@ import javax.inject.Singleton
 
 @Singleton
 class PropertyRemoteSource
-@Inject constructor(var remoteData: PropertyDataSource): PropertySource {
+@Inject constructor(var remoteData: PropertyDataSource) : PropertySource {
 
     override fun count(): Single<Int> {
-       return remoteData.count()
+        return remoteData.count()
     }
 
     override fun saveProperty(property: Property): Completable {
@@ -25,7 +25,7 @@ class PropertyRemoteSource
     }
 
     override fun findPropertyById(id: String): Single<Property> {
-       return remoteData.findPropertyById(id)
+        return remoteData.findPropertyById(id)
     }
 
     override fun findPropertiesByIds(ids: List<String>): Single<List<Property>> {
@@ -45,7 +45,7 @@ class PropertyRemoteSource
     }
 
     override fun deletePropertiesByIds(ids: List<String>): Completable {
-       return remoteData.deletePropertiesByIds(ids)
+        return remoteData.deletePropertiesByIds(ids)
     }
 
     override fun deleteProperties(properties: List<Property>): Completable {
@@ -59,6 +59,4 @@ class PropertyRemoteSource
     override fun deletePropertyById(id: String): Completable {
         return remoteData.deletePropertyById(id)
     }
-
-
 }

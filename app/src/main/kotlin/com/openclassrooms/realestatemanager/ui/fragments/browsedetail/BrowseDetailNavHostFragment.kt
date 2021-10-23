@@ -17,7 +17,7 @@ class BrowseDetailNavHostFragment : NavHostFragment() {
 
     override fun onAttach(context: Context) {
         (activity?.application as BaseApplication).browseComponent()
-                .inject(this)
+            .inject(this)
         childFragmentManager.fragmentFactory = browseDetailFragmentFactory
         super.onAttach(context)
     }

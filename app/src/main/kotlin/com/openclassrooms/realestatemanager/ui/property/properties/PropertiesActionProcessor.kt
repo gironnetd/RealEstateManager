@@ -11,8 +11,10 @@ import io.reactivex.ObservableTransformer
 import javax.inject.Inject
 
 class PropertiesActionProcessor
-@Inject constructor(private val propertyRepository: PropertyRepository,
-                    private val schedulerProvider: BaseSchedulerProvider) {
+@Inject constructor(
+    private val propertyRepository: PropertyRepository,
+    private val schedulerProvider: BaseSchedulerProvider
+) {
 
     private val loadPropertiesProcessor =
         ObservableTransformer<LoadPropertiesAction, PropertiesResult> { actions ->
@@ -33,7 +35,7 @@ class PropertiesActionProcessor
         ObservableTransformer<LoadPropertiesAction, PropertiesResult> { actions ->
             actions.flatMap {
                 propertyRepository.pushLocalChanges().flatMap { result ->
-                    when(result.first) {
+                    when (result.first) {
                         CREATE -> {
                             Observable.just(CreatePropertyResult.Created(result.second.isNotEmpty()))
                                 .cast(CreatePropertyResult::class.java)
@@ -68,7 +70,8 @@ class PropertiesActionProcessor
                 // Error for not implemented actions
                 shared.filter { v -> v !is LoadPropertiesAction }.flatMap { w ->
                     Observable.error(
-                        IllegalArgumentException("Unknown Action type: $w"))
+                        IllegalArgumentException("Unknown Action type: $w")
+                    )
                 }
             )
         }

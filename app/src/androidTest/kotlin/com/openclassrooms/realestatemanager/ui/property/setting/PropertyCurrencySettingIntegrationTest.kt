@@ -11,6 +11,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.google.android.material.internal.CheckableImageButton
 import com.google.android.material.internal.NavigationMenuItemView
@@ -29,8 +30,11 @@ import com.openclassrooms.realestatemanager.ui.property.setting.Currency.DOLLARS
 import com.openclassrooms.realestatemanager.ui.property.setting.Currency.EUROS
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
 import com.openclassrooms.realestatemanager.ui.property.shared.list.ListAdapter
-import com.openclassrooms.realestatemanager.util.*
+import com.openclassrooms.realestatemanager.util.BitmapUtil
+import com.openclassrooms.realestatemanager.util.ConnectivityUtil
 import com.openclassrooms.realestatemanager.util.Constants.DEFAULT_CURRENCY
+import com.openclassrooms.realestatemanager.util.RxImmediateSchedulerRule
+import com.openclassrooms.realestatemanager.util.Utils
 import com.openclassrooms.realestatemanager.util.schedulers.SchedulerProvider
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -41,7 +45,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(OrderedRunner::class)
+@RunWith(AndroidJUnit4::class)
 @MediumTest
 class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
 
@@ -84,7 +88,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(1)
+    //@Order(1)
     fun given_navigation_view_when_euros_is_default_currency_then_euros_choice_button_is_checked_and_indicated_as_default_currency() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, EUROS.currency).commit()
@@ -100,7 +104,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(2)
+    //@Order(2)
     fun given_navigation_view_when_euros_is_default_currency_and_dollar_choice_button_is_pressed_then_dollar_choice_button_is_checked_and_indicated_as_default_currency() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, EUROS.currency).commit()
@@ -122,7 +126,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(3)
+    //@Order(3)
     fun given_navigation_view_when_dollar_is_default_currency_then_dollars_choice_button_is_checked_and_indicated_as_default_currency() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, DOLLARS.currency).commit()
@@ -138,7 +142,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(4)
+    //@Order(4)
     fun given_navigation_view_when_dollar_is_default_currency_and_euros_choice_button_is_pressed_then_euros_choice_button_is_checked_and_indicated_as_default_currency() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, DOLLARS.currency).commit()
@@ -160,7 +164,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(5)
+    //@Order(5)
     fun given_list_fragment_when_euros_is_default_currency_then_price_is_indicated_in_euros() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, EUROS.currency).commit()
@@ -188,7 +192,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(6)
+    //@Order(6)
     fun given_list_fragment_and_euros_is_default_currency_when_dollars_is_selected_then_price_is_indicated_in_dollars() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, EUROS.currency).commit()
@@ -223,7 +227,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(7)
+    //@Order(7)
     fun given_list_fragment_when_dollars_is_default_currency_then_price_is_indicated_in_dollars() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, DOLLARS.currency).commit()
@@ -251,7 +255,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(8)
+    //@Order(8)
     fun given_list_fragment_and_dollars_is_default_currency_when_euros_is_selected_then_price_is_indicated_in_euros() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, DOLLARS.currency).commit()
@@ -286,7 +290,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(9)
+    //@Order(9)
     fun given_detail_fragment_when_euros_is_default_currency_then_price_is_indicated_in_euros() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, EUROS.currency).commit()
@@ -313,7 +317,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(10)
+    //@Order(10)
     fun given_detail_fragment_and_euros_is_default_currency_when_dollars_is_selected_then_price_is_indicated_in_dollars() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, EUROS.currency).commit()
@@ -351,7 +355,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(11)
+    //@Order(11)
     fun given_detail_fragment_when_dollars_is_default_currency_then_price_is_indicated_in_dollars() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, DOLLARS.currency).commit()
@@ -378,7 +382,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(12)
+    //@Order(12)
     fun given_detail_fragment_and_dollars_is_default_currency_when_euros_is_selected_then_price_is_indicated_in_euros() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, DOLLARS.currency).commit()
@@ -416,7 +420,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(13)
+    //@Order(13)
     fun given_update_fragment_when_euros_is_default_currency_then_price_is_indicated_in_euros() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, EUROS.currency).commit()
@@ -443,7 +447,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(14)
+    //@Order(14)
     fun given_update_fragment_and_euros_is_default_currency_when_dollars_is_selected_then_price_is_indicated_in_dollars() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, EUROS.currency).commit()
@@ -482,7 +486,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(15)
+    //@Order(15)
     fun given_update_fragment_when_dollars_is_default_currency_then_price_is_indicated_in_dollars() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, DOLLARS.currency).commit()
@@ -509,7 +513,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(16)
+    //@Order(16)
     fun given_update_fragment_and_dollars_is_default_currency_when_euros_is_selected_then_price_is_indicated_in_euros() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, DOLLARS.currency).commit()
@@ -548,7 +552,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(17)
+    //@Order(17)
     fun given_create_fragment_when_euros_is_default_currency_then_price_is_indicated_in_euros() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, EUROS.currency).commit()
@@ -574,7 +578,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(18)
+    //@Order(18)
     fun given_create_fragment_and_euros_is_default_currency_when_dollars_is_selected_then_price_is_indicated_in_dollars() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, EUROS.currency).commit()
@@ -607,7 +611,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(19)
+    //@Order(19)
     fun given_create_fragment_when_dollars_is_default_currency_then_price_is_indicated_in_dollars() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, DOLLARS.currency).commit()
@@ -632,7 +636,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(20)
+    //@Order(20)
     fun given_create_fragment_and_dollars_is_default_currency_when_euros_is_selected_then_price_is_indicated_in_euros() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, DOLLARS.currency).commit()
@@ -666,7 +670,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
 
 
     @Test
-    @Order(21)
+    //@Order(21)
     fun given_search_fragment_when_euros_is_default_currency_then_min_and_max_price_are_indicated_in_euros() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, EUROS.currency).commit()
@@ -699,7 +703,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(22)
+    //@Order(22)
     fun given_search_fragment_and_euros_is_default_currency_when_dollars_is_selected_then_min_and_max_price_are_indicated_in_dollars() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, EUROS.currency).commit()
@@ -739,7 +743,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(23)
+    //@Order(23)
     fun given_search_fragment_when_dollars_is_default_currency_then_min_and_max_price_are_indicated_in_dollars() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, DOLLARS.currency).commit()
@@ -772,7 +776,7 @@ class PropertyCurrencySettingIntegrationTest : BaseFragmentTests() {
     }
 
     @Test
-    @Order(24)
+    //@Order(24)
     fun given_search_fragment_and_dollars_is_default_currency_when_euros_is_selected_then_min_and_max_price_are_indicated_in_euros() {
         // Given Main activity is launched and Navigation View is opened
         sharedPreferences.edit().putString(DEFAULT_CURRENCY, DOLLARS.currency).commit()

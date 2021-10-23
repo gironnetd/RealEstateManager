@@ -8,13 +8,13 @@ import com.openclassrooms.realestatemanager.data.cache.dao.PropertyDao
 import com.openclassrooms.realestatemanager.models.property.*
 
 @Database(entities = [Property::class, Photo::class], version = 1, exportSchema = false)
-@TypeConverters(*arrayOf(
+@TypeConverters(
     PropertyTypeConverter::class,
-        PropertyStatusConverter::class,
-        PhotoTypeConverter::class,
-        InterestPointConverter::class,
-        DateConverter::class
-))
+    PropertyStatusConverter::class,
+    PhotoTypeConverter::class,
+    InterestPointConverter::class,
+    DateConverter::class
+)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun propertyDao(): PropertyDao

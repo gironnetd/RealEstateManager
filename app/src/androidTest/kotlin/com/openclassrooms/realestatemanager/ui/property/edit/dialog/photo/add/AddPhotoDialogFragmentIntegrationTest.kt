@@ -101,7 +101,7 @@ class AddPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
         navigate_to_update_fragment()
 
         onView(allOf(withId(R.id.add_a_photo), isDisplayed())).perform(click())
-        onView(withId(R.id.add_photo_dialog_fragment)).check(matches(isDisplayed()))
+        onView(withId(R.id.edit_photo_dialog_fragment)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -131,7 +131,7 @@ class AddPhotoDialogFragmentIntegrationTest : BaseFragmentTests() {
         if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
             onView(isRoot()).perform(orientationPortrait(mainActivity))
         }
-        onView(withId(R.id.add_photo_dialog_fragment)).check(matches(isDisplayed()))
+        onView(withId(R.id.edit_photo_dialog_fragment)).check(matches(isDisplayed()))
     }
 
     @Test

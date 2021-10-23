@@ -13,29 +13,35 @@ import javax.inject.Singleton
 
 @Singleton
 class PhotoCacheSource
-@Inject constructor(var cacheData: PhotoDataSource,
-            var cacheStorage: PhotoStorageSource): PhotoSource {
+@Inject constructor(
+    var cacheData: PhotoDataSource,
+    var cacheStorage: PhotoStorageSource
+) : PhotoSource {
 
     override fun count(): Single<Int> {
-        return Single.zip(cacheData.count(), cacheStorage.count(),
+        return Single.zip(
+            cacheData.count(), cacheStorage.count(),
             BiFunction { dataCount, storageCount ->
-                if(dataCount == storageCount) {
+                if (dataCount == storageCount) {
                     return@BiFunction dataCount
                 } else {
                     return@BiFunction -1
                 }
-            })
+            }
+        )
     }
 
     override fun count(propertyId: String): Single<Int> {
-        return Single.zip(cacheData.count(propertyId), cacheStorage.count(propertyId),
+        return Single.zip(
+            cacheData.count(propertyId), cacheStorage.count(propertyId),
             BiFunction { dataCount, storageCount ->
-                if(dataCount == storageCount) {
+                if (dataCount == storageCount) {
                     return@BiFunction dataCount
                 } else {
                     return@BiFunction -1
                 }
-            })
+            }
+        )
     }
 
     override fun savePhoto(photo: Photo): Completable {

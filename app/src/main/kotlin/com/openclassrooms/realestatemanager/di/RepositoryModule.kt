@@ -42,10 +42,12 @@ object RepositoryModule {
     @JvmStatic
     @Singleton
     @Provides
-    fun providePhotoCacheSource(cacheDataSource: PhotoCacheDataSource,
-                                cacheStorageSource: PhotoCacheStorageSource
+    fun providePhotoCacheSource(
+        cacheDataSource: PhotoCacheDataSource,
+        cacheStorageSource: PhotoCacheStorageSource
     ): PhotoCacheSource {
-        return PhotoCacheSource(cacheData = cacheDataSource,
+        return PhotoCacheSource(
+            cacheData = cacheDataSource,
             cacheStorage = cacheStorageSource
         )
     }
@@ -67,7 +69,10 @@ object RepositoryModule {
     @JvmStatic
     @Singleton
     @Provides
-    fun providePhotoRemoteSource(remoteDataSource: PhotoRemoteDataSource, remoteStorageSource: PhotoRemoteStorageSource): PhotoRemoteSource {
+    fun providePhotoRemoteSource(
+        remoteDataSource: PhotoRemoteDataSource,
+        remoteStorageSource: PhotoRemoteStorageSource
+    ): PhotoRemoteSource {
         return PhotoRemoteSource(remoteData = remoteDataSource, remoteStorage = remoteStorageSource)
     }
 
@@ -102,8 +107,9 @@ object RepositoryModule {
     @JvmStatic
     @Singleton
     @Provides
-    fun provideRemoteDataSource(propertyRemoteSource: PropertyRemoteSource,
-                                photoRemoteSource: PhotoRemoteSource
+    fun provideRemoteDataSource(
+        propertyRemoteSource: PropertyRemoteSource,
+        photoRemoteSource: PhotoRemoteSource
     ): DataSource<PropertyRemoteSource, PhotoRemoteSource> {
         return DataSource(propertySource = propertyRemoteSource, photoSource = photoRemoteSource)
     }
@@ -111,8 +117,9 @@ object RepositoryModule {
     @JvmStatic
     @Singleton
     @Provides
-    fun provideCacheDataSource(propertyCacheSource: PropertyCacheSource,
-                               photoCacheSource: PhotoCacheSource
+    fun provideCacheDataSource(
+        propertyCacheSource: PropertyCacheSource,
+        photoCacheSource: PhotoCacheSource
     ): DataSource<PropertyCacheSource, PhotoCacheSource> {
         return DataSource(propertySource = propertyCacheSource, photoSource = photoCacheSource)
     }
@@ -120,9 +127,10 @@ object RepositoryModule {
     @JvmStatic
     @Singleton
     @Provides
-    fun providePropertyRepository(networkConnectionLiveData: NetworkConnectionLiveData,
-                                  remoteDataSource: DataSource<PropertyRemoteSource, PhotoRemoteSource>,
-                                  cacheDataSource: DataSource<PropertyCacheSource, PhotoCacheSource>
+    fun providePropertyRepository(
+        networkConnectionLiveData: NetworkConnectionLiveData,
+        remoteDataSource: DataSource<PropertyRemoteSource, PhotoRemoteSource>,
+        cacheDataSource: DataSource<PropertyCacheSource, PhotoCacheSource>
     ): PropertyRepository = DefaultPropertyRepository(
         networkConnectionLiveData = networkConnectionLiveData,
         remoteDataSource = remoteDataSource,

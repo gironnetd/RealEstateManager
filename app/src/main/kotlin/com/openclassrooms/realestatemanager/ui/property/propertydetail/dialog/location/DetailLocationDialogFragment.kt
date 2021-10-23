@@ -15,14 +15,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.openclassrooms.realestatemanager.R
 import com.openclassrooms.realestatemanager.databinding.FragmentDialogDetailLocationBinding
 import com.openclassrooms.realestatemanager.extensions.setHeightPercent
+import com.openclassrooms.realestatemanager.extensions.setWidthPercent
 import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseDialogFragment
-import com.openclassrooms.realestatemanager.ui.property.shared.map.BaseMapFragment
 import com.openclassrooms.realestatemanager.util.BitmapUtil
-import java.util.*
 
-class DetailLocationDialogFragment(private val innerContext: Context, var property: Property) : BaseDialogFragment(R.layout.fragment_dialog_detail_location),
-        OnMapReadyCallback, GoogleMap.OnMapLoadedCallback {
+class DetailLocationDialogFragment(private val innerContext: Context, var property: Property) :
+    BaseDialogFragment(R.layout.fragment_dialog_detail_location),
+    OnMapReadyCallback {
 
     private var _binding: FragmentDialogDetailLocationBinding? = null
     val binding get() = _binding!!
@@ -30,38 +30,53 @@ class DetailLocationDialogFragment(private val innerContext: Context, var proper
     lateinit var alertDialog: AlertDialog
     private lateinit var mMap: GoogleMap
 
+    private var supportMapFragment: SupportMapFragment? = null
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = FragmentDialogDetailLocationBinding.inflate(LayoutInflater.from(innerContext))
 
-        if(!::alertDialog.isInitialized) {
-            alertDialog = activity?.let {
-                MaterialAlertDialogBuilder(requireContext()).run {
-                    setView(binding.root)
-                    it.runOnUiThread {
-                        (it.supportFragmentManager.findFragmentById(R.id.map_detail_dialog_fragment) as SupportMapFragment)
-                                .getMapAsync(this@DetailLocationDialogFragment)
-                    }
-                    create()
+        alertDialog = activity?.let {
+            MaterialAlertDialogBuilder(requireContext()).run {
+                setView(binding.root)
+                it.runOnUiThread {
+                    supportMapFragment = (
+                        it.supportFragmentManager.findFragmentById(R.id.map_detail_dialog_fragment)
+                            as SupportMapFragment
+                        )
+                    supportMapFragment?.getMapAsync(this@DetailLocationDialogFragment)
                 }
-            } ?: throw IllegalStateException("Activity cannot be null")
-            alertDialog.setOnShowListener {
-                displayProperty()
+                create()
             }
-        }
+        } ?: throw error("Activity cannot be null")
         return alertDialog
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        applyDialogDimension()
-        //displayProperty()
+        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            setHeightPercent(portraitHeightPercentFragment)
+        }
+
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            setWidthPercent(landscapeWidthPercentFragment)
+        }
         return binding.root
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         dismiss()
-        show(requireParentFragment().childFragmentManager, tag)
+        show(requireParentFragment().childFragmentManager, TAG)
+    }
+
+    override fun dismiss() {
+        super.dismiss()
+        if (supportMapFragment != null) {
+            requireActivity().supportFragmentManager.beginTransaction().remove(supportMapFragment!!).commit()
+            requireActivity().supportFragmentManager.executePendingTransactions()
+            supportMapFragment = null
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -80,24 +95,27 @@ class DetailLocationDialogFragment(private val innerContext: Context, var proper
     private fun displayProperty() {
         mMap.clear()
 
-        if(!property.address.latitude.equals(0.0) && !property.address.longitude.equals(0.0)) {
-            mMap.addMarker(MarkerOptions()
-                    .position(LatLng(property.address.latitude,
-                            property.address.longitude)
+        if (!property.address.latitude.equals(0.0) && !property.address.longitude.equals(0.0)) {
+            mMap.addMarker(
+                MarkerOptions()
+                    .position(
+                        LatLng(
+                            property.address.latitude,
+                            property.address.longitude
+                        )
                     ).icon(BitmapUtil.bitmapDescriptorFromVector(innerContext, R.drawable.ic_marker_selected))
             )
 
             val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                    LatLng(property.address.latitude,
-                            property.address.longitude), (BaseMapFragment.DEFAULT_ZOOM + 3))
+                LatLng(
+                    property.address.latitude,
+                    property.address.longitude
+                ),
+                (DEFAULT_ZOOM)
+            )
 
             mMap.moveCamera(cameraUpdate)
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        setHeightPercent(percentage = 60)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -111,18 +129,17 @@ class DetailLocationDialogFragment(private val innerContext: Context, var proper
         */
         mMap = googleMap
         mMap.isIndoorEnabled = false
-        //displayProperty()
         val options = GoogleMapOptions().liteMode(true)
         mMap.mapType = options.mapType
-        //binding.mapDetailFragment.contentDescription = DETAIL_MAP_NOT_FINISH_LOADING
-
-        //mMap.setOnMapLoadedCallback(this)
+        displayProperty()
     }
-
-    override fun onMapLoaded() {}
 
     companion object {
         const val TAG = "LocationDetailDialog"
         const val PROPERTY = "property"
+
+        const val DEFAULT_ZOOM = 18f
+        const val portraitHeightPercentFragment = 60
+        const val landscapeWidthPercentFragment = 80
     }
 }

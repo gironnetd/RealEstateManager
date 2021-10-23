@@ -115,15 +115,7 @@ class BrowseFragmentTest : BaseMainActivityTests() {
 
         if(screenSize == TABLET && orientation == ORIENTATION_PORTRAIT) {
             onView(withId(R.id.properties_recycler_view)).check(matches(isDisplayed()))
-
-            onView(withId(R.id.properties_recycler_view))
-                    .check(isCompletelyLeftOf(
-                            anyOf(withId(R.id.map_fragment),
-                                    withId(R.id.edit_fragment))))
-
-            onView(anyOf(withId(R.id.map_fragment),
-                    withId(R.id.edit_fragment)))
-                    .check(matches(isDisplayed()))
+            onView(withId(R.id.segmentedcontrol)).check(matches(isDisplayed()))
         }
 
         if(screenSize == TABLET && orientation == ORIENTATION_LANDSCAPE) {

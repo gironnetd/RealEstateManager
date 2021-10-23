@@ -11,14 +11,14 @@ sealed class PropertyEditResult : MviResult {
         object InFlight : PopulatePropertyResult()
     }
 
-    sealed class UpdatePropertyResult: PropertyEditResult() {
-        data class Updated(val fullyUpdated: Boolean): UpdatePropertyResult()
+    sealed class UpdatePropertyResult : PropertyEditResult() {
+        data class Updated(val fullyUpdated: Boolean) : UpdatePropertyResult()
         data class Failure(val error: Throwable) : UpdatePropertyResult()
         object InFlight : UpdatePropertyResult()
     }
 
-    sealed class CreatePropertyResult: PropertyEditResult() {
-        data class Created(val fullyCreated: Boolean): CreatePropertyResult()
+    sealed class CreatePropertyResult : PropertyEditResult() {
+        data class Created(val fullyCreated: Boolean) : CreatePropertyResult()
         data class Failure(val error: Throwable) : CreatePropertyResult()
         object InFlight : CreatePropertyResult()
     }

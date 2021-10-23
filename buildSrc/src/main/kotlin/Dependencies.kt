@@ -48,6 +48,8 @@ object Dependencies {
 
     private val robolectric by lazy { "org.robolectric:robolectric:${Versions.robolectric}" }
 
+    val testOrchestrator by lazy { "androidx.test:orchestrator:${Versions.androidx_test_orchestrator}" }
+
     private val truth by lazy { "androidx.test.ext:truth:${Versions.truth}" }
 
     private val navigationFragment by lazy { "androidx.navigation:navigation-fragment-ktx:${Versions.navigation_component}" }
@@ -139,7 +141,6 @@ object Dependencies {
         add(extJunit)
         add(mockitoAndroid)
         add(espressoCore)
-        //add(espressoContrib)
         add(espressoIdlingResource)
         add(uiAutomator)
         add(testRunner)

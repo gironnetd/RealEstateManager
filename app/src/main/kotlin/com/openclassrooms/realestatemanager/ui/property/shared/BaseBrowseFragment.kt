@@ -6,6 +6,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.os.bundleOf
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -20,16 +21,27 @@ import com.openclassrooms.realestatemanager.ui.property.shared.list.ListAdapter
 import com.openclassrooms.realestatemanager.ui.property.shared.map.BaseMapFragment
 import com.openclassrooms.realestatemanager.util.Constants
 
-abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
+abstract class BaseBrowseFragment :
+    BaseFragment(R.layout.fragment_browse),
     ListAdapter.OnItemClickListener {
 
-    protected var _binding: FragmentBrowseBinding? = null
-    val binding get() = _binding!!
+    protected var browseBinding: FragmentBrowseBinding? = null
+    val binding get() = browseBinding!!
 
     val mainActivity by lazy { activity as FragmentActivity }
 
     lateinit var master: BaseListFragment
     lateinit var detail: NavHostFragment
+
+    private var callBack: OnItemClickListener? = null
+
+    interface OnItemClickListener {
+        fun onItemClick(propertyId: String)
+    }
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        callBack = listener
+    }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -50,17 +62,8 @@ abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
         adapter.setOnItemClickListener(this)
     }
 
-    interface OnItemClickListener {
-        fun onItemClick(propertyId: String)
-    }
-
-    private var callBack: OnItemClickListener? = null
-
-    fun setOnItemClickListener(listener: OnItemClickListener) {
-        callBack = listener
-    }
-
     override fun onItemClick(propertyId: String) {
+        (requireActivity() as MainActivity).onBackPressedCallback.isEnabled = false
         if (resources.getBoolean(R.bool.isMasterDetail)) {
             if (detail.childFragmentManager.primaryNavigationFragment is BaseMapFragment) {
                 (detail.childFragmentManager.primaryNavigationFragment as BaseMapFragment)
@@ -69,6 +72,17 @@ abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
 
             if (detail.childFragmentManager.primaryNavigationFragment is PropertyDetailFragment) {
                 callBack?.onItemClick(propertyId = propertyId)
+            }
+
+            if (detail.childFragmentManager.primaryNavigationFragment is PropertyUpdateFragment) {
+                callBack?.onItemClick(propertyId = propertyId)
+
+                val bundle = bundleOf(
+                    Constants.FROM to BaseListFragment::class.java.name,
+                    Constants.PROPERTY_ID to propertyId
+                )
+
+                detail.navController.navigate(R.id.navigation_detail, bundle)
             }
         } else {
             (mainActivity as? MainActivity)?.let { mainActivity ->
@@ -92,24 +106,24 @@ abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
     }
 
     private fun initSegmentedControl() {
-        when(resources.getBoolean(R.bool.isMasterDetail)) {
+        when (resources.getBoolean(R.bool.isMasterDetail)) {
             true -> { binding.segmentedcontrol.buttonContainer.visibility = GONE }
             false -> { binding.segmentedcontrol.buttonContainer.visibility = VISIBLE }
         }
 
-        when(isDetailFragmentSelected()) {
+        when (isDetailFragmentSelected()) {
             false -> { binding.segmentedcontrol.listViewButton.isSelected = true }
             true -> { binding.segmentedcontrol.mapViewButton.isSelected = true }
         }
 
-        if(!binding.segmentedcontrol.listViewButton.isSelected && !binding.segmentedcontrol.mapViewButton.isSelected) {
+        if (!binding.segmentedcontrol.listViewButton.isSelected && !binding.segmentedcontrol.mapViewButton.isSelected) {
             binding.segmentedcontrol.listViewButton.isSelected = true
         }
 
         binding.segmentedcontrol.listViewButton.setOnClickListener {
-            if(!it.isSelected) {
+            if (!it.isSelected) {
                 it.isSelected = true
-                if(binding.segmentedcontrol.mapViewButton.isSelected) {
+                if (binding.segmentedcontrol.mapViewButton.isSelected) {
                     binding.segmentedcontrol.mapViewButton.isSelected = false
 
                     master.requireView().visibility = VISIBLE
@@ -124,10 +138,10 @@ abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
         }
 
         binding.segmentedcontrol.mapViewButton.setOnClickListener {
-            if(!it.isSelected) {
+            if (!it.isSelected) {
                 it.isSelected = true
 
-                if(binding.segmentedcontrol.listViewButton.isSelected) {
+                if (binding.segmentedcontrol.listViewButton.isSelected) {
                     binding.segmentedcontrol.listViewButton.isSelected = false
 
                     detail.navController.navigate(R.id.navigation_map)
@@ -145,21 +159,24 @@ abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
 
     private fun configureView() {
         val detailLayoutParams =
-            FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT)
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
                 .apply {
                     height = ViewGroup.LayoutParams.MATCH_PARENT
                 }
 
         val masterLayoutParams =
-            FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT)
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
                 .apply {
                     height = ViewGroup.LayoutParams.MATCH_PARENT
                 }
 
         if (resources.getBoolean(R.bool.isMasterDetail)) {
-
             binding.segmentedcontrol.buttonContainer.visibility = GONE
 
             screenWidth = screenWidth(requireActivity())
@@ -179,6 +196,7 @@ abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
                 resources.getValue(R.dimen.detail_width_weight, detailWidthWeight, false)
                 width = (screenWidth * detailWidthWeight.float).toInt()
                 leftMargin = (screenWidth * masterWidthWeight.float).toInt()
+                gravity = GravityCompat.END
             }
 
             detail.requireView().apply {
@@ -187,7 +205,7 @@ abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
                 visibility = VISIBLE
             }
 
-            if(detail.childFragmentManager.primaryNavigationFragment is SplashFragment) {
+            if (detail.childFragmentManager.primaryNavigationFragment is SplashFragment) {
                 detail.navController.navigate(R.id.navigation_map)
             }
 
@@ -196,15 +214,14 @@ abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
             detail.requireView().visibility = VISIBLE
             binding.resultDetailNavFragment.visibility = VISIBLE
         } else if (!resources.getBoolean(R.bool.isMasterDetail)) {
-
             detail.requireView().apply {
                 layoutParams = detailLayoutParams
                 requestLayout()
             }
 
-            if(detail.childFragmentManager.primaryNavigationFragment is PropertyDetailFragment ||
-                detail.childFragmentManager.primaryNavigationFragment is PropertyUpdateFragment) {
-
+            if (detail.childFragmentManager.primaryNavigationFragment is PropertyDetailFragment ||
+                detail.childFragmentManager.primaryNavigationFragment is PropertyUpdateFragment
+            ) {
                 detail.requireView().visibility = VISIBLE
                 binding.segmentedcontrol.buttonContainer.visibility = GONE
 
@@ -212,7 +229,7 @@ abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
             } else {
                 binding.segmentedcontrol.buttonContainer.visibility = VISIBLE
 
-                if(binding.segmentedcontrol.listViewButton.isSelected) {
+                if (binding.segmentedcontrol.listViewButton.isSelected) {
                     master.requireView().visibility = VISIBLE
                     binding.resultListFragment.visibility = VISIBLE
                     binding.resultListFragment.bringToFront()
@@ -220,13 +237,14 @@ abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
                     binding.resultDetailNavFragment.visibility = GONE
                 }
 
-                if(binding.segmentedcontrol.mapViewButton.isSelected) {
+                if (binding.segmentedcontrol.mapViewButton.isSelected) {
                     master.requireView().visibility = GONE
                     binding.resultListFragment.visibility = GONE
                     detail.requireView().visibility = VISIBLE
                     binding.resultDetailNavFragment.visibility = VISIBLE
                     binding.resultDetailNavFragment.bringToFront()
-                    if(detail.childFragmentManager.primaryNavigationFragment !is BaseMapFragment) {
+                    binding.segmentedcontrol.root.bringToFront()
+                    if (detail.childFragmentManager.primaryNavigationFragment !is BaseMapFragment) {
                         detail.navController.navigate(R.id.navigation_map)
                     }
                 }
@@ -235,5 +253,5 @@ abstract class BaseBrowseFragment : BaseFragment(R.layout.fragment_browse),
     }
 
     abstract fun isDetailFragmentSelected(): Boolean
-    abstract fun setDetailFragmentSelected( isSelected: Boolean)
+    abstract fun setDetailFragmentSelected(isSelected: Boolean)
 }

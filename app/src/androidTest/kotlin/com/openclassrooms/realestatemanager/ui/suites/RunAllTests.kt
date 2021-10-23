@@ -7,9 +7,9 @@ import com.openclassrooms.realestatemanager.data.repository.ConnectivityManagerT
 import com.openclassrooms.realestatemanager.data.repository.CreatePropertyRepositoryTest
 import com.openclassrooms.realestatemanager.data.repository.FindAllPropertyRepositoryTest
 import com.openclassrooms.realestatemanager.data.repository.UpdatePropertyRepositoryTest
-import com.openclassrooms.realestatemanager.ui.MainActivityTest
-import com.openclassrooms.realestatemanager.ui.MainNavigationTest
-import com.openclassrooms.realestatemanager.ui.MainRotationTest
+import com.openclassrooms.realestatemanager.ui.main.MainActivityTest
+import com.openclassrooms.realestatemanager.ui.main.MainNavigationTest
+import com.openclassrooms.realestatemanager.ui.main.MainRotationTest
 import com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragmentTest
 import com.openclassrooms.realestatemanager.ui.property.browse.list.BrowseListFragmentIntegrationTest
 import com.openclassrooms.realestatemanager.ui.property.browse.map.BrowseMapFragmentIntegrationTest

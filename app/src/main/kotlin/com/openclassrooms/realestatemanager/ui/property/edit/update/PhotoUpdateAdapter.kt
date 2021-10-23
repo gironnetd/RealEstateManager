@@ -16,14 +16,6 @@ import java.util.*
 
 class PhotoUpdateAdapter(val context: Context) : RecyclerView.Adapter<PhotoUpdateAdapter.PhotoViewHolder>() {
 
-    interface OnItemClickListener {
-        fun clickOnPhotoAtPosition(photoId: String)
-    }
-
-    private var callBack: OnItemClickListener? = null
-
-    fun setOnItemClickListener(listener: OnItemClickListener) { callBack = listener }
-
     private val diffCallback = object : DiffUtil.ItemCallback<Photo>() {
 
         override fun areItemsTheSame(oldItem: Photo, newItem: Photo): Boolean {
@@ -33,15 +25,26 @@ class PhotoUpdateAdapter(val context: Context) : RecyclerView.Adapter<PhotoUpdat
         override fun areContentsTheSame(oldItem: Photo, newItem: Photo): Boolean {
             return oldItem == newItem
         }
-
     }
     val differ = AsyncListDiffer(this, diffCallback)
 
+    interface OnItemClickListener {
+        fun clickOnPhotoAtPosition(photoId: String)
+    }
+
+    private var callBack: OnItemClickListener? = null
+
+    fun setOnItemClickListener(listener: OnItemClickListener) { callBack = listener }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
-        return PhotoViewHolder(from(context).inflate(R.layout.layout_photo_list_item,
-            parent,
-            false),
-            callBack)
+        return PhotoViewHolder(
+            from(context).inflate(
+                R.layout.layout_photo_list_item,
+                parent,
+                false
+            ),
+            callBack
+        )
     }
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
@@ -73,17 +76,17 @@ class PhotoUpdateAdapter(val context: Context) : RecyclerView.Adapter<PhotoUpdat
         fun bind(item: Photo) = with(itemView) {
             item.let { photo ->
                 photo.bitmap?.let {
-                    this@PhotoViewHolder.photo.setPadding(0,0,0,0)
+                    this@PhotoViewHolder.photo.setPadding(0, 0, 0, 0)
                     this@PhotoViewHolder.photo.setImageBitmap(photo.bitmap)
-                }?: with(this@PhotoViewHolder.photo) {
+                } ?: with(this@PhotoViewHolder.photo) {
                     setImageBitmap(null)
-                    setPadding(32,32,32,32)
+                    setPadding(emptyPhotoPadding, emptyPhotoPadding, emptyPhotoPadding, emptyPhotoPadding)
                     setImageResource(R.drawable.ic_baseline_no_photography_24)
                 }
 
-                if(photo.mainPhoto) {
-                    type.text =  resources.getString(PhotoType.MAIN.type).uppercase(Locale.getDefault())
-                } else if(photo.type != PhotoType.NONE) {
+                if (photo.mainPhoto) {
+                    type.text = resources.getString(PhotoType.MAIN.type).uppercase(Locale.getDefault())
+                } else if (photo.type != PhotoType.NONE) {
                     type.text = resources.getString(photo.type.type).uppercase(Locale.getDefault())
                 }
 
@@ -92,5 +95,9 @@ class PhotoUpdateAdapter(val context: Context) : RecyclerView.Adapter<PhotoUpdat
                 }
             }
         }
+    }
+
+    companion object {
+        const val emptyPhotoPadding = 32
     }
 }

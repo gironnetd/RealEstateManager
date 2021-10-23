@@ -13,17 +13,9 @@ import com.openclassrooms.realestatemanager.models.property.Property
 import com.openclassrooms.realestatemanager.ui.property.setting.Currency
 import com.openclassrooms.realestatemanager.ui.property.setting.Currency.EUROS
 import com.openclassrooms.realestatemanager.ui.property.shared.BaseFragment
-import com.openclassrooms.realestatemanager.util.Utils
+import com.openclassrooms.realestatemanager.util.Utils.convertEuroToDollar
 
 class ListAdapter : RecyclerView.Adapter<ListAdapter.PropertyViewHolder>() {
-
-    interface OnItemClickListener {
-        fun onItemClick(propertyId: String)
-    }
-
-    private lateinit var callBack: OnItemClickListener
-
-    fun setOnItemClickListener(listener: OnItemClickListener) { callBack = listener }
 
     private val diffCallback = object : DiffUtil.ItemCallback<Property>() {
 
@@ -37,11 +29,22 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.PropertyViewHolder>() {
     }
     private val differ = AsyncListDiffer(this, diffCallback)
 
+    interface OnItemClickListener {
+        fun onItemClick(propertyId: String)
+    }
+
+    private lateinit var callBack: OnItemClickListener
+
+    fun setOnItemClickListener(listener: OnItemClickListener) { callBack = listener }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PropertyViewHolder {
-        return PropertyViewHolder(LayoutInflater.from(parent.context).inflate(
+        return PropertyViewHolder(
+            LayoutInflater.from(parent.context).inflate(
                 R.layout.layout_property_list_item,
                 parent, false
-        ), if(::callBack.isInitialized) { callBack } else { null } )
+            ),
+            if (::callBack.isInitialized) { callBack } else { null }
+        )
     }
 
     override fun onBindViewHolder(holder: PropertyViewHolder, position: Int) {
@@ -58,7 +61,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.PropertyViewHolder>() {
     }
 
     class PropertyViewHolder
-    constructor(itemView: View, private var callBack: OnItemClickListener? = null ) : RecyclerView.ViewHolder(itemView) {
+    constructor(itemView: View, private var callBack: OnItemClickListener? = null) : RecyclerView.ViewHolder(itemView) {
 
         var mainPhoto: ImageView = itemView.findViewById(R.id.property_main_photo)
         var type: TextView = itemView.findViewById(R.id.property_type)
@@ -68,12 +71,12 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.PropertyViewHolder>() {
         fun bind(item: Property) = with(itemView) {
             item.photos.singleOrNull { photo -> photo.mainPhoto }?.let { photo ->
                 photo.bitmap?.let {
-                    mainPhoto.setPadding(0,0,0,0)
+                    mainPhoto.setPadding(0, 0, 0, 0)
                     mainPhoto.setImageBitmap(photo.bitmap)
                 }
-            }?: with(mainPhoto) {
+            } ?: with(mainPhoto) {
                 setImageBitmap(null)
-                setPadding(20,20,20,20)
+                setPadding(emptyPhotoPadding, emptyPhotoPadding, emptyPhotoPadding, emptyPhotoPadding)
                 setImageResource(R.drawable.ic_baseline_no_photography_24)
             }
 
@@ -82,22 +85,19 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.PropertyViewHolder>() {
             }
 
             item.address.let {
-                if(it.street.isNotEmpty()) {
-                    if(resources.getBoolean(R.bool.isMasterDetail)) {
-                        street.text = it.street
-                    } else {
-                        street.text = item.addressInList(resources)
-                    }
+                if (it.street.isNotEmpty()) {
+                    street.text = item.addressInList(resources)
                 }
             }
+
             item.price.let {
                 BaseFragment.defaultCurrency.value?.let { defaultCurrency ->
-                    if(defaultCurrency == EUROS.currency) {
+                    if (defaultCurrency == EUROS.currency) {
                         price.text = resources.getString(R.string.euros_symbol).plus(" $it")
                     }
 
-                    if(defaultCurrency == Currency.DOLLARS.currency) {
-                        price.text = resources.getString(R.string.dollars_symbol).plus(" ${Utils.convertEuroToDollar(it)}")
+                    if (defaultCurrency == Currency.DOLLARS.currency) {
+                        price.text = resources.getString(R.string.dollars_symbol).plus(" ${convertEuroToDollar(it)}")
                     }
                 }
             }
@@ -106,5 +106,9 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.PropertyViewHolder>() {
                 callBack?.onItemClick(item.id)
             }
         }
+    }
+
+    companion object {
+        const val emptyPhotoPadding = 20
     }
 }

@@ -7,16 +7,17 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Address(
-        var street: String = "",
-        var city: String = "",
-        @ColumnInfo(name = "postal_code")
-        var postalCode: String = "",
-        var country: String = "",
-        var state: String = "",
-        var latitude: Double = 0.0,
-        var longitude: Double = 0.0) : Parcelable {
+    var street: String = "",
+    var city: String = "",
+    @ColumnInfo(name = "postal_code")
+    var postalCode: String = "",
+    var country: String = "",
+    var state: String = "",
+    var latitude: Double = 0.0,
+    var longitude: Double = 0.0
+) : Parcelable {
 
-    constructor(cursor: Cursor): this() {
+    constructor(cursor: Cursor) : this() {
         street = cursor.getString(cursor.getColumnIndex(COLUMN_ADDRESS_STREET))
         city = cursor.getString(cursor.getColumnIndex(COLUMN_ADDRESS_CITY))
         postalCode = cursor.getString(cursor.getColumnIndex(COLUMN_ADDRESS_POSTAL_CODE))
@@ -26,10 +27,14 @@ data class Address(
         longitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_ADDRESS_LONGITUDE))
     }
 
-    fun deepCopy(street: String = this.street, city: String = this.city,
-                 postalCode: String = this.postalCode, country: String = this.country,
-                 state: String = this.state, latitude: Double = this.latitude,
-                 longitude: Double = this.longitude) = Address(street, city, postalCode, country, state, latitude, longitude)
+    fun deepCopy(
+        street: String = this.street, city: String = this.city,
+        postalCode: String = this.postalCode, country: String = this.country,
+        state: String = this.state, latitude: Double = this.latitude,
+        longitude: Double = this.longitude
+    ) = Address(street, city, postalCode, country, state, latitude, longitude)
+
+    override fun toString(): String = "$street\n$city\n$postalCode\n$country\n$state"
 
     companion object {
         /** The name of the street column.  */
@@ -52,9 +57,5 @@ data class Address(
 
         /** The name of the longitude column.  */
         const val COLUMN_ADDRESS_LONGITUDE = "longitude"
-    }
-
-    override fun toString(): String {
-        return "$street\n$city\n$postalCode\n$country\n$state"
     }
 }

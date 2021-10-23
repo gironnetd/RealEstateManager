@@ -1,8 +1,6 @@
 package com.openclassrooms.realestatemanager.ui.property.edit.dialog.location.update
 
 import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.espresso.Espresso.onView
@@ -45,7 +43,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
-import java.io.FileOutputStream
 import java.util.*
 
 @RunWith(AndroidJUnit4::class)
@@ -74,19 +71,6 @@ class UpdateLocationDialogFragmentIntegrationTest : BaseFragmentTests() {
         itemPosition = (fakeProperties.indices).random()
 
         BrowseFragment.WHEN_NORMAL_MODE_IS_DETAIL_FRAGMENT_SELECTED = false
-
-        fakeProperties[itemPosition].photos.forEach { photo ->
-            val photoFile = File(photo.storageLocalDatabase(testApplication.applicationContext.cacheDir, true))
-
-            if (!photoFile.exists()) {
-                val defaultImage = testApplication.resources.getDrawable(R.drawable.default_image, null)
-
-                val outputStream = FileOutputStream(photoFile, true)
-
-                (defaultImage as BitmapDrawable).bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                outputStream.close()
-            }
-        }
 
         val predictionsJson = jsonUtil.readJSONFromAsset(ConstantsTest.PREDICTIONS_DATA_FILENAME)
         fakePredictions = Gson().fromJson(predictionsJson, object : TypeToken<List<Prediction>>() {}.type)

@@ -34,9 +34,10 @@ import javax.inject.Inject
  * Fragment to Create a real estate.
  */
 class PropertyCreateFragment
-@Inject constructor(viewModelFactory: ViewModelProvider.Factory, registry: ActivityResultRegistry?) : PropertyEditFragment(registry),
-    MviView<PropertyEditIntent.PropertyCreateIntent, PropertyEditViewState>
-    ,  AddLocationDialogFragment.AddLocationListener {
+@Inject constructor(viewModelFactory: ViewModelProvider.Factory, registry: ActivityResultRegistry?) :
+    PropertyEditFragment(registry),
+    MviView<PropertyEditIntent.PropertyCreateIntent, PropertyEditViewState>,
+    AddLocationDialogFragment.AddLocationListener {
 
     private val propertyCreateViewModel: PropertyCreateViewModel by viewModels { viewModelFactory }
 
@@ -53,7 +54,7 @@ class PropertyCreateFragment
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         innerInflater = inflater.cloneInContext(ContextThemeWrapper(activity, R.style.AppTheme_Secondary))
-        _binding = FragmentEditBinding.inflate(innerInflater, container, false)
+        editBinding = FragmentEditBinding.inflate(innerInflater, container, false)
         super.onCreateView(innerInflater, container, savedInstanceState)
         return binding.root
     }
@@ -61,11 +62,16 @@ class PropertyCreateFragment
     override fun configureView() {
         super.configureView()
         with(binding) {
-            description.minLines = 4
-            mapViewButton!!.setImageResource(R.drawable.ic_baseline_add_location_36)
+            description.minLines = descriptionMinLines
+            price.isFocusable = true
+            surface.isFocusable = true
+            rooms.isFocusable = true
+            bathrooms.isFocusable = true
+            bedrooms.isFocusable = true
+            mapViewButton.setImageResource(R.drawable.ic_baseline_add_location_36)
 
             mapViewButton.setOnClickListener {
-                if(!::addLocationAlertDialog.isInitialized) {
+                if (!::addLocationAlertDialog.isInitialized) {
                     addLocationAlertDialog = AddLocationDialogFragment(innerContext = innerInflater.context)
                     addLocationAlertDialog.show(childFragmentManager, TAG)
                     addLocationAlertDialog.setCallBack(this@PropertyCreateFragment)
@@ -74,14 +80,7 @@ class PropertyCreateFragment
                     addLocationAlertDialog.alertDialog.show()
                 }
             }
-
-            street.onFocusChangeListener = null
-            city.onFocusChangeListener = null
-            postalCode.onFocusChangeListener = null
-            country.onFocusChangeListener = null
-            state.onFocusChangeListener = null
         }
-        //binding.mapDetailFragment.visibility = GONE
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -92,13 +91,13 @@ class PropertyCreateFragment
         val createItemLayout = createItem.actionView as LinearLayout
 
         createItemLayout.apply {
-            //findViewById<ImageView>(R.id.menu_item_icon).setImageResource(null)
+            // findViewById<ImageView>(R.id.menu_item_icon).setImageResource(null)
             findViewById<TextView>(R.id.menu_item_title).text = resources.getString(R.string.create)
         }
 
         createItemLayout.setOnClickListener {
             populateChanges()
-            if(newProperty != Property() || newProperty.photos.isNotEmpty()) {
+            if (newProperty != Property() || newProperty.photos.isNotEmpty()) {
                 confirmSaveChanges()
             } else {
                 showMessage(resources.getString(R.string.no_changes))
@@ -114,19 +113,18 @@ class PropertyCreateFragment
         when (item.itemId) {
             R.id.navigation_create -> {
                 populateChanges()
-                if(newProperty != Property() || newProperty.photos.isNotEmpty()) {
+                if (newProperty != Property() || newProperty.photos.isNotEmpty()) {
                     confirmSaveChanges()
                 } else {
                     showMessage(resources.getString(R.string.no_changes))
                 }
-                return true
             }
             R.id.navigation_main_search -> {
                 (activity as MainActivity).navController.navigate(R.id.navigation_main_search)
-                return true
             }
-            else -> { return true }
+            else -> { }
         }
+        return true
     }
 
     override fun onResume() {
@@ -137,13 +135,14 @@ class PropertyCreateFragment
     }
 
     override fun initializeToolbar() {
-        mainActivity.binding.toolBar.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorSecondary, null))
-        mainActivity.binding.statusbar.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorSecondaryDark, null))
-            with(mainActivity) {
-                if(binding.toolBar.visibility == GONE) {
-                    binding.toolBar.visibility = VISIBLE
-                }
+        with(mainActivity.binding) {
+            toolBar.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorSecondary, null))
+            statusbar.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorSecondaryDark, null))
+
+            if (toolBar.visibility == GONE) {
+                toolBar.visibility = VISIBLE
             }
+        }
     }
 
     override fun intents(): Observable<PropertyEditIntent.PropertyCreateIntent> {
@@ -159,17 +158,23 @@ class PropertyCreateFragment
     }
 
     override fun render(state: PropertyEditViewState) {
-        if(state.isSaved) {
+        if (state.isSaved) {
             state.uiNotification?.let { uiNotification ->
 
                 val mNotificationManager = AppNotificationManager(requireActivity())
 
-                if(uiNotification == PropertyEditViewState.UiNotification.PROPERTIES_FULLY_CREATED) {
-                    mNotificationManager.showNotification(newProperty, resources.getString(R.string.property_create_totally))
+                if (uiNotification == PropertyEditViewState.UiNotification.PROPERTIES_FULLY_CREATED) {
+                    mNotificationManager.showNotification(
+                        newProperty,
+                        resources.getString(R.string.property_create_totally)
+                    )
                 }
 
-                if(uiNotification == PropertyEditViewState.UiNotification.PROPERTY_LOCALLY_CREATED) {
-                    mNotificationManager.showNotification(newProperty, resources.getString(R.string.property_create_locally))
+                if (uiNotification == PropertyEditViewState.UiNotification.PROPERTY_LOCALLY_CREATED) {
+                    mNotificationManager.showNotification(
+                        newProperty,
+                        resources.getString(R.string.property_create_locally)
+                    )
                 }
             }
 
@@ -182,13 +187,13 @@ class PropertyCreateFragment
         }
     }
 
-    override fun confirmSaveChanges() {
+    fun confirmSaveChanges() {
         val builder = AlertDialog.Builder(innerInflater.context)
         with(builder) {
             setTitle(getString(R.string.confirm_create_changes_dialog_title))
             setMessage(getString(R.string.confirm_create_changes_dialog_message))
-            setPositiveButton(getString(R.string.confirm_create_changes))  { _, _ ->
-                if(newProperty.photos.any { photo -> photo.locallyDeleted }) {
+            setPositiveButton(getString(R.string.confirm_create_changes)) { _, _ ->
+                if (newProperty.photos.any { photo -> photo.locallyDeleted }) {
                     newProperty.photos.removeAll(newProperty.photos.filter { photo -> photo.locallyDeleted })
                 }
                 createPropertyIntentPublisher.onNext(CreatePropertyIntent(newProperty))
@@ -200,31 +205,34 @@ class PropertyCreateFragment
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        if(hidden) {
-            mainActivity.binding.toolBar.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorSecondary, null))
-            mainActivity.binding.statusbar.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorSecondaryDark, null))
+        if (hidden) {
+            with(mainActivity.binding) {
+                toolBar.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorSecondary, null))
+                statusbar.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorSecondaryDark, null))
+            }
             newProperty = Property()
             createItem.isVisible = false
             searchItem.isVisible = true
-            onBackPressedCallback.isEnabled = true
             clearView()
         } else {
             initializeToolbar()
+            initInterestPoints()
             createItem.isVisible = true
             searchItem.isVisible = false
-            onBackPressedCallback.isEnabled = false
+            onBackPressedCallback.isEnabled = true
         }
     }
 
     fun onBackPressed() {
         (activity as MainActivity).navController.navigate(R.id.navigation_browse)
+        onBackPressedCallback.isEnabled = false
     }
 
     override fun onBackPressedCallback() {
         onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 populateChanges()
-                if(newProperty != Property() || newProperty.photos != mutableListOf<Photo>()) {
+                if (newProperty != Property() || newProperty.photos != mutableListOf<Photo>()) {
                     confirmSaveChanges()
                 } else {
                     onBackPressed()
@@ -246,5 +254,9 @@ class PropertyCreateFragment
             country.setText(newProperty.address.country)
             state.setText(newProperty.address.state)
         }
+    }
+
+    companion object {
+        const val descriptionMinLines = 4
     }
 }

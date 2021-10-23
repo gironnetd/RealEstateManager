@@ -6,6 +6,9 @@
       <w>extjunit</w>
       <w>firestore</w>
       <w>gmail</w>
+      <w>hinttext</w>
+      <w>menuitem</w>
+      <w>navigationview</w>
       <w>phablet</w>
       <w>radiogroup</w>
       <w>rocquencourt</w>
@@ -14,6 +17,8 @@
       <w>sharedpref</w>
       <w>snackbar</w>
       <w>statusbar</w>
+      <w>textinputedittext</w>
+      <w>textinputlayout</w>
       <w>yvelines</w>
     </words>
   </dictionary>

@@ -6,7 +6,7 @@ import com.openclassrooms.realestatemanager.ui.mvibase.MviAction
 sealed class PropertyEditAction : MviAction {
 
     sealed class PopulatePropertyAction : PropertyEditAction() {
-        data class PopulatePropertyAction(val propertyId: String): PropertyEditAction.PopulatePropertyAction()
+        data class PopulatePropertyAction(val propertyId: String) : PropertyEditAction.PopulatePropertyAction()
     }
 
     sealed class UpdatePropertyAction : PropertyEditAction() {

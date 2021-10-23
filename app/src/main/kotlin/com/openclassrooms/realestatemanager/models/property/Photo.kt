@@ -40,7 +40,7 @@ fun Photo.storageLocalDatabase(cacheDir: File, isThumbnail: Boolean = false): St
 
     val root = File(destination.toString())
 
-    if(!root.exists()) {
+    if (!root.exists()) {
         root.mkdirs()
     }
 
@@ -68,7 +68,7 @@ fun Photo.storageUrl(storageBucket: String, isThumbnail: Boolean = false): Strin
 
 @Parcelize
 @Entity(tableName = TABLE_NAME, primaryKeys = [COLUMN_ID, "property_id"])
-data class Photo (
+data class Photo(
     @SerializedName(value = "id")
     @ColumnInfo(index = true, name = COLUMN_ID)
     var id: String = Firebase.firestore.collection(PHOTOS_COLLECTION).document().id,
@@ -98,27 +98,30 @@ data class Photo (
 
     @ColumnInfo(name = "locally_deleted")
     @get:Exclude
-    var locallyDeleted: Boolean = false ) : Parcelable {
+    var locallyDeleted: Boolean = false
+) : Parcelable {
 
-    fun deepCopy(id: String = this.id, propertyId: String = this.propertyId,
-                 description: String = this.description, mainPhoto: Boolean = this.mainPhoto,
-                 type: PhotoType = this.type, bitmap: Bitmap? = this.bitmap,
-                 locallyUpdated: Boolean = this.locallyUpdated,
-                 locallyCreated: Boolean = this.locallyCreated,
-                 locallyDeleted: Boolean = this.locallyDeleted
-    ) = Photo(id, propertyId, description, mainPhoto, type, bitmap, locallyUpdated, locallyCreated, locallyDeleted)
-
-    constructor(cursor: Cursor): this() {
+    constructor(cursor: Cursor) : this() {
         id = cursor.getString(cursor.getColumnIndex(COLUMN_ID))
         propertyId = cursor.getString(cursor.getColumnIndex(COLUMN_PHOTO_PROPERTY_ID))
         description = cursor.getString(cursor.getColumnIndex(COLUMN_PHOTO_DESCRIPTION))
         type = PhotoType.valueOf(cursor.getString(cursor.getColumnIndex(COLUMN_PHOTO_TYPE)))
-
         mainPhoto = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_MAIN_PHOTO)) == 1
-
         locallyUpdated = cursor.getInt(cursor.getColumnIndex(COLUMN_LOCALLY_UPDATED)) == 1
         locallyCreated = cursor.getInt(cursor.getColumnIndex(COLUMN_LOCALLY_CREATED)) == 1
     }
+
+    fun deepCopy(
+        id: String = this.id, propertyId: String = this.propertyId,
+        description: String = this.description, mainPhoto: Boolean = this.mainPhoto,
+        type: PhotoType = this.type, bitmap: Bitmap? = this.bitmap,
+        locallyUpdated: Boolean = this.locallyUpdated,
+        locallyCreated: Boolean = this.locallyCreated,
+        locallyDeleted: Boolean = this.locallyDeleted
+    ): Photo = Photo(
+        id, propertyId, description, mainPhoto, type,
+        bitmap, locallyUpdated, locallyCreated, locallyDeleted
+    )
 
     override fun toString(): String {
         return StringBuffer()
@@ -143,9 +146,7 @@ data class Photo (
         if (description != other.description) return false
         if (mainPhoto != other.mainPhoto) return false
         if (type != other.type) return false
-        if(bitmap != null && other.bitmap != null) {
-            if (!sameAs(bitmap!!, other.bitmap!!) ) return false
-        }
+        if (bitmap != null && other.bitmap != null) if (!sameAs(bitmap!!, other.bitmap!!)) return false
         if (locallyUpdated != other.locallyUpdated) return false
         if (locallyCreated != other.locallyCreated) return false
         if (locallyDeleted != other.locallyDeleted) return false
@@ -169,6 +170,7 @@ data class Photo (
     companion object {
 
         const val SEPARATOR = ","
+
         /** The name of the Photo table.  */
         const val TABLE_NAME: String = "photos"
 
@@ -197,15 +199,15 @@ data class Photo (
         fun fromContentValues(values: ContentValues?): Photo {
             val photo = Photo()
             values?.let {
-                if ( it.containsKey(COLUMN_ID)) {
+                if (it.containsKey(COLUMN_ID)) {
                     photo.id = it.getAsString(Property.COLUMN_ID)
                 }
 
-                if ( it.containsKey(COLUMN_PHOTO_PROPERTY_ID)) {
+                if (it.containsKey(COLUMN_PHOTO_PROPERTY_ID)) {
                     photo.propertyId = it.getAsString(COLUMN_PHOTO_PROPERTY_ID)
                 }
 
-                if ( it.containsKey(COLUMN_PHOTO_DESCRIPTION)) {
+                if (it.containsKey(COLUMN_PHOTO_DESCRIPTION)) {
                     photo.description = it.getAsString(COLUMN_PHOTO_DESCRIPTION)
                 }
 
@@ -213,15 +215,15 @@ data class Photo (
                     photo.type = PhotoType.valueOf(it.getAsString(COLUMN_PHOTO_TYPE))
                 }
 
-                if(it.containsKey(COLUMN_IS_MAIN_PHOTO)) {
+                if (it.containsKey(COLUMN_IS_MAIN_PHOTO)) {
                     photo.mainPhoto = it.getAsBoolean(COLUMN_IS_MAIN_PHOTO)
                 }
 
-                if(it.containsKey(COLUMN_LOCALLY_UPDATED)) {
+                if (it.containsKey(COLUMN_LOCALLY_UPDATED)) {
                     photo.locallyUpdated = it.getAsBoolean(COLUMN_LOCALLY_UPDATED)
                 }
 
-                if(it.containsKey(COLUMN_LOCALLY_CREATED)) {
+                if (it.containsKey(COLUMN_LOCALLY_CREATED)) {
                     photo.locallyCreated = it.getAsBoolean(COLUMN_LOCALLY_CREATED)
                 }
             }
@@ -229,5 +231,3 @@ data class Photo (
         }
     }
 }
-
-
