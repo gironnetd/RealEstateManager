@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_browse"
+        android:icon="@drawable/ic_outline_home_work_24"
+
+        android:title="@string/real_estate" />
+    <item
+        android:id="@+id/navigation_create"
+        android:icon="@drawable/ic_outline_add_business_24"
+        android:title="@string/create_property" />
+    <item
+        android:id="@+id/navigation_main_search"
+        android:title="@string/search_properties"
+        android:icon="@drawable/ic_baseline_search_not_selected_24" />
+</menu>

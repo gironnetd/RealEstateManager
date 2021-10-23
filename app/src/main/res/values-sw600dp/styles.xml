@@ -1,0 +1,32 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlayAlertDialog</item>
+        <item name="snackbarStyle">@style/SnackBarStyle</item>
+        <item name="snackbarTextViewStyle">@style/SnackBarStyle.TextViewStyle</item>
+        <item name="textInputStyle">@style/TextInputLayoutStyle</item>
+        <item name="chipStyle">@style/ChipStyle</item>
+        <item name="actionBarStyle">@style/ActionBarStyle</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="toolbarStyle">@style/ToolbarStyle</item>
+        <item name="actionMenuTextAppearance">@style/ToolbarStyle.MenuItem.TextAppearance</item>
+        <item name="android:scrollbarStyle">insideOverlay</item>
+        <item name="android:scrollbarThumbVertical">@drawable/scroll_bar_background</item>
+        <item name="progressBarStyle">@style/ProgressBarStyle</item>
+        <item name="android:checkboxStyle">@style/CheckBoxStyle</item>
+        <item name="checkboxStyle">@style/CheckBoxStyle</item>
+        <item name="radioButtonStyle">@style/RadioButtonStyle</item>
+        <item name="android:radioButtonStyle">@style/RadioButtonStyle</item>
+        <item name="searchViewStyle">@style/SearchViewStyle</item>
+        <item name="android:searchViewStyle">@style/SearchViewStyle</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerDialogStyle</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="colorSurface">@android:color/transparent</item>
+        <item name="colorControlHighlight">@android:color/transparent</item>
+        <item name="colorControlNormal">@color/colorGrayDark</item>
+    </style>
+</resources>

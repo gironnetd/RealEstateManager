@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/edit_photo_dialog_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:paddingBottom="8dp">
+
+        <FrameLayout
+            android:id="@+id/photo_image_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/edit_location_border"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/add_photo_textview"
+                style="@style/TextAppearance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/add_a_photo" />
+
+            <ImageView
+                android:id="@+id/photo_imageview"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="26dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
+                android:contentDescription="@string/content_description"
+                android:visibility="invisible"
+                tools:srcCompat="@tools:sample/avatars" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/add_photo_buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:orientation="horizontal"
+            android:visibility="visible"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteY="8dp">
+
+            <ImageView
+                android:id="@+id/take_photo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@android:color/white"
+                android:contentDescription="@string/content_description"
+                android:padding="4dp"
+                app:srcCompat="@drawable/ic_baseline_add_a_photo_24" />
+
+            <ImageView
+                android:id="@+id/select_photo_from_gallery"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_gravity="end"
+                android:background="@android:color/white"
+                android:contentDescription="@string/content_description"
+                android:padding="4dp"
+                app:srcCompat="@drawable/ic_baseline_folder_24" />
+
+            <ImageView
+                android:id="@+id/delete_photo"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_gravity="end"
+                android:layout_marginStart="16dp"
+                android:background="@android:color/white"
+                android:contentDescription="@string/content_description"
+                android:padding="4dp"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_baseline_delete_24" />
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/is_main_photo"
+            style="@style/LabelTextAppearance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="@string/is_main_photo_question"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/photo_type_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/edit_location_border"
+            android:orientation="vertical"
+            android:paddingTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/photo_image_layout">
+
+            <RadioButton
+                android:id="@+id/radio_button_lounge"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/radio_button_facade"
+                app:layout_constraintTop_toTopOf="parent"
+                android:text="@string/photo_type_lounge" />
+
+            <RadioButton
+                android:id="@+id/radio_button_facade"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.33"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/radio_button_lounge"
+                app:layout_constraintEnd_toStartOf="@+id/radio_button_kitchen"
+                android:text="@string/photo_type_facade" />
+
+            <RadioButton
+                android:id="@+id/radio_button_kitchen"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/radio_button_facade"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_weight="0.33"
+                android:text="@string/photo_type_kitchen" />
+
+            <RadioButton
+                android:id="@+id/radio_button_bedroom"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.33"
+                app:layout_constraintHorizontal_weight="0.33"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/radio_button_lounge"
+                app:layout_constraintEnd_toStartOf="@+id/radio_button_bathroom"
+                android:text="@string/photo_type_bedroom" />
+
+            <RadioButton
+                android:id="@+id/radio_button_bathroom"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.66"
+                app:layout_constraintHorizontal_weight="0.66"
+                app:layout_constraintStart_toEndOf="@+id/radio_button_bedroom"
+                app:layout_constraintTop_toBottomOf="@+id/radio_button_lounge"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:text="@string/photo_type_bathroom" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/label_photo_type"
+            style="@style/LabelTextAppearance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/property_type"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/photo_image_layout" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/description_text_input_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/photo_type_layout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/description_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:hint="@string/description"
+                android:inputType="textMultiLine|textNoSuggestions"
+                android:text="@string/enter_a_description" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

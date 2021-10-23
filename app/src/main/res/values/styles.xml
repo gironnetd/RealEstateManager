@@ -1,11 +1,353 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlayAlertDialog</item>
+        <item name="snackbarStyle">@style/SnackBarStyle</item>
+        <item name="snackbarTextViewStyle">@style/SnackBarStyle.TextViewStyle</item>
+        <item name="textInputStyle">@style/TextInputLayoutStyle</item>
+        <item name="chipStyle">@style/ChipStyle</item>
+        <item name="actionBarStyle">@style/ActionBarStyle</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="toolbarStyle">@style/ToolbarStyle</item>
+        <item name="actionMenuTextAppearance">@style/ToolbarStyle.MenuItem.TextAppearance</item>
+        <item name="android:scrollbarStyle">insideOverlay</item>
+        <item name="android:scrollbarThumbVertical">@drawable/scroll_bar_background</item>
+        <item name="progressBarStyle">@style/ProgressBarStyle</item>
+        <item name="android:checkboxStyle">@style/CheckBoxStyle</item>
+        <item name="checkboxStyle">@style/CheckBoxStyle</item>
+        <item name="radioButtonStyle">@style/RadioButtonStyle</item>
+        <item name="android:radioButtonStyle">@style/RadioButtonStyle</item>
+        <item name="searchViewStyle">@style/SearchViewStyle</item>
+        <item name="android:searchViewStyle">@style/SearchViewStyle</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerDialogStyle</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <!--<item name="android:windowTranslucentNavigation">true</item>-->
+        <item name="android:windowNoTitle">true</item>
+        <item name="colorSurface">@android:color/transparent</item>
+        <item name="colorControlHighlight">@android:color/transparent</item>
+        <item name="colorControlNormal">@color/colorGrayDark</item>
     </style>
 
+    <style name="AppTheme.Primary" parent="AppTheme">
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryLight">@color/colorPrimaryLight</item>
+        <item name="colorPrimaryRipple">@color/colorPrimaryRipple</item>
+        <item name="colorPrimaryScrollbar">@color/colorPrimaryScrollbar</item>
+        <item name="colorAccentDark">@color/colorPrimaryAccentDark</item>
+        <item name="colorAccent">@color/colorPrimaryAccent</item>
+        <item name="colorAccentLight">@color/colorPrimaryAccentLight</item>
+        <item name="colorAccentSnackBar">@color/colorPrimaryAccentSnackBar</item>
+    </style>
+
+    <style name="AppTheme.Secondary" parent="AppTheme">
+        <item name="colorPrimaryDark">@color/colorSecondaryDark</item>
+        <item name="colorPrimary">@color/colorSecondary</item>
+        <item name="colorPrimaryLight">@color/colorSecondaryLight</item>
+        <item name="colorPrimaryRipple">@color/colorSecondaryRipple</item>
+        <item name="colorPrimaryScrollbar">@color/colorSecondaryScrollbar</item>
+        <item name="colorAccentDark">@color/colorPrimaryAccentDark</item>
+        <item name="colorAccent">@color/colorSecondaryAccent</item>
+        <item name="colorAccentLight">@color/colorSecondaryAccentLight</item>
+        <item name="colorAccentSnackBar">@color/colorSecondaryAccentSnackBar</item>
+    </style>
+
+    <style name="AppTheme.Tertiary" parent="AppTheme">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimaryDark">@color/colorTertiaryDark</item>
+        <item name="colorPrimary">@color/colorTertiary</item>
+        <item name="colorPrimaryScrollbar">@color/colorTertiaryScrollbar</item>
+        <item name="colorPrimaryLight">@color/colorTertiaryLight</item>
+        <item name="colorPrimaryRipple">@color/colorTertiaryRipple</item>
+        <item name="colorAccentDark">@color/colorPrimaryAccentDark</item>
+        <item name="colorAccent">@color/colorTertiaryAccent</item>
+        <item name="colorAccentLight">@color/colorTertiaryAccentLight</item>
+        <item name="colorAccentSnackBar">@color/colorTertiaryAccentSnackBar</item>
+    </style>
+
+    <style name="CheckBoxStyle" parent="@style/Widget.MaterialComponents.CompoundButton.CheckBox">
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+        <item name="android:textSize">@dimen/checkbox_text_size</item>
+        <item name="android:textColor">@color/button_color_hint</item>
+        <item name="buttonTint">@color/button_color_hint</item>
+        <item name="android:buttonTint">@color/button_color_hint</item>
+    </style>
+
+    <style name="RadioButtonStyle" parent="@style/Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+        <item name="android:textSize">@dimen/radiobutton_text_size</item>
+        <item name="android:textColor">@color/button_color_hint</item>
+        <item name="buttonTint">@color/button_color_hint</item>
+        <item name="android:buttonTint">@color/button_color_hint</item>
+    </style>
+
+    <style name="DatePickerDialogStyle" parent="ThemeOverlay.MaterialComponents.Dialog">
+        <item name="colorAccent">?attr/colorPrimaryDark</item>                      <!--header background-->
+        <item name="android:windowBackground">@android:color/white</item>           <!--calendar background-->
+        <item name="colorControlActivated">?attr/colorPrimary</item>                <!--selected day-->
+        <item name="android:colorControlActivated">?attr/colorPrimary</item>
+        <item name="android:textColorPrimary">?attr/colorPrimaryDark</item>         <!--days of the month-->
+        <item name="android:textColorSecondary">?attr/colorPrimary</item>           <!--days of the week-->
+    </style>
+
+    <style name="ToolbarStyle.MenuItem.TextAppearance" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Menu">
+        <item name="android:textSize">@dimen/toolbar_menuitem_text_size</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/roboto_slab_bold</item>
+        <item name="fontFamily">@font/roboto_slab_bold</item>
+        <item name="background">@drawable/menu_item_toolbar_background</item>
+        <item name="android:background">@drawable/menu_item_toolbar_background</item>
+        <item name="android:backgroundTint">@drawable/menu_item_toolbar_background</item>
+        <item name="backgroundTint">@drawable/menu_item_toolbar_background</item>
+    </style>
+
+    <style name="SegmentedControlButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton">
+        <item name="background">@drawable/segmented_control_background</item>
+        <item name="backgroundTint">@color/segmented_control_button_color</item>
+        <item name="android:background">@drawable/segmented_control_background</item>
+        <item name="android:textColor">@color/selector_text_color</item>
+        <item name="android:textSize">@dimen/text_size</item>
+    </style>
+
+    <style name="BottomNavigationViewTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">?attr/colorAccent</item>
+        <item name="colorPrimaryDark">?attr/colorPrimaryDark</item>
+        <item name="colorAccent">?attr/colorAccent</item>
+    </style>
+
+    <style name="BottomNavigationViewTextAppearanceActive" parent="Widget.Design.BottomNavigationView">
+        <item name="fontFamily">@font/roboto_slab_bold</item>
+    </style>
+
+    <style name="BottomNavigationViewTextAppearanceInactive" parent="Widget.Design.BottomNavigationView">
+        <item name="fontFamily">@font/roboto_slab</item>
+    </style>
+
+    <style name="NavigationViewTextAppearance" parent="@style/TextAppearance.MaterialComponents.Subtitle2">
+        <item name="fontFamily">@font/roboto_slab</item>
+    </style>
+
+    <style name="NavigationViewTextAppearanceActive" parent="@style/TextAppearance.MaterialComponents.Subtitle2">
+        <item name="android:textSize">@dimen/navigationview_active_text_size</item>
+        <item name="fontFamily">@font/roboto_slab_bold</item>
+    </style>
+
+    <style name="NavigationViewTextAppearanceInactive" parent="@style/TextAppearance.MaterialComponents.Subtitle2">
+        <item name="android:textSize">@dimen/navigationview_inactive_text_size</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+    </style>
+
+    <style name="ChipStyle" parent="@style/Widget.MaterialComponents.Chip.Filter">
+        <item name="android:textColor">@color/chip_text_state_list</item>
+        <item name="android:textAppearance">@style/ChipStyle.TextAppearance</item>
+        <item name="chipBackgroundColor">@color/chip_background_state_list</item>
+    </style>
+
+    <style name="ChipStyle.TextAppearance" parent="@style/TextAppearance.MaterialComponents.Body2">
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+        <item name="android:textSize">@dimen/chip_text_size</item>
+    </style>
+
+    <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="materialThemeOverlay">@style/MaterialThemeOverlay</item>
+
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="textInputStyle">@style/TextAppearance</item>
+        <item name="android:textColorHint">@color/box_stroke_color</item>
+        <item name="hintTextColor">?attr/colorPrimaryLight</item>
+        <item name="android:textSize">@dimen/textinputlayout_text_size</item>
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+        <item name="boxStrokeColor">@color/box_stroke_color</item>
+        <item name="boxCornerRadiusTopEnd">2dp</item>
+        <item name="boxCornerRadiusTopStart">2dp</item>
+        <item name="boxCornerRadiusBottomStart">2dp</item>
+        <item name="boxCornerRadiusBottomEnd">2dp</item>
+        <item name="startIconTint">@android:color/black</item>
+        <item name="endIconTint">@android:color/black</item>
+        <item name="errorIconDrawable">@null</item>
+        <item name="errorTextColor">@null</item>
+        <item name="colorError">@null</item>
+        <item name="hintTextAppearance">@style/HintTextAppearance</item>
+        <item name="android:theme">@style/ThemeOverlayOutlinedBox</item>
+    </style>
+    
+    <style name="MaterialThemeOverlay">
+        <item name="editTextStyle">@style/TextInputEditTextStyle</item>
+    </style>
+    
+    <style name="TextInputEditTextStyle" parent="@style/Widget.MaterialComponents.TextInputEditText.OutlinedBox.Dense">
+        <item name="android:textColor">@color/box_stroke_color</item>
+        <item name="android:text">@string/none</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:textColorHint">?attr/colorPrimaryDark</item>
+        <item name="hintTextColor">?attr/colorPrimaryLight</item>
+        <item name="android:textSize">@dimen/textinputedittext_text_size</item>
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+        <item name="boxStrokeColor">@color/box_stroke_color</item>
+        <item name="startIconTint">@android:color/black</item>
+        <item name="endIconMode">custom</item>
+        <item name="endIconTint">@android:color/black</item>
+        <item name="hintTextAppearance">@style/HintTextAppearance</item>
+        <item name="android:theme">@style/ThemeOverlayOutlinedBox</item>
+        <item name="android:textCursorDrawable">?attr/colorPrimaryDark</item>
+        <item name="android:focusable">true</item>
+        <item name="background">@null</item>
+        <item name="android:background">@null</item>
+    </style>
+
+    <style name="HintTextAppearance" parent="@style/TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">?attr/colorPrimaryLight</item>
+        <item name="android:textSize">@dimen/hinttext_text_size</item>
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+    </style>
+
+    <style name="LabelTextAppearance" parent="@android:style/TextAppearance.Medium">
+        <item name="android:background">@android:color/white</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">5dp</item>
+        <item name="android:textColor">?attr/colorPrimaryDark</item>
+        <item name="android:textSize">@dimen/label_text_size</item>
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+    </style>
+
+    <style name="TextAppearance" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">?attr/colorPrimaryDark</item>
+        <item name="android:textSize">@dimen/text_size</item>
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+        <item name="android:hint">@string/none</item>
+        <item name="android:textColorHint">?attr/colorPrimaryLight</item>
+        <item name="android:textCursorDrawable">@null</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="ThemeOverlayOutlinedBox" parent="@style/ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="colorControlActivated">?attr/colorPrimaryDark</item>
+        <item name="boxStrokeColor">@color/box_stroke_color</item>
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+        <item name="android:text">@string/none</item>
+        <item name="android:textColor">?attr/colorPrimaryLight</item>
+    </style>
+
+    <style name="DefaultTextView" parent="@style/Widget.AppCompat.TextView">
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+    </style>
+
+    <style name="ActionBarStyle" parent="@style/Widget.MaterialComponents.Light.ActionBar.Solid">
+        <item name="theme">@style/ThemeOverlay.MaterialComponents.Dark.ActionBar</item>
+        <item name="popupTheme">@style/ThemeOverlay.MaterialComponents.Light</item>
+    </style>
+
+    <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@android:color/white</item>
+    </style>
+    
+    <style name="ToolbarStyle" parent="@style/Widget.MaterialComponents.Toolbar">
+        <item name="titleTextColor">@android:color/white</item>
+        <item name="titleTextAppearance">@style/ToolbarStyle.Title.TextAppearance</item>
+        <item name="android:background">?attr/colorPrimary</item>
+    </style>
+
+    <style name="ToolbarStyle.Title.TextAppearance" parent="@style/TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textSize">@dimen/toolbar_title_text_size</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/roboto_slab_bold</item>
+        <item name="fontFamily">@font/roboto_slab_bold</item>
+    </style>
+
+    <style name="SnackBarStyle" parent="Widget.MaterialComponents.Snackbar">
+        <item name="background">@drawable/snack_bar_background</item>
+        <item name="backgroundOverlayColorAlpha">1.0</item>
+        <item name="android:background">@drawable/snack_bar_background</item>
+        <item name="colorOnSurface">@android:color/white</item>
+        <item name="colorSurface">@android:color/white</item>
+    </style>
+
+    <style name="SnackBarStyle.TextViewStyle" parent="Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:textColor">?attr/colorPrimaryDark</item>
+        <item name="android:textSize">@dimen/snackbar_text_size</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:alpha">1.0</item>
+    </style>
+
+    <style name="ProgressBarStyle" parent="Widget.AppCompat.ProgressBar">
+        <item name="colorAccent">?attr/colorPrimaryDark</item>
+        <item name="android:indeterminate">true</item>
+    </style>
+
+    <style name="SearchViewStyle" parent="Widget.AppCompat.Light.SearchView">
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+        <item name="android:textColorHint">?attr/colorPrimaryScrollbar</item>
+        <item name="queryBackground">@android:color/white</item>
+        <item name="queryHint">@string/search_location_hint</item>
+        <item name="searchIcon">@drawable/ic_baseline_search_selected_24</item>
+        <item name="voiceIcon">@drawable/ic_mic_grey_24dp</item>
+    </style>
+
+    <style name="SearchViewStyle.TextAppearance" parent="@style/TextAppearance">
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="NavigationViewStyle" parent="@style/Widget.MaterialComponents.NavigationView">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:theme">@style/NavigationViewTheme</item>
+    </style>
+
+    <style name="NavigationViewTheme" parent="AppTheme">
+        <item name="android:textColorSecondary">@android:color/black</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:listPreferredItemHeightSmall">60dp</item>
+        <item name="android:listDivider">@drawable/navigation_view_divider</item>
+        <item name="android:overScrollMode">never</item>
+        <item name="android:scrollbarThumbVertical">@android:color/transparent</item>
+    </style>
+
+    <style name="TextAppearance.AppCompat.Body2">
+
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+    </style>
+
+    <style name="NavigationViewStyle.RadioButtonStyle" parent="@style/Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="android:fontFamily">@font/roboto_slab</item>
+        <item name="fontFamily">@font/roboto_slab</item>
+        <item name="android:textSize">@dimen/navigationview_radiobutton_text_size</item>
+        <item name="buttonTint">@color/colorGrayDark</item>
+    </style>
+
+    <style name="ThemeOverlayAlertDialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.MyApp.Dialog.Rounded</item>
+        <item name="buttonBarPositiveButtonStyle">@style/AlertDialogButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/AlertDialogButtonStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/AlertDialogButtonStyle</item>
+        <item name="android:background">@android:color/white</item>
+    </style>
+
+    <style name="AlertDialogButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">?attr/colorPrimaryDark</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.MyApp.Dialog.Rounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">4dp</item>
+    </style>
 </resources>

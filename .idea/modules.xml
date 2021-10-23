@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/RealEstateManager.iml" filepath="$PROJECT_DIR$/RealEstateManager.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/RealEstateManager.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/RealEstateManager.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/RealEstateManager.buildSrc.iml" filepath="$PROJECT_DIR$/.idea/modules/RealEstateManager.buildSrc.iml" />
     </modules>
   </component>
 </project>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/navigation_browse">
+
+    <main_fragment
+        android:id="@+id/navigation_browse"
+        android:name="com.openclassrooms.realestatemanager.ui.property.browse.BrowseFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_browse" />
+    <main_fragment
+        android:id="@+id/navigation_create"
+        android:name="com.openclassrooms.realestatemanager.ui.property.edit.create.PropertyCreateFragment"
+        android:label="@string/create_property"
+        tools:layout="@layout/fragment_edit" />
+    <main_fragment
+        android:id="@+id/navigation_main_search"
+        android:name="com.openclassrooms.realestatemanager.ui.property.search.MainSearchFragment"
+        android:label="@string/search_properties"
+        tools:layout="@layout/fragment_main_search" />
+</navigation>

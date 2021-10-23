@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:checkableBehavior="single"
+        android:id="@+id/main_category">
+    <item
+        android:id="@+id/navigation_browse"
+        android:title="@string/real_estate"
+        android:icon="@drawable/ic_outline_home_work_24"
+        />
+    <item
+        android:id="@+id/navigation_create"
+        android:title="@string/create_property"
+        android:icon="@drawable/ic_outline_add_business_24"
+        />
+    <item
+        android:id="@+id/navigation_main_search"
+        android:title="@string/search_properties"
+        android:icon="@drawable/ic_baseline_search_not_selected_24"
+        />
+    </group>
+
+    <item
+        android:id="@+id/choose_default_currency"
+        android:title="@string/choose_default_currency">
+        <menu>
+            <group android:checkableBehavior="single"
+                android:id="@+id/default_currency">
+                <item
+                    android:id="@+id/euros_choice"
+                    android:title="Euros"
+                    android:checkable="false"
+                    android:checked="true"
+                    app:actionLayout="@layout/action_choose_default_currency" />
+                <item
+                    android:id="@+id/dollars_choice"
+                    android:title="Dollars"
+                    android:checkable="false"
+                    app:actionLayout="@layout/action_choose_default_currency"
+                    />
+            </group>
+        </menu>
+    </item>
+
+</menu>

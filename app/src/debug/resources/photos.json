@@ -1,0 +1,50 @@
+[
+  {
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et tempus risus. In finibus risus sit amet velit blandit congue. In porta, sapien quis interdum dapibus, tortor justo porta nibh, et cursus leo nunc non quam.",
+    "id": "9uCYQYqQGrW2JvqJlj5B",
+    "mainPhoto": true,
+    "type": "BEDROOM"
+  },
+  {
+    "type": "BEDROOM",
+    "description": "Proin pellentesque magna risus, ut auctor elit congue a. Mauris non libero laoreet, tincidunt tellus venenatis, fringilla mauris. Nulla in ligula turpis. Fusce sagittis in elit ac finibus.",
+    "id": "FVsDhjrKwTOcAdUpCRUs",
+    "mainPhoto": false
+  },
+  {
+    "id": "GV2AOKK9irGc6aVBIeLT",
+    "type": "BEDROOM",
+    "mainPhoto": false,
+    "description": "Donec ornare ornare ipsum, id ultricies odio convallis sed. Nullam lectus nisi, finibus eget dolor ac, ultricies porta velit. Proin lorem risus, varius quis ante sit amet, cursus efficitur nunc."
+  },
+  {
+    "id": "HKTPtuo8lAvnE7Htzmht",
+    "mainPhoto": false,
+    "description": "Cras vehicula, ligula a mollis tincidunt, ex purus feugiat quam, ut ultricies nisl ante ac leo. Aenean vestibulum pulvinar pellentesque. Curabitur sit amet odio finibus, efficitur ipsum eu, accumsan quam.",
+    "type": "LOUNGE"
+  },
+  {
+    "id": "Mt8i6uiPh6C4MhjK8z76",
+    "mainPhoto": false,
+    "description": "Morbi tempor mi nulla, quis commodo libero commodo sed. Morbi eu purus nibh. Donec feugiat volutpat justo, non luctus est pretium in.",
+    "type": "LOUNGE"
+  },
+  {
+    "id": "P01rOBPqtUXqSPTMTCJa",
+    "type": "BATHROOM",
+    "mainPhoto": false,
+    "description": "Ut dapibus velit leo, ut consectetur orci gravida ut. Mauris facilisis tempor aliquet. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."
+  },
+  {
+    "type": "FACADE",
+    "id": "bM6e2nNhRgGmKEEFkuj3",
+    "mainPhoto": false,
+    "description": "Integer eu lacus sem. Suspendisse in scelerisque quam, ut lobortis ligula. Aliquam interdum urna quam, elementum dapibus magna tincidunt quis. Mauris eget auctor nulla."
+  },
+  {
+    "type": "KITCHEN",
+    "mainPhoto": false,
+    "description": "Integer leo nisi, aliquam id ultrices vel, hendrerit sed justo. Vivamus eu consectetur nunc. Sed rutrum ullamcorper libero, at ultricies nisi pulvinar at.",
+    "id": "uzObZucRNvFvoeJBhyJx"
+  }
+]

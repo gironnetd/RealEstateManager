@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="list_properties_margin_top">90dp</dimen>
+
+    <dimen name="checkbox_text_size">19sp</dimen>
+    <dimen name="radiobutton_text_size">19sp</dimen>
+    <dimen name="toolbar_title_text_size">21sp</dimen>
+    <dimen name="toolbar_menuitem_text_size">21sp</dimen>
+    <dimen name="navigationview_active_text_size">23sp</dimen>
+    <dimen name="navigationview_inactive_text_size">13sp</dimen>
+    <dimen name="navigationview_radiobutton_text_size">19sp</dimen>
+    <dimen name="chip_text_size">19sp</dimen>
+    <dimen name="snackbar_text_size">16sp</dimen>
+    <dimen name="textinputlayout_text_size">19sp</dimen>
+    <dimen name="textinputedittext_text_size">16sp</dimen>
+    <dimen name="hinttext_text_size">19sp</dimen>
+    <dimen name="label_text_size">19sp</dimen>
+    <dimen name="text_size">16sp</dimen>
+
+    <dimen name="list_property_main_photo_width">95dp</dimen>
+    <dimen name="list_property_main_photo_height">95dp</dimen>
+    <dimen name="list_property_type_text_size">17sp</dimen>
+    <dimen name="list_property_address_street_text_size">14sp</dimen>
+    <dimen name="list_property_price_text_size">22sp</dimen>
+</resources>

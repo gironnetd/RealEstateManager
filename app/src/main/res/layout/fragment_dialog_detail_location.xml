@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fragment
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/map_detail_dialog_fragment"
+    android:layout_margin="12dp"
+    android:padding="8dp"
+    android:background="@drawable/edit_location_border"
+    android:name="com.google.android.gms.maps.SupportMapFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layerType="hardware"
+    map:liteMode="true" />
+
